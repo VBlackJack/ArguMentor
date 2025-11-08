@@ -11,6 +11,10 @@ echo ===========================================================================
 echo              ArguMentor - Build Helper Menu
 echo ============================================================================
 echo.
+echo  Setup:
+echo  ------
+echo  S. Setup Environment (Install all dependencies)
+echo.
 echo  Build Options:
 echo  --------------
 echo  1. Debug Build (APK for testing)
@@ -38,8 +42,9 @@ echo.
 echo ============================================================================
 echo.
 
-set /p "CHOICE=Select option (0-11): "
+set /p "CHOICE=Select option (S, 0-11): "
 
+if /i "%CHOICE%"=="S" goto :option_setup
 if "%CHOICE%"=="1" goto :option_debug
 if "%CHOICE%"=="2" goto :option_release
 if "%CHOICE%"=="3" goto :option_test
@@ -57,6 +62,19 @@ echo.
 echo Invalid option. Please try again.
 timeout /t 2 >nul
 goto :menu
+
+:option_setup
+    echo.
+    echo Running environment setup...
+    echo This will install all required dependencies:
+    echo - Java JDK 17
+    echo - Android SDK
+    echo - Gradle wrapper
+    echo.
+    pause
+    call setup.bat
+    pause
+    goto :menu
 
 :option_debug
     echo.
