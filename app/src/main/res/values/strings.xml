@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ArguMentor</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Accueil</string>
+    <string name="nav_topics">Sujets</string>
+    <string name="nav_search">Rechercher</string>
+    <string name="nav_settings">Paramètres</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">ArguMentor</string>
+    <string name="home_search_hint">Rechercher des arguments, sujets…</string>
+    <string name="home_recent_topics">Sujets récents</string>
+    <string name="home_empty_state">Aucun sujet. Créez-en un pour commencer!</string>
+
+    <!-- Topic -->
+    <string name="topic_create">Créer un sujet</string>
+    <string name="topic_edit">Modifier le sujet</string>
+    <string name="topic_delete">Supprimer le sujet</string>
+    <string name="topic_title_hint">Titre du sujet</string>
+    <string name="topic_summary_hint">Résumé du sujet</string>
+    <string name="topic_posture">Posture</string>
+    <string name="topic_tags">Tags</string>
+
+    <!-- Postures -->
+    <string name="posture_neutral_critique">Neutre &amp; Critique</string>
+    <string name="posture_sceptique">Sceptique</string>
+    <string name="posture_comparatif_academique">Comparatif Académique</string>
+
+    <!-- Claim -->
+    <string name="claim_create">Créer une affirmation</string>
+    <string name="claim_edit">Modifier l\'affirmation</string>
+    <string name="claim_text_hint">Texte de l\'affirmation</string>
+    <string name="claim_stance">Position</string>
+    <string name="claim_strength">Force</string>
+
+    <!-- Stance -->
+    <string name="stance_pro">Pour</string>
+    <string name="stance_con">Contre</string>
+    <string name="stance_neutral">Neutre</string>
+
+    <!-- Strength -->
+    <string name="strength_low">Faible</string>
+    <string name="strength_medium">Moyen</string>
+    <string name="strength_high">Fort</string>
+
+    <!-- Rebuttal -->
+    <string name="rebuttal_create">Créer un contre-argument</string>
+    <string name="rebuttal_text_hint">Texte du contre-argument</string>
+    <string name="rebuttal_fallacy">Sophisme</string>
+
+    <!-- Evidence -->
+    <string name="evidence_create">Ajouter une preuve</string>
+    <string name="evidence_type">Type de preuve</string>
+    <string name="evidence_content_hint">Contenu de la preuve</string>
+
+    <!-- Question -->
+    <string name="question_create">Ajouter une question</string>
+    <string name="question_text_hint">Texte de la question</string>
+    <string name="question_kind">Type de question</string>
+    <string name="question_kind_socratic">Socratique</string>
+    <string name="question_kind_clarifying">Clarification</string>
+
+    <!-- Source -->
+    <string name="source_create">Ajouter une source</string>
+    <string name="source_title_hint">Titre de la source</string>
+    <string name="source_citation_hint">Citation</string>
+    <string name="source_url_hint">URL</string>
+
+    <!-- Debate Mode -->
+    <string name="debate_mode">Mode Débat</string>
+    <string name="debate_flip_card">Retourner la carte</string>
+
+    <!-- Import/Export -->
+    <string name="import_data">Importer des données</string>
+    <string name="export_data">Exporter des données</string>
+    <string name="import_success">Import réussi: %1$d créés, %2$d mis à jour</string>
+    <string name="import_error">Erreur d\'import</string>
+    <string name="export_success">Export réussi</string>
+    <string name="export_error">Erreur d\'export</string>
+
+    <!-- Ethics Warning -->
+    <string name="ethics_title">Avertissement Éthique</string>
+    <string name="ethics_message">ArguMentor traite de sujets sensibles (religion, politique, santé). Nous encourageons le respect, la bienveillance et la rigueur intellectuelle dans tous les débats.</string>
+    <string name="ethics_accept">J\'accepte</string>
+
+    <!-- Common -->
+    <string name="save">Enregistrer</string>
+    <string name="cancel">Annuler</string>
+    <string name="delete">Supprimer</string>
+    <string name="edit">Modifier</string>
+    <string name="close">Fermer</string>
+    <string name="search">Rechercher</string>
+    <string name="filter">Filtrer</string>
+    <string name="created_at">Créé le %1$s</string>
+    <string name="updated_at">Mis à jour le %1$s</string>
+</resources>
