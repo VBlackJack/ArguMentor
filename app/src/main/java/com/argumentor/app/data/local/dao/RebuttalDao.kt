@@ -1,0 +1,41 @@
+package com.argumentor.app.data.local.dao
+
+import androidx.room.*
+import com.argumentor.app.data.model.Rebuttal
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface RebuttalDao {
+    @Query("SELECT * FROM rebuttals WHERE claimId = :claimId ORDER BY createdAt DESC")
+    fun getRebuttalsByClaimId(claimId: String): Flow<List<Rebuttal>>
+
+    @Query("SELECT * FROM rebuttals WHERE id = :rebuttalId")
+    suspend fun getRebuttalById(rebuttalId: String): Rebuttal?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRebuttal(rebuttal: Rebuttal)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRebuttals(rebuttals: List<Rebuttal>)
+
+    @Update
+    suspend fun updateRebuttal(rebuttal: Rebuttal)
+
+    @Delete
+    suspend fun deleteRebuttal(rebuttal: Rebuttal)
+
+    @Query("DELETE FROM rebuttals WHERE id = :rebuttalId")
+    suspend fun deleteRebuttalById(rebuttalId: String)
+
+    // Full-text search
+    @Query("""
+        SELECT rebuttals.* FROM rebuttals
+        JOIN rebuttals_fts ON rebuttals.rowid = rebuttals_fts.rowid
+        WHERE rebuttals_fts MATCH :query
+        ORDER BY createdAt DESC
+    """)
+    fun searchRebuttalsFts(query: String): Flow<List<Rebuttal>>
+
+    @Query("SELECT COUNT(*) FROM rebuttals")
+    suspend fun getRebuttalCount(): Int
+}
