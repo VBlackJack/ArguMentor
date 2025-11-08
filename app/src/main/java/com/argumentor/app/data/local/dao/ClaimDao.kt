@@ -45,6 +45,15 @@ interface ClaimDao {
     """)
     fun searchClaimsFts(query: String): Flow<List<Claim>>
 
+    // Fallback search using LIKE (for when FTS query contains invalid operators)
+    @Query("""
+        SELECT * FROM claims
+        WHERE text LIKE '%' || :query || '%'
+        OR title LIKE '%' || :query || '%'
+        ORDER BY updatedAt DESC
+    """)
+    fun searchClaimsLike(query: String): Flow<List<Claim>>
+
     @Query("SELECT * FROM claims WHERE claimFingerprint = :fingerprint")
     suspend fun getClaimByFingerprint(fingerprint: String): Claim?
 

@@ -45,6 +45,14 @@ interface QuestionDao {
     """)
     fun searchQuestionsFts(query: String): Flow<List<Question>>
 
+    // Fallback search using LIKE (for when FTS query contains invalid operators)
+    @Query("""
+        SELECT * FROM questions
+        WHERE text LIKE '%' || :query || '%'
+        ORDER BY createdAt DESC
+    """)
+    fun searchQuestionsLike(query: String): Flow<List<Question>>
+
     @Query("SELECT COUNT(*) FROM questions")
     suspend fun getQuestionCount(): Int
 }

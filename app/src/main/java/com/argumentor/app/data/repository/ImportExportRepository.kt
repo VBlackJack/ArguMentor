@@ -187,7 +187,10 @@ class ImportExportRepository @Inject constructor(
             }
         }
 
-        // Import Claims with fingerprint checking
+        // Import Claims with fingerprint and similarity checking
+        // Fetch all existing claims once for similarity comparison
+        val allExistingClaims = database.claimDao().getAllClaimsSync()
+
         importData.claims.forEach { claimDto ->
             try {
                 val claim = claimDto.toModel()
@@ -205,15 +208,50 @@ class ImportExportRepository @Inject constructor(
                         duplicates++
                     }
                 } else {
-                    // Check for fingerprint match
+                    // Check for exact fingerprint match
                     val duplicateByFingerprint = database.claimDao().getClaimByFingerprint(fingerprint)
                     if (duplicateByFingerprint != null) {
                         duplicates++
                     } else {
                         // Check for near-duplicates using similarity
-                        // (Simplified: in production, would check against all existing claims)
-                        database.claimDao().insertClaim(claim.copy(claimFingerprint = fingerprint))
-                        created++
+                        // Compare with existing claims that share at least one topic
+                        val candidateClaims = allExistingClaims.filter { existingClaim ->
+                            claim.topics.any { topic -> topic in existingClaim.topics }
+                        }
+
+                        var isNearDuplicate = false
+                        var similarTo: String? = null
+
+                        for (candidate in candidateClaims) {
+                            if (FingerprintUtils.areSimilar(claim.text, candidate.text, similarityThreshold)) {
+                                isNearDuplicate = true
+                                similarTo = candidate.id
+                                break
+                            }
+                        }
+
+                        if (isNearDuplicate) {
+                            nearDuplicates++
+                            itemsForReview.add(
+                                ReviewItem(
+                                    type = "Claim",
+                                    incomingId = claim.id,
+                                    existingId = similarTo ?: "",
+                                    incomingText = claim.text.take(100),
+                                    existingText = candidateClaims.find { it.id == similarTo }?.text?.take(100) ?: "",
+                                    similarityScore = candidateClaims.find { it.id == similarTo }?.let {
+                                        FingerprintUtils.similarityRatio(
+                                            FingerprintUtils.normalizeText(claim.text),
+                                            FingerprintUtils.normalizeText(it.text)
+                                        )
+                                    } ?: 0.0,
+                                    action = "review"
+                                )
+                            )
+                        } else {
+                            database.claimDao().insertClaim(claim.copy(claimFingerprint = fingerprint))
+                            created++
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -222,20 +260,58 @@ class ImportExportRepository @Inject constructor(
             }
         }
 
-        // Import Rebuttals
+        // Import Rebuttals with similarity checking
+        val allExistingRebuttals = database.rebuttalDao().getAllRebuttalsSync()
+
         importData.rebuttals.forEach { rebuttalDto ->
             try {
-                val existing = database.rebuttalDao().getRebuttalById(rebuttalDto.id)
+                val rebuttal = rebuttalDto.toModel()
+
+                val existing = database.rebuttalDao().getRebuttalById(rebuttal.id)
                 if (existing != null) {
-                    if (rebuttalDto.updatedAt > existing.updatedAt) {
-                        database.rebuttalDao().updateRebuttal(rebuttalDto.toModel())
+                    if (rebuttal.updatedAt > existing.updatedAt) {
+                        database.rebuttalDao().updateRebuttal(rebuttal)
                         updated++
                     } else {
                         duplicates++
                     }
                 } else {
-                    database.rebuttalDao().insertRebuttal(rebuttalDto.toModel())
-                    created++
+                    // Check for near-duplicates among rebuttals for the same claim
+                    val candidateRebuttals = allExistingRebuttals.filter { it.claimId == rebuttal.claimId }
+
+                    var isNearDuplicate = false
+                    var similarTo: String? = null
+
+                    for (candidate in candidateRebuttals) {
+                        if (FingerprintUtils.areSimilar(rebuttal.text, candidate.text, similarityThreshold)) {
+                            isNearDuplicate = true
+                            similarTo = candidate.id
+                            break
+                        }
+                    }
+
+                    if (isNearDuplicate) {
+                        nearDuplicates++
+                        itemsForReview.add(
+                            ReviewItem(
+                                type = "Rebuttal",
+                                incomingId = rebuttal.id,
+                                existingId = similarTo ?: "",
+                                incomingText = rebuttal.text.take(100),
+                                existingText = candidateRebuttals.find { it.id == similarTo }?.text?.take(100) ?: "",
+                                similarityScore = candidateRebuttals.find { it.id == similarTo }?.let {
+                                    FingerprintUtils.similarityRatio(
+                                        FingerprintUtils.normalizeText(rebuttal.text),
+                                        FingerprintUtils.normalizeText(it.text)
+                                    )
+                                } ?: 0.0,
+                                action = "review"
+                            )
+                        )
+                    } else {
+                        database.rebuttalDao().insertRebuttal(rebuttal)
+                        created++
+                    }
                 }
             } catch (e: Exception) {
                 errors++
@@ -294,15 +370,30 @@ class ImportExportRepository @Inject constructor(
 
     // Helper functions to get all data
     private suspend fun getAllTopics(): List<TopicDto> {
-        // Note: In production, use Flow.first() or similar
-        // For now, simplified approach
-        return emptyList() // Will be populated when repositories are connected
+        return database.topicDao().getAllTopicsSync().map { it.toDto() }
     }
 
-    private suspend fun getAllClaims(): List<ClaimDto> = emptyList()
-    private suspend fun getAllRebuttals(): List<RebuttalDto> = emptyList()
-    private suspend fun getAllEvidences(): List<EvidenceDto> = emptyList()
-    private suspend fun getAllQuestions(): List<QuestionDto> = emptyList()
-    private suspend fun getAllSources(): List<SourceDto> = emptyList()
-    private suspend fun getAllTags(): List<TagDto> = emptyList()
+    private suspend fun getAllClaims(): List<ClaimDto> {
+        return database.claimDao().getAllClaimsSync().map { it.toDto() }
+    }
+
+    private suspend fun getAllRebuttals(): List<RebuttalDto> {
+        return database.rebuttalDao().getAllRebuttalsSync().map { it.toDto() }
+    }
+
+    private suspend fun getAllEvidences(): List<EvidenceDto> {
+        return database.evidenceDao().getAllEvidenceSync().map { it.toDto() }
+    }
+
+    private suspend fun getAllQuestions(): List<QuestionDto> {
+        return database.questionDao().getAllQuestionsSync().map { it.toDto() }
+    }
+
+    private suspend fun getAllSources(): List<SourceDto> {
+        return database.sourceDao().getAllSourcesSync().map { it.toDto() }
+    }
+
+    private suspend fun getAllTags(): List<TagDto> {
+        return database.tagDao().getAllTagsSync().map { it.toDto() }
+    }
 }

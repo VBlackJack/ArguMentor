@@ -45,6 +45,15 @@ interface RebuttalDao {
     """)
     fun searchRebuttalsFts(query: String): Flow<List<Rebuttal>>
 
+    // Fallback search using LIKE (for when FTS query contains invalid operators)
+    @Query("""
+        SELECT * FROM rebuttals
+        WHERE text LIKE '%' || :query || '%'
+        OR title LIKE '%' || :query || '%'
+        ORDER BY createdAt DESC
+    """)
+    fun searchRebuttalsLike(query: String): Flow<List<Rebuttal>>
+
     @Query("SELECT COUNT(*) FROM rebuttals")
     suspend fun getRebuttalCount(): Int
 }
