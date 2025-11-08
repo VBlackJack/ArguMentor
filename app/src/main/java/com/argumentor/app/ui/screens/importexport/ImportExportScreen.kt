@@ -105,14 +105,16 @@ fun ImportExportScreen(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        "📄 Export PDF/Markdown",
+                        "📄 Export PDF/Markdown par sujet",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onTertiaryContainer
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "Les exporteurs PDF et Markdown sont maintenant compatibles avec Android 13/14 (SAF). " +
-                        "L'export par sujet sera disponible depuis l'écran de détail dans une prochaine version.",
+                        "Pour exporter un sujet spécifique en PDF ou Markdown :\n" +
+                        "1. Ouvrez le sujet\n" +
+                        "2. Menu ⋮ → \"Exporter en PDF\" ou \"Exporter en Markdown\"\n" +
+                        "3. Choisissez l'emplacement via le sélecteur de fichiers",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onTertiaryContainer
                     )

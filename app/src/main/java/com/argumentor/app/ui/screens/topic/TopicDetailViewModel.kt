@@ -2,11 +2,14 @@ package com.argumentor.app.ui.screens.topic
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.argumentor.app.data.export.MarkdownExporter
+import com.argumentor.app.data.export.PdfExporter
 import com.argumentor.app.data.model.*
 import com.argumentor.app.data.repository.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.io.OutputStream
 import javax.inject.Inject
 
 @HiltViewModel
@@ -16,7 +19,9 @@ class TopicDetailViewModel @Inject constructor(
     private val rebuttalRepository: RebuttalRepository,
     private val evidenceRepository: EvidenceRepository,
     private val questionRepository: QuestionRepository,
-    private val sourceRepository: SourceRepository
+    private val sourceRepository: SourceRepository,
+    private val pdfExporter: PdfExporter,
+    private val markdownExporter: MarkdownExporter
 ) : ViewModel() {
 
     private val _topicId = MutableStateFlow<String?>(null)
@@ -77,5 +82,80 @@ class TopicDetailViewModel @Inject constructor(
 
     fun getClaimEvidences(claimId: String): Flow<List<Evidence>> {
         return evidenceRepository.getEvidencesByClaimId(claimId)
+    }
+
+    /**
+     * Export topic to PDF format via SAF OutputStream.
+     * @param topicId The topic to export
+     * @param outputStream OutputStream from SAF CreateDocument
+     * @param onResult Callback with (success: Boolean, errorMessage: String?)
+     */
+    fun exportTopicToPdf(topicId: String, outputStream: OutputStream, onResult: (Boolean, String?) -> Unit) {
+        viewModelScope.launch {
+            runCatching {
+                // Gather all data for export
+                val topic = _topic.value ?: error("Topic not found")
+                val claims = _claims.value
+
+                // Build rebuttals map
+                val rebuttalsMap = claims.associate { claim ->
+                    claim.id to rebuttalRepository.getRebuttalsByClaimId(claim.id).first()
+                }
+
+                // Export to PDF
+                pdfExporter.exportTopicToPdf(topic, claims, rebuttalsMap, outputStream).getOrThrow()
+            }.onSuccess {
+                onResult(true, null)
+            }.onFailure { error ->
+                onResult(false, error.message ?: "Erreur lors de l'export PDF")
+            }
+        }
+    }
+
+    /**
+     * Export topic to Markdown format via SAF OutputStream.
+     * @param topicId The topic to export
+     * @param outputStream OutputStream from SAF CreateDocument
+     * @param onResult Callback with (success: Boolean, errorMessage: String?)
+     */
+    fun exportTopicToMarkdown(topicId: String, outputStream: OutputStream, onResult: (Boolean, String?) -> Unit) {
+        viewModelScope.launch {
+            runCatching {
+                // Gather all data for export
+                val topic = _topic.value ?: error("Topic not found")
+                val claims = _claims.value
+                val questions = _questions.value
+
+                // Build rebuttals map
+                val rebuttalsMap = claims.associate { claim ->
+                    claim.id to rebuttalRepository.getRebuttalsByClaimId(claim.id).first()
+                }
+
+                // Build evidences map (for claims and rebuttals)
+                val evidencesMap = mutableMapOf<String, List<Evidence>>()
+                claims.forEach { claim ->
+                    evidencesMap[claim.id] = evidenceRepository.getEvidencesByClaimId(claim.id).first()
+                }
+                rebuttalsMap.values.flatten().forEach { rebuttal ->
+                    evidencesMap[rebuttal.id] = evidenceRepository.getEvidencesByClaimId(rebuttal.id).first()
+                }
+
+                // Build sources map
+                val allEvidences = evidencesMap.values.flatten()
+                val sourceIds = allEvidences.mapNotNull { it.sourceId }.filter { it.isNotEmpty() }.distinct()
+                val sourcesMap = sourceIds.mapNotNull { sourceId ->
+                    sourceRepository.getSourceById(sourceId).first()?.let { sourceId to it }
+                }.toMap()
+
+                // Export to Markdown
+                markdownExporter.exportTopicToMarkdown(
+                    topic, claims, rebuttalsMap, evidencesMap, questions, sourcesMap, outputStream
+                ).getOrThrow()
+            }.onSuccess {
+                onResult(true, null)
+            }.onFailure { error ->
+                onResult(false, error.message ?: "Erreur lors de l'export Markdown")
+            }
+        }
     }
 }

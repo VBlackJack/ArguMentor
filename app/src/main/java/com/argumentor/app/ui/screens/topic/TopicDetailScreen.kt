@@ -1,5 +1,7 @@
 package com.argumentor.app.ui.screens.topic
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,6 +10,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -27,16 +30,55 @@ fun TopicDetailScreen(
     onNavigateToAddClaim: (String) -> Unit,
     viewModel: TopicDetailViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val topic by viewModel.topic.collectAsState()
     val claims by viewModel.claims.collectAsState()
     val questions by viewModel.questions.collectAsState()
     val selectedTab by viewModel.selectedTab.collectAsState()
+
+    var showExportMenu by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // SAF launcher for PDF export
+    val exportPdfLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/pdf")
+    ) { uri ->
+        uri?.let {
+            context.contentResolver.openOutputStream(it)?.use { os ->
+                viewModel.exportTopicToPdf(topicId, os) { success, error ->
+                    kotlinx.coroutines.MainScope().launch {
+                        snackbarHostState.showSnackbar(
+                            message = if (success) "PDF exporté avec succès" else "Erreur: $error"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    // SAF launcher for Markdown export
+    val exportMdLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("text/markdown")
+    ) { uri ->
+        uri?.let {
+            context.contentResolver.openOutputStream(it)?.use { os ->
+                viewModel.exportTopicToMarkdown(topicId, os) { success, error ->
+                    kotlinx.coroutines.MainScope().launch {
+                        snackbarHostState.showSnackbar(
+                            message = if (success) "Markdown exporté avec succès" else "Erreur: $error"
+                        )
+                    }
+                }
+            }
+        }
+    }
 
     LaunchedEffect(topicId) {
         viewModel.loadTopic(topicId)
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(topic?.title ?: "Sujet") },
@@ -51,6 +93,38 @@ fun TopicDetailScreen(
                     }
                     IconButton(onClick = { onNavigateToDebate(topicId) }) {
                         Icon(Icons.Default.PlayArrow, contentDescription = "Mode Débat")
+                    }
+                    IconButton(onClick = { showExportMenu = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "Plus d'options")
+                    }
+                    DropdownMenu(
+                        expanded = showExportMenu,
+                        onDismissRequest = { showExportMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Exporter en PDF") },
+                            leadingIcon = {
+                                Icon(Icons.Default.PictureAsPdf, contentDescription = null)
+                            },
+                            onClick = {
+                                showExportMenu = false
+                                val timestamp = System.currentTimeMillis()
+                                val title = topic?.title?.take(20)?.replace(" ", "_") ?: "topic"
+                                exportPdfLauncher.launch("ArguMentor_${title}_$timestamp.pdf")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Exporter en Markdown") },
+                            leadingIcon = {
+                                Icon(Icons.Default.Description, contentDescription = null)
+                            },
+                            onClick = {
+                                showExportMenu = false
+                                val timestamp = System.currentTimeMillis()
+                                val title = topic?.title?.take(20)?.replace(" ", "_") ?: "topic"
+                                exportMdLauncher.launch("ArguMentor_${title}_$timestamp.md")
+                            }
+                        )
                     }
                 }
             )
