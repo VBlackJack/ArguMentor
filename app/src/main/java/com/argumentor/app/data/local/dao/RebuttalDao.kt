@@ -6,8 +6,17 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RebuttalDao {
+    @Query("SELECT * FROM rebuttals ORDER BY createdAt DESC")
+    fun getAllRebuttals(): Flow<List<Rebuttal>>
+
+    @Query("SELECT * FROM rebuttals ORDER BY createdAt DESC")
+    suspend fun getAllRebuttalsSync(): List<Rebuttal>
+
     @Query("SELECT * FROM rebuttals WHERE claimId = :claimId ORDER BY createdAt DESC")
     fun getRebuttalsByClaimId(claimId: String): Flow<List<Rebuttal>>
+
+    @Query("SELECT * FROM rebuttals WHERE claimId = :claimId ORDER BY createdAt DESC")
+    suspend fun getRebuttalsForClaim(claimId: String): List<Rebuttal>
 
     @Query("SELECT * FROM rebuttals WHERE id = :rebuttalId")
     suspend fun getRebuttalById(rebuttalId: String): Rebuttal?

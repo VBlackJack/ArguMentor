@@ -6,8 +6,17 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface QuestionDao {
+    @Query("SELECT * FROM questions ORDER BY createdAt DESC")
+    fun getAllQuestions(): Flow<List<Question>>
+
+    @Query("SELECT * FROM questions ORDER BY createdAt DESC")
+    suspend fun getAllQuestionsSync(): List<Question>
+
     @Query("SELECT * FROM questions WHERE targetId = :targetId ORDER BY createdAt DESC")
     fun getQuestionsByTargetId(targetId: String): Flow<List<Question>>
+
+    @Query("SELECT * FROM questions WHERE topicId = :topicId ORDER BY createdAt DESC")
+    suspend fun getQuestionsForTopic(topicId: String): List<Question>
 
     @Query("SELECT * FROM questions WHERE id = :questionId")
     suspend fun getQuestionById(questionId: String): Question?

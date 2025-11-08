@@ -9,6 +9,9 @@ interface SourceDao {
     @Query("SELECT * FROM sources ORDER BY createdAt DESC")
     fun getAllSources(): Flow<List<Source>>
 
+    @Query("SELECT * FROM sources ORDER BY createdAt DESC")
+    suspend fun getAllSourcesSync(): List<Source>
+
     @Query("SELECT * FROM sources WHERE id = :sourceId")
     suspend fun getSourceById(sourceId: String): Source?
 

@@ -5,6 +5,7 @@ package com.argumentor.app.ui.navigation
  */
 sealed class Screen(val route: String) {
     object EthicsWarning : Screen("ethics_warning")
+    object Permissions : Screen("permissions")
     object Home : Screen("home")
     object TopicDetail : Screen("topic/{topicId}") {
         fun createRoute(topicId: String) = "topic/$topicId"
@@ -17,5 +18,6 @@ sealed class Screen(val route: String) {
         fun createRoute(topicId: String) = "debate/$topicId"
     }
     object ImportExport : Screen("import_export")
+    object Statistics : Screen("statistics")
     object Settings : Screen("settings")
 }
