@@ -2,7 +2,9 @@ package com.argumentor.app.data.repository
 
 import com.argumentor.app.data.local.dao.RebuttalDao
 import com.argumentor.app.data.model.Rebuttal
+import com.argumentor.app.util.SearchUtils
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,6 +27,21 @@ class RebuttalRepository @Inject constructor(
     suspend fun deleteRebuttal(rebuttal: Rebuttal) =
         rebuttalDao.deleteRebuttal(rebuttal)
 
-    fun searchRebuttals(query: String): Flow<List<Rebuttal>> =
-        rebuttalDao.searchRebuttalsFts(query)
+    /**
+     * Search rebuttals using FTS with automatic fallback to LIKE search if FTS fails.
+     */
+    fun searchRebuttals(query: String): Flow<List<Rebuttal>> {
+        val sanitizedQuery = SearchUtils.sanitizeLikeQuery(query)
+
+        return if (SearchUtils.isSafeFtsQuery(query)) {
+            // Try FTS first
+            rebuttalDao.searchRebuttalsFts(query).catch { error ->
+                // If FTS fails (e.g., invalid query syntax), fall back to LIKE
+                emitAll(rebuttalDao.searchRebuttalsLike(sanitizedQuery))
+            }
+        } else {
+            // Query looks unsafe for FTS, use LIKE directly
+            rebuttalDao.searchRebuttalsLike(sanitizedQuery)
+        }
+    }
 }

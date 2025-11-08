@@ -3,12 +3,10 @@ package com.argumentor.app.data.export
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
-import android.os.Environment
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.data.model.Rebuttal
 import com.argumentor.app.data.model.Topic
-import java.io.File
-import java.io.FileOutputStream
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -28,13 +26,15 @@ class PdfExporter(private val context: Context) {
     }
 
     /**
-     * Export a single topic with all its claims and rebuttals to PDF
+     * Export a single topic with all its claims and rebuttals to PDF via OutputStream (for SAF).
+     * Use this method with Storage Access Framework (CreateDocument).
      */
     fun exportTopicToPdf(
         topic: Topic,
         claims: List<Claim>,
-        rebuttals: Map<String, List<Rebuttal>>
-    ): Result<File> {
+        rebuttals: Map<String, List<Rebuttal>>,
+        outputStream: OutputStream
+    ): Result<Unit> {
         return try {
             val document = PdfDocument()
             var pageNumber = 1
@@ -162,21 +162,19 @@ class PdfExporter(private val context: Context) {
             // Finish last page
             document.finishPage(page)
 
-            // Save to file
-            val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val fileName = "ArguMentor_${topic.title.take(20).replace(" ", "_")}_$timestamp.pdf"
-            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val file = File(downloadsDir, fileName)
-
-            FileOutputStream(file).use { outputStream ->
-                document.writeTo(outputStream)
-            }
-
+            // Write to OutputStream (SAF-compatible)
+            document.writeTo(outputStream)
             document.close()
 
-            Result.success(file)
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
+        } finally {
+            try {
+                outputStream.close()
+            } catch (e: Exception) {
+                // Ignore close errors
+            }
         }
     }
 

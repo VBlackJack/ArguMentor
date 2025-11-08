@@ -2,7 +2,9 @@ package com.argumentor.app.data.repository
 
 import com.argumentor.app.data.local.dao.QuestionDao
 import com.argumentor.app.data.model.Question
+import com.argumentor.app.util.SearchUtils
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,6 +27,21 @@ class QuestionRepository @Inject constructor(
     suspend fun deleteQuestion(question: Question) =
         questionDao.deleteQuestion(question)
 
-    fun searchQuestions(query: String): Flow<List<Question>> =
-        questionDao.searchQuestionsFts(query)
+    /**
+     * Search questions using FTS with automatic fallback to LIKE search if FTS fails.
+     */
+    fun searchQuestions(query: String): Flow<List<Question>> {
+        val sanitizedQuery = SearchUtils.sanitizeLikeQuery(query)
+
+        return if (SearchUtils.isSafeFtsQuery(query)) {
+            // Try FTS first
+            questionDao.searchQuestionsFts(query).catch { error ->
+                // If FTS fails (e.g., invalid query syntax), fall back to LIKE
+                emitAll(questionDao.searchQuestionsLike(sanitizedQuery))
+            }
+        } else {
+            // Query looks unsafe for FTS, use LIKE directly
+            questionDao.searchQuestionsLike(sanitizedQuery)
+        }
+    }
 }

@@ -1,14 +1,13 @@
 package com.argumentor.app.data.export
 
 import android.content.Context
-import android.os.Environment
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.data.model.Evidence
 import com.argumentor.app.data.model.Question
 import com.argumentor.app.data.model.Rebuttal
 import com.argumentor.app.data.model.Source
 import com.argumentor.app.data.model.Topic
-import java.io.File
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -18,7 +17,8 @@ import java.util.*
 class MarkdownExporter(private val context: Context) {
 
     /**
-     * Export a single topic with all its data to Markdown
+     * Export a single topic with all its data to Markdown via OutputStream (for SAF).
+     * Use this method with Storage Access Framework (CreateDocument).
      */
     fun exportTopicToMarkdown(
         topic: Topic,
@@ -26,8 +26,9 @@ class MarkdownExporter(private val context: Context) {
         rebuttals: Map<String, List<Rebuttal>>,
         evidence: Map<String, List<Evidence>>,
         questions: List<Question>,
-        sources: Map<String, Source>
-    ): Result<File> {
+        sources: Map<String, Source>,
+        outputStream: OutputStream
+    ): Result<Unit> {
         return try {
             val markdown = buildString {
                 // Title
@@ -171,27 +172,31 @@ class MarkdownExporter(private val context: Context) {
                 appendLine("*Généré par ArguMentor le ${formatDate(getCurrentIsoTimestamp())}*")
             }
 
-            // Save to file
-            val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val fileName = "ArguMentor_${topic.title.take(20).replace(" ", "_")}_$timestamp.md"
-            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val file = File(downloadsDir, fileName)
+            // Write to OutputStream (SAF-compatible)
+            outputStream.write(markdown.toByteArray(Charsets.UTF_8))
+            outputStream.flush()
 
-            file.writeText(markdown)
-
-            Result.success(file)
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
+        } finally {
+            try {
+                outputStream.close()
+            } catch (e: Exception) {
+                // Ignore close errors
+            }
         }
     }
 
     /**
-     * Export multiple topics to a single Markdown file
+     * Export multiple topics to a single Markdown file via OutputStream (for SAF).
+     * Use this method with Storage Access Framework (CreateDocument).
      */
     fun exportMultipleTopicsToMarkdown(
         topics: List<Topic>,
-        claimsMap: Map<String, List<Claim>>
-    ): Result<File> {
+        claimsMap: Map<String, List<Claim>>,
+        outputStream: OutputStream
+    ): Result<Unit> {
         return try {
             val markdown = buildString {
                 appendLine("# Mes Topics ArguMentor")
@@ -227,17 +232,19 @@ class MarkdownExporter(private val context: Context) {
                 appendLine("*Généré par ArguMentor*")
             }
 
-            // Save to file
-            val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val fileName = "ArguMentor_AllTopics_$timestamp.md"
-            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val file = File(downloadsDir, fileName)
+            // Write to OutputStream (SAF-compatible)
+            outputStream.write(markdown.toByteArray(Charsets.UTF_8))
+            outputStream.flush()
 
-            file.writeText(markdown)
-
-            Result.success(file)
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
+        } finally {
+            try {
+                outputStream.close()
+            } catch (e: Exception) {
+                // Ignore close errors
+            }
         }
     }
 

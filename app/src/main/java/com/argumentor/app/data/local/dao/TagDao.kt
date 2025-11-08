@@ -9,6 +9,9 @@ interface TagDao {
     @Query("SELECT * FROM tags ORDER BY label ASC")
     fun getAllTags(): Flow<List<Tag>>
 
+    @Query("SELECT * FROM tags ORDER BY label ASC")
+    suspend fun getAllTagsSync(): List<Tag>
+
     @Query("SELECT * FROM tags WHERE id = :tagId")
     suspend fun getTagById(tagId: String): Tag?
 
