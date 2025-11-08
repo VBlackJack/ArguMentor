@@ -107,6 +107,12 @@ fun SettingsScreen(
 
             // About section
             SettingsSection(title = "À propos") {
+                SettingsItem(title = "Auteur") {
+                    Text("Julien Bombled", style = MaterialTheme.typography.bodyMedium)
+                }
+
+                Divider()
+
                 SettingsItem(title = "Version") {
                     Text("1.0.0", style = MaterialTheme.typography.bodyMedium)
                 }

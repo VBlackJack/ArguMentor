@@ -85,6 +85,13 @@
     <string name="ethics_message">ArguMentor traite de sujets sensibles (religion, politique, santé). Nous encourageons le respect, la bienveillance et la rigueur intellectuelle dans tous les débats.</string>
     <string name="ethics_accept">J\'accepte</string>
 
+    <!-- About -->
+    <string name="about_author">Auteur</string>
+    <string name="about_author_name">Julien Bombled</string>
+    <string name="about_version">Version</string>
+    <string name="about_license">Licence</string>
+    <string name="about_license_name">Apache License 2.0</string>
+
     <!-- Common -->
     <string name="save">Enregistrer</string>
     <string name="cancel">Annuler</string>
