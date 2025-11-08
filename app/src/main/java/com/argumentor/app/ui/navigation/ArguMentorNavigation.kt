@@ -17,6 +17,7 @@ import com.argumentor.app.ui.screens.home.HomeScreen
 import com.argumentor.app.ui.screens.importexport.ImportExportScreen
 import com.argumentor.app.ui.screens.permissions.PermissionsScreen
 import com.argumentor.app.ui.screens.settings.SettingsScreen
+import com.argumentor.app.ui.screens.statistics.StatisticsScreen
 import com.argumentor.app.ui.screens.topic.TopicCreateEditScreen
 import com.argumentor.app.ui.screens.topic.TopicDetailScreen
 
@@ -77,6 +78,9 @@ fun ArguMentorNavigation() {
                 },
                 onNavigateToImportExport = {
                     navController.navigate(Screen.ImportExport.route)
+                },
+                onNavigateToStatistics = {
+                    navController.navigate(Screen.Statistics.route)
                 }
             )
         }
@@ -160,6 +164,13 @@ fun ArguMentorNavigation() {
         // Import/Export
         composable(Screen.ImportExport.route) {
             ImportExportScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Statistics
+        composable(Screen.Statistics.route) {
+            StatisticsScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }

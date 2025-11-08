@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -26,7 +27,8 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToTopic: (String) -> Unit,
     onNavigateToCreate: () -> Unit,
-    onNavigateToImportExport: () -> Unit
+    onNavigateToImportExport: () -> Unit,
+    onNavigateToStatistics: () -> Unit
 ) {
     val topics by viewModel.topics.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -36,6 +38,9 @@ fun HomeScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.home_title)) },
                 actions = {
+                    IconButton(onClick = onNavigateToStatistics) {
+                        Icon(Icons.Default.BarChart, contentDescription = "Statistiques")
+                    }
                     IconButton(onClick = onNavigateToImportExport) {
                         Icon(Icons.Default.FileUpload, contentDescription = "Import/Export")
                     }

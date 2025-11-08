@@ -18,5 +18,6 @@ sealed class Screen(val route: String) {
         fun createRoute(topicId: String) = "debate/$topicId"
     }
     object ImportExport : Screen("import_export")
+    object Statistics : Screen("statistics")
     object Settings : Screen("settings")
 }

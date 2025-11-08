@@ -9,6 +9,9 @@ interface TopicDao {
     @Query("SELECT * FROM topics ORDER BY updatedAt DESC")
     fun getAllTopics(): Flow<List<Topic>>
 
+    @Query("SELECT * FROM topics ORDER BY updatedAt DESC")
+    suspend fun getAllTopicsSync(): List<Topic>
+
     @Query("SELECT * FROM topics WHERE id = :topicId")
     suspend fun getTopicById(topicId: String): Topic?
 
