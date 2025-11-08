@@ -1,11 +1,8 @@
 package com.argumentor.app.di
 
 import com.argumentor.app.data.local.ArguMentorDatabase
-import com.argumentor.app.data.local.dao.ClaimDao
-import com.argumentor.app.data.local.dao.TopicDao
-import com.argumentor.app.data.repository.ClaimRepository
-import com.argumentor.app.data.repository.ImportExportRepository
-import com.argumentor.app.data.repository.TopicRepository
+import com.argumentor.app.data.local.dao.*
+import com.argumentor.app.data.repository.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,6 +27,46 @@ object RepositoryModule {
         claimDao: ClaimDao
     ): ClaimRepository {
         return ClaimRepository(claimDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRebuttalRepository(
+        rebuttalDao: RebuttalDao
+    ): RebuttalRepository {
+        return RebuttalRepository(rebuttalDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEvidenceRepository(
+        evidenceDao: EvidenceDao
+    ): EvidenceRepository {
+        return EvidenceRepository(evidenceDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideQuestionRepository(
+        questionDao: QuestionDao
+    ): QuestionRepository {
+        return QuestionRepository(questionDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSourceRepository(
+        sourceDao: SourceDao
+    ): SourceRepository {
+        return SourceRepository(sourceDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTagRepository(
+        tagDao: TagDao
+    ): TagRepository {
+        return TagRepository(tagDao)
     }
 
     @Provides
