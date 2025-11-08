@@ -14,7 +14,7 @@ Fournir un outil rigoureux pour structurer la pensée critique sur des sujets se
 - ✅ **Liens croisés** : Un claim peut appartenir à plusieurs topics
 - ✅ **Mode Débat** : Cartes recto/verso pour réviser arguments et contre-arguments
 - ✅ **Import/Export JSON** : Format versionné (schema v1.0) avec anti-doublons intelligent et détection de similarité
-- ✅ **Export PDF/Markdown** : Exporteurs SAF-compatibles (Android 13/14) - UI en cours d'implémentation
+- ✅ **Export PDF/Markdown** : Export par sujet avec SAF (Android 13/14 compatible) - menu ⋮ depuis le détail du sujet
 - ✅ **Bibliothèque de modèles** : Templates pour arguments doctrinaux, scientifiques, témoignages, etc.
 - ✅ **Catalogue de sophismes** : 15+ fallacies cataloguées (ad hominem, straw man, post hoc, etc.)
 - ✅ **Avertissement éthique** : Écran d'avertissement au premier lancement
@@ -176,8 +176,11 @@ ArguMentor utilise le **Storage Access Framework (SAF)** pour l'import/export :
    - Erreurs éventuelles
 5. Confirmer l'import
 
-#### Export PDF/Markdown (à venir)
-Les exporteurs PDF et Markdown sont déjà compatibles SAF. L'intégration UI sera disponible dans la v1.1.
+#### Export PDF/Markdown
+1. Ouvrir un sujet
+2. Menu ⋮ (Plus d'options) → "Exporter en PDF" ou "Exporter en Markdown"
+3. Choisir l'emplacement de sauvegarde via le sélecteur de fichiers
+4. Le fichier est créé avec tous les arguments, contre-arguments, preuves, questions et sources du sujet
 
 ### Mode Débat
 - Ouvrir un topic
@@ -227,9 +230,9 @@ Les exporteurs PDF et Markdown sont déjà compatibles SAF. L'intégration UI se
 ## 🗺️ Roadmap
 
 ### v1.1 (Q2 2025)
-- [ ] Export PDF/Markdown par topic (UI integration)
 - [ ] Tests de performance FTS (< 200ms sur 2000 items)
 - [ ] Tests unitaires import engine (5 cas de figure)
+- [ ] Export global PDF/Markdown (tous les sujets)
 - [ ] Scoring automatique de qualité de preuve
 - [ ] Favoris/bookmarks
 - [ ] Partage de topics individuels
