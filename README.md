@@ -10,14 +10,16 @@ Fournir un outil rigoureux pour structurer la pensée critique sur des sujets se
 
 ### Core Features
 - ✅ **CRUD complet** : Création/modification/suppression de Sujets, Affirmations, Contre-arguments, Preuves, Questions, Sources, Tags
-- ✅ **Recherche plein-texte** : Recherche FTS (Full-Text Search) sur claims, rebuttals et questions
+- ✅ **Recherche plein-texte** : Recherche FTS (Full-Text Search) avec fallback automatique sur claims, rebuttals et questions
 - ✅ **Liens croisés** : Un claim peut appartenir à plusieurs topics
 - ✅ **Mode Débat** : Cartes recto/verso pour réviser arguments et contre-arguments
-- ✅ **Import/Export JSON** : Format versionné (schema v1.0) avec anti-doublons intelligent
+- ✅ **Import/Export JSON** : Format versionné (schema v1.0) avec anti-doublons intelligent et détection de similarité
+- ✅ **Export PDF/Markdown** : Exporteurs SAF-compatibles (Android 13/14) - UI en cours d'implémentation
 - ✅ **Bibliothèque de modèles** : Templates pour arguments doctrinaux, scientifiques, témoignages, etc.
 - ✅ **Catalogue de sophismes** : 15+ fallacies cataloguées (ad hominem, straw man, post hoc, etc.)
 - ✅ **Avertissement éthique** : Écran d'avertissement au premier lancement
 - ✅ **Thème clair/sombre** : Support des deux thèmes
+- ✅ **Android 13/14 compatible** : Storage Access Framework (SAF) - aucune permission de stockage requise
 
 ### Architecture Technique
 
@@ -81,8 +83,17 @@ app/
 L'import utilise plusieurs stratégies :
 1. **Correspondance exacte par ID** : Mise à jour si `updatedAt` plus récent
 2. **Fingerprints** : Hash SHA-256 du texte normalisé (claims, rebuttals, sources)
-3. **Similarité Levenshtein** : Détection des quasi-doublons (seuil configurable 0.85-0.95)
+3. **Similarité Levenshtein** : Détection des quasi-doublons avec seuil configurable
 4. **Revue manuelle** : Items marqués `needs_review` en cas de conflit
+
+#### Seuil de Similarité
+
+Le seuil de similarité est configurable entre 0.85 et 0.95 (par défaut 0.90) :
+- **0.85** : Plus permissif - détecte plus de quasi-doublons potentiels
+- **0.90** (défaut) : Équilibré - bon compromis précision/rappel
+- **0.95** : Plus strict - uniquement les doublons très proches
+
+Le calcul utilise la distance de Levenshtein normalisée sur le texte sans accents/ponctuation.
 
 #### Normalisation du texte
 - Lowercase
@@ -90,6 +101,13 @@ L'import utilise plusieurs stratégies :
 - Suppression de la ponctuation Unicode
 - Collapse des espaces multiples
 - Trim
+
+### Permissions
+
+ArguMentor requiert un minimum de permissions :
+- ✅ **RECORD_AUDIO** : Pour la reconnaissance vocale (Speech-to-Text) - optionnelle
+- ✅ **INTERNET** : Pour les futures fonctionnalités de synchro cloud (v2.0)
+- ❌ **Aucune permission de stockage** : SAF utilisé pour import/export
 
 ## 🚀 Installation & Build
 
@@ -132,15 +150,34 @@ cd ArguMentor
 3. Ajouter des affirmations, preuves, contre-arguments
 
 ### Import/Export
-#### Export
-- Menu → Import/Export → Export
-- Fichier JSON sauvegardé dans Downloads/
 
-#### Import
-- Menu → Import/Export → Import
-- Sélectionner fichier JSON
-- Prévisualisation des changements (créations/mises à jour/doublons)
-- Confirmer l'import
+#### Compatibilité Android 13/14 (Storage Access Framework)
+
+ArguMentor utilise le **Storage Access Framework (SAF)** pour l'import/export :
+- ✅ **Aucune permission de stockage requise** (READ/WRITE_EXTERNAL_STORAGE supprimées)
+- ✅ **Compatible Android 13/14** (targetSdk 34)
+- ✅ **Sélecteur de fichiers natif Android** pour import/export
+- ✅ **Sécurité renforcée** : accès fichier uniquement via consentement utilisateur
+
+#### Export JSON
+1. Menu → Import/Export → "Exporter en JSON"
+2. Choisir l'emplacement de sauvegarde via le sélecteur de fichiers
+3. Le fichier JSON est créé avec toutes les données
+
+#### Import JSON
+1. Menu → Import/Export → "Importer"
+2. Ajuster le seuil de similarité si nécessaire (slider 85%-95%)
+3. Sélectionner le fichier JSON via le sélecteur
+4. Prévisualisation des changements :
+   - Items créés
+   - Items mis à jour
+   - Doublons exacts
+   - Quasi-doublons détectés
+   - Erreurs éventuelles
+5. Confirmer l'import
+
+#### Export PDF/Markdown (à venir)
+Les exporteurs PDF et Markdown sont déjà compatibles SAF. L'intégration UI sera disponible dans la v1.1.
 
 ### Mode Débat
 - Ouvrir un topic
@@ -190,7 +227,9 @@ cd ArguMentor
 ## 🗺️ Roadmap
 
 ### v1.1 (Q2 2025)
-- [ ] Dictée vocale (SpeechRecognizer)
+- [ ] Export PDF/Markdown par topic (UI integration)
+- [ ] Tests de performance FTS (< 200ms sur 2000 items)
+- [ ] Tests unitaires import engine (5 cas de figure)
 - [ ] Scoring automatique de qualité de preuve
 - [ ] Favoris/bookmarks
 - [ ] Partage de topics individuels

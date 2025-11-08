@@ -15,15 +15,8 @@ fun PermissionDialog(
     val (title, description) = when (permission) {
         AppPermission.RECORD_AUDIO -> Pair(
             "Permission Microphone",
-            "ArguMentor a besoin d'accéder au microphone pour la fonctionnalité de reconnaissance vocale (Speech-to-Text). Cela vous permet de dicter vos arguments rapidement."
-        )
-        AppPermission.READ_EXTERNAL_STORAGE -> Pair(
-            "Permission Stockage",
-            "ArguMentor a besoin d'accéder au stockage pour importer et exporter vos données d'argumentation au format JSON."
-        )
-        AppPermission.POST_NOTIFICATIONS -> Pair(
-            "Permission Notifications",
-            "ArguMentor peut vous envoyer des notifications pour vous rappeler de réviser vos débats et arguments."
+            "ArguMentor a besoin d'accéder au microphone pour la fonctionnalité de reconnaissance vocale (Speech-to-Text). Cela vous permet de dicter vos arguments rapidement.\n\n" +
+            "Note : L'import/export de fichiers utilise le sélecteur de fichiers Android (SAF) et ne nécessite pas de permission de stockage."
         )
     }
 
@@ -57,15 +50,12 @@ fun PermissionRationaleDialog(
         permissions.forEach { permission ->
             when (permission) {
                 AppPermission.RECORD_AUDIO ->
-                    append("• Microphone : pour la reconnaissance vocale\n")
-                AppPermission.READ_EXTERNAL_STORAGE ->
-                    append("• Stockage : pour importer/exporter vos données\n")
-                AppPermission.POST_NOTIFICATIONS ->
-                    append("• Notifications : pour les rappels de révision\n")
+                    append("• Microphone : pour la reconnaissance vocale (Speech-to-Text)\n")
             }
         }
 
-        append("\nVous pouvez modifier ces permissions à tout moment dans les paramètres de l'application.")
+        append("\n📁 Import/Export : Le sélecteur de fichiers Android (SAF) est utilisé. Aucune permission de stockage requise.")
+        append("\n\nVous pouvez modifier ces permissions à tout moment dans les paramètres de l'application.")
     }
 
     AlertDialog(
