@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.R
 
 /**
@@ -19,7 +20,8 @@ import com.argumentor.app.R
  */
 @Composable
 fun EthicsWarningScreen(
-    onAccept: () -> Unit
+    onAccept: () -> Unit,
+    viewModel: EthicsWarningViewModel = hiltViewModel()
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -67,7 +69,10 @@ fun EthicsWarningScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
-                onClick = onAccept,
+                onClick = {
+                    viewModel.markEthicsWarningAsShown()
+                    onAccept()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)

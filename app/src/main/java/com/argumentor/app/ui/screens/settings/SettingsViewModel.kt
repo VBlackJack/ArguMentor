@@ -2,6 +2,7 @@ package com.argumentor.app.ui.screens.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.argumentor.app.data.datastore.SettingsDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,7 +11,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SettingsViewModel @Inject constructor() : ViewModel() {
+class SettingsViewModel @Inject constructor(
+    private val settingsDataStore: SettingsDataStore
+) : ViewModel() {
 
     private val _isDarkTheme = MutableStateFlow(false)
     val isDarkTheme: StateFlow<Boolean> = _isDarkTheme.asStateFlow()
@@ -25,39 +28,59 @@ class SettingsViewModel @Inject constructor() : ViewModel() {
     val defaultPosture: StateFlow<String> = _defaultPosture.asStateFlow()
 
     init {
-        // Load settings from DataStore (placeholder for now)
         loadSettings()
     }
 
     private fun loadSettings() {
         viewModelScope.launch {
-            // TODO: Load from DataStore
+            settingsDataStore.isDarkTheme.collect { isDark ->
+                _isDarkTheme.value = isDark
+            }
+        }
+        viewModelScope.launch {
+            settingsDataStore.fontSize.collect { size ->
+                _fontSize.value = FontSize.valueOf(size)
+            }
+        }
+        viewModelScope.launch {
+            settingsDataStore.showEthicsWarning.collect { show ->
+                _showEthicsWarning.value = show
+            }
+        }
+        viewModelScope.launch {
+            settingsDataStore.defaultPosture.collect { posture ->
+                _defaultPosture.value = posture
+            }
         }
     }
 
     fun toggleDarkTheme() {
-        _isDarkTheme.value = !_isDarkTheme.value
-        saveSettings()
+        viewModelScope.launch {
+            val newValue = !_isDarkTheme.value
+            _isDarkTheme.value = newValue
+            settingsDataStore.setDarkTheme(newValue)
+        }
     }
 
     fun setFontSize(size: FontSize) {
-        _fontSize.value = size
-        saveSettings()
+        viewModelScope.launch {
+            _fontSize.value = size
+            settingsDataStore.setFontSize(size.name)
+        }
     }
 
     fun toggleEthicsWarning() {
-        _showEthicsWarning.value = !_showEthicsWarning.value
-        saveSettings()
+        viewModelScope.launch {
+            val newValue = !_showEthicsWarning.value
+            _showEthicsWarning.value = newValue
+            settingsDataStore.setShowEthicsWarning(newValue)
+        }
     }
 
     fun setDefaultPosture(posture: String) {
-        _defaultPosture.value = posture
-        saveSettings()
-    }
-
-    private fun saveSettings() {
         viewModelScope.launch {
-            // TODO: Save to DataStore
+            _defaultPosture.value = posture
+            settingsDataStore.setDefaultPosture(posture)
         }
     }
 

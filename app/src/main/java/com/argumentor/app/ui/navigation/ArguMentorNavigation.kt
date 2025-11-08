@@ -1,16 +1,21 @@
 package com.argumentor.app.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.argumentor.app.ui.MainViewModel
 import com.argumentor.app.ui.screens.claim.ClaimCreateEditScreen
 import com.argumentor.app.ui.screens.debate.DebateModeScreen
 import com.argumentor.app.ui.screens.ethics.EthicsWarningScreen
 import com.argumentor.app.ui.screens.home.HomeScreen
 import com.argumentor.app.ui.screens.importexport.ImportExportScreen
+import com.argumentor.app.ui.screens.permissions.PermissionsScreen
 import com.argumentor.app.ui.screens.settings.SettingsScreen
 import com.argumentor.app.ui.screens.topic.TopicCreateEditScreen
 import com.argumentor.app.ui.screens.topic.TopicDetailScreen
@@ -21,17 +26,41 @@ import com.argumentor.app.ui.screens.topic.TopicDetailScreen
 @Composable
 fun ArguMentorNavigation() {
     val navController = rememberNavController()
+    val mainViewModel: MainViewModel = hiltViewModel()
+    val ethicsWarningShown by mainViewModel.ethicsWarningShown.collectAsState()
+
+    val startDestination = if (ethicsWarningShown) {
+        Screen.Home.route
+    } else {
+        Screen.EthicsWarning.route
+    }
 
     NavHost(
         navController = navController,
-        startDestination = Screen.EthicsWarning.route
+        startDestination = startDestination
     ) {
         // Ethics Warning (first launch)
         composable(Screen.EthicsWarning.route) {
             EthicsWarningScreen(
                 onAccept = {
-                    navController.navigate(Screen.Home.route) {
+                    navController.navigate(Screen.Permissions.route) {
                         popUpTo(Screen.EthicsWarning.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        // Permissions Screen
+        composable(Screen.Permissions.route) {
+            PermissionsScreen(
+                onAllPermissionsGranted = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Permissions.route) { inclusive = true }
+                    }
+                },
+                onSkip = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Permissions.route) { inclusive = true }
                     }
                 }
             )
