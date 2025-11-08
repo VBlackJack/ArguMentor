@@ -3,7 +3,6 @@ package com.argumentor.app.util
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,32 +12,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 
 /**
- * Permission types used in ArguMentor app
+ * Permission types used in ArguMentor app.
+ * Note: File access uses Storage Access Framework (SAF) and does not require storage permissions.
  */
 enum class AppPermission(val manifestPermission: String) {
-    RECORD_AUDIO(Manifest.permission.RECORD_AUDIO),
-    READ_EXTERNAL_STORAGE(Manifest.permission.READ_EXTERNAL_STORAGE),
-    POST_NOTIFICATIONS(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        Manifest.permission.POST_NOTIFICATIONS
-    } else {
-        "" // Not needed for older versions
-    })
+    RECORD_AUDIO(Manifest.permission.RECORD_AUDIO)
 }
 
 /**
  * Check if a specific permission is granted
  */
 fun Context.hasPermission(permission: AppPermission): Boolean {
-    // POST_NOTIFICATIONS only needed on API 33+
-    if (permission == AppPermission.POST_NOTIFICATIONS && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-        return true
-    }
-
-    // READ_EXTERNAL_STORAGE only needed on API 32 and below
-    if (permission == AppPermission.READ_EXTERNAL_STORAGE && Build.VERSION.SDK_INT > 32) {
-        return true
-    }
-
     return ContextCompat.checkSelfPermission(
         this,
         permission.manifestPermission
@@ -90,14 +74,6 @@ fun rememberMultiplePermissionsLauncher(
             when (permission) {
                 Manifest.permission.RECORD_AUDIO ->
                     results[AppPermission.RECORD_AUDIO] = granted
-                Manifest.permission.READ_EXTERNAL_STORAGE ->
-                    results[AppPermission.READ_EXTERNAL_STORAGE] = granted
-                else -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                        permission == Manifest.permission.POST_NOTIFICATIONS) {
-                        results[AppPermission.POST_NOTIFICATIONS] = granted
-                    }
-                }
             }
         }
 
@@ -109,19 +85,7 @@ fun rememberMultiplePermissionsLauncher(
  * Get all required permissions for the app
  */
 fun getRequiredPermissions(): List<AppPermission> {
-    return buildList {
-        add(AppPermission.RECORD_AUDIO)
-
-        // Only add READ_EXTERNAL_STORAGE on API 32 and below
-        if (Build.VERSION.SDK_INT <= 32) {
-            add(AppPermission.READ_EXTERNAL_STORAGE)
-        }
-
-        // Only add POST_NOTIFICATIONS on API 33+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            add(AppPermission.POST_NOTIFICATIONS)
-        }
-    }
+    return listOf(AppPermission.RECORD_AUDIO)
 }
 
 /**

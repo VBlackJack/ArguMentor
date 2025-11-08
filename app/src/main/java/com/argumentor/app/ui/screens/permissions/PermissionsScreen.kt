@@ -1,20 +1,15 @@
 package com.argumentor.app.ui.screens.permissions
 
-import android.Manifest
-import android.os.Build
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.argumentor.app.util.*
@@ -104,6 +99,29 @@ fun PermissionsScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer
+            )
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "ℹ️ Gestion des fichiers",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "L'import/export de données utilise le Sélecteur de fichiers Android (SAF). Aucune permission de stockage n'est requise.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         Text(
             text = "Vous pourrez modifier ces permissions à tout moment dans les paramètres de l'application.",
             style = MaterialTheme.typography.bodySmall,
@@ -122,16 +140,6 @@ private fun PermissionItem(
             Icons.Default.Mic,
             "Microphone",
             "Pour la reconnaissance vocale (Speech-to-Text)"
-        )
-        AppPermission.READ_EXTERNAL_STORAGE -> Triple(
-            Icons.Default.Storage,
-            "Stockage",
-            "Pour importer et exporter vos données"
-        )
-        AppPermission.POST_NOTIFICATIONS -> Triple(
-            Icons.Default.Notifications,
-            "Notifications",
-            "Pour les rappels de révision"
         )
     }
 

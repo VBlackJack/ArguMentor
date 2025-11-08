@@ -91,8 +91,31 @@ fun ImportExportScreen(
                     ) {
                         Icon(Icons.Default.FileDownload, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Exporter")
+                        Text("Exporter en JSON")
                     }
+                }
+            }
+
+            // PDF/Markdown export info card
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                )
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        "📄 Export PDF/Markdown",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        "Les exporteurs PDF et Markdown sont maintenant compatibles avec Android 13/14 (SAF). " +
+                        "L'export par sujet sera disponible depuis l'écran de détail dans une prochaine version.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer
+                    )
                 }
             }
 
