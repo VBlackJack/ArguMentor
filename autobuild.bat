@@ -551,7 +551,7 @@ goto :cleanup
         echo ============================================================================
         echo.
         echo Java Version:
-        java -version 2>&1
+        java -version 2^>^&1
         echo.
         echo JAVA_HOME: %JAVA_HOME%
         echo ANDROID_HOME: %ANDROID_HOME%
@@ -567,19 +567,19 @@ goto :cleanup
         echo COMMON GRADLE ERRORS
         echo ============================================================================
         echo.
-        findstr /i /c:"error" /c:"failed" /c:"exception" /c:"cannot find" "%BUILD_LOG%" 2>nul
+        findstr /i /c:"error" /c:"failed" /c:"exception" /c:"cannot find" "%BUILD_LOG%" 2^>nul
         echo.
         echo ============================================================================
         echo DEPENDENCY ISSUES
         echo ============================================================================
         echo.
-        findstr /i /c:"dependency" /c:"resolution" /c:"download" "%BUILD_LOG%" 2>nul
+        findstr /i /c:"dependency" /c:"resolution" /c:"download" "%BUILD_LOG%" 2^>nul
         echo.
         echo ============================================================================
         echo COMPILATION ERRORS
         echo ============================================================================
         echo.
-        findstr /i /c:"compilation" /c:"\.kt:" /c:"\.java:" "%BUILD_LOG%" 2>nul
+        findstr /i /c:"compilation" /c:"\.kt:" /c:"\.java:" "%BUILD_LOG%" 2^>nul
         echo.
         echo ============================================================================
         echo END OF REPORT
@@ -618,7 +618,7 @@ goto :cleanup
         echo.
         echo **Key Error Lines:**
         echo ```
-        findstr /i /c:"error" /c:"failed" /c:"exception" "%BUILD_LOG%" 2>nul | powershell -Command "$input | Select-Object -First 20"
+        findstr /i /c:"error" /c:"failed" /c:"exception" "%BUILD_LOG%" 2^>nul | powershell -Command "$input | Select-Object -First 20"
         echo ```
         echo.
         echo **Questions:**
