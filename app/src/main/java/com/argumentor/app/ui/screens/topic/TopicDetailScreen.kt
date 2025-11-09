@@ -659,34 +659,25 @@ private fun ClaimCard(
 
         // Evidence section
         if (evidences.isNotEmpty() || showEvidenceSection) {
-            val evidenceSectionIsDark = isSystemInDarkTheme()
             val cs = MaterialTheme.colorScheme
+            val isDark = isSystemInDarkTheme()
 
-            // Bordure subtile avec couleur thématique au lieu de couleurs pures
-            val borderColor = if (evidenceSectionIsDark) {
-                cs.primary.copy(alpha = 0.4f)  // Halo doux de la couleur primaire
-            } else {
-                cs.outline.copy(alpha = 0.6f)  // Outline subtil en mode clair
-            }
-
-            // Fond avec hiérarchie Material You - surfaceContainer pour plus de profondeur
-            val evidenceBackgroundColor = if (evidenceSectionIsDark) {
-                Color(0xFF252525)  // Légèrement plus clair que le fond pour créer la profondeur
-            } else {
-                Color(0xFFF0F0F0)  // Gris très clair en mode clair
-            }
+            // M3 surfaces & borders
+            val borderColor = cs.outlineVariant.copy(alpha = if (isDark) 0.6f else 0.9f)
+            val evidenceBg = if (isDark) cs.surface else cs.surfaceVariant
+            val evidenceCardBg = if (isDark) cs.surfaceVariant.copy(alpha = 0.5f) else cs.surface
 
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 4.dp, start = 8.dp)
+                    .padding(top = 8.dp, start = 8.dp)
                     .border(
-                        width = 2.dp,  // Bordure plus fine pour être moins dominante
+                        width = 1.dp,
                         color = borderColor,
                         shape = RoundedCornerShape(18.dp)
                     ),
                 colors = CardDefaults.cardColors(
-                    containerColor = evidenceBackgroundColor
+                    containerColor = evidenceBg
                 ),
                 shape = RoundedCornerShape(18.dp)
             ) {
@@ -703,8 +694,8 @@ private fun ClaimCard(
                     ) {
                         Text(
                             text = "Preuves (${evidences.size})",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.titleSmall,
+                            color = cs.onSurface,
                             fontWeight = FontWeight.SemiBold
                         )
                         TextButton(
@@ -748,34 +739,23 @@ private fun ClaimCard(
                             )
                         }
 
-                        val evidenceIsDark = isSystemInDarkTheme()
-
-                        // Define quality colors based on theme - Pastel clair en mode clair
+                        // Quality M3 semantic colors
                         val qualityBgColor = when (evidence.quality) {
-                            com.argumentor.app.data.model.Evidence.Quality.HIGH ->
-                                if (evidenceIsDark) Color(0xFF1B5E20).copy(alpha = 0.3f) else Color(0xFFE8F5E9)
-                            com.argumentor.app.data.model.Evidence.Quality.MEDIUM ->
-                                if (evidenceIsDark) Color(0xFFE65100).copy(alpha = 0.3f) else Color(0xFFFFF3E0)
-                            com.argumentor.app.data.model.Evidence.Quality.LOW ->
-                                if (evidenceIsDark) Color(0xFFB71C1C).copy(alpha = 0.3f) else Color(0xFFFFEBEE)
+                            com.argumentor.app.data.model.Evidence.Quality.HIGH -> cs.primaryContainer
+                            com.argumentor.app.data.model.Evidence.Quality.MEDIUM -> cs.tertiaryContainer
+                            com.argumentor.app.data.model.Evidence.Quality.LOW -> cs.errorContainer
                         }
 
                         val qualityTextColor = when (evidence.quality) {
-                            com.argumentor.app.data.model.Evidence.Quality.HIGH ->
-                                if (evidenceIsDark) Color(0xFF81C784) else Color(0xFF2E7D32)
-                            com.argumentor.app.data.model.Evidence.Quality.MEDIUM ->
-                                if (evidenceIsDark) Color(0xFFFFB74D) else Color(0xFFE65100)
-                            com.argumentor.app.data.model.Evidence.Quality.LOW ->
-                                if (evidenceIsDark) Color(0xFFE57373) else Color(0xFFC62828)
+                            com.argumentor.app.data.model.Evidence.Quality.HIGH -> cs.onPrimaryContainer
+                            com.argumentor.app.data.model.Evidence.Quality.MEDIUM -> cs.onTertiaryContainer
+                            com.argumentor.app.data.model.Evidence.Quality.LOW -> cs.onErrorContainer
                         }
 
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(
-                                containerColor = if (evidenceIsDark)
-                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                                else
-                                    Color.Transparent
+                                containerColor = evidenceCardBg
                             ),
                             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                         ) {
@@ -797,12 +777,7 @@ private fun ClaimCard(
                                         Box(
                                             modifier = Modifier
                                                 .clip(RoundedCornerShape(6.dp))
-                                                .background(
-                                                    if (evidenceIsDark)
-                                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
-                                                    else
-                                                        MaterialTheme.colorScheme.primaryContainer
-                                                )
+                                                .background(cs.surfaceVariant)
                                                 .padding(horizontal = 6.dp, vertical = 2.dp)
                                         ) {
                                             Text(
@@ -813,10 +788,7 @@ private fun ClaimCard(
                                                     com.argumentor.app.data.model.Evidence.EvidenceType.EXAMPLE -> "Exemple"
                                                 },
                                                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
-                                                color = if (evidenceIsDark)
-                                                    MaterialTheme.colorScheme.primary
-                                                else
-                                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                                color = cs.onSurfaceVariant
                                             )
                                         }
                                         // Quality badge
@@ -854,7 +826,7 @@ private fun ClaimCard(
                                             Icons.Default.Edit,
                                             contentDescription = "Éditer",
                                             modifier = Modifier.size(16.dp),
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                            tint = cs.onSurfaceVariant
                                         )
                                     }
                                     IconButton(
@@ -865,7 +837,7 @@ private fun ClaimCard(
                                             Icons.Default.Delete,
                                             contentDescription = "Supprimer",
                                             modifier = Modifier.size(16.dp),
-                                            tint = MaterialTheme.colorScheme.error
+                                            tint = cs.error
                                         )
                                     }
                                 }

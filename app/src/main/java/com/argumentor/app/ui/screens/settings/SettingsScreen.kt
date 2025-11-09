@@ -19,7 +19,6 @@ fun SettingsScreen(
 ) {
     val isDarkTheme by viewModel.isDarkTheme.collectAsState()
     val fontSize by viewModel.fontSize.collectAsState()
-    val showEthicsWarning by viewModel.showEthicsWarning.collectAsState()
     val defaultPosture by viewModel.defaultPosture.collectAsState()
 
     Scaffold(
@@ -77,15 +76,6 @@ fun SettingsScreen(
 
             // Content section
             SettingsSection(title = "Contenu") {
-                SettingsSwitchItem(
-                    title = "Avertissement éthique",
-                    description = "Afficher l'avertissement au démarrage",
-                    checked = showEthicsWarning,
-                    onCheckedChange = { viewModel.toggleEthicsWarning() }
-                )
-
-                Divider()
-
                 SettingsItem(title = "Posture par défaut") {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         listOf(

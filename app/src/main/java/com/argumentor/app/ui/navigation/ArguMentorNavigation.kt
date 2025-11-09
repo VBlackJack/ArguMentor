@@ -1,18 +1,13 @@
 package com.argumentor.app.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.argumentor.app.ui.MainViewModel
 import com.argumentor.app.ui.screens.claim.ClaimCreateEditScreen
 import com.argumentor.app.ui.screens.debate.DebateModeScreen
-import com.argumentor.app.ui.screens.ethics.EthicsWarningScreen
 import com.argumentor.app.ui.screens.evidence.EvidenceCreateEditScreen
 import com.argumentor.app.ui.screens.home.HomeScreen
 import com.argumentor.app.ui.screens.importexport.ImportExportScreen
@@ -31,33 +26,11 @@ import com.argumentor.app.ui.screens.topic.TopicDetailScreen
 @Composable
 fun ArguMentorNavigation() {
     val navController = rememberNavController()
-    val mainViewModel: MainViewModel = hiltViewModel()
-    val ethicsWarningShown by mainViewModel.ethicsWarningShown.collectAsState(initial = false)
 
     NavHost(
         navController = navController,
-        startDestination = Screen.EthicsWarning.route  // Always start here, then redirect if needed
+        startDestination = Screen.Permissions.route  // Start directly at permissions
     ) {
-        // Ethics Warning (first launch)
-        composable(Screen.EthicsWarning.route) {
-            // Auto-redirect if already shown
-            if (ethicsWarningShown) {
-                androidx.compose.runtime.LaunchedEffect(Unit) {
-                    navController.navigate(Screen.Permissions.route) {
-                        popUpTo(Screen.EthicsWarning.route) { inclusive = true }
-                    }
-                }
-            } else {
-                EthicsWarningScreen(
-                    onAccept = {
-                        navController.navigate(Screen.Permissions.route) {
-                            popUpTo(Screen.EthicsWarning.route) { inclusive = true }
-                        }
-                    }
-                )
-            }
-        }
-
         // Permissions Screen
         composable(Screen.Permissions.route) {
             PermissionsScreen(

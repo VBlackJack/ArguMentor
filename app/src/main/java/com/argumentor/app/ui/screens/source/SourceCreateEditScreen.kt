@@ -2,6 +2,7 @@ package com.argumentor.app.ui.screens.source
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -9,8 +10,13 @@ import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.R
@@ -86,6 +92,7 @@ fun SourceCreateEditScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
+                    .imePadding()
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -98,7 +105,12 @@ fun SourceCreateEditScreen(
                     placeholder = { Text("Ex: Article de journal, livre, site web...") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = false,
-                    maxLines = 3
+                    maxLines = 3,
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Words,
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    )
                 )
 
                 // Citation field
@@ -109,7 +121,12 @@ fun SourceCreateEditScreen(
                     placeholder = { Text("Ex: Auteur, Titre, Édition, Année") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = false,
-                    maxLines = 5
+                    maxLines = 5,
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    )
                 )
 
                 // URL field
@@ -119,7 +136,11 @@ fun SourceCreateEditScreen(
                     label = { Text("URL") },
                     placeholder = { Text("https://...") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Uri,
+                        imeAction = ImeAction.Next
+                    )
                 )
 
                 // Publisher field
@@ -129,7 +150,12 @@ fun SourceCreateEditScreen(
                     label = { Text("Éditeur") },
                     placeholder = { Text("Ex: Nom de la maison d'édition") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Words,
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    )
                 )
 
                 // Date field
@@ -139,7 +165,11 @@ fun SourceCreateEditScreen(
                     label = { Text("Date de publication") },
                     placeholder = { Text("Ex: 2024, Janvier 2024, 15/01/2024") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    )
                 )
 
                 // Notes field
@@ -151,7 +181,12 @@ fun SourceCreateEditScreen(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = false,
                     minLines = 3,
-                    maxLines = 8
+                    maxLines = 8,
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Default
+                    )
                 )
 
                 // Help text
