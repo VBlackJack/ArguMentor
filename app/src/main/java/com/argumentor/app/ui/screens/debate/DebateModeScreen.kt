@@ -12,6 +12,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,7 +48,8 @@ fun DebateModeScreen(
                     Text(
                         text = "${stringResource(R.string.debate_mode)} - ${topic?.title ?: ""}",
                         maxLines = 1,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        modifier = Modifier.semantics { heading() }
                     )
                 },
                 navigationIcon = {
@@ -128,7 +134,7 @@ fun DebateModeScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Progress indicator
+                // Progress indicator with live region
                 LinearProgressIndicator(
                     progress = (currentCardIndex + 1) / debateCards.size.toFloat(),
                     modifier = Modifier.fillMaxWidth()
@@ -138,7 +144,10 @@ fun DebateModeScreen(
 
                 Text(
                     stringResource(R.string.debate_card_progress, currentCardIndex + 1, debateCards.size),
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.semantics {
+                        liveRegion = LiveRegionMode.Polite
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -213,6 +222,9 @@ private fun FlipCard(
                 cameraDistance = 12f * density
             }
             .clickable { onFlip() }
+            .semantics {
+                stateDescription = if (isFlipped) "Affichage de la réponse" else "Affichage de l'affirmation"
+            }
     ) {
         Box(
             modifier = Modifier

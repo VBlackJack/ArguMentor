@@ -32,6 +32,9 @@ class HomeViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     init {
         loadTopics()
         observeSearchQuery()
@@ -94,6 +97,32 @@ class HomeViewModel @Inject constructor(
                 _topics.value = filteredTopics
             } finally {
                 _isLoading.value = false
+            }
+        }
+    }
+
+    fun deleteTopic(topic: Topic, onComplete: () -> Unit = {}) {
+        viewModelScope.launch {
+            topicRepository.deleteTopic(topic)
+            onComplete()
+        }
+    }
+
+    fun restoreTopic(topic: Topic) {
+        viewModelScope.launch {
+            topicRepository.insertTopic(topic)
+        }
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            _isRefreshing.value = true
+            try {
+                // In a real app, this might fetch from a remote source
+                // For now, just reload local data
+                loadTopics()
+            } finally {
+                _isRefreshing.value = false
             }
         }
     }
