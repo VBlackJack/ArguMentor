@@ -24,6 +24,9 @@ fun QuestionCreateEditScreen(
     val text by viewModel.text.collectAsState()
     val kind by viewModel.kind.collectAsState()
     val isSaving by viewModel.isSaving.collectAsState()
+    val availableClaims by viewModel.availableClaims.collectAsState()
+    val selectedClaim by viewModel.selectedClaim.collectAsState()
+    val isTopicLevel by viewModel.isTopicLevel.collectAsState()
 
     LaunchedEffect(questionId, targetId) {
         viewModel.loadQuestion(questionId, targetId)
@@ -66,6 +69,71 @@ fun QuestionCreateEditScreen(
                 minLines = 3,
                 maxLines = 8
             )
+
+            // Target selector (topic vs claim)
+            if (availableClaims.isNotEmpty()) {
+                Text("Cible de la question", style = MaterialTheme.typography.titleMedium)
+
+                // Toggle between topic level and claim level
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    FilterChip(
+                        selected = isTopicLevel,
+                        onClick = { viewModel.onToggleLevel() },
+                        label = { Text("Sujet global") }
+                    )
+                    FilterChip(
+                        selected = !isTopicLevel,
+                        onClick = {
+                            if (isTopicLevel) {
+                                viewModel.onToggleLevel()
+                            }
+                        },
+                        label = { Text("Affirmation spécifique") }
+                    )
+                }
+
+                // Claim selector (shown when not topic level)
+                if (!isTopicLevel) {
+                    Text("Sélectionner une affirmation", style = MaterialTheme.typography.labelMedium)
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        availableClaims.forEach { claim ->
+                            FilterChip(
+                                selected = selectedClaim?.id == claim.id,
+                                onClick = { viewModel.onClaimSelected(claim) },
+                                label = {
+                                    Text(
+                                        text = claim.text,
+                                        maxLines = 2,
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+                } else if (selectedClaim != null) {
+                    // Show currently linked claim when in topic mode
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                "Affirmation liée:",
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                            Text(
+                                selectedClaim!!.text,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
+                }
+            }
 
             // Kind selector
             Text("Type de question", style = MaterialTheme.typography.titleMedium)

@@ -35,6 +35,9 @@ class TopicDetailViewModel @Inject constructor(
     private val _questions = MutableStateFlow<List<Question>>(emptyList())
     val questions: StateFlow<List<Question>> = _questions.asStateFlow()
 
+    private val _sources = MutableStateFlow<List<Source>>(emptyList())
+    val sources: StateFlow<List<Source>> = _sources.asStateFlow()
+
     private val _selectedTab = MutableStateFlow(0)
     val selectedTab: StateFlow<Int> = _selectedTab.asStateFlow()
 
@@ -75,6 +78,21 @@ class TopicDetailViewModel @Inject constructor(
                 allQuestions.distinctBy { it.id }
             }.collect { allQuestions ->
                 _questions.value = allQuestions
+            }
+        }
+
+        viewModelScope.launch {
+            // Load sources - collect all sources from evidences
+            _claims.collect { claims ->
+                val claimIds = claims.map { it.id }
+                val allEvidences = claimIds.flatMap { claimId ->
+                    evidenceRepository.getEvidencesByClaimId(claimId).first()
+                }
+                val sourceIds = allEvidences.mapNotNull { it.sourceId }.filter { it.isNotEmpty() }.distinct()
+                val sources = sourceIds.mapNotNull { sourceId ->
+                    sourceRepository.getSourceById(sourceId).first()
+                }
+                _sources.value = sources
             }
         }
     }

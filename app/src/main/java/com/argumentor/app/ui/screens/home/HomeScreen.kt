@@ -1,5 +1,6 @@
 package com.argumentor.app.ui.screens.home
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,10 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -31,7 +29,7 @@ import com.argumentor.app.ui.components.EngagingEmptyState
 import com.argumentor.app.ui.components.HighlightedText
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
@@ -152,16 +150,11 @@ fun HomeScreen(
                 }
             }
         ) { paddingValues ->
-            PullToRefreshBox(
-                isRefreshing = isRefreshing,
-                onRefresh = { viewModel.refresh() },
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                ) {
                 // Search bar with loading indicator
                 Column {
                     OutlinedTextField(
@@ -192,8 +185,9 @@ fun HomeScreen(
                     )
 
                     // Clear filters chip when active
-                    val hasActiveFilters = searchQuery.isNotEmpty() || selectedTag != null
-                    if (hasActiveFilters && selectedTag != null) {
+                    val currentTag = selectedTag
+                    val hasActiveFilters = searchQuery.isNotEmpty() || currentTag != null
+                    if (hasActiveFilters && currentTag != null) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -205,7 +199,7 @@ fun HomeScreen(
                             FilterChip(
                                 selected = true,
                                 onClick = { viewModel.onTagSelected(null) },
-                                label = { Text(selectedTag) },
+                                label = { Text(currentTag) },
                                 trailingIcon = {
                                     Icon(
                                         Icons.Default.Close,
@@ -271,31 +265,16 @@ fun HomeScreen(
                             items = topics,
                             key = { it.id }
                         ) { topic ->
-                            SwipeToDismissTopicCard(
+                            TopicCard(
                                 topic = topic,
                                 selectedTag = selectedTag,
                                 searchQuery = searchQuery,
                                 onClick = { onNavigateToTopic(topic.id) },
                                 onTagClick = viewModel::onTagSelected,
-                                onDelete = { deletedTopic ->
-                                    viewModel.deleteTopic(deletedTopic) {
-                                        scope.launch {
-                                            val result = snackbarHostState.showSnackbar(
-                                                message = "Sujet supprimé",
-                                                actionLabel = "Annuler",
-                                                duration = SnackbarDuration.Short
-                                            )
-                                            if (result == SnackbarResult.ActionPerformed) {
-                                                viewModel.restoreTopic(deletedTopic)
-                                            }
-                                        }
-                                    }
-                                },
                                 modifier = Modifier.animateItemPlacement()
                             )
                         }
                     }
-                }
                 }
             }
         }
@@ -387,59 +366,5 @@ private fun TopicCard(
                 }
             }
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SwipeToDismissTopicCard(
-    topic: Topic,
-    selectedTag: String?,
-    searchQuery: String,
-    onClick: () -> Unit,
-    onTagClick: (String) -> Unit,
-    onDelete: (Topic) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val dismissState = rememberSwipeToDismissBoxState(
-        confirmValueChange = { dismissValue ->
-            if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
-                onDelete(topic)
-                true
-            } else {
-                false
-            }
-        }
-    )
-
-    SwipeToDismissBox(
-        state = dismissState,
-        modifier = modifier,
-        backgroundContent = {
-            // Background shown when swiping
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.errorContainer)
-                    .padding(horizontal = 20.dp),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "Supprimer",
-                    tint = MaterialTheme.colorScheme.onErrorContainer
-                )
-            }
-        },
-        enableDismissFromStartToEnd = false,
-        enableDismissFromEndToStart = true
-    ) {
-        TopicCard(
-            topic = topic,
-            selectedTag = selectedTag,
-            searchQuery = searchQuery,
-            onClick = onClick,
-            onTagClick = onTagClick
-        )
     }
 }

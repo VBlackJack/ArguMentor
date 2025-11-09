@@ -25,6 +25,7 @@ class SettingsDataStore @Inject constructor(
         val SHOW_ETHICS_WARNING = booleanPreferencesKey("show_ethics_warning")
         val DEFAULT_POSTURE = stringPreferencesKey("default_posture")
         val ETHICS_WARNING_SHOWN = booleanPreferencesKey("ethics_warning_shown")
+        val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
     }
 
     val isDarkTheme: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -45,6 +46,10 @@ class SettingsDataStore @Inject constructor(
 
     val ethicsWarningShown: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[PreferencesKeys.ETHICS_WARNING_SHOWN] ?: false
+    }
+
+    val onboardingCompleted: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false
     }
 
     suspend fun setDarkTheme(isDark: Boolean) {
@@ -74,6 +79,12 @@ class SettingsDataStore @Inject constructor(
     suspend fun setEthicsWarningShown(shown: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.ETHICS_WARNING_SHOWN] = shown
+        }
+    }
+
+    suspend fun setOnboardingCompleted(completed: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.ONBOARDING_COMPLETED] = completed
         }
     }
 }

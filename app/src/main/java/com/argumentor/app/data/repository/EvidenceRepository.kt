@@ -13,6 +13,9 @@ class EvidenceRepository @Inject constructor(
     fun getEvidencesByClaimId(claimId: String): Flow<List<Evidence>> =
         evidenceDao.getEvidencesByClaimId(claimId)
 
+    fun getEvidencesBySourceId(sourceId: String): Flow<List<Evidence>> =
+        evidenceDao.getEvidencesBySourceId(sourceId)
+
     suspend fun getEvidenceById(evidenceId: String): Evidence? =
         evidenceDao.getEvidenceById(evidenceId)
 

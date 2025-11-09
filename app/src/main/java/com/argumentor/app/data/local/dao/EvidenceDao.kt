@@ -25,6 +25,9 @@ interface EvidenceDao {
     @Query("SELECT * FROM evidences WHERE id = :evidenceId")
     suspend fun getEvidenceById(evidenceId: String): Evidence?
 
+    @Query("SELECT * FROM evidences WHERE sourceId = :sourceId ORDER BY createdAt DESC")
+    fun getEvidencesBySourceId(sourceId: String): Flow<List<Evidence>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEvidence(evidence: Evidence)
 

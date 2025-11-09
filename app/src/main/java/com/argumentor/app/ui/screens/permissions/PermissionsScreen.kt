@@ -33,8 +33,16 @@ fun PermissionsScreen(
         }
     }
 
-    LaunchedEffect(permissionsGranted) {
-        if (permissionsGranted) {
+    // Add minimum display time so users can read the screen
+    var hasShownForMinimumTime by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(2000) // 2 seconds minimum display time
+        hasShownForMinimumTime = true
+    }
+
+    LaunchedEffect(permissionsGranted, hasShownForMinimumTime) {
+        if (permissionsGranted && hasShownForMinimumTime) {
             onAllPermissionsGranted()
         }
     }

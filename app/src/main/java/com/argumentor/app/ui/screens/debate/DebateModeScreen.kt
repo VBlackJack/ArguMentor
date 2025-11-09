@@ -164,22 +164,15 @@ fun DebateModeScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Navigation buttons
-                Row(
+                // Navigation buttons - Column layout for better mobile UX
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    OutlinedButton(
-                        onClick = { viewModel.previousCard() },
-                        enabled = currentCardIndex > 0
-                    ) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = null)
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(stringResource(R.string.debate_previous))
-                    }
-
+                    // Flip button (most important action)
                     Button(
-                        onClick = { viewModel.flipCard() }
+                        onClick = { viewModel.flipCard() },
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
                             if (isCardFlipped)
@@ -189,13 +182,30 @@ fun DebateModeScreen(
                         )
                     }
 
-                    Button(
-                        onClick = { viewModel.nextCard() },
-                        enabled = currentCardIndex < debateCards.size - 1
+                    // Previous/Next navigation row
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text(stringResource(R.string.debate_next))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Icon(Icons.Default.ArrowForward, contentDescription = null)
+                        OutlinedButton(
+                            onClick = { viewModel.previousCard() },
+                            enabled = currentCardIndex > 0,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = null)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(stringResource(R.string.debate_previous))
+                        }
+
+                        Button(
+                            onClick = { viewModel.nextCard() },
+                            enabled = currentCardIndex < debateCards.size - 1,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(stringResource(R.string.debate_next))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(Icons.Default.ArrowForward, contentDescription = null)
+                        }
                     }
                 }
             }

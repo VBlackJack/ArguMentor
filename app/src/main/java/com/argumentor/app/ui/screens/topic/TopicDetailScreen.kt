@@ -9,6 +9,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.with
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -34,13 +36,16 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.R
 import com.argumentor.app.data.model.Claim
+import com.argumentor.app.data.model.Evidence
+import com.argumentor.app.data.model.Source
 import com.argumentor.app.ui.components.AppNavigationDrawerContent
 import com.argumentor.app.ui.components.EngagingEmptyState
 import com.argumentor.app.ui.theme.StanceCon
 import com.argumentor.app.ui.theme.StanceNeutral
 import com.argumentor.app.ui.theme.StancePro
+import androidx.compose.animation.ExperimentalAnimationApi
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun TopicDetailScreen(
     topicId: String,
@@ -50,6 +55,9 @@ fun TopicDetailScreen(
     onNavigateToDebate: (String) -> Unit,
     onNavigateToAddClaim: (String, String?) -> Unit,
     onNavigateToAddQuestion: (String, String?) -> Unit,
+    onNavigateToAddSource: (String?) -> Unit,
+    onNavigateToAddEvidence: (String) -> Unit,
+    onNavigateToEditEvidence: (String, String) -> Unit,
     onNavigateToCreate: () -> Unit,
     onNavigateToStatistics: () -> Unit,
     onNavigateToImportExport: () -> Unit,
@@ -60,6 +68,7 @@ fun TopicDetailScreen(
     val topic by viewModel.topic.collectAsState()
     val claims by viewModel.claims.collectAsState()
     val questions by viewModel.questions.collectAsState()
+    val sources by viewModel.sources.collectAsState()
     val selectedTab by viewModel.selectedTab.collectAsState()
 
     var showExportMenu by remember { mutableStateOf(false) }
@@ -382,12 +391,18 @@ fun TopicDetailScreen(
                     onClick = { viewModel.onTabSelected(1) },
                     text = { Text("Questions (${questions.size})") }
                 )
+                Tab(
+                    selected = selectedTab == 2,
+                    onClick = { viewModel.onTabSelected(2) },
+                    text = { Text("Sources (${sources.size})") }
+                )
             }
 
             // Tab content
             when (selectedTab) {
                 0 -> ClaimsTab(
                     claims = claims,
+                    viewModel = viewModel,
                     onEditClaim = { claimId ->
                         onNavigateToAddClaim(topicId, claimId)
                     },
@@ -398,7 +413,9 @@ fun TopicDetailScreen(
                             }
                         }
                     },
-                    onAddClaim = { onNavigateToAddClaim(topicId, null) }
+                    onAddClaim = { onNavigateToAddClaim(topicId, null) },
+                    onAddEvidence = onNavigateToAddEvidence,
+                    onEditEvidence = onNavigateToEditEvidence
                 )
                 1 -> QuestionsTab(
                     questions = questions,
@@ -418,6 +435,15 @@ fun TopicDetailScreen(
                         onNavigateToAddQuestion(topicId, null)
                     }
                 )
+                2 -> SourcesTab(
+                    sources = sources,
+                    onAddSource = {
+                        onNavigateToAddSource(null)
+                    },
+                    onEditSource = { sourceId ->
+                        onNavigateToAddSource(sourceId)
+                    }
+                )
             }
         }
     }
@@ -427,9 +453,12 @@ fun TopicDetailScreen(
 @Composable
 private fun ClaimsTab(
     claims: List<Claim>,
+    viewModel: TopicDetailViewModel,
     onEditClaim: (String) -> Unit,
     onDeleteClaim: (Claim) -> Unit,
-    onAddClaim: () -> Unit
+    onAddClaim: () -> Unit,
+    onAddEvidence: (String) -> Unit,
+    onEditEvidence: (String, String) -> Unit
 ) {
     if (claims.isEmpty()) {
         EngagingEmptyState(
@@ -448,8 +477,11 @@ private fun ClaimsTab(
             items(claims, key = { it.id }) { claim ->
                 ClaimCard(
                     claim = claim,
+                    viewModel = viewModel,
                     onEdit = { onEditClaim(claim.id) },
-                    onDelete = { onDeleteClaim(claim) }
+                    onDelete = { onDeleteClaim(claim) },
+                    onAddEvidence = { onAddEvidence(claim.id) },
+                    onEditEvidence = { evidenceId -> onEditEvidence(evidenceId, claim.id) }
                 )
             }
         }
@@ -459,10 +491,15 @@ private fun ClaimsTab(
 @Composable
 private fun ClaimCard(
     claim: Claim,
+    viewModel: TopicDetailViewModel,
     onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onAddEvidence: () -> Unit,
+    onEditEvidence: (String) -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showEvidenceSection by remember { mutableStateOf(true) }
+    val evidences by viewModel.getClaimEvidences(claim.id).collectAsState(initial = emptyList())
 
     if (showDeleteDialog) {
         AlertDialog(
@@ -514,106 +551,330 @@ private fun ClaimCard(
         Claim.Strength.HIGH -> "Fort"
     }
 
-    ElevatedCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .semantics(mergeDescendants = true) {
-                contentDescription = "Affirmation $stanceText, force $strengthText: ${claim.text}"
-            },
-        colors = CardDefaults.elevatedCardColors(containerColor = backgroundColor),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(18.dp)
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
-        ListItem(
-            headlineContent = {
-                Text(
-                    text = claim.text,
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontSize = 17.sp,
-                        lineHeight = 24.sp,
-                        fontWeight = FontWeight.Normal
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            },
-            overlineContent = {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-                    modifier = Modifier.wrapContentHeight()
-                ) {
-                    // Stance badge
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(stanceColor)
-                            .padding(horizontal = 8.dp, vertical = 3.dp)
+        ElevatedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics(mergeDescendants = true) {
+                    contentDescription = "Affirmation $stanceText, force $strengthText: ${claim.text}"
+                },
+            colors = CardDefaults.elevatedCardColors(containerColor = backgroundColor),
+            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
+            shape = RoundedCornerShape(18.dp)
+        ) {
+            ListItem(
+                headlineContent = {
+                    Text(
+                        text = claim.text,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontSize = 17.sp,
+                            lineHeight = 24.sp,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                },
+                overlineContent = {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                        modifier = Modifier.wrapContentHeight()
                     ) {
+                        // Stance badge
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(stanceColor)
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                        ) {
+                            Text(
+                                text = when (claim.stance) {
+                                    Claim.Stance.PRO -> "Pour"
+                                    Claim.Stance.CON -> "Contre"
+                                    Claim.Stance.NEUTRAL -> "Neutre"
+                                },
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 10.sp
+                                ),
+                                color = Color.White
+                            )
+                        }
+                        // Divider
                         Text(
-                            text = when (claim.stance) {
-                                Claim.Stance.PRO -> "Pour"
-                                Claim.Stance.CON -> "Contre"
-                                Claim.Stance.NEUTRAL -> "Neutre"
+                            text = "•",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        // Strength text
+                        Text(
+                            text = when (claim.strength) {
+                                Claim.Strength.LOW -> "Faible"
+                                Claim.Strength.MEDIUM -> "Moyen"
+                                Claim.Strength.HIGH -> "Fort"
                             },
                             style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 10.sp
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 10.sp,
+                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                             ),
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                    // Divider
-                    Text(
-                        text = "•",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    // Strength text
-                    Text(
-                        text = when (claim.strength) {
-                            Claim.Strength.LOW -> "Faible"
-                            Claim.Strength.MEDIUM -> "Moyen"
-                            Claim.Strength.HIGH -> "Fort"
-                        },
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 10.sp,
-                            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                        ),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                },
+                trailingContent = {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(0.dp),
+                        modifier = Modifier.wrapContentWidth()
+                    ) {
+                        IconButton(
+                            onClick = onEdit,
+                            modifier = Modifier.minimumInteractiveComponentSize()
+                        ) {
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = stringResource(R.string.accessibility_edit_claim),
+                                modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        IconButton(
+                            onClick = { showDeleteDialog = true },
+                            modifier = Modifier.minimumInteractiveComponentSize()
+                        ) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = stringResource(R.string.accessibility_delete_claim),
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
                 }
-            },
-            trailingContent = {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(0.dp),
-                    modifier = Modifier.wrapContentWidth()
-                ) {
-                    IconButton(
-                        onClick = onEdit,
-                        modifier = Modifier.minimumInteractiveComponentSize()
+            )
+        }
+
+        // Evidence section
+        if (evidences.isNotEmpty() || showEvidenceSection) {
+            val evidenceSectionIsDark = isSystemInDarkTheme()
+            val cs = MaterialTheme.colorScheme
+
+            // Bordure subtile avec couleur thématique au lieu de couleurs pures
+            val borderColor = if (evidenceSectionIsDark) {
+                cs.primary.copy(alpha = 0.4f)  // Halo doux de la couleur primaire
+            } else {
+                cs.outline.copy(alpha = 0.6f)  // Outline subtil en mode clair
+            }
+
+            // Fond avec hiérarchie Material You - surfaceContainer pour plus de profondeur
+            val evidenceBackgroundColor = if (evidenceSectionIsDark) {
+                Color(0xFF252525)  // Légèrement plus clair que le fond pour créer la profondeur
+            } else {
+                Color(0xFFF0F0F0)  // Gris très clair en mode clair
+            }
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp, start = 8.dp)
+                    .border(
+                        width = 2.dp,  // Bordure plus fine pour être moins dominante
+                        color = borderColor,
+                        shape = RoundedCornerShape(18.dp)
+                    ),
+                colors = CardDefaults.cardColors(
+                    containerColor = evidenceBackgroundColor
+                ),
+                shape = RoundedCornerShape(18.dp)
+            ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(
-                            Icons.Default.Edit,
-                            contentDescription = stringResource(R.string.accessibility_edit_claim),
-                            modifier = Modifier.size(20.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Preuves (${evidences.size})",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontWeight = FontWeight.SemiBold
                         )
+                        TextButton(
+                            onClick = onAddEvidence,
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Ajouter", style = MaterialTheme.typography.labelSmall)
+                        }
                     }
-                    IconButton(
-                        onClick = { showDeleteDialog = true },
-                        modifier = Modifier.minimumInteractiveComponentSize()
-                    ) {
-                        Icon(
-                            Icons.Default.Delete,
-                            contentDescription = stringResource(R.string.accessibility_delete_claim),
-                            tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.size(20.dp)
-                        )
+
+                    // Evidence items
+                    evidences.forEach { evidence ->
+                        var showDeleteEvidenceDialog by remember { mutableStateOf(false) }
+
+                        if (showDeleteEvidenceDialog) {
+                            AlertDialog(
+                                onDismissRequest = { showDeleteEvidenceDialog = false },
+                                title = { Text("Supprimer la preuve ?") },
+                                text = { Text("Cette action est irréversible.") },
+                                confirmButton = {
+                                    TextButton(
+                                        onClick = {
+                                            showDeleteEvidenceDialog = false
+                                            // TODO: Delete evidence
+                                        }
+                                    ) {
+                                        Text("Supprimer", color = MaterialTheme.colorScheme.error)
+                                    }
+                                },
+                                dismissButton = {
+                                    TextButton(onClick = { showDeleteEvidenceDialog = false }) {
+                                        Text("Annuler")
+                                    }
+                                }
+                            )
+                        }
+
+                        val evidenceIsDark = isSystemInDarkTheme()
+
+                        // Define quality colors based on theme - Pastel clair en mode clair
+                        val qualityBgColor = when (evidence.quality) {
+                            com.argumentor.app.data.model.Evidence.Quality.HIGH ->
+                                if (evidenceIsDark) Color(0xFF1B5E20).copy(alpha = 0.3f) else Color(0xFFE8F5E9)
+                            com.argumentor.app.data.model.Evidence.Quality.MEDIUM ->
+                                if (evidenceIsDark) Color(0xFFE65100).copy(alpha = 0.3f) else Color(0xFFFFF3E0)
+                            com.argumentor.app.data.model.Evidence.Quality.LOW ->
+                                if (evidenceIsDark) Color(0xFFB71C1C).copy(alpha = 0.3f) else Color(0xFFFFEBEE)
+                        }
+
+                        val qualityTextColor = when (evidence.quality) {
+                            com.argumentor.app.data.model.Evidence.Quality.HIGH ->
+                                if (evidenceIsDark) Color(0xFF81C784) else Color(0xFF2E7D32)
+                            com.argumentor.app.data.model.Evidence.Quality.MEDIUM ->
+                                if (evidenceIsDark) Color(0xFFFFB74D) else Color(0xFFE65100)
+                            com.argumentor.app.data.model.Evidence.Quality.LOW ->
+                                if (evidenceIsDark) Color(0xFFE57373) else Color(0xFFC62828)
+                        }
+
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (evidenceIsDark)
+                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                                else
+                                    Color.Transparent
+                            ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                                    ) {
+                                        // Type badge
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(6.dp))
+                                                .background(
+                                                    if (evidenceIsDark)
+                                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                                                    else
+                                                        MaterialTheme.colorScheme.primaryContainer
+                                                )
+                                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                                        ) {
+                                            Text(
+                                                text = when (evidence.type) {
+                                                    com.argumentor.app.data.model.Evidence.EvidenceType.STUDY -> "Étude"
+                                                    com.argumentor.app.data.model.Evidence.EvidenceType.STAT -> "Stat"
+                                                    com.argumentor.app.data.model.Evidence.EvidenceType.QUOTE -> "Citation"
+                                                    com.argumentor.app.data.model.Evidence.EvidenceType.EXAMPLE -> "Exemple"
+                                                },
+                                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
+                                                color = if (evidenceIsDark)
+                                                    MaterialTheme.colorScheme.primary
+                                                else
+                                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                            )
+                                        }
+                                        // Quality badge
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(6.dp))
+                                                .background(qualityBgColor)
+                                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                                        ) {
+                                            Text(
+                                                text = when (evidence.quality) {
+                                                    com.argumentor.app.data.model.Evidence.Quality.HIGH -> "Élevée"
+                                                    com.argumentor.app.data.model.Evidence.Quality.MEDIUM -> "Moyenne"
+                                                    com.argumentor.app.data.model.Evidence.Quality.LOW -> "Faible"
+                                                },
+                                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
+                                                color = qualityTextColor
+                                            )
+                                        }
+                                    }
+                                    Text(
+                                        text = evidence.content,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        maxLines = 3,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                    )
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
+                                    IconButton(
+                                        onClick = { onEditEvidence(evidence.id) },
+                                        modifier = Modifier.size(32.dp)
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Edit,
+                                            contentDescription = "Éditer",
+                                            modifier = Modifier.size(16.dp),
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                    IconButton(
+                                        onClick = { showDeleteEvidenceDialog = true },
+                                        modifier = Modifier.size(32.dp)
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Delete,
+                                            contentDescription = "Supprimer",
+                                            modifier = Modifier.size(16.dp),
+                                            tint = MaterialTheme.colorScheme.error
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
-        )
+        }
     }
 }
 
@@ -737,6 +998,134 @@ private fun QuestionsTab(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun SourcesTab(
+    sources: List<Source>,
+    onAddSource: () -> Unit,
+    onEditSource: (String) -> Unit
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (sources.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.padding(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MenuBook,
+                        contentDescription = null,
+                        modifier = Modifier.size(120.dp),
+                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                    )
+                    Text(
+                        text = "Aucune source",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "Les sources bibliographiques apparaîtront ici. Ajoutez des preuves avec sources à vos affirmations.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        } else {
+        LazyColumn(
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(sources) { source ->
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            // Title
+                            Text(
+                                text = source.title,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+
+                            // Citation
+                            if (!source.citation.isNullOrEmpty()) {
+                                Text(
+                                    text = "\"${source.citation}\"",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                                )
+                            }
+
+                            // URL
+                            if (!source.url.isNullOrEmpty()) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Link,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                    Text(
+                                        text = source.url,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                        }
+
+                        // Edit button
+                        IconButton(
+                            onClick = { onEditSource(source.id) }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Éditer la source",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        }
+
+        // FAB to add new source
+        FloatingActionButton(
+            onClick = onAddSource,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Ajouter une source"
+            )
         }
     }
 }

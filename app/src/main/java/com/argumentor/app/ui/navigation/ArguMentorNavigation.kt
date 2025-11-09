@@ -13,11 +13,14 @@ import com.argumentor.app.ui.MainViewModel
 import com.argumentor.app.ui.screens.claim.ClaimCreateEditScreen
 import com.argumentor.app.ui.screens.debate.DebateModeScreen
 import com.argumentor.app.ui.screens.ethics.EthicsWarningScreen
+import com.argumentor.app.ui.screens.evidence.EvidenceCreateEditScreen
 import com.argumentor.app.ui.screens.home.HomeScreen
 import com.argumentor.app.ui.screens.importexport.ImportExportScreen
+import com.argumentor.app.ui.screens.onboarding.OnboardingScreen
 import com.argumentor.app.ui.screens.permissions.PermissionsScreen
 import com.argumentor.app.ui.screens.question.QuestionCreateEditScreen
 import com.argumentor.app.ui.screens.settings.SettingsScreen
+import com.argumentor.app.ui.screens.source.SourceCreateEditScreen
 import com.argumentor.app.ui.screens.statistics.StatisticsScreen
 import com.argumentor.app.ui.screens.topic.TopicCreateEditScreen
 import com.argumentor.app.ui.screens.topic.TopicDetailScreen
@@ -29,40 +32,54 @@ import com.argumentor.app.ui.screens.topic.TopicDetailScreen
 fun ArguMentorNavigation() {
     val navController = rememberNavController()
     val mainViewModel: MainViewModel = hiltViewModel()
-    val ethicsWarningShown by mainViewModel.ethicsWarningShown.collectAsState()
-
-    val startDestination = if (ethicsWarningShown) {
-        Screen.Home.route
-    } else {
-        Screen.EthicsWarning.route
-    }
+    val ethicsWarningShown by mainViewModel.ethicsWarningShown.collectAsState(initial = false)
 
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = Screen.EthicsWarning.route  // Always start here, then redirect if needed
     ) {
         // Ethics Warning (first launch)
         composable(Screen.EthicsWarning.route) {
-            EthicsWarningScreen(
-                onAccept = {
+            // Auto-redirect if already shown
+            if (ethicsWarningShown) {
+                androidx.compose.runtime.LaunchedEffect(Unit) {
                     navController.navigate(Screen.Permissions.route) {
                         popUpTo(Screen.EthicsWarning.route) { inclusive = true }
                     }
                 }
-            )
+            } else {
+                EthicsWarningScreen(
+                    onAccept = {
+                        navController.navigate(Screen.Permissions.route) {
+                            popUpTo(Screen.EthicsWarning.route) { inclusive = true }
+                        }
+                    }
+                )
+            }
         }
 
         // Permissions Screen
         composable(Screen.Permissions.route) {
             PermissionsScreen(
                 onAllPermissionsGranted = {
-                    navController.navigate(Screen.Home.route) {
+                    navController.navigate(Screen.Onboarding.route) {
                         popUpTo(Screen.Permissions.route) { inclusive = true }
                     }
                 },
                 onSkip = {
-                    navController.navigate(Screen.Home.route) {
+                    navController.navigate(Screen.Onboarding.route) {
                         popUpTo(Screen.Permissions.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        // Onboarding Screen
+        composable(Screen.Onboarding.route) {
+            OnboardingScreen(
+                onComplete = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Onboarding.route) { inclusive = true }
                     }
                 }
             )
@@ -124,6 +141,19 @@ fun ArguMentorNavigation() {
                         "question/create?targetId=$tId"
                     }
                     navController.navigate(route)
+                },
+                onNavigateToAddSource = { sourceId ->
+                    if (sourceId != null) {
+                        navController.navigate(Screen.SourceEdit.createRoute(sourceId))
+                    } else {
+                        navController.navigate(Screen.SourceCreate.route)
+                    }
+                },
+                onNavigateToAddEvidence = { claimId ->
+                    navController.navigate(Screen.EvidenceCreate.createRoute(claimId))
+                },
+                onNavigateToEditEvidence = { evidenceId, claimId ->
+                    navController.navigate(Screen.EvidenceEdit.createRoute(evidenceId, claimId))
                 },
                 onNavigateToCreate = {
                     navController.navigate(Screen.TopicCreate.route)
@@ -236,6 +266,66 @@ fun ArguMentorNavigation() {
         composable(Screen.Settings.route) {
             SettingsScreen(
                 onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Source create
+        composable(Screen.SourceCreate.route) {
+            SourceCreateEditScreen(
+                sourceId = null,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Source edit
+        composable(
+            route = Screen.SourceEdit.route,
+            arguments = listOf(navArgument("sourceId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val sourceId = backStackEntry.arguments?.getString("sourceId") ?: return@composable
+            SourceCreateEditScreen(
+                sourceId = sourceId,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Evidence create
+        composable(
+            route = Screen.EvidenceCreate.route,
+            arguments = listOf(
+                navArgument("claimId") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val claimId = backStackEntry.arguments?.getString("claimId") ?: return@composable
+            EvidenceCreateEditScreen(
+                evidenceId = null,
+                claimId = claimId,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToCreateSource = {
+                    navController.navigate(Screen.SourceCreate.route)
+                }
+            )
+        }
+
+        // Evidence edit
+        composable(
+            route = Screen.EvidenceEdit.route,
+            arguments = listOf(
+                navArgument("evidenceId") { type = NavType.StringType },
+                navArgument("claimId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val evidenceId = backStackEntry.arguments?.getString("evidenceId") ?: return@composable
+            val claimId = backStackEntry.arguments?.getString("claimId") ?: return@composable
+            EvidenceCreateEditScreen(
+                evidenceId = evidenceId,
+                claimId = claimId,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToCreateSource = {
+                    navController.navigate(Screen.SourceCreate.route)
+                }
             )
         }
     }

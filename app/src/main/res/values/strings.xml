@@ -132,6 +132,23 @@
     <string name="ethics_message">ArguMentor traite de sujets sensibles (religion, politique, santé). Nous encourageons le respect, la bienveillance et la rigueur intellectuelle dans tous les débats.</string>
     <string name="ethics_accept">J\'accepte</string>
 
+    <!-- Onboarding -->
+    <string name="onboarding_skip">Passer</string>
+    <string name="onboarding_next">Suivant</string>
+    <string name="onboarding_start">Commencer</string>
+
+    <string name="onboarding_page1_title">Bienvenue dans ArguMentor</string>
+    <string name="onboarding_page1_description">Structurez vos débats et affûtez votre pensée critique avec une méthode rigoureuse.</string>
+
+    <string name="onboarding_page2_title">Créez des Sujets</string>
+    <string name="onboarding_page2_description">Un sujet est le thème principal de votre débat. Exemple : \"Faut-il apprendre à coder ?\"</string>
+
+    <string name="onboarding_page3_title">Ajoutez des Affirmations</string>
+    <string name="onboarding_page3_description">Les affirmations sont des arguments POUR, CONTRE ou NEUTRES. Chaque affirmation peut avoir des contre-arguments (rebuttals), des preuves et des questions.</string>
+
+    <string name="onboarding_page4_title">Pratiquez en Mode Débat</string>
+    <string name="onboarding_page4_description">Le mode débat affiche vos affirmations sous forme de cartes à retourner. Parfait pour réviser et mémoriser vos arguments !</string>
+
     <!-- About -->
     <string name="about_author">Auteur</string>
     <string name="about_author_name">Julien Bombled</string>
