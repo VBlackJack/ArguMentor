@@ -38,6 +38,7 @@ fun TopicDetailScreen(
     val selectedTab by viewModel.selectedTab.collectAsState()
 
     var showExportMenu by remember { mutableStateOf(false) }
+    var showSummary by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
@@ -144,26 +145,49 @@ fun TopicDetailScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Topic summary card
+            // Topic summary card (collapsible)
             topic?.let { currentTopic ->
-                Card(
+                OutlinedCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = currentTopic.summary,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        if (currentTopic.tags.isNotEmpty()) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Résumé",
+                                style = MaterialTheme.typography.labelLarge,
+                                modifier = Modifier.weight(1f)
+                            )
+                            IconButton(
+                                onClick = { showSummary = !showSummary },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    if (showSummary) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                    contentDescription = if (showSummary) "Masquer" else "Afficher"
+                                )
+                            }
+                        }
+                        if (showSummary) {
                             Spacer(modifier = Modifier.height(8.dp))
-                            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                currentTopic.tags.forEach { tag ->
-                                    SuggestionChip(
-                                        onClick = { },
-                                        label = { Text(tag) }
-                                    )
+                            Text(
+                                text = currentTopic.summary,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            if (currentTopic.tags.isNotEmpty()) {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    currentTopic.tags.forEach { tag ->
+                                        SuggestionChip(
+                                            onClick = { },
+                                            label = { Text(tag, style = MaterialTheme.typography.labelSmall) }
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -187,7 +211,21 @@ fun TopicDetailScreen(
 
             // Tab content
             when (selectedTab) {
-                0 -> ClaimsTab(claims = claims)
+                0 -> ClaimsTab(
+                    claims = claims,
+                    onEditClaim = { claimId ->
+                        // Navigate to edit claim screen
+                        // For now we'll use the same screen as create
+                        onNavigateToAddClaim("${topicId}?claimId=${claimId}")
+                    },
+                    onDeleteClaim = { claim ->
+                        viewModel.deleteClaim(claim) {
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar("Affirmation supprimée")
+                            }
+                        }
+                    }
+                )
                 1 -> QuestionsTab(questions = questions)
             }
         }
@@ -195,7 +233,11 @@ fun TopicDetailScreen(
 }
 
 @Composable
-private fun ClaimsTab(claims: List<Claim>) {
+private fun ClaimsTab(
+    claims: List<Claim>,
+    onEditClaim: (String) -> Unit,
+    onDeleteClaim: (Claim) -> Unit
+) {
     if (claims.isEmpty()) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -209,15 +251,48 @@ private fun ClaimsTab(claims: List<Claim>) {
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(claims) { claim ->
-                ClaimCard(claim = claim)
+            items(claims, key = { it.id }) { claim ->
+                ClaimCard(
+                    claim = claim,
+                    onEdit = { onEditClaim(claim.id) },
+                    onDelete = { onDeleteClaim(claim) }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun ClaimCard(claim: Claim) {
+private fun ClaimCard(
+    claim: Claim,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Supprimer l'affirmation ?") },
+            text = { Text("Cette action est irréversible. Toutes les réfutations et preuves associées seront également supprimées.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                        onDelete()
+                    }
+                ) {
+                    Text("Supprimer", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Annuler")
+                }
+            }
+        )
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -228,32 +303,61 @@ private fun ClaimCard(claim: Claim) {
             }
         )
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(12.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
             ) {
-                Text(
-                    text = when (claim.stance) {
-                        Claim.Stance.PRO -> "Pour"
-                        Claim.Stance.CON -> "Contre"
-                        Claim.Stance.NEUTRAL -> "Neutre"
-                    },
-                    style = MaterialTheme.typography.labelMedium,
-                    color = when (claim.stance) {
-                        Claim.Stance.PRO -> StancePro
-                        Claim.Stance.CON -> StanceCon
-                        Claim.Stance.NEUTRAL -> StanceNeutral
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = when (claim.stance) {
+                            Claim.Stance.PRO -> "Pour"
+                            Claim.Stance.CON -> "Contre"
+                            Claim.Stance.NEUTRAL -> "Neutre"
+                        },
+                        style = MaterialTheme.typography.labelMedium,
+                        color = when (claim.stance) {
+                            Claim.Stance.PRO -> StancePro
+                            Claim.Stance.CON -> StanceCon
+                            Claim.Stance.NEUTRAL -> StanceNeutral
+                        }
+                    )
+                    Text(
+                        text = when (claim.strength) {
+                            Claim.Strength.LOW -> "Faible"
+                            Claim.Strength.MEDIUM -> "Moyen"
+                            Claim.Strength.HIGH -> "Fort"
+                        },
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    IconButton(
+                        onClick = onEdit,
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = "Modifier",
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
-                )
-                Text(
-                    text = when (claim.strength) {
-                        Claim.Strength.LOW -> "Faible"
-                        Claim.Strength.MEDIUM -> "Moyen"
-                        Claim.Strength.HIGH -> "Fort"
-                    },
-                    style = MaterialTheme.typography.labelMedium
-                )
+                    IconButton(
+                        onClick = { showDeleteDialog = true },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "Supprimer",
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(

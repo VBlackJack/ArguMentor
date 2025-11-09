@@ -76,6 +76,13 @@ class TopicDetailViewModel @Inject constructor(
         }
     }
 
+    fun deleteClaim(claim: Claim, onDeleted: () -> Unit) {
+        viewModelScope.launch {
+            claimRepository.deleteClaim(claim)
+            onDeleted()
+        }
+    }
+
     fun getClaimRebuttals(claimId: String): Flow<List<Rebuttal>> {
         return rebuttalRepository.getRebuttalsByClaimId(claimId)
     }
