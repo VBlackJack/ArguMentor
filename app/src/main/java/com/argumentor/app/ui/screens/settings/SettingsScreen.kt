@@ -107,8 +107,17 @@ fun SettingsScreen(
 
             // About section
             SettingsSection(title = "À propos") {
-                SettingsItem(title = "Auteur") {
-                    Text("Julien Bombled", style = MaterialTheme.typography.bodyMedium)
+                SettingsItem(title = "Auteur de l'application") {
+                    Column {
+                        Text("Julien Bombled", style = MaterialTheme.typography.bodyMedium)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            "Note : L'auteur développe uniquement l'application. " +
+                            "Il n'est pas responsable du contenu stocké par les utilisateurs.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
 
                 Divider()
@@ -121,6 +130,17 @@ fun SettingsScreen(
 
                 SettingsItem(title = "Licence") {
                     Text("Apache License 2.0", style = MaterialTheme.typography.bodyMedium)
+                }
+
+                Divider()
+
+                SettingsItem(title = "Description") {
+                    Text(
+                        "ArguMentor est un outil d'organisation de débats et d'arguments. " +
+                        "Chaque utilisateur l'adapte à ses propres thématiques.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }
