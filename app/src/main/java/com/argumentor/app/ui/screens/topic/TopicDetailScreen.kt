@@ -194,12 +194,16 @@ fun TopicDetailScreen(
         ) {
             // Topic summary card (collapsible)
             topic?.let { currentTopic ->
-                OutlinedCard(
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFFE8EEF8)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
+                    Column(modifier = Modifier.padding(14.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -213,38 +217,56 @@ fun TopicDetailScreen(
                                 Icon(
                                     Icons.Default.Description,
                                     contentDescription = null,
-                                    modifier = Modifier.size(20.dp),
-                                    tint = MaterialTheme.colorScheme.primary
+                                    modifier = Modifier.size(18.dp),
+                                    tint = Color(0xFF1976D2)
                                 )
                                 Text(
-                                    text = "Résumé",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = MaterialTheme.colorScheme.primary
+                                    text = "Résumé du sujet",
+                                    style = MaterialTheme.typography.labelLarge.copy(
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 13.sp
+                                    ),
+                                    color = Color(0xFF1976D2)
                                 )
                             }
                             IconButton(
                                 onClick = { showSummary = !showSummary },
-                                modifier = Modifier.size(32.dp)
+                                modifier = Modifier.size(28.dp)
                             ) {
                                 Icon(
                                     if (showSummary) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                                    contentDescription = if (showSummary) "Masquer" else "Afficher"
+                                    contentDescription = if (showSummary) "Masquer" else "Afficher",
+                                    tint = Color(0xFF666666)
                                 )
                             }
                         }
                         if (showSummary) {
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(10.dp))
                             Text(
                                 text = currentTopic.summary,
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontSize = 14.sp,
+                                    lineHeight = 20.sp
+                                ),
+                                color = Color(0xFF333333)
                             )
                             if (currentTopic.tags.isNotEmpty()) {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Divider(color = Color(0xFFCCDDEE))
                                 Spacer(modifier = Modifier.height(8.dp))
-                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
                                     currentTopic.tags.forEach { tag ->
-                                        SuggestionChip(
+                                        AssistChip(
                                             onClick = { },
-                                            label = { Text(tag, style = MaterialTheme.typography.labelSmall) }
+                                            label = {
+                                                Text(
+                                                    tag,
+                                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp)
+                                                )
+                                            }
                                         )
                                     }
                                 }
@@ -364,22 +386,22 @@ private fun ClaimCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+            // Badges row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f)
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                 ) {
                     // Stance badge
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(10.dp))
                             .background(stanceColor)
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                            .padding(horizontal = 8.dp, vertical = 3.dp)
                     ) {
                         Text(
                             text = when (claim.stance) {
@@ -388,33 +410,32 @@ private fun ClaimCard(
                                 Claim.Stance.NEUTRAL -> "Neutre"
                             },
                             style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 11.sp
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.sp
                             ),
                             color = Color.White
                         )
                     }
+                    // Divider
+                    Text(
+                        text = "•",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color(0xFF999999)
+                    )
                     // Strength badge
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(MaterialTheme.colorScheme.secondaryContainer)
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
-                    ) {
-                        Text(
-                            text = when (claim.strength) {
-                                Claim.Strength.LOW -> "Faible"
-                                Claim.Strength.MEDIUM -> "Moyen"
-                                Claim.Strength.HIGH -> "Fort"
-                            },
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 11.sp,
-                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                            ),
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                    }
+                    Text(
+                        text = when (claim.strength) {
+                            Claim.Strength.LOW -> "Faible"
+                            Claim.Strength.MEDIUM -> "Moyen"
+                            Claim.Strength.HIGH -> "Fort"
+                        },
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 10.sp,
+                            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                        ),
+                        color = Color(0xFF666666)
+                    )
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
                     IconButton(
@@ -425,7 +446,7 @@ private fun ClaimCard(
                             Icons.Default.Edit,
                             contentDescription = "Modifier",
                             modifier = Modifier.size(20.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = Color(0xFF666666)
                         )
                     }
                     IconButton(
@@ -441,14 +462,18 @@ private fun ClaimCard(
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(12.dp))
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Claim text with better contrast
             Text(
                 text = claim.text,
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    fontSize = 15.sp,
-                    lineHeight = 22.sp
+                    fontSize = 17.sp,
+                    lineHeight = 24.sp,
+                    fontWeight = FontWeight.Normal
                 ),
-                color = MaterialTheme.colorScheme.onSurface
+                color = Color(0xFF222222)
             )
         }
     }
