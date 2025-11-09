@@ -24,8 +24,8 @@ fun TopicDto.toModel(): Topic = Topic(
     summary = summary,
     posture = Topic.Posture.fromString(posture),
     tags = tags,
-    createdAt = createdAt,
-    updatedAt = updatedAt
+    createdAt = createdAt ?: getCurrentIsoTimestamp(),
+    updatedAt = updatedAt ?: getCurrentIsoTimestamp()
 )
 
 // Claim mappers

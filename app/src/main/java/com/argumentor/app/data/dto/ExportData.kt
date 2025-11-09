@@ -51,13 +51,13 @@ data class TopicDto(
     val posture: String,
 
     @SerializedName("tags")
-    val tags: List<String>,
+    val tags: List<String> = emptyList(),
 
     @SerializedName("createdAt")
-    val createdAt: String,
+    val createdAt: String? = null,
 
     @SerializedName("updatedAt")
-    val updatedAt: String
+    val updatedAt: String? = null
 )
 
 data class ClaimDto(

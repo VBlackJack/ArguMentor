@@ -170,8 +170,9 @@ class ImportExportRepository @Inject constructor(
             try {
                 val existing = database.topicDao().getTopicById(topicDto.id)
                 if (existing != null) {
-                    // Update if incoming is newer
-                    if (topicDto.updatedAt > existing.updatedAt) {
+                    // Update if incoming is newer (or if incoming has no timestamp, skip update)
+                    val incomingUpdatedAt = topicDto.updatedAt
+                    if (incomingUpdatedAt != null && incomingUpdatedAt > existing.updatedAt) {
                         database.topicDao().updateTopic(topicDto.toModel())
                         updated++
                     } else {
