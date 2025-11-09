@@ -81,6 +81,13 @@ class DebateModeViewModel @Inject constructor(
         }
     }
 
+    fun goToCard(index: Int) {
+        if (index in 0 until _debateCards.value.size) {
+            _currentCardIndex.value = index
+            _isCardFlipped.value = false
+        }
+    }
+
     fun flipCard() {
         _isCardFlipped.value = !_isCardFlipped.value
     }

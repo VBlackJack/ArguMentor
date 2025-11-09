@@ -25,6 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.R
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.ui.components.AppNavigationDrawerContent
+import com.argumentor.app.ui.components.EngagingEmptyState
 import com.argumentor.app.ui.theme.StanceCon
 import com.argumentor.app.ui.theme.StanceNeutral
 import com.argumentor.app.ui.theme.StancePro
@@ -153,18 +154,30 @@ fun TopicDetailScreen(
                     },
                     navigationIcon = {
                         IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu")
+                            Icon(
+                                Icons.Default.Menu,
+                                contentDescription = stringResource(R.string.accessibility_menu)
+                            )
                         }
                     },
                 actions = {
                     IconButton(onClick = { onNavigateToEdit(topicId) }) {
-                        Icon(Icons.Default.Edit, contentDescription = "Modifier")
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = stringResource(R.string.accessibility_edit_topic)
+                        )
                     }
                     IconButton(onClick = { onNavigateToDebate(topicId) }) {
-                        Icon(Icons.Default.PlayArrow, contentDescription = "Mode Débat")
+                        Icon(
+                            Icons.Default.PlayArrow,
+                            contentDescription = stringResource(R.string.accessibility_debate_mode)
+                        )
                     }
                     IconButton(onClick = { showExportMenu = true }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = "Plus d'options")
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = stringResource(R.string.accessibility_more_options)
+                        )
                     }
                     DropdownMenu(
                         expanded = showExportMenu,
@@ -173,7 +186,10 @@ fun TopicDetailScreen(
                         DropdownMenuItem(
                             text = { Text("Exporter en PDF") },
                             leadingIcon = {
-                                Icon(Icons.Default.PictureAsPdf, contentDescription = null)
+                                Icon(
+                                    Icons.Default.PictureAsPdf,
+                                    contentDescription = stringResource(R.string.accessibility_export)
+                                )
                             },
                             onClick = {
                                 showExportMenu = false
@@ -185,7 +201,10 @@ fun TopicDetailScreen(
                         DropdownMenuItem(
                             text = { Text("Exporter en Markdown") },
                             leadingIcon = {
-                                Icon(Icons.Default.Description, contentDescription = null)
+                                Icon(
+                                    Icons.Default.Description,
+                                    contentDescription = stringResource(R.string.accessibility_export)
+                                )
                             },
                             onClick = {
                                 showExportMenu = false
@@ -198,7 +217,11 @@ fun TopicDetailScreen(
                         DropdownMenuItem(
                             text = { Text("Supprimer le sujet", color = MaterialTheme.colorScheme.error) },
                             leadingIcon = {
-                                Icon(Icons.Default.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+                                Icon(
+                                    Icons.Default.Delete,
+                                    contentDescription = stringResource(R.string.accessibility_delete_topic),
+                                    tint = MaterialTheme.colorScheme.error
+                                )
                             },
                             onClick = {
                                 showExportMenu = false
@@ -212,10 +235,16 @@ fun TopicDetailScreen(
         floatingActionButton = {
             when (selectedTab) {
                 0 -> FloatingActionButton(onClick = { onNavigateToAddClaim(topicId, null) }) {
-                    Icon(Icons.Default.Add, contentDescription = "Ajouter une affirmation")
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = stringResource(R.string.accessibility_create_claim)
+                    )
                 }
                 1 -> FloatingActionButton(onClick = { onNavigateToAddQuestion(topicId, null) }) {
-                    Icon(Icons.Default.Add, contentDescription = "Ajouter une question")
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = stringResource(R.string.accessibility_create_question)
+                    )
                 }
             }
         }
@@ -359,6 +388,9 @@ fun TopicDetailScreen(
                                 snackbarHostState.showSnackbar("Question supprimée")
                             }
                         }
+                    },
+                    onAddQuestion = {
+                        onNavigateToAddQuestion(topicId, null)
                     }
                 )
             }
@@ -517,22 +549,22 @@ private fun ClaimCard(
                 ) {
                     IconButton(
                         onClick = onEdit,
-                        modifier = Modifier.size(36.dp)
+                        modifier = Modifier.minimumInteractiveComponentSize()
                     ) {
                         Icon(
                             Icons.Default.Edit,
-                            contentDescription = "Modifier",
+                            contentDescription = stringResource(R.string.accessibility_edit_claim),
                             modifier = Modifier.size(20.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     IconButton(
                         onClick = { showDeleteDialog = true },
-                        modifier = Modifier.size(36.dp)
+                        modifier = Modifier.minimumInteractiveComponentSize()
                     ) {
                         Icon(
                             Icons.Default.Delete,
-                            contentDescription = "Supprimer",
+                            contentDescription = stringResource(R.string.accessibility_delete_claim),
                             tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(20.dp)
                         )
@@ -549,38 +581,17 @@ private fun QuestionsTab(
     topicId: String,
     claims: List<Claim>,
     onEditQuestion: (String) -> Unit,
-    onDeleteQuestion: (com.argumentor.app.data.model.Question) -> Unit
+    onDeleteQuestion: (com.argumentor.app.data.model.Question) -> Unit,
+    onAddQuestion: () -> Unit
 ) {
     if (questions.isEmpty()) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = androidx.compose.ui.Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
-                modifier = Modifier.padding(32.dp)
-            ) {
-                Icon(
-                    Icons.Default.QuestionAnswer,
-                    contentDescription = null,
-                    modifier = Modifier.size(64.dp),
-                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    "Aucune question pour l'instant",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    "Les questions permettent d'approfondir votre réflexion et d'explorer les nuances du sujet.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                )
-            }
-        }
+        EngagingEmptyState(
+            icon = Icons.Default.QuestionAnswer,
+            title = "Aucune question pour l'instant",
+            description = "Les questions permettent d'approfondir votre réflexion, d'explorer les nuances du sujet et de challenger vos affirmations.",
+            actionText = "Ajouter une question",
+            onAction = onAddQuestion
+        )
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -666,7 +677,7 @@ private fun QuestionsTab(
                                 IconButton(onClick = { onEditQuestion(question.id) }) {
                                     Icon(
                                         Icons.Default.Edit,
-                                        contentDescription = "Éditer",
+                                        contentDescription = stringResource(R.string.accessibility_edit_question),
                                         tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(20.dp)
                                     )
@@ -674,7 +685,7 @@ private fun QuestionsTab(
                                 IconButton(onClick = { showDeleteDialog = true }) {
                                     Icon(
                                         Icons.Default.Delete,
-                                        contentDescription = "Supprimer",
+                                        contentDescription = stringResource(R.string.accessibility_delete_question),
                                         tint = MaterialTheme.colorScheme.error,
                                         modifier = Modifier.size(20.dp)
                                     )

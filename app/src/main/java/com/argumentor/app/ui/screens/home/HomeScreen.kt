@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.R
 import com.argumentor.app.data.model.Topic
+import com.argumentor.app.ui.components.EngagingEmptyState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,6 +33,8 @@ fun HomeScreen(
 ) {
     val topics by viewModel.topics.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
+    val selectedTag by viewModel.selectedTag.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -50,7 +53,7 @@ fun HomeScreen(
 
                     NavigationDrawerItem(
                         icon = { Icon(Icons.Default.Home, contentDescription = null) },
-                        label = { Text("Accueil") },
+                        label = { Text(stringResource(R.string.nav_home)) },
                         selected = true,
                         onClick = {
                             scope.launch { drawerState.close() }
@@ -59,7 +62,7 @@ fun HomeScreen(
 
                     NavigationDrawerItem(
                         icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                        label = { Text("Nouveau sujet") },
+                        label = { Text(stringResource(R.string.nav_new_topic)) },
                         selected = false,
                         onClick = {
                             scope.launch { drawerState.close() }
@@ -73,7 +76,7 @@ fun HomeScreen(
 
                     NavigationDrawerItem(
                         icon = { Icon(Icons.Default.BarChart, contentDescription = null) },
-                        label = { Text("Statistiques") },
+                        label = { Text(stringResource(R.string.nav_statistics)) },
                         selected = false,
                         onClick = {
                             scope.launch { drawerState.close() }
@@ -83,7 +86,7 @@ fun HomeScreen(
 
                     NavigationDrawerItem(
                         icon = { Icon(Icons.Default.FileUpload, contentDescription = null) },
-                        label = { Text("Import/Export") },
+                        label = { Text(stringResource(R.string.nav_import_export)) },
                         selected = false,
                         onClick = {
                             scope.launch { drawerState.close() }
@@ -97,7 +100,7 @@ fun HomeScreen(
 
                     NavigationDrawerItem(
                         icon = { Icon(Icons.Default.Settings, contentDescription = null) },
-                        label = { Text("Paramètres") },
+                        label = { Text(stringResource(R.string.nav_settings)) },
                         selected = false,
                         onClick = {
                             scope.launch { drawerState.close() }
@@ -114,14 +117,20 @@ fun HomeScreen(
                     title = { Text(stringResource(R.string.home_title)) },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu")
+                            Icon(
+                                Icons.Default.Menu,
+                                contentDescription = stringResource(R.string.accessibility_menu)
+                            )
                         }
                     }
                 )
             },
             floatingActionButton = {
                 FloatingActionButton(onClick = onNavigateToCreate) {
-                    Icon(Icons.Default.Add, contentDescription = "Create Topic")
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = stringResource(R.string.accessibility_create_topic)
+                    )
                 }
             }
         ) { paddingValues ->
@@ -138,22 +147,32 @@ fun HomeScreen(
                         .fillMaxWidth()
                         .padding(16.dp),
                     placeholder = { Text(stringResource(R.string.home_search_hint)) },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    singleLine = true
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = stringResource(R.string.accessibility_search)
+                        )
+                    },
+                    singleLine = true,
+                    trailingIcon = {
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                strokeWidth = 2.dp
+                            )
+                        }
+                    }
                 )
 
                 // Topics list
                 if (topics.isEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = stringResource(R.string.home_empty_state),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    EngagingEmptyState(
+                        icon = Icons.Default.Topic,
+                        title = stringResource(R.string.home_empty_title),
+                        description = stringResource(R.string.home_empty_description),
+                        actionText = stringResource(R.string.home_empty_action),
+                        onAction = onNavigateToCreate
+                    )
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -163,7 +182,9 @@ fun HomeScreen(
                         items(topics) { topic ->
                             TopicCard(
                                 topic = topic,
-                                onClick = { onNavigateToTopic(topic.id) }
+                                selectedTag = selectedTag,
+                                onClick = { onNavigateToTopic(topic.id) },
+                                onTagClick = viewModel::onTagSelected
                             )
                         }
                     }
@@ -173,40 +194,69 @@ fun HomeScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopicCard(
     topic: Topic,
-    onClick: () -> Unit
+    selectedTag: String?,
+    onClick: () -> Unit,
+    onTagClick: (String) -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
+            // Title with stronger visual weight
             Text(
                 text = topic.title,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
             )
-            Spacer(modifier = Modifier.height(4.dp))
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Summary with reduced visual weight
             Text(
                 text = topic.summary,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 2
             )
+
+            // Tags section with proper spacing
             if (topic.tags.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     topic.tags.take(3).forEach { tag ->
-                        SuggestionChip(
-                            onClick = { },
-                            label = { Text(tag) }
+                        FilterChip(
+                            selected = tag == selectedTag,
+                            onClick = { onTagClick(tag) },
+                            label = {
+                                Text(
+                                    text = tag,
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            }
+                        )
+                    }
+                    if (topic.tags.size > 3) {
+                        Text(
+                            text = stringResource(R.string.more_tags, topic.tags.size - 3),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.align(Alignment.CenterVertically)
                         )
                     }
                 }

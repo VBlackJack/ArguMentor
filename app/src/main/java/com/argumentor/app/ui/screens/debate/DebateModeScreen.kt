@@ -11,8 +11,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.argumentor.app.R
 import com.argumentor.app.ui.theme.StanceCon
 import com.argumentor.app.ui.theme.StancePro
 
@@ -27,6 +30,7 @@ fun DebateModeScreen(
     val debateCards by viewModel.debateCards.collectAsState()
     val currentCardIndex by viewModel.currentCardIndex.collectAsState()
     val isCardFlipped by viewModel.isCardFlipped.collectAsState()
+    var showCardMenu by remember { mutableStateOf(false) }
 
     LaunchedEffect(topicId) {
         viewModel.loadTopic(topicId)
@@ -35,15 +39,71 @@ fun DebateModeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Mode Débat - ${topic?.title ?: ""}") },
+                title = {
+                    Text(
+                        text = "${stringResource(R.string.debate_mode)} - ${topic?.title ?: ""}",
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Retour")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.accessibility_back))
                     }
                 },
                 actions = {
+                    // Card selector menu
+                    if (debateCards.isNotEmpty()) {
+                        Box {
+                            IconButton(onClick = { showCardMenu = true }) {
+                                Icon(Icons.Default.List, contentDescription = "Sélectionner une carte")
+                            }
+                            DropdownMenu(
+                                expanded = showCardMenu,
+                                onDismissRequest = { showCardMenu = false }
+                            ) {
+                                debateCards.forEachIndexed { index, card ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                            ) {
+                                                Text(
+                                                    text = "${index + 1}.",
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    color = if (index == currentCardIndex)
+                                                        MaterialTheme.colorScheme.primary
+                                                    else
+                                                        MaterialTheme.colorScheme.onSurface
+                                                )
+                                                Text(
+                                                    text = card.claim.text,
+                                                    maxLines = 2,
+                                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    color = if (index == currentCardIndex)
+                                                        MaterialTheme.colorScheme.primary
+                                                    else
+                                                        MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+                                        },
+                                        onClick = {
+                                            viewModel.goToCard(index)
+                                            showCardMenu = false
+                                        },
+                                        leadingIcon = if (index == currentCardIndex) {
+                                            { Icon(Icons.Default.Check, contentDescription = null) }
+                                        } else null
+                                    )
+                                }
+                            }
+                        }
+                    }
+
                     IconButton(onClick = { viewModel.resetProgress() }) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Recommencer")
+                        Icon(Icons.Default.Refresh, contentDescription = stringResource(R.string.accessibility_debate_mode))
                     }
                 }
             )
@@ -56,7 +116,7 @@ fun DebateModeScreen(
                     .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Aucune carte disponible")
+                Text(stringResource(R.string.debate_no_cards))
             }
         } else {
             val currentCard = debateCards[currentCardIndex]
@@ -77,7 +137,7 @@ fun DebateModeScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    "Carte ${currentCardIndex + 1} / ${debateCards.size}",
+                    stringResource(R.string.debate_card_progress, currentCardIndex + 1, debateCards.size),
                     style = MaterialTheme.typography.labelMedium
                 )
 
@@ -106,20 +166,25 @@ fun DebateModeScreen(
                     ) {
                         Icon(Icons.Default.ArrowBack, contentDescription = null)
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Précédent")
+                        Text(stringResource(R.string.debate_previous))
                     }
 
                     Button(
                         onClick = { viewModel.flipCard() }
                     ) {
-                        Text(if (isCardFlipped) "Voir Claim" else "Voir Réponse")
+                        Text(
+                            if (isCardFlipped)
+                                stringResource(R.string.debate_view_claim)
+                            else
+                                stringResource(R.string.debate_view_answer)
+                        )
                     }
 
                     Button(
                         onClick = { viewModel.nextCard() },
                         enabled = currentCardIndex < debateCards.size - 1
                     ) {
-                        Text("Suivant")
+                        Text(stringResource(R.string.debate_next))
                         Spacer(modifier = Modifier.width(4.dp))
                         Icon(Icons.Default.ArrowForward, contentDescription = null)
                     }
@@ -203,33 +268,108 @@ private fun ClaimFront(card: DebateCard) {
 
 @Composable
 private fun ClaimBack(card: DebateCard, modifier: Modifier = Modifier) {
+    val hasContent = card.rebuttals.isNotEmpty() || card.evidences.isNotEmpty() || card.questions.isNotEmpty()
+
     Column(
         modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = if (hasContent) Arrangement.spacedBy(16.dp) else Arrangement.Center
     ) {
-        // Rebuttals
-        if (card.rebuttals.isNotEmpty()) {
-            Text("Contre-arguments:", style = MaterialTheme.typography.titleMedium)
-            card.rebuttals.forEach { rebuttal ->
-                Card(colors = CardDefaults.cardColors(containerColor = StanceCon.copy(alpha = 0.1f))) {
-                    Text(
-                        text = rebuttal.text,
-                        modifier = Modifier.padding(12.dp),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+        if (!hasContent) {
+            // Empty state for CON claims with no supporting content
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = stringResource(R.string.debate_empty_title),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.debate_empty_message),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            // Rebuttals
+            if (card.rebuttals.isNotEmpty()) {
+                Text(stringResource(R.string.debate_rebuttals), style = MaterialTheme.typography.titleMedium)
+                card.rebuttals.forEach { rebuttal ->
+                    Card(colors = CardDefaults.cardColors(containerColor = StanceCon.copy(alpha = 0.1f))) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = rebuttal.text,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            if (rebuttal.fallacyTag != null) {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = stringResource(R.string.debate_fallacy, rebuttal.fallacyTag),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
+                    }
                 }
             }
-        }
 
-        // Question
-        if (card.questions.isNotEmpty()) {
-            Text("Question:", style = MaterialTheme.typography.titleMedium)
-            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
-                Text(
-                    text = card.questions.first().text,
-                    modifier = Modifier.padding(12.dp),
-                    style = MaterialTheme.typography.bodyMedium
-                )
+            // Evidence (NEW - was missing!)
+            if (card.evidences.isNotEmpty()) {
+                Text(stringResource(R.string.debate_evidence), style = MaterialTheme.typography.titleMedium)
+                card.evidences.forEach { evidence ->
+                    Card(colors = CardDefaults.cardColors(containerColor = StancePro.copy(alpha = 0.1f))) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = evidence.content,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            if (evidence.sourceId != null) {
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = evidence.type.toString(),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Question
+            if (card.questions.isNotEmpty()) {
+                Text(stringResource(R.string.debate_question), style = MaterialTheme.typography.titleMedium)
+                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(
+                            text = card.questions.first().text,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = when (card.questions.first().kind) {
+                                com.argumentor.app.data.model.Question.QuestionKind.SOCRATIC -> stringResource(R.string.question_kind_socratic)
+                                com.argumentor.app.data.model.Question.QuestionKind.CLARIFYING -> stringResource(R.string.question_kind_clarifying)
+                                com.argumentor.app.data.model.Question.QuestionKind.CHALLENGE -> stringResource(R.string.question_kind_challenge)
+                                com.argumentor.app.data.model.Question.QuestionKind.EVIDENCE -> stringResource(R.string.question_kind_evidence)
+                            },
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                        )
+                    }
+                }
             }
         }
     }

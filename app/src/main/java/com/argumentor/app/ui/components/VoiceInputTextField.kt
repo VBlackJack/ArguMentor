@@ -14,6 +14,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.argumentor.app.R
 import java.util.Locale
 
 /**
@@ -72,7 +74,7 @@ fun VoiceInputTextField(
             ) {
                 Icon(
                     imageVector = Icons.Default.Mic,
-                    contentDescription = "Saisie vocale"
+                    contentDescription = stringResource(R.string.accessibility_voice_input)
                 )
             }
         }

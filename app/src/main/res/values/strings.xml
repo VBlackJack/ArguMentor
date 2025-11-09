@@ -7,12 +7,18 @@
     <string name="nav_topics">Sujets</string>
     <string name="nav_search">Rechercher</string>
     <string name="nav_settings">Paramètres</string>
+    <string name="nav_new_topic">Nouveau sujet</string>
+    <string name="nav_statistics">Statistiques</string>
+    <string name="nav_import_export">Import/Export</string>
 
     <!-- Home Screen -->
     <string name="home_title">ArguMentor</string>
     <string name="home_search_hint">Rechercher des arguments, sujets…</string>
     <string name="home_recent_topics">Sujets récents</string>
     <string name="home_empty_state">Aucun sujet. Créez-en un pour commencer!</string>
+    <string name="home_empty_title">Aucun sujet pour l\'instant</string>
+    <string name="home_empty_description">Commencez à structurer vos arguments en créant votre premier sujet de débat. Chaque sujet peut contenir des affirmations, contre-arguments et questions.</string>
+    <string name="home_empty_action">Créer un sujet</string>
 
     <!-- Topic -->
     <string name="topic_create">Créer un sujet</string>
@@ -61,6 +67,8 @@
     <string name="question_kind">Type de question</string>
     <string name="question_kind_socratic">Socratique</string>
     <string name="question_kind_clarifying">Clarification</string>
+    <string name="question_kind_challenge">Contestation</string>
+    <string name="question_kind_evidence">Demande de preuve</string>
 
     <!-- Source -->
     <string name="source_create">Ajouter une source</string>
@@ -71,6 +79,18 @@
     <!-- Debate Mode -->
     <string name="debate_mode">Mode Débat</string>
     <string name="debate_flip_card">Retourner la carte</string>
+    <string name="debate_no_cards">Aucune carte disponible</string>
+    <string name="debate_card_progress">Carte %1$d / %2$d</string>
+    <string name="debate_previous">Précédent</string>
+    <string name="debate_next">Suivant</string>
+    <string name="debate_view_claim">Voir Claim</string>
+    <string name="debate_view_answer">Voir Réponse</string>
+    <string name="debate_rebuttals">Contre-arguments:</string>
+    <string name="debate_evidence">Preuves:</string>
+    <string name="debate_question">Question:</string>
+    <string name="debate_fallacy">Sophisme: %1$s</string>
+    <string name="debate_empty_title">Pas de contenu supplémentaire</string>
+    <string name="debate_empty_message">Cette affirmation n\'a pas encore de contre-arguments, preuves ou questions associés</string>
 
     <!-- Import/Export -->
     <string name="import_data">Importer des données</string>
@@ -102,4 +122,32 @@
     <string name="filter">Filtrer</string>
     <string name="created_at">Créé le %1$s</string>
     <string name="updated_at">Mis à jour le %1$s</string>
+    <string name="more_tags">+%1$d</string>
+    <string name="questions_empty_title">Aucune question pour l\'instant</string>
+    <string name="questions_empty_description">Les questions stimulent la réflexion critique et approfondissent le débat. Créez votre première question pour challenger ce sujet.</string>
+    <string name="questions_empty_action">Ajouter une question</string>
+
+    <!-- Accessibility -->
+    <string name="accessibility_menu">Ouvrir le menu</string>
+    <string name="accessibility_back">Retour</string>
+    <string name="accessibility_close">Fermer</string>
+    <string name="accessibility_search">Rechercher</string>
+    <string name="accessibility_create_topic">Créer un nouveau sujet</string>
+    <string name="accessibility_create_claim">Créer une nouvelle affirmation</string>
+    <string name="accessibility_create_question">Créer une nouvelle question</string>
+    <string name="accessibility_edit_topic">Modifier le sujet</string>
+    <string name="accessibility_edit_claim">Modifier l\'affirmation</string>
+    <string name="accessibility_edit_question">Modifier la question</string>
+    <string name="accessibility_delete_topic">Supprimer le sujet</string>
+    <string name="accessibility_delete_claim">Supprimer l\'affirmation</string>
+    <string name="accessibility_delete_question">Supprimer la question</string>
+    <string name="accessibility_more_options">Plus d\'options</string>
+    <string name="accessibility_voice_input">Saisie vocale</string>
+    <string name="accessibility_export">Exporter</string>
+    <string name="accessibility_import">Importer</string>
+    <string name="accessibility_debate_mode">Mode débat</string>
+    <string name="accessibility_home">Accueil</string>
+    <string name="accessibility_statistics">Statistiques</string>
+    <string name="accessibility_settings">Paramètres</string>
+    <string name="accessibility_import_export">Import/Export</string>
 </resources>
