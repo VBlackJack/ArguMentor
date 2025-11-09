@@ -97,6 +97,11 @@ fun ArguMentorNavigation() {
             TopicDetailScreen(
                 topicId = topicId,
                 onNavigateBack = { navController.popBackStack() },
+                onNavigateToHome = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) { inclusive = false }
+                    }
+                },
                 onNavigateToEdit = { id ->
                     navController.navigate(Screen.TopicEdit.createRoute(id))
                 },
@@ -110,6 +115,18 @@ fun ArguMentorNavigation() {
                         "claim/create?topicId=$tId"
                     }
                     navController.navigate(route)
+                },
+                onNavigateToCreate = {
+                    navController.navigate(Screen.TopicCreate.route)
+                },
+                onNavigateToStatistics = {
+                    navController.navigate(Screen.Statistics.route)
+                },
+                onNavigateToImportExport = {
+                    navController.navigate(Screen.ImportExport.route)
+                },
+                onNavigateToSettings = {
+                    navController.navigate(Screen.Settings.route)
                 }
             )
         }

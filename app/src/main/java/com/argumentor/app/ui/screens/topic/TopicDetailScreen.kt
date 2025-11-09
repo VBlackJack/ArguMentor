@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.R
 import com.argumentor.app.data.model.Claim
+import com.argumentor.app.ui.components.AppNavigationDrawerContent
 import com.argumentor.app.ui.theme.StanceCon
 import com.argumentor.app.ui.theme.StanceNeutral
 import com.argumentor.app.ui.theme.StancePro
@@ -33,9 +34,14 @@ import com.argumentor.app.ui.theme.StancePro
 fun TopicDetailScreen(
     topicId: String,
     onNavigateBack: () -> Unit,
+    onNavigateToHome: () -> Unit,
     onNavigateToEdit: (String) -> Unit,
     onNavigateToDebate: (String) -> Unit,
     onNavigateToAddClaim: (String, String?) -> Unit,
+    onNavigateToCreate: () -> Unit,
+    onNavigateToStatistics: () -> Unit,
+    onNavigateToImportExport: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     viewModel: TopicDetailViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -49,6 +55,7 @@ fun TopicDetailScreen(
     var showSummary by remember { mutableStateOf(true) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     // SAF launcher for PDF export
     val exportPdfLauncher = rememberLauncherForActivityResult(
@@ -117,22 +124,37 @@ fun TopicDetailScreen(
         )
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = topic?.title ?: "Sujet",
-                        maxLines = 1,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Retour")
-                    }
-                },
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            AppNavigationDrawerContent(
+                currentRoute = "topic_detail",
+                drawerState = drawerState,
+                scope = coroutineScope,
+                onNavigateToHome = onNavigateToHome,
+                onNavigateToCreate = onNavigateToCreate,
+                onNavigateToStatistics = onNavigateToStatistics,
+                onNavigateToImportExport = onNavigateToImportExport,
+                onNavigateToSettings = onNavigateToSettings
+            )
+        }
+    ) {
+        Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = topic?.title ?: "Sujet",
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
+                            Icon(Icons.Default.Menu, contentDescription = "Menu")
+                        }
+                    },
                 actions = {
                     IconButton(onClick = { onNavigateToEdit(topicId) }) {
                         Icon(Icons.Default.Edit, contentDescription = "Modifier")
@@ -323,6 +345,7 @@ fun TopicDetailScreen(
                 1 -> QuestionsTab(questions = questions)
             }
         }
+    }
     }
 }
 
