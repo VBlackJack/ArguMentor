@@ -574,7 +574,7 @@ goto :cleanup
         echo ============================================================================
         echo.
         echo Java Version:
-        java -version 2>&1
+        java -version 2^>^&1
         echo.
         echo JAVA_HOME: %JAVA_HOME%
         echo ANDROID_HOME: %ANDROID_HOME%
@@ -595,7 +595,7 @@ goto :cleanup
         echo ============================================================================
         echo.
         if exist "%BUILD_LOG%" (
-            findstr /i /c:"error" /c:"failed" /c:"exception" /c:"cannot find" "%BUILD_LOG%" 2>nul
+            findstr /i /c:"error" /c:"failed" /c:"exception" /c:"cannot find" "%BUILD_LOG%" 2^>nul
         ) else (
             echo [No build log available]
         )
@@ -605,7 +605,7 @@ goto :cleanup
         echo ============================================================================
         echo.
         if exist "%BUILD_LOG%" (
-            findstr /i /c:"dependency" /c:"resolution" /c:"download" "%BUILD_LOG%" 2>nul
+            findstr /i /c:"dependency" /c:"resolution" /c:"download" "%BUILD_LOG%" 2^>nul
         ) else (
             echo [No build log available]
         )
@@ -615,7 +615,7 @@ goto :cleanup
         echo ============================================================================
         echo.
         if exist "%BUILD_LOG%" (
-            findstr /i /c:"compilation" /c:"\.kt:" /c:"\.java:" "%BUILD_LOG%" 2>nul
+            findstr /i /c:"compilation" /c:"\.kt:" /c:"\.java:" "%BUILD_LOG%" 2^>nul
         ) else (
             echo [No build log available]
         )
@@ -662,7 +662,7 @@ goto :cleanup
         echo **Key Error Lines^:**
         echo ```
         if exist "%BUILD_LOG%" (
-            findstr /i /c:"error" /c:"failed" /c:"exception" "%BUILD_LOG%" 2>nul
+            findstr /i /c:"error" /c:"failed" /c:"exception" "%BUILD_LOG%" 2^>nul
         ) else (
             echo [No build log available]
         )

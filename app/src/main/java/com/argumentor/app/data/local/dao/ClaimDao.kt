@@ -49,7 +49,6 @@ interface ClaimDao {
     @Query("""
         SELECT * FROM claims
         WHERE text LIKE '%' || :query || '%'
-        OR title LIKE '%' || :query || '%'
         ORDER BY updatedAt DESC
     """)
     fun searchClaimsLike(query: String): Flow<List<Claim>>

@@ -49,7 +49,6 @@ interface RebuttalDao {
     @Query("""
         SELECT * FROM rebuttals
         WHERE text LIKE '%' || :query || '%'
-        OR title LIKE '%' || :query || '%'
         ORDER BY createdAt DESC
     """)
     fun searchRebuttalsLike(query: String): Flow<List<Rebuttal>>
