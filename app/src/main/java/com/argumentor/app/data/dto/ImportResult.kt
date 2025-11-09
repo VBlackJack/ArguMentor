@@ -19,9 +19,11 @@ data class ImportResult(
  * Item that needs manual review (near-duplicate or conflict).
  */
 data class ReviewItem(
-    val type: String, // "claim", "rebuttal", "source", "topic"
-    val newItem: Any,
-    val existingItem: Any,
-    val reason: String, // "near_duplicate", "conflict"
-    val similarityScore: Double? = null
+    val type: String, // "Claim", "Rebuttal", "Source", "Topic"
+    val incomingId: String,
+    val existingId: String,
+    val incomingText: String,
+    val existingText: String,
+    val similarityScore: Double,
+    val action: String // "review", "merge", "skip"
 )

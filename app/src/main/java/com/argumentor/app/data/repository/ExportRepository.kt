@@ -24,11 +24,10 @@ class ExportRepository @Inject constructor(
     private val rebuttalDao: RebuttalDao,
     private val evidenceDao: EvidenceDao,
     private val questionDao: QuestionDao,
-    private val sourceDao: SourceDao
+    private val sourceDao: SourceDao,
+    private val pdfExporter: PdfExporter,
+    private val markdownExporter: MarkdownExporter
 ) {
-
-    private val pdfExporter = PdfExporter(context)
-    private val markdownExporter = MarkdownExporter(context)
 
     /**
      * Export a single topic to PDF

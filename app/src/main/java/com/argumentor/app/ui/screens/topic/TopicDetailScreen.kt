@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -38,6 +39,7 @@ fun TopicDetailScreen(
 
     var showExportMenu by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     // SAF launcher for PDF export
     val exportPdfLauncher = rememberLauncherForActivityResult(
@@ -46,7 +48,7 @@ fun TopicDetailScreen(
         uri?.let {
             context.contentResolver.openOutputStream(it)?.use { os ->
                 viewModel.exportTopicToPdf(topicId, os) { success, error ->
-                    kotlinx.coroutines.MainScope().launch {
+                    coroutineScope.launch {
                         snackbarHostState.showSnackbar(
                             message = if (success) "PDF exporté avec succès" else "Erreur: $error"
                         )
@@ -63,7 +65,7 @@ fun TopicDetailScreen(
         uri?.let {
             context.contentResolver.openOutputStream(it)?.use { os ->
                 viewModel.exportTopicToMarkdown(topicId, os) { success, error ->
-                    kotlinx.coroutines.MainScope().launch {
+                    coroutineScope.launch {
                         snackbarHostState.showSnackbar(
                             message = if (success) "Markdown exporté avec succès" else "Erreur: $error"
                         )

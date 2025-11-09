@@ -14,9 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.argumentor.app.data.model.Posture
-import com.argumentor.app.data.model.Stance
-import com.argumentor.app.data.model.Strength
+import com.argumentor.app.data.model.Topic
+import com.argumentor.app.data.model.Claim
 import com.argumentor.app.data.repository.Statistics
 import com.argumentor.app.data.repository.TopicStats
 
@@ -187,7 +186,7 @@ private fun StatItem(
 }
 
 @Composable
-private fun StanceDistributionCard(claimsByStance: Map<Stance, Int>) {
+private fun StanceDistributionCard(claimsByStance: Map<Claim.Stance, Int>) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -200,7 +199,7 @@ private fun StanceDistributionCard(claimsByStance: Map<Stance, Int>) {
 
             val total = claimsByStance.values.sum()
             if (total > 0) {
-                Stance.values().forEach { stance ->
+                Claim.Stance.values().forEach { stance ->
                     val count = claimsByStance[stance] ?: 0
                     val percentage = (count.toFloat() / total * 100).toInt()
 
@@ -211,9 +210,9 @@ private fun StanceDistributionCard(claimsByStance: Map<Stance, Int>) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         val (icon, color) = when (stance) {
-                            Stance.PRO -> Icons.Default.ThumbUp to MaterialTheme.colorScheme.primary
-                            Stance.CON -> Icons.Default.ThumbDown to MaterialTheme.colorScheme.error
-                            Stance.NEUTRAL -> Icons.Default.Balance to MaterialTheme.colorScheme.tertiary
+                            Claim.Stance.PRO -> Icons.Default.ThumbUp to MaterialTheme.colorScheme.primary
+                            Claim.Stance.CON -> Icons.Default.ThumbDown to MaterialTheme.colorScheme.error
+                            Claim.Stance.NEUTRAL -> Icons.Default.Balance to MaterialTheme.colorScheme.tertiary
                         }
 
                         Icon(
@@ -258,7 +257,7 @@ private fun StanceDistributionCard(claimsByStance: Map<Stance, Int>) {
 }
 
 @Composable
-private fun StrengthDistributionCard(claimsByStrength: Map<Strength, Int>) {
+private fun StrengthDistributionCard(claimsByStrength: Map<Claim.Strength, Int>) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -271,7 +270,7 @@ private fun StrengthDistributionCard(claimsByStrength: Map<Strength, Int>) {
 
             val total = claimsByStrength.values.sum()
             if (total > 0) {
-                Strength.values().forEach { strength ->
+                Claim.Strength.values().forEach { strength ->
                     val count = claimsByStrength[strength] ?: 0
                     val percentage = (count.toFloat() / total * 100).toInt()
 
@@ -313,7 +312,7 @@ private fun StrengthDistributionCard(claimsByStrength: Map<Strength, Int>) {
 }
 
 @Composable
-private fun PostureDistributionCard(topicsByPosture: Map<Posture, Int>) {
+private fun PostureDistributionCard(topicsByPosture: Map<Topic.Posture, Int>) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -326,7 +325,7 @@ private fun PostureDistributionCard(topicsByPosture: Map<Posture, Int>) {
 
             val total = topicsByPosture.values.sum()
             if (total > 0) {
-                Posture.values().forEach { posture ->
+                Topic.Posture.values().forEach { posture ->
                     val count = topicsByPosture[posture] ?: 0
                     val percentage = (count.toFloat() / total * 100).toInt()
 

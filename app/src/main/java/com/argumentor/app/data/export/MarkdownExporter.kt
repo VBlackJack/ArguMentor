@@ -1,6 +1,8 @@
 package com.argumentor.app.data.export
 
 import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.data.model.Evidence
 import com.argumentor.app.data.model.Question
@@ -14,7 +16,9 @@ import java.util.*
 /**
  * Exports topics and their arguments to Markdown format.
  */
-class MarkdownExporter(private val context: Context) {
+class MarkdownExporter @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
 
     /**
      * Export a single topic with all its data to Markdown via OutputStream (for SAF).

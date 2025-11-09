@@ -5,8 +5,9 @@ import com.argumentor.app.data.model.Claim
 import com.argumentor.app.data.model.Topic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -59,14 +60,12 @@ class StatisticsRepository @Inject constructor(
      * Get comprehensive statistics as a Flow
      */
     fun getStatistics(): Flow<Statistics> {
-        return combine(
-            topicDao.getAllTopics(),
-            claimDao.getAllClaims(),
-            rebuttalDao.getAllRebuttals(),
-            evidenceDao.getAllEvidence(),
-            questionDao.getAllQuestions(),
-            sourceDao.getAllSources()
-        ) { topics, claims, rebuttals, evidence, questions, sources ->
+        return topicDao.getAllTopics().flatMapLatest { topics ->
+            claimDao.getAllClaims().flatMapLatest { claims ->
+                rebuttalDao.getAllRebuttals().flatMapLatest { rebuttals ->
+                    evidenceDao.getAllEvidence().flatMapLatest { evidence ->
+                        questionDao.getAllQuestions().flatMapLatest { questions ->
+                            sourceDao.getAllSources().map { sources ->
 
             // Claims by stance
             val claimsByStance = claims.groupingBy { it.stance }.eachCount()
@@ -84,10 +83,9 @@ class StatisticsRepository @Inject constructor(
                     rebuttals.filter { it.claimId == claim.id }
                 }
                 val topicEvidence = evidence.filter { ev ->
-                    topicClaims.any { it.id == ev.claimId } ||
-                            topicRebuttals.any { it.id == ev.rebuttalId }
+                    topicClaims.any { it.id == ev.claimId }
                 }
-                val topicQuestions = questions.filter { it.topicId == topic.id }
+                val topicQuestions = questions.filter { it.targetId == topic.id }
 
                 TopicStats(
                     topicId = topic.id,
@@ -127,6 +125,11 @@ class StatisticsRepository @Inject constructor(
                 averageRebuttalsPerClaim = avgRebuttalsPerClaim,
                 averageStrength = avgStrength
             )
+                            }
+                        }
+                    }
+                }
+            }
         }.flowOn(Dispatchers.IO)
     }
 
@@ -145,9 +148,8 @@ class StatisticsRepository @Inject constructor(
             }
             val evidence = claims.flatMap { claim ->
                 evidenceDao.getEvidenceForClaim(claim.id)
-            } + rebuttals.flatMap { rebuttal ->
-                evidenceDao.getEvidenceForRebuttal(rebuttal.id)
             }
+            // Note: Evidence is linked to claims, not rebuttals in current schema
             val questions = questionDao.getQuestionsForTopic(topicId)
 
             val stats = TopicStats(
@@ -182,11 +184,11 @@ class StatisticsRepository @Inject constructor(
     /**
      * Convert strength to numeric value for average calculation
      */
-    private fun strengthToNumeric(strength: Strength): Double {
+    private fun strengthToNumeric(strength: Claim.Strength): Double {
         return when (strength) {
-            Strength.LOW -> 1.0
-            Strength.MEDIUM -> 2.0
-            Strength.HIGH -> 3.0
+            Claim.Strength.LOW -> 1.0
+            Claim.Strength.MEDIUM -> 2.0
+            Claim.Strength.HIGH -> 3.0
         }
     }
 }

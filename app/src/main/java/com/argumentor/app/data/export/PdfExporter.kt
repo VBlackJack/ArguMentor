@@ -2,6 +2,8 @@ package com.argumentor.app.data.export
 
 import android.content.Context
 import android.graphics.Paint
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 import android.graphics.pdf.PdfDocument
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.data.model.Rebuttal
@@ -13,7 +15,9 @@ import java.util.*
 /**
  * Exports topics and their arguments to PDF format.
  */
-class PdfExporter(private val context: Context) {
+class PdfExporter @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
 
     companion object {
         private const val PAGE_WIDTH = 595 // A4 width in points
