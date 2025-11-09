@@ -594,41 +594,41 @@ goto :cleanup
 
     (
         echo I'm building an Android app called ArguMentor using Kotlin, Jetpack Compose, Room, and Hilt.
-        echo The build failed with the following error:
+        echo The build failed with the following error^:
         echo.
-        echo **Error Message:**
+        echo **Error Message^:**
         echo !ERROR_MSG!
         echo.
-        echo **Build Command:**
+        echo **Build Command^:**
         echo !BUILD_COMMAND!
         echo.
-        echo **Environment:**
-        echo - OS: Windows
-        echo - Build Tool: Gradle
-        echo - Language: Kotlin
-        echo - UI Framework: Jetpack Compose
-        echo - Database: Room
-        echo - DI: Hilt
-        echo - MinSdk: 24, TargetSdk: 34
+        echo **Environment^:**
+        echo - OS^: Windows
+        echo - Build Tool^: Gradle
+        echo - Language^: Kotlin
+        echo - UI Framework^: Jetpack Compose
+        echo - Database^: Room
+        echo - DI^: Hilt
+        echo - MinSdk^: 24, TargetSdk^: 34
         echo.
-        echo **Build Log Excerpt (Last 50 lines):**
+        echo **Build Log Excerpt (Last 50 lines)^:**
         echo ```
         powershell -Command "Get-Content '%BUILD_LOG%' -Tail 50"
         echo ```
         echo.
-        echo **Key Error Lines:**
+        echo **Key Error Lines^:**
         echo ```
         findstr /i /c:"error" /c:"failed" /c:"exception" "%BUILD_LOG%" 2>nul
         echo ```
         echo.
-        echo **Questions:**
+        echo **Questions^:**
         echo 1. What is causing this build error?
         echo 2. What are the exact steps to fix it?
         echo 3. Are there any dependency conflicts or version mismatches?
         echo 4. Do I need to update any Gradle configuration files?
         echo 5. Are there any missing permissions or SDK components?
         echo.
-        echo Please provide:
+        echo Please provide^:
         echo - Root cause analysis
         echo - Step-by-step fix instructions
         echo - Any code changes needed
