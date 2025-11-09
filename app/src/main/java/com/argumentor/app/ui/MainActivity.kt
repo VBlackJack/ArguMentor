@@ -26,9 +26,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Enable edge-to-edge and immersive mode
-        enableImmersiveMode()
-
         setContent {
             val isDarkTheme by viewModel.isDarkTheme.collectAsState()
 
@@ -41,6 +38,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        // Enable edge-to-edge and immersive mode after content is set
+        enableImmersiveMode()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
