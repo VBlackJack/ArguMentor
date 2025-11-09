@@ -24,11 +24,19 @@ set "PROJECT_NAME=ArguMentor"
 set "BUILD_TYPE=%1"
 set "AUTO_INSTALL=0"
 set "LOG_DIR=build_logs"
-set "ERROR_REPORT=%LOG_DIR%\error_report_%date:~-4,4%%date:~-10,2%%date:~-7,2%_%time:~0,2%%time:~3,2%%time:~6,2%.txt"
-set "ERROR_REPORT=%ERROR_REPORT: =0%"
+
+REM Generate timestamp (locale-independent)
+for /f "tokens=2 delims==" %%I in ('wmic os get localdatetime /value') do set datetime=%%I
+set "TIMESTAMP=%datetime:~0,8%_%datetime:~8,6%"
+set "ERROR_REPORT=%LOG_DIR%\error_report_%TIMESTAMP%.txt"
+
 set "AI_PROMPT=%LOG_DIR%\ai_prompt.txt"
 set "BUILD_LOG=%LOG_DIR%\build.log"
 set "TOOLS_DIR=build_tools"
+
+REM Initialize error tracking variables
+set "ERROR_MSG=Unknown error"
+set "BUILD_COMMAND=N/A"
 
 REM Check for --auto-install flag
 if /i "%2"=="--auto-install" set "AUTO_INSTALL=1"
@@ -139,6 +147,13 @@ goto :cleanup
     )
     set JAVA_VER=%JAVA_VER:"=%
     for /f "tokens=1 delims=." %%a in ("%JAVA_VER%") do set JAVA_MAJOR=%%a
+
+    REM Protect against empty JAVA_MAJOR
+    if not defined JAVA_MAJOR (
+        echo     Unable to detect Java version
+        exit /b 1
+    )
+
     if %JAVA_MAJOR% LSS 17 (
         echo     Found Java %JAVA_MAJOR%, but need Java 17+
         exit /b 1
@@ -193,7 +208,7 @@ goto :cleanup
     echo   Downloading Temurin JDK 17...
 
     REM Download using PowerShell
-    powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri 'https://api.adoptium.net/v3/binary/latest/17/ga/windows/x64/jdk/hotspot/normal/eclipse' -OutFile '%TOOLS_DIR%\jdk-17.msi'}"
+    powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri 'https://api.adoptium.net/v3/binary/latest/17/ga/windows/x64/jdk/hotspot/normal/eclipse' -OutFile \"%TOOLS_DIR%\jdk-17.msi\"}"
 
     if not exist "%TOOLS_DIR%\jdk-17.msi" (
         echo   ERROR: Download failed
@@ -202,10 +217,10 @@ goto :cleanup
     )
 
     echo   Installing JDK 17...
-    msiexec /i "%TOOLS_DIR%\jdk-17.msi" /qn
+    echo   This may take a few minutes...
+    start /wait msiexec /i "%TOOLS_DIR%\jdk-17.msi" /qn
 
-    echo   Waiting for installation to complete...
-    timeout /t 30 /nobreak >nul
+    echo   Installation process completed, verifying...
 
     REM Try to find installed Java
     call :set_java_home
@@ -306,7 +321,7 @@ goto :cleanup
     set "CMDLINE_TOOLS_URL=https://dl.google.com/android/repository/commandlinetools-win-9477386_latest.zip"
 
     REM Download
-    powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%CMDLINE_TOOLS_URL%' -OutFile '%TOOLS_DIR%\cmdline-tools.zip'}"
+    powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%CMDLINE_TOOLS_URL%' -OutFile \"%TOOLS_DIR%\cmdline-tools.zip\"}"
 
     if not exist "%TOOLS_DIR%\cmdline-tools.zip" (
         echo   ERROR: Download failed
@@ -314,13 +329,18 @@ goto :cleanup
     )
 
     echo   Extracting...
-    powershell -Command "Expand-Archive -Path '%TOOLS_DIR%\cmdline-tools.zip' -DestinationPath '%TOOLS_DIR%\cmdline-tools' -Force"
+    powershell -Command "Expand-Archive -Path \"%TOOLS_DIR%\cmdline-tools.zip\" -DestinationPath \"%TOOLS_DIR%\cmdline-tools\" -Force"
 
     echo   Setting up Android SDK...
     if not exist "%SDK_DIR%" mkdir "%SDK_DIR%"
     if not exist "%SDK_DIR%\cmdline-tools\latest" mkdir "%SDK_DIR%\cmdline-tools\latest"
 
+    echo   Copying command line tools...
     xcopy /E /I /Y "%TOOLS_DIR%\cmdline-tools\cmdline-tools\*" "%SDK_DIR%\cmdline-tools\latest\" >nul
+    if errorlevel 1 (
+        echo   ERROR: Failed to copy command line tools
+        exit /b 1
+    )
 
     REM Set environment variable
     set "ANDROID_HOME=%SDK_DIR%"
@@ -347,12 +367,15 @@ goto :cleanup
         echo   2. Install via Scoop: scoop install gradle
         echo   3. Download from: https://gradle.org/releases/
         echo.
+        set "ERROR_MSG=Gradle not found in PATH - required to generate wrapper"
+        set "BUILD_COMMAND=gradle wrapper"
         if %AUTO_INSTALL%==1 (
             echo   Attempting Chocolatey installation...
             choco install gradle -y >nul 2>&1
             if errorlevel 1 (
                 echo   ERROR: Chocolatey installation failed
                 echo   Please install Gradle manually
+                set "ERROR_MSG=Chocolatey Gradle installation failed"
                 exit /b 1
             )
         ) else (
@@ -561,25 +584,41 @@ goto :cleanup
         echo BUILD LOG EXCERPT (Last 100 lines)
         echo ============================================================================
         echo.
-        powershell -Command "Get-Content '%BUILD_LOG%' -Tail 100"
+        if exist "%BUILD_LOG%" (
+            powershell -Command "Get-Content \"%BUILD_LOG%\" -Tail 100"
+        ) else (
+            echo [Build log not available - error occurred before build execution]
+        )
         echo.
         echo ============================================================================
         echo COMMON GRADLE ERRORS
         echo ============================================================================
         echo.
-        findstr /i /c:"error" /c:"failed" /c:"exception" /c:"cannot find" "%BUILD_LOG%" 2>nul
+        if exist "%BUILD_LOG%" (
+            findstr /i /c:"error" /c:"failed" /c:"exception" /c:"cannot find" "%BUILD_LOG%" 2>nul
+        ) else (
+            echo [No build log available]
+        )
         echo.
         echo ============================================================================
         echo DEPENDENCY ISSUES
         echo ============================================================================
         echo.
-        findstr /i /c:"dependency" /c:"resolution" /c:"download" "%BUILD_LOG%" 2>nul
+        if exist "%BUILD_LOG%" (
+            findstr /i /c:"dependency" /c:"resolution" /c:"download" "%BUILD_LOG%" 2>nul
+        ) else (
+            echo [No build log available]
+        )
         echo.
         echo ============================================================================
         echo COMPILATION ERRORS
         echo ============================================================================
         echo.
-        findstr /i /c:"compilation" /c:"\.kt:" /c:"\.java:" "%BUILD_LOG%" 2>nul
+        if exist "%BUILD_LOG%" (
+            findstr /i /c:"compilation" /c:"\.kt:" /c:"\.java:" "%BUILD_LOG%" 2>nul
+        ) else (
+            echo [No build log available]
+        )
         echo.
         echo ============================================================================
         echo END OF REPORT
@@ -594,41 +633,49 @@ goto :cleanup
 
     (
         echo I'm building an Android app called ArguMentor using Kotlin, Jetpack Compose, Room, and Hilt.
-        echo The build failed with the following error:
+        echo The build failed with the following error^:
         echo.
-        echo **Error Message:**
+        echo **Error Message^:**
         echo !ERROR_MSG!
         echo.
-        echo **Build Command:**
+        echo **Build Command^:**
         echo !BUILD_COMMAND!
         echo.
-        echo **Environment:**
-        echo - OS: Windows
-        echo - Build Tool: Gradle
-        echo - Language: Kotlin
-        echo - UI Framework: Jetpack Compose
-        echo - Database: Room
-        echo - DI: Hilt
-        echo - MinSdk: 24, TargetSdk: 34
+        echo **Environment^:**
+        echo - OS^: Windows
+        echo - Build Tool^: Gradle
+        echo - Language^: Kotlin
+        echo - UI Framework^: Jetpack Compose
+        echo - Database^: Room
+        echo - DI^: Hilt
+        echo - MinSdk^: 24, TargetSdk^: 34
         echo.
-        echo **Build Log Excerpt (Last 50 lines):**
+        echo **Build Log Excerpt (Last 50 lines)^:**
         echo ```
-        powershell -Command "Get-Content '%BUILD_LOG%' -Tail 50"
+        if exist "%BUILD_LOG%" (
+            powershell -Command "Get-Content \"%BUILD_LOG%\" -Tail 50"
+        ) else (
+            echo [Build log not available - error occurred before build execution]
+        )
         echo ```
         echo.
-        echo **Key Error Lines:**
+        echo **Key Error Lines^:**
         echo ```
-        findstr /i /c:"error" /c:"failed" /c:"exception" "%BUILD_LOG%" 2>nul
+        if exist "%BUILD_LOG%" (
+            findstr /i /c:"error" /c:"failed" /c:"exception" "%BUILD_LOG%" 2>nul
+        ) else (
+            echo [No build log available]
+        )
         echo ```
         echo.
-        echo **Questions:**
+        echo **Questions^:**
         echo 1. What is causing this build error?
         echo 2. What are the exact steps to fix it?
         echo 3. Are there any dependency conflicts or version mismatches?
         echo 4. Do I need to update any Gradle configuration files?
         echo 5. Are there any missing permissions or SDK components?
         echo.
-        echo Please provide:
+        echo Please provide^:
         echo - Root cause analysis
         echo - Step-by-step fix instructions
         echo - Any code changes needed
