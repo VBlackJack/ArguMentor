@@ -38,7 +38,8 @@ fun TopicDetailScreen(
     val selectedTab by viewModel.selectedTab.collectAsState()
 
     var showExportMenu by remember { mutableStateOf(false) }
-    var showSummary by remember { mutableStateOf(false) }
+    var showDeleteTopicDialog by remember { mutableStateOf(false) }
+    var showSummary by remember { mutableStateOf(true) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
@@ -78,6 +79,35 @@ fun TopicDetailScreen(
 
     LaunchedEffect(topicId) {
         viewModel.loadTopic(topicId)
+    }
+
+    // Delete topic confirmation dialog
+    if (showDeleteTopicDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteTopicDialog = false },
+            title = { Text("Supprimer le sujet ?") },
+            text = { Text("Cette action est irréversible. Toutes les affirmations, réfutations, preuves et questions associées seront également supprimées.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteTopicDialog = false
+                        viewModel.deleteTopic {
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar("Sujet supprimé")
+                            }
+                            onNavigateBack()
+                        }
+                    }
+                ) {
+                    Text("Supprimer", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteTopicDialog = false }) {
+                    Text("Annuler")
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -126,6 +156,17 @@ fun TopicDetailScreen(
                                 val timestamp = System.currentTimeMillis()
                                 val title = topic?.title?.take(20)?.replace(" ", "_") ?: "topic"
                                 exportMdLauncher.launch("ArguMentor_${title}_$timestamp.md")
+                            }
+                        )
+                        Divider()
+                        DropdownMenuItem(
+                            text = { Text("Supprimer le sujet", color = MaterialTheme.colorScheme.error) },
+                            leadingIcon = {
+                                Icon(Icons.Default.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+                            },
+                            onClick = {
+                                showExportMenu = false
+                                showDeleteTopicDialog = true
                             }
                         )
                     }
