@@ -103,8 +103,13 @@ fun ArguMentorNavigation() {
                 onNavigateToDebate = { id ->
                     navController.navigate(Screen.DebateMode.createRoute(id))
                 },
-                onNavigateToAddClaim = { id ->
-                    navController.navigate("claim/create?topicId=$id")
+                onNavigateToAddClaim = { tId, cId ->
+                    val route = if (cId != null) {
+                        "claim/create?topicId=$tId&claimId=$cId"
+                    } else {
+                        "claim/create?topicId=$tId"
+                    }
+                    navController.navigate(route)
                 }
             )
         }

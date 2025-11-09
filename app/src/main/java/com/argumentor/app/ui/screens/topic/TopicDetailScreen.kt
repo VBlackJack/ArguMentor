@@ -35,7 +35,7 @@ fun TopicDetailScreen(
     onNavigateBack: () -> Unit,
     onNavigateToEdit: (String) -> Unit,
     onNavigateToDebate: (String) -> Unit,
-    onNavigateToAddClaim: (String) -> Unit,
+    onNavigateToAddClaim: (String, String?) -> Unit,
     viewModel: TopicDetailViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -121,7 +121,13 @@ fun TopicDetailScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(topic?.title ?: "Sujet") },
+                title = {
+                    Text(
+                        text = topic?.title ?: "Sujet",
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Retour")
@@ -182,7 +188,7 @@ fun TopicDetailScreen(
         },
         floatingActionButton = {
             if (selectedTab == 0) {
-                FloatingActionButton(onClick = { onNavigateToAddClaim(topicId) }) {
+                FloatingActionButton(onClick = { onNavigateToAddClaim(topicId, null) }) {
                     Icon(Icons.Default.Add, contentDescription = "Ajouter une affirmation")
                 }
             }
@@ -304,9 +310,7 @@ fun TopicDetailScreen(
                 0 -> ClaimsTab(
                     claims = claims,
                     onEditClaim = { claimId ->
-                        // Navigate to edit claim screen
-                        // For now we'll use the same screen as create
-                        onNavigateToAddClaim("${topicId}?claimId=${claimId}")
+                        onNavigateToAddClaim(topicId, claimId)
                     },
                     onDeleteClaim = { claim ->
                         viewModel.deleteClaim(claim) {
