@@ -134,7 +134,7 @@ goto :cleanup
     if errorlevel 1 exit /b 1
 
     REM Check Java version (need 17+)
-    for /f "tokens=3" %%i in ('java -version 2>&1 ^| findstr /i "version"') do (
+    for /f "tokens=3" %%i in ('java -version 2^>^&1 ^| findstr /i "version"') do (
         set JAVA_VER=%%i
     )
     set JAVA_VER=%JAVA_VER:"=%
