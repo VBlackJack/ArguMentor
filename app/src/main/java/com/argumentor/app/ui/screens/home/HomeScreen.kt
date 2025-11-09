@@ -1,5 +1,6 @@
 package com.argumentor.app.ui.screens.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,11 +17,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.R
 import com.argumentor.app.data.model.Topic
 import com.argumentor.app.ui.components.EngagingEmptyState
+import com.argumentor.app.ui.components.HighlightedText
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,8 +45,10 @@ fun HomeScreen(
     val searchQuery by viewModel.searchQuery.collectAsState()
     val selectedTag by viewModel.selectedTag.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -114,9 +124,15 @@ fun HomeScreen(
         }
     ) {
         Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
                 TopAppBar(
-                    title = { Text(stringResource(R.string.home_title)) },
+                    title = {
+                        Text(
+                            stringResource(R.string.home_title),
+                            modifier = Modifier.semantics { heading() }
+                        )
+                    },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
@@ -136,11 +152,16 @@ fun HomeScreen(
                 }
             }
         ) { paddingValues ->
-            Column(
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                onRefresh = { viewModel.refresh() },
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
                 // Search bar with loading indicator
                 Column {
                     OutlinedTextField(
@@ -226,7 +247,7 @@ fun HomeScreen(
                     }
                 }
 
-                // Topics list
+                // Topics list with live region for accessibility
                 if (topics.isEmpty()) {
                     EngagingEmptyState(
                         icon = Icons.Default.Topic,
@@ -237,7 +258,12 @@ fun HomeScreen(
                     )
                 } else {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .semantics {
+                                liveRegion = LiveRegionMode.Polite
+                                contentDescription = "${topics.size} sujets trouvés"
+                            },
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
@@ -245,15 +271,31 @@ fun HomeScreen(
                             items = topics,
                             key = { it.id }
                         ) { topic ->
-                            TopicCard(
+                            SwipeToDismissTopicCard(
                                 topic = topic,
                                 selectedTag = selectedTag,
+                                searchQuery = searchQuery,
                                 onClick = { onNavigateToTopic(topic.id) },
                                 onTagClick = viewModel::onTagSelected,
+                                onDelete = { deletedTopic ->
+                                    viewModel.deleteTopic(deletedTopic) {
+                                        scope.launch {
+                                            val result = snackbarHostState.showSnackbar(
+                                                message = "Sujet supprimé",
+                                                actionLabel = "Annuler",
+                                                duration = SnackbarDuration.Short
+                                            )
+                                            if (result == SnackbarResult.ActionPerformed) {
+                                                viewModel.restoreTopic(deletedTopic)
+                                            }
+                                        }
+                                    }
+                                },
                                 modifier = Modifier.animateItemPlacement()
                             )
                         }
                     }
+                }
                 }
             }
         }
@@ -265,6 +307,7 @@ fun HomeScreen(
 private fun TopicCard(
     topic: Topic,
     selectedTag: String?,
+    searchQuery: String = "",
     onClick: () -> Unit,
     onTagClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -277,6 +320,9 @@ private fun TopicCard(
             .clickable {
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 onClick()
+            }
+            .semantics(mergeDescendants = true) {
+                contentDescription = "Sujet: ${topic.title}. ${topic.summary}. ${topic.tags.size} tags"
             },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -287,20 +333,24 @@ private fun TopicCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // Title with stronger visual weight
-            Text(
+            // Title with stronger visual weight and search highlights
+            HighlightedText(
                 text = topic.title,
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                query = searchQuery,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Summary with reduced visual weight
-            Text(
+            // Summary with reduced visual weight and search highlights
+            HighlightedText(
                 text = topic.summary,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                query = searchQuery,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                ),
                 maxLines = 2
             )
 
@@ -337,5 +387,59 @@ private fun TopicCard(
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SwipeToDismissTopicCard(
+    topic: Topic,
+    selectedTag: String?,
+    searchQuery: String,
+    onClick: () -> Unit,
+    onTagClick: (String) -> Unit,
+    onDelete: (Topic) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { dismissValue ->
+            if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
+                onDelete(topic)
+                true
+            } else {
+                false
+            }
+        }
+    )
+
+    SwipeToDismissBox(
+        state = dismissState,
+        modifier = modifier,
+        backgroundContent = {
+            // Background shown when swiping
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.errorContainer)
+                    .padding(horizontal = 20.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = "Supprimer",
+                    tint = MaterialTheme.colorScheme.onErrorContainer
+                )
+            }
+        },
+        enableDismissFromStartToEnd = false,
+        enableDismissFromEndToStart = true
+    ) {
+        TopicCard(
+            topic = topic,
+            selectedTag = selectedTag,
+            searchQuery = searchQuery,
+            onClick = onClick,
+            onTagClick = onTagClick
+        )
     }
 }

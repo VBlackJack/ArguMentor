@@ -1,0 +1,166 @@
+package com.argumentor.app.ui.components
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.argumentor.app.R
+import com.argumentor.app.ui.common.WindowSizeClass
+import com.argumentor.app.ui.common.rememberWindowSizeClass
+import kotlinx.coroutines.launch
+
+/**
+ * Adaptive navigation scaffold that automatically switches between:
+ * - ModalNavigationDrawer for compact screens (phones)
+ * - PermanentNavigationDrawer for medium/expanded screens (tablets/desktops)
+ *
+ * Follows Material 3 adaptive layout guidelines
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AdaptiveNavigationScaffold(
+    currentRoute: String,
+    onNavigateToHome: () -> Unit,
+    onNavigateToCreate: () -> Unit,
+    onNavigateToStatistics: () -> Unit,
+    onNavigateToImportExport: () -> Unit,
+    onNavigateToSettings: () -> Unit,
+    content: @Composable (
+        onMenuClick: () -> Unit,
+        paddingValues: PaddingValues
+    ) -> Unit
+) {
+    val windowSizeClass = rememberWindowSizeClass()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    val navigationContent = @Composable {
+        NavigationDrawerContent(
+            currentRoute = currentRoute,
+            onNavigateToHome = {
+                scope.launch { drawerState.close() }
+                onNavigateToHome()
+            },
+            onNavigateToCreate = {
+                scope.launch { drawerState.close() }
+                onNavigateToCreate()
+            },
+            onNavigateToStatistics = {
+                scope.launch { drawerState.close() }
+                onNavigateToStatistics()
+            },
+            onNavigateToImportExport = {
+                scope.launch { drawerState.close() }
+                onNavigateToImportExport()
+            },
+            onNavigateToSettings = {
+                scope.launch { drawerState.close() }
+                onNavigateToSettings()
+            }
+        )
+    }
+
+    when {
+        // Compact: Use modal drawer (phones)
+        windowSizeClass.isCompact -> {
+            ModalNavigationDrawer(
+                drawerState = drawerState,
+                drawerContent = {
+                    ModalDrawerSheet {
+                        navigationContent()
+                    }
+                }
+            ) {
+                content(
+                    onMenuClick = { scope.launch { drawerState.open() } },
+                    paddingValues = PaddingValues(0.dp)
+                )
+            }
+        }
+        // Medium/Expanded: Use permanent drawer (tablets/desktops)
+        else -> {
+            PermanentNavigationDrawer(
+                drawerContent = {
+                    PermanentDrawerSheet(
+                        modifier = Modifier.width(280.dp)
+                    ) {
+                        navigationContent()
+                    }
+                }
+            ) {
+                content(
+                    onMenuClick = { /* No-op for permanent drawer */ },
+                    paddingValues = PaddingValues(0.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun NavigationDrawerContent(
+    currentRoute: String,
+    onNavigateToHome: () -> Unit,
+    onNavigateToCreate: () -> Unit,
+    onNavigateToStatistics: () -> Unit,
+    onNavigateToImportExport: () -> Unit,
+    onNavigateToSettings: () -> Unit
+) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(
+            "ArguMentor",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        Divider()
+        Spacer(modifier = Modifier.height(16.dp))
+
+        NavigationDrawerItem(
+            icon = { Icon(Icons.Default.Home, contentDescription = null) },
+            label = { Text(stringResource(R.string.nav_home)) },
+            selected = currentRoute == "home",
+            onClick = onNavigateToHome
+        )
+
+        NavigationDrawerItem(
+            icon = { Icon(Icons.Default.Add, contentDescription = null) },
+            label = { Text(stringResource(R.string.nav_new_topic)) },
+            selected = false,
+            onClick = onNavigateToCreate
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Divider()
+        Spacer(modifier = Modifier.height(8.dp))
+
+        NavigationDrawerItem(
+            icon = { Icon(Icons.Default.BarChart, contentDescription = null) },
+            label = { Text(stringResource(R.string.nav_statistics)) },
+            selected = currentRoute == "statistics",
+            onClick = onNavigateToStatistics
+        )
+
+        NavigationDrawerItem(
+            icon = { Icon(Icons.Default.FileUpload, contentDescription = null) },
+            label = { Text(stringResource(R.string.nav_import_export)) },
+            selected = currentRoute == "import_export",
+            onClick = onNavigateToImportExport
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Divider()
+        Spacer(modifier = Modifier.height(8.dp))
+
+        NavigationDrawerItem(
+            icon = { Icon(Icons.Default.Settings, contentDescription = null) },
+            label = { Text(stringResource(R.string.nav_settings)) },
+            selected = currentRoute == "settings",
+            onClick = onNavigateToSettings
+        )
+    }
+}

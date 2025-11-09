@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ArguMentor</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_topics">Topics</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_new_topic">New Topic</string>
+    <string name="nav_statistics">Statistics</string>
+    <string name="nav_import_export">Import/Export</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">ArguMentor</string>
+    <string name="home_search_hint">Search for arguments, topics…</string>
+    <string name="home_recent_topics">Recent Topics</string>
+    <string name="home_empty_state">No topics. Create one to get started!</string>
+    <string name="home_empty_title">No topics yet</string>
+    <string name="home_empty_description">Start structuring your arguments by creating your first debate topic. Each topic can contain claims, counter-arguments, and questions.</string>
+    <string name="home_empty_action">Create a Topic</string>
+
+    <!-- Topic -->
+    <string name="topic_create">Create a Topic</string>
+    <string name="topic_edit">Edit Topic</string>
+    <string name="topic_delete">Delete Topic</string>
+    <string name="topic_title_hint">Topic Title</string>
+    <string name="topic_summary_hint">Topic Summary</string>
+    <string name="topic_posture">Stance</string>
+    <string name="topic_tags">Tags</string>
+
+    <!-- Postures -->
+    <string name="posture_neutral_critique">Neutral &amp; Critical</string>
+    <string name="posture_sceptique">Skeptical</string>
+    <string name="posture_comparatif_academique">Academic Comparative</string>
+
+    <!-- Claim -->
+    <string name="claim_create">Create a Claim</string>
+    <string name="claim_edit">Edit Claim</string>
+    <string name="claim_text_hint">Claim Text</string>
+    <string name="claim_stance">Position</string>
+    <string name="claim_strength">Strength</string>
+
+    <!-- Stance -->
+    <string name="stance_pro">For</string>
+    <string name="stance_con">Against</string>
+    <string name="stance_neutral">Neutral</string>
+
+    <!-- Strength -->
+    <string name="strength_low">Weak</string>
+    <string name="strength_medium">Medium</string>
+    <string name="strength_high">Strong</string>
+
+    <!-- Rebuttal -->
+    <string name="rebuttal_create">Create a Counter-Argument</string>
+    <string name="rebuttal_text_hint">Counter-Argument Text</string>
+    <string name="rebuttal_fallacy">Fallacy</string>
+
+    <!-- Evidence -->
+    <string name="evidence_create">Add Evidence</string>
+    <string name="evidence_type">Evidence Type</string>
+    <string name="evidence_content_hint">Evidence Content</string>
+
+    <!-- Question -->
+    <string name="question_create">Add a Question</string>
+    <string name="question_text_hint">Question Text</string>
+    <string name="question_kind">Question Type</string>
+    <string name="question_kind_socratic">Socratic</string>
+    <string name="question_kind_clarifying">Clarifying</string>
+    <string name="question_kind_challenge">Challenge</string>
+    <string name="question_kind_evidence">Evidence Request</string>
+
+    <!-- Source -->
+    <string name="source_create">Add a Source</string>
+    <string name="source_title_hint">Source Title</string>
+    <string name="source_citation_hint">Citation</string>
+    <string name="source_url_hint">URL</string>
+
+    <!-- Debate Mode -->
+    <string name="debate_mode">Debate Mode</string>
+    <string name="debate_flip_card">Flip Card</string>
+    <string name="debate_no_cards">No cards available</string>
+    <string name="debate_card_progress">Card %1$d / %2$d</string>
+    <string name="debate_previous">Previous</string>
+    <string name="debate_next">Next</string>
+    <string name="debate_view_claim">View Claim</string>
+    <string name="debate_view_answer">View Answer</string>
+    <string name="debate_rebuttals">Counter-Arguments:</string>
+    <string name="debate_evidence">Evidence:</string>
+    <string name="debate_question">Question:</string>
+    <string name="debate_fallacy">Fallacy: %1$s</string>
+    <string name="debate_empty_title">No additional content</string>
+    <string name="debate_empty_message">This claim doesn\'t have any associated counter-arguments, evidence, or questions yet</string>
+
+    <!-- Plurals -->
+    <plurals name="topic_count">
+        <item quantity="zero">No topics</item>
+        <item quantity="one">%d topic</item>
+        <item quantity="other">%d topics</item>
+    </plurals>
+    <plurals name="claim_count">
+        <item quantity="zero">No claims</item>
+        <item quantity="one">%d claim</item>
+        <item quantity="other">%d claims</item>
+    </plurals>
+    <plurals name="question_count">
+        <item quantity="zero">No questions</item>
+        <item quantity="one">%d question</item>
+        <item quantity="other">%d questions</item>
+    </plurals>
+    <plurals name="tag_count">
+        <item quantity="zero">No tags</item>
+        <item quantity="one">%d tag</item>
+        <item quantity="other">%d tags</item>
+    </plurals>
+    <plurals name="source_count">
+        <item quantity="zero">No sources</item>
+        <item quantity="one">%d source</item>
+        <item quantity="other">%d sources</item>
+    </plurals>
+
+    <!-- Import/Export -->
+    <string name="import_data">Import Data</string>
+    <string name="export_data">Export Data</string>
+    <string name="import_success">Import successful: %1$d created, %2$d updated</string>
+    <string name="import_error">Import error</string>
+    <string name="export_success">Export successful</string>
+    <string name="export_error">Export error</string>
+
+    <!-- Ethics Warning -->
+    <string name="ethics_title">Ethical Warning</string>
+    <string name="ethics_message">ArguMentor deals with sensitive topics (religion, politics, health). We encourage respect, kindness, and intellectual rigor in all debates.</string>
+    <string name="ethics_accept">I Accept</string>
+
+    <!-- About -->
+    <string name="about_author">Author</string>
+    <string name="about_author_name">Julien Bombled</string>
+    <string name="about_version">Version</string>
+    <string name="about_license">License</string>
+    <string name="about_license_name">Apache License 2.0</string>
+
+    <!-- Common -->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="close">Close</string>
+    <string name="search">Search</string>
+    <string name="filter">Filter</string>
+    <string name="created_at">Created on %1$s</string>
+    <string name="updated_at">Updated on %1$s</string>
+    <string name="more_tags">+%1$d</string>
+    <string name="questions_empty_title">No questions yet</string>
+    <string name="questions_empty_description">Questions stimulate critical thinking and deepen the debate. Create your first question to challenge this topic.</string>
+    <string name="questions_empty_action">Add a Question</string>
+
+    <!-- Accessibility -->
+    <string name="accessibility_menu">Open menu</string>
+    <string name="accessibility_back">Back</string>
+    <string name="accessibility_close">Close</string>
+    <string name="accessibility_search">Search</string>
+    <string name="accessibility_create_topic">Create a new topic</string>
+    <string name="accessibility_create_claim">Create a new claim</string>
+    <string name="accessibility_create_question">Create a new question</string>
+    <string name="accessibility_edit_topic">Edit topic</string>
+    <string name="accessibility_edit_claim">Edit claim</string>
+    <string name="accessibility_edit_question">Edit question</string>
+    <string name="accessibility_delete_topic">Delete topic</string>
+    <string name="accessibility_delete_claim">Delete claim</string>
+    <string name="accessibility_delete_question">Delete question</string>
+    <string name="accessibility_more_options">More options</string>
+    <string name="accessibility_voice_input">Voice input</string>
+    <string name="accessibility_export">Export</string>
+    <string name="accessibility_import">Import</string>
+    <string name="accessibility_debate_mode">Debate mode</string>
+    <string name="accessibility_home">Home</string>
+    <string name="accessibility_statistics">Statistics</string>
+    <string name="accessibility_settings">Settings</string>
+    <string name="accessibility_import_export">Import/Export</string>
+</resources>

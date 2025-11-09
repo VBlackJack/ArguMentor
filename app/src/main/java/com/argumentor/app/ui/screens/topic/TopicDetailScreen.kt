@@ -25,6 +25,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -155,7 +159,8 @@ fun TopicDetailScreen(
                         Text(
                             text = topic?.title ?: "Sujet",
                             maxLines = 1,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                            modifier = Modifier.semantics { heading() }
                         )
                     },
                     navigationIcon = {
@@ -308,11 +313,15 @@ fun TopicDetailScreen(
                             }
                             IconButton(
                                 onClick = { showSummary = !showSummary },
-                                modifier = Modifier.size(28.dp)
+                                modifier = Modifier
+                                    .size(28.dp)
+                                    .semantics {
+                                        stateDescription = if (showSummary) "Résumé développé" else "Résumé réduit"
+                                    }
                             ) {
                                 Icon(
                                     if (showSummary) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                                    contentDescription = if (showSummary) "Masquer" else "Afficher",
+                                    contentDescription = if (showSummary) "Masquer le résumé" else "Afficher le résumé",
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -494,8 +503,23 @@ private fun ClaimCard(
         Claim.Stance.NEUTRAL -> Color(0xFF424242)  // Gris foncé
     }
 
+    val stanceText = when (claim.stance) {
+        Claim.Stance.PRO -> "Pour"
+        Claim.Stance.CON -> "Contre"
+        Claim.Stance.NEUTRAL -> "Neutre"
+    }
+    val strengthText = when (claim.strength) {
+        Claim.Strength.LOW -> "Faible"
+        Claim.Strength.MEDIUM -> "Moyen"
+        Claim.Strength.HIGH -> "Fort"
+    }
+
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) {
+                contentDescription = "Affirmation $stanceText, force $strengthText: ${claim.text}"
+            },
         colors = CardDefaults.elevatedCardColors(containerColor = backgroundColor),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(18.dp)
