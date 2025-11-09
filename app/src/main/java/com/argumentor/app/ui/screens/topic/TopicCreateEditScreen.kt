@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.data.model.Topic
+import com.argumentor.app.ui.components.VoiceInputTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,19 +61,19 @@ fun TopicCreateEditScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Title field
-            OutlinedTextField(
+            VoiceInputTextField(
                 value = title,
                 onValueChange = viewModel::onTitleChange,
-                label = { Text("Titre") },
+                label = "Titre",
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
 
             // Summary field
-            OutlinedTextField(
+            VoiceInputTextField(
                 value = summary,
                 onValueChange = viewModel::onSummaryChange,
-                label = { Text("Résumé") },
+                label = "Résumé",
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
                 maxLines = 6

@@ -5,13 +5,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.data.model.Claim
+import com.argumentor.app.ui.components.VoiceInputTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -19,7 +19,6 @@ fun ClaimCreateEditScreen(
     claimId: String?,
     topicId: String?,
     onNavigateBack: () -> Unit,
-    onVoiceInput: (() -> Unit)? = null,
     viewModel: ClaimCreateEditViewModel = hiltViewModel()
 ) {
     val text by viewModel.text.collectAsState()
@@ -41,11 +40,6 @@ fun ClaimCreateEditScreen(
                     }
                 },
                 actions = {
-                    if (onVoiceInput != null) {
-                        IconButton(onClick = onVoiceInput) {
-                            Icon(Icons.Default.Mic, contentDescription = "Dictée vocale")
-                        }
-                    }
                     TextButton(
                         onClick = { viewModel.saveClaim(onNavigateBack) },
                         enabled = !isSaving && text.isNotBlank()
@@ -65,10 +59,10 @@ fun ClaimCreateEditScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Text field
-            OutlinedTextField(
+            VoiceInputTextField(
                 value = text,
                 onValueChange = viewModel::onTextChange,
-                label = { Text("Texte de l'affirmation") },
+                label = "Texte de l'affirmation",
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
                 maxLines = 8
