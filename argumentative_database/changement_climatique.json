@@ -1,0 +1,299 @@
+{
+  "schemaVersion": "1.0",
+  "exportedAt": "2025-01-15T18:00:00Z",
+  "app": "ArguMentor",
+  "topics": [
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440001",
+      "title": "Changement climatique : Causes et controverses",
+      "summary": "Analyse du consensus scientifique sur le réchauffement climatique et des arguments climato-sceptiques",
+      "posture": "neutre_critique",
+      "tags": ["tag_climat", "tag_science", "tag_environnement", "tag_politique"],
+      "createdAt": "2025-01-15T18:00:00Z",
+      "updatedAt": "2025-01-15T18:00:00Z"
+    }
+  ],
+  "claims": [
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440101",
+      "text": "Le changement climatique est principalement causé par les activités humaines",
+      "stance": "pro",
+      "strength": "high",
+      "topics": ["d50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T18:00:00Z",
+      "updatedAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440102",
+      "text": "Le climat a toujours changé naturellement, l'influence humaine est surestimée",
+      "stance": "con",
+      "strength": "weak",
+      "topics": ["d50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T18:00:00Z",
+      "updatedAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440103",
+      "text": "97% des climatologues s'accordent sur le réchauffement d'origine anthropique",
+      "stance": "pro",
+      "strength": "high",
+      "topics": ["d50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T18:00:00Z",
+      "updatedAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440104",
+      "text": "Le consensus scientifique est biaisé par des intérêts financiers et politiques",
+      "stance": "con",
+      "strength": "weak",
+      "topics": ["d50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T18:00:00Z",
+      "updatedAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440105",
+      "text": "Les modèles climatiques prédisent avec précision les tendances observées",
+      "stance": "pro",
+      "strength": "high",
+      "topics": ["d50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T18:00:00Z",
+      "updatedAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440106",
+      "text": "Les modèles climatiques sont trop imprécis pour être fiables",
+      "stance": "con",
+      "strength": "weak",
+      "topics": ["d50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T18:00:00Z",
+      "updatedAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440107",
+      "text": "Les événements extrêmes (canicules, inondations) augmentent en fréquence et en intensité",
+      "stance": "pro",
+      "strength": "high",
+      "topics": ["d50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T18:00:00Z",
+      "updatedAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440108",
+      "text": "Les médias exagèrent les événements météorologiques pour créer de la peur",
+      "stance": "con",
+      "strength": "weak",
+      "topics": ["d50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T18:00:00Z",
+      "updatedAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440109",
+      "text": "La transition énergétique est techniquement et économiquement viable",
+      "stance": "pro",
+      "strength": "medium",
+      "topics": ["d50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T18:00:00Z",
+      "updatedAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440110",
+      "text": "La transition énergétique coûtera trop cher et détruira l'économie",
+      "stance": "con",
+      "strength": "medium",
+      "topics": ["d50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T18:00:00Z",
+      "updatedAt": "2025-01-15T18:00:00Z"
+    }
+  ],
+  "rebuttals": [
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440201",
+      "claimId": "d50e8400-e29b-41d4-a716-446655440102",
+      "text": "Le réchauffement actuel est 10 fois plus rapide que tous les changements naturels des 2 000 dernières années",
+      "fallacyTag": "Faux équilibre",
+      "createdAt": "2025-01-15T18:00:00Z",
+      "updatedAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440202",
+      "claimId": "d50e8400-e29b-41d4-a716-446655440104",
+      "text": "Les industries fossiles ont dépensé 1 milliard USD en lobbying climato-sceptique depuis 2000, bien plus que la recherche climatique",
+      "fallacyTag": "Projection d'intérêts",
+      "createdAt": "2025-01-15T18:00:00Z",
+      "updatedAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440203",
+      "claimId": "d50e8400-e29b-41d4-a716-446655440106",
+      "text": "Les modèles de 1990 ont correctement prédit le réchauffement de +1,1°C observé en 2024",
+      "fallacyTag": "Incompréhension des modèles",
+      "createdAt": "2025-01-15T18:00:00Z",
+      "updatedAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440204",
+      "claimId": "d50e8400-e29b-41d4-a716-446655440108",
+      "text": "Les données satellitaires, marégraphes et stations météo montrent objectivement l'augmentation des événements extrêmes",
+      "fallacyTag": "Minimisation des données",
+      "createdAt": "2025-01-15T18:00:00Z",
+      "updatedAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440205",
+      "claimId": "d50e8400-e29b-41d4-a716-446655440110",
+      "text": "Le coût de l'inaction climatique est estimé à 178 000 milliards USD d'ici 2070, bien supérieur au coût de la transition",
+      "fallacyTag": "Omission des coûts futurs",
+      "createdAt": "2025-01-15T18:00:00Z",
+      "updatedAt": "2025-01-15T18:00:00Z"
+    }
+  ],
+  "evidences": [
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440301",
+      "claimId": "d50e8400-e29b-41d4-a716-446655440101",
+      "type": "study",
+      "content": "GIEC 6e rapport (2023) : 'Il est sans équivoque que l'influence humaine a réchauffé l'atmosphère, l'océan et les terres'",
+      "sourceId": "d50e8400-e29b-41d4-a716-446655440401",
+      "quality": "high",
+      "createdAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440302",
+      "claimId": "d50e8400-e29b-41d4-a716-446655440103",
+      "type": "statistic",
+      "content": "Méta-analyse de Cook et al. (2013) : 97,1% des 11 944 publications scientifiques approuvent le consensus sur le réchauffement anthropique",
+      "sourceId": "d50e8400-e29b-41d4-a716-446655440402",
+      "quality": "high",
+      "createdAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440303",
+      "claimId": "d50e8400-e29b-41d4-a716-446655440105",
+      "type": "study",
+      "content": "Étude Hausfather et al. (2020) : Les modèles climatiques de 1970-2007 ont prédit avec précision le réchauffement observé",
+      "sourceId": "d50e8400-e29b-41d4-a716-446655440403",
+      "quality": "high",
+      "createdAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440304",
+      "claimId": "d50e8400-e29b-41d4-a716-446655440107",
+      "type": "statistic",
+      "content": "Entre 2000 et 2019, les catastrophes climatiques ont augmenté de 74% par rapport à 1980-1999 (ONU, 2020)",
+      "sourceId": "d50e8400-e29b-41d4-a716-446655440404",
+      "quality": "high",
+      "createdAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440305",
+      "claimId": "d50e8400-e29b-41d4-a716-446655440109",
+      "type": "statistic",
+      "content": "Le coût des énergies renouvelables a chuté de 89% (solaire) et 70% (éolien) entre 2010 et 2022 (IRENA)",
+      "sourceId": "d50e8400-e29b-41d4-a716-446655440405",
+      "quality": "high",
+      "createdAt": "2025-01-15T18:00:00Z"
+    }
+  ],
+  "questions": [
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440501",
+      "targetId": "d50e8400-e29b-41d4-a716-446655440102",
+      "text": "Si le réchauffement est naturel, comment expliquer la corrélation parfaite entre CO2 et température depuis 1850 ?",
+      "kind": "challenge",
+      "createdAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440502",
+      "targetId": "d50e8400-e29b-41d4-a716-446655440104",
+      "text": "Qui aurait intérêt à financer un faux consensus climatique impliquant 99% des climatologues de 195 pays ?",
+      "kind": "challenge",
+      "createdAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440503",
+      "targetId": "d50e8400-e29b-41d4-a716-446655440110",
+      "text": "Quel sera le coût économique si nous n'agissons pas et que les prévisions du GIEC se réalisent ?",
+      "kind": "evidence",
+      "createdAt": "2025-01-15T18:00:00Z"
+    }
+  ],
+  "sources": [
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440401",
+      "title": "IPCC Sixth Assessment Report (AR6)",
+      "citation": "IPCC (2023). Cambridge University Press.",
+      "url": "https://www.ipcc.ch/report/ar6/",
+      "publisher": "GIEC/IPCC",
+      "date": "2023",
+      "reliabilityScore": 0.99,
+      "notes": "Synthèse de 14 000 études par 234 scientifiques de 66 pays",
+      "createdAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440402",
+      "title": "Quantifying the consensus on anthropogenic global warming",
+      "citation": "Cook, J., et al. (2013). Environmental Research Letters, 8(2), 024024.",
+      "url": "https://iopscience.iop.org/article/10.1088/1748-9326/8/2/024024",
+      "publisher": "IOP Science",
+      "date": "2013",
+      "reliabilityScore": 0.96,
+      "notes": "Méta-analyse de référence sur le consensus",
+      "createdAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440403",
+      "title": "Evaluating the performance of past climate model projections",
+      "citation": "Hausfather, Z., et al. (2020). Geophysical Research Letters, 47(1), e2019GL085378.",
+      "url": "https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2019GL085378",
+      "publisher": "American Geophysical Union",
+      "date": "2020",
+      "reliabilityScore": 0.95,
+      "notes": "Validation rétrospective des modèles",
+      "createdAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440404",
+      "title": "The Human Cost of Disasters: An overview of the last 20 years (2000-2019)",
+      "citation": "UNDRR (2020).",
+      "url": "https://www.undrr.org/publication/human-cost-disasters-overview-last-20-years-2000-2019",
+      "publisher": "United Nations",
+      "date": "2020",
+      "reliabilityScore": 0.97,
+      "notes": "Données onusiennes sur les catastrophes naturelles",
+      "createdAt": "2025-01-15T18:00:00Z"
+    },
+    {
+      "id": "d50e8400-e29b-41d4-a716-446655440405",
+      "title": "Renewable Power Generation Costs in 2022",
+      "citation": "IRENA (2023).",
+      "url": "https://www.irena.org/publications/2023/Aug/Renewable-Power-Generation-Costs-in-2022",
+      "publisher": "International Renewable Energy Agency",
+      "date": "2023",
+      "reliabilityScore": 0.96,
+      "notes": "Rapport annuel de référence sur les coûts des renouvelables",
+      "createdAt": "2025-01-15T18:00:00Z"
+    }
+  ],
+  "tags": [
+    {
+      "id": "tag_climat",
+      "label": "Climat",
+      "color": "#4CAF50"
+    },
+    {
+      "id": "tag_science",
+      "label": "Science",
+      "color": "#2196F3"
+    },
+    {
+      "id": "tag_environnement",
+      "label": "Environnement",
+      "color": "#8BC34A"
+    },
+    {
+      "id": "tag_politique",
+      "label": "Politique",
+      "color": "#E91E63"
+    }
+  ]
+}

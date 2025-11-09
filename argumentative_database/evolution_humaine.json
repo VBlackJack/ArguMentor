@@ -1,0 +1,299 @@
+{
+  "schemaVersion": "1.0",
+  "exportedAt": "2025-01-15T15:00:00Z",
+  "app": "ArguMentor",
+  "topics": [
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440001",
+      "title": "Évolution humaine : 'L'homme descend du singe'",
+      "summary": "Clarification scientifique de l'évolution humaine et réfutation des malentendus courants",
+      "posture": "neutre_critique",
+      "tags": ["tag_science", "tag_evolution", "tag_biologie", "tag_anthropologie"],
+      "createdAt": "2025-01-15T15:00:00Z",
+      "updatedAt": "2025-01-15T15:00:00Z"
+    }
+  ],
+  "claims": [
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440101",
+      "text": "L'homme ne descend pas du singe mais partage un ancêtre commun avec les grands singes actuels",
+      "stance": "pro",
+      "strength": "high",
+      "topics": ["a50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T15:00:00Z",
+      "updatedAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440102",
+      "text": "Si l'homme descend du singe, pourquoi les singes existent-ils encore ?",
+      "stance": "con",
+      "strength": "weak",
+      "topics": ["a50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T15:00:00Z",
+      "updatedAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440103",
+      "text": "Les fossiles intermédiaires entre le singe et l'homme prouvent l'évolution humaine",
+      "stance": "pro",
+      "strength": "high",
+      "topics": ["a50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T15:00:00Z",
+      "updatedAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440104",
+      "text": "Il manque des chaînons intermédiaires dans le registre fossile",
+      "stance": "con",
+      "strength": "weak",
+      "topics": ["a50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T15:00:00Z",
+      "updatedAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440105",
+      "text": "L'ADN humain et celui des chimpanzés sont identiques à 98,8%, confirmant une origine commune récente",
+      "stance": "pro",
+      "strength": "high",
+      "topics": ["a50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T15:00:00Z",
+      "updatedAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440106",
+      "text": "La similarité génétique ne prouve pas la descendance, seulement un créateur commun",
+      "stance": "con",
+      "strength": "weak",
+      "topics": ["a50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T15:00:00Z",
+      "updatedAt": "2025-01-15T15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440107",
+      "text": "L'évolution humaine est documentée par la paléoanthropologie avec des dizaines d'espèces d'hominidés",
+      "stance": "pro",
+      "strength": "high",
+      "topics": ["a50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T15:00:00Z",
+      "updatedAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440108",
+      "text": "Les datations au carbone 14 sont imprécises et les fossiles pourraient être beaucoup plus récents",
+      "stance": "con",
+      "strength": "weak",
+      "topics": ["a50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T15:00:00Z",
+      "updatedAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440109",
+      "text": "L'anatomie comparée montre des homologies structurelles entre humains et primates",
+      "stance": "pro",
+      "strength": "high",
+      "topics": ["a50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T15:00:00Z",
+      "updatedAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440110",
+      "text": "La complexité de l'œil humain ne peut pas être le résultat de l'évolution",
+      "stance": "con",
+      "strength": "weak",
+      "topics": ["a50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T15:00:00Z",
+      "updatedAt": "2025-01-15T15:00:00Z"
+    }
+  ],
+  "rebuttals": [
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440201",
+      "claimId": "a50e8400-e29b-41d4-a716-446655440102",
+      "text": "Les singes actuels ont évolué parallèlement à partir du même ancêtre commun il y a 6-7 millions d'années. C'est comme demander 'si les Français descendent des Européens, pourquoi les Allemands existent encore ?'",
+      "fallacyTag": "Malentendu du processus évolutif",
+      "createdAt": "2025-01-15T15:00:00Z",
+      "updatedAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440202",
+      "claimId": "a50e8400-e29b-41d4-a716-446655440104",
+      "text": "On a découvert plus de 20 espèces d'hominidés fossiles : Australopithecus, Homo habilis, Homo erectus, Homo heidelbergensis, Néandertal, etc.",
+      "fallacyTag": "Ignorance des découvertes",
+      "createdAt": "2025-01-15T15:00:00Z",
+      "updatedAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440203",
+      "claimId": "a50e8400-e29b-41d4-a716-446655440106",
+      "text": "Les pseudogènes défectueux partagés entre humains et primates s'expliquent par l'évolution, pas par un créateur intelligent",
+      "fallacyTag": "Argument du dessein",
+      "createdAt": "2025-01-15T15:00:00Z",
+      "updatedAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440204",
+      "claimId": "a50e8400-e29b-41d4-a716-446655440108",
+      "text": "Le carbone 14 n'est utilisé que jusqu'à 50 000 ans. Pour les fossiles plus anciens, on utilise potassium-argon, uranium-plomb, etc., avec recoupements multiples",
+      "fallacyTag": "Incompréhension des méthodes",
+      "createdAt": "2025-01-15T15:00:00Z",
+      "updatedAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440205",
+      "claimId": "a50e8400-e29b-41d4-a716-446655440110",
+      "text": "Darwin avait prédit des yeux intermédiaires, et on en a trouvé des dizaines dans le règne animal, du simple œil à cupule aux yeux composés",
+      "fallacyTag": "Complexité irréductible réfutée",
+      "createdAt": "2025-01-15T15:00:00Z",
+      "updatedAt": "2025-01-15T15:00:00Z"
+    }
+  ],
+  "evidences": [
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440301",
+      "claimId": "a50e8400-e29b-41d4-a716-446655440101",
+      "type": "study",
+      "content": "Analyse phylogénétique (Nature, 2012) : L'ancêtre commun entre humains et chimpanzés a vécu il y a 6-7 millions d'années en Afrique",
+      "sourceId": "a50e8400-e29b-41d4-a716-446655440401",
+      "quality": "high",
+      "createdAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440302",
+      "claimId": "a50e8400-e29b-41d4-a716-446655440103",
+      "type": "example",
+      "content": "Lucy (Australopithecus afarensis, 3,2 millions d'années) : bipède avec cerveau de 450 cm³, intermédiaire entre singes et humains",
+      "sourceId": "a50e8400-e29b-41d4-a716-446655440402",
+      "quality": "high",
+      "createdAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440303",
+      "claimId": "a50e8400-e29b-41d4-a716-446655440105",
+      "type": "statistic",
+      "content": "Séquençage du génome (Nature, 2005) : 98,8% de similarité ADN entre humains et chimpanzés, 1,2% de différence représente 35 millions de mutations",
+      "sourceId": "a50e8400-e29b-41d4-a716-446655440403",
+      "quality": "high",
+      "createdAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440304",
+      "claimId": "a50e8400-e29b-41d4-a716-446655440107",
+      "type": "citation",
+      "content": "Bernard Wood, paléoanthropologue : 'Nous avons maintenant assez de fossiles d'hominidés pour remplir un bus scolaire'",
+      "sourceId": "a50e8400-e29b-41d4-a716-446655440404",
+      "quality": "high",
+      "createdAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440305",
+      "claimId": "a50e8400-e29b-41d4-a716-446655440109",
+      "type": "study",
+      "content": "L'os hyoïde, identique chez humains et Néandertaliens, suggère des capacités de langage similaires (Science, 2013)",
+      "sourceId": "a50e8400-e29b-41d4-a716-446655440405",
+      "quality": "high",
+      "createdAt": "2025-01-15T15:00:00Z"
+    }
+  ],
+  "questions": [
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440501",
+      "targetId": "a50e8400-e29b-41d4-a716-446655440102",
+      "text": "Si l'évolution était fausse, comment expliquer les chromosomes fusionnés chez l'humain (2n=46) vs les grands singes (2n=48) ?",
+      "kind": "challenge",
+      "createdAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440502",
+      "targetId": "a50e8400-e29b-41d4-a716-446655440106",
+      "text": "Pourquoi un créateur intelligent aurait-il laissé des pseudogènes défectueux identiques chez l'humain et les primates ?",
+      "kind": "challenge",
+      "createdAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440503",
+      "targetId": "a50e8400-e29b-41d4-a716-446655440110",
+      "text": "Comment l'œil du nautile (simple trou d'épingle) et celui de la pieuvre (avec cristallin) démontrent-ils l'évolution progressive de la vision ?",
+      "kind": "evidence",
+      "createdAt": "2025-01-15T15:00:00Z"
+    }
+  ],
+  "sources": [
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440401",
+      "title": "Genetic Divergence Between Human and Chimpanzee",
+      "citation": "Prüfer, K., et al. (2012). Nature, 486(7404), 527-531.",
+      "url": "https://www.nature.com/articles/nature11128",
+      "publisher": "Nature",
+      "date": "2012",
+      "reliabilityScore": 0.98,
+      "notes": "Séquençage complet du génome du bonobo",
+      "createdAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440402",
+      "title": "Australopithecus afarensis: A New Species of Early Hominid from Hadar, Ethiopia",
+      "citation": "Johanson, D. C., & White, T. D. (1979). Science, 203(4378), 321-330.",
+      "url": "https://www.science.org/doi/10.1126/science.104384",
+      "publisher": "Science",
+      "date": "1979",
+      "reliabilityScore": 0.96,
+      "notes": "Description originale de Lucy",
+      "createdAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440403",
+      "title": "Initial Sequence of the Chimpanzee Genome",
+      "citation": "Chimpanzee Sequencing Consortium (2005). Nature, 437(7055), 69-87.",
+      "url": "https://www.nature.com/articles/nature03931",
+      "publisher": "Nature",
+      "date": "2005",
+      "reliabilityScore": 0.99,
+      "notes": "Premier séquençage complet du génome du chimpanzé",
+      "createdAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440404",
+      "title": "Human Evolution",
+      "citation": "Wood, B. (2010). Scientific American, 303(3), 88-93.",
+      "url": "https://www.scientificamerican.com/article/human-evolution/",
+      "publisher": "Scientific American",
+      "date": "2010",
+      "reliabilityScore": 0.92,
+      "notes": "Vue d'ensemble de la paléoanthropologie",
+      "createdAt": "2025-01-15T15:00:00Z"
+    },
+    {
+      "id": "a50e8400-e29b-41d4-a716-446655440405",
+      "title": "Neanderthal Hyoid Bone and the Evolution of Speech",
+      "citation": "D'Anastasio, R., et al. (2013). PLOS ONE, 8(12), e82261.",
+      "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0082261",
+      "publisher": "PLOS ONE",
+      "date": "2013",
+      "reliabilityScore": 0.94,
+      "notes": "Étude anatomique comparative",
+      "createdAt": "2025-01-15T15:00:00Z"
+    }
+  ],
+  "tags": [
+    {
+      "id": "tag_science",
+      "label": "Science",
+      "color": "#2196F3"
+    },
+    {
+      "id": "tag_evolution",
+      "label": "Évolution",
+      "color": "#4CAF50"
+    },
+    {
+      "id": "tag_biologie",
+      "label": "Biologie",
+      "color": "#8BC34A"
+    },
+    {
+      "id": "tag_anthropologie",
+      "label": "Anthropologie",
+      "color": "#FF9800"
+    }
+  ]
+}

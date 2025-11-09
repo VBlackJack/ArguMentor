@@ -1,0 +1,291 @@
+{
+  "schemaVersion": "1.0",
+  "exportedAt": "2025-01-15T20:00:00Z",
+  "app": "ArguMentor",
+  "topics": [
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440001",
+      "title": "Organismes génétiquement modifiés (OGM)",
+      "summary": "Analyse scientifique des OGM, de leur sécurité alimentaire, de leurs impacts environnementaux et des controverses associées",
+      "posture": "neutre_critique",
+      "tags": ["tag_science", "tag_agriculture", "tag_sante", "tag_environnement"],
+      "createdAt": "2025-01-15T20:00:00Z",
+      "updatedAt": "2025-01-15T20:00:00Z"
+    }
+  ],
+  "claims": [
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440101",
+      "text": "Les OGM sont sûrs pour la consommation humaine selon le consensus scientifique",
+      "stance": "pro",
+      "strength": "high",
+      "topics": ["f50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T20:00:00Z",
+      "updatedAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440102",
+      "text": "Les études sur la sécurité des OGM sont souvent financées par les entreprises qui les produisent, créant un conflit d'intérêts",
+      "stance": "con",
+      "strength": "medium",
+      "topics": ["f50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T20:00:00Z",
+      "updatedAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440103",
+      "text": "Les OGM réduisent l'utilisation de pesticides et augmentent les rendements agricoles",
+      "stance": "pro",
+      "strength": "high",
+      "topics": ["f50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T20:00:00Z",
+      "updatedAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440104",
+      "text": "Les OGM résistants aux herbicides ont entraîné une augmentation de l'usage de glyphosate et l'apparition de super-mauvaises herbes",
+      "stance": "con",
+      "strength": "high",
+      "topics": ["f50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T20:00:00Z",
+      "updatedAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440105",
+      "text": "Les OGM comme le riz doré peuvent résoudre des problèmes de malnutrition dans les pays en développement",
+      "stance": "pro",
+      "strength": "medium",
+      "topics": ["f50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T20:00:00Z",
+      "updatedAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440106",
+      "text": "Les OGM créent une dépendance des agriculteurs vis-à-vis des multinationales semencières par les brevets",
+      "stance": "con",
+      "strength": "high",
+      "topics": ["f50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T20:00:00Z",
+      "updatedAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440107",
+      "text": "Les OGM Bt réduisent l'usage d'insecticides chimiques et préservent les insectes non-cibles",
+      "stance": "pro",
+      "strength": "high",
+      "topics": ["f50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T20:00:00Z",
+      "updatedAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440108",
+      "text": "Les OGM menacent la biodiversité par contamination génétique des cultures conventionnelles et sauvages",
+      "stance": "con",
+      "strength": "medium",
+      "topics": ["f50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T20:00:00Z",
+      "updatedAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440109",
+      "text": "Les OGM sont indispensables pour nourrir une population mondiale croissante",
+      "stance": "pro",
+      "strength": "medium",
+      "topics": ["f50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T20:00:00Z",
+      "updatedAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440110",
+      "text": "L'agriculture agroécologique peut nourrir le monde sans recourir aux OGM",
+      "stance": "con",
+      "strength": "medium",
+      "topics": ["f50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T20:00:00Z",
+      "updatedAt": "2025-01-15T20:00:00Z"
+    }
+  ],
+  "rebuttals": [
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440201",
+      "claimId": "f50e8400-e29b-41d4-a716-446655440102",
+      "text": "Des milliers d'études indépendantes (EU, OMS, NAS) confirment la sécurité des OGM approuvés",
+      "fallacyTag": "Théorie du complot industriel",
+      "createdAt": "2025-01-15T20:00:00Z",
+      "updatedAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440202",
+      "claimId": "f50e8400-e29b-41d4-a716-446655440103",
+      "text": "L'usage de glyphosate sur les cultures OGM a augmenté de 239% aux USA entre 1996 et 2011",
+      "fallacyTag": "Omission des conséquences",
+      "createdAt": "2025-01-15T20:00:00Z",
+      "updatedAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440203",
+      "claimId": "f50e8400-e29b-41d4-a716-446655440105",
+      "text": "Après 20 ans, le riz doré n'est toujours pas largement distribué, questionnant son efficacité réelle comme solution",
+      "fallacyTag": "Promesse non tenue",
+      "createdAt": "2025-01-15T20:00:00Z",
+      "updatedAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440204",
+      "claimId": "f50e8400-e29b-41d4-a716-446655440109",
+      "text": "Le gaspillage alimentaire (1/3 de la production) et la répartition inégale sont les vraies causes de la faim, pas le manque de rendement",
+      "fallacyTag": "Fausse solution",
+      "createdAt": "2025-01-15T20:00:00Z",
+      "updatedAt": "2025-01-15T20:00:00Z"
+    }
+  ],
+  "evidences": [
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440301",
+      "claimId": "f50e8400-e29b-41d4-a716-446655440101",
+      "type": "expert",
+      "content": "National Academy of Sciences (2016) : 'Aucune preuve de risques pour la santé humaine' après analyse de 900 études sur 20 ans",
+      "sourceId": "f50e8400-e29b-41d4-a716-446655440401",
+      "quality": "high",
+      "createdAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440302",
+      "claimId": "f50e8400-e29b-41d4-a716-446655440103",
+      "type": "statistic",
+      "content": "Méta-analyse de Klümper & Qaim (2014) : Les OGM augmentent les rendements de 22% et réduisent les pesticides de 37% en moyenne",
+      "sourceId": "f50e8400-e29b-41d4-a716-446655440402",
+      "quality": "high",
+      "createdAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440303",
+      "claimId": "f50e8400-e29b-41d4-a716-446655440104",
+      "type": "study",
+      "content": "Étude Benbrook (2012) : L'usage d'herbicides a augmenté de 183 millions kg aux USA à cause des OGM résistants au glyphosate",
+      "sourceId": "f50e8400-e29b-41d4-a716-446655440403",
+      "quality": "high",
+      "createdAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440304",
+      "claimId": "f50e8400-e29b-41d4-a716-446655440106",
+      "type": "example",
+      "content": "En Inde, Monsanto (Bayer) contrôle 95% du marché du coton Bt, forçant les agriculteurs à racheter des semences chaque année",
+      "sourceId": "f50e8400-e29b-41d4-a716-446655440404",
+      "quality": "high",
+      "createdAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440305",
+      "claimId": "f50e8400-e29b-41d4-a716-446655440108",
+      "type": "example",
+      "content": "Contamination documentée du maïs traditionnel mexicain par des gènes de maïs OGM (Quist & Chapela, Nature 2001)",
+      "sourceId": "f50e8400-e29b-41d4-a716-446655440405",
+      "quality": "medium",
+      "createdAt": "2025-01-15T20:00:00Z"
+    }
+  ],
+  "questions": [
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440501",
+      "targetId": "f50e8400-e29b-41d4-a716-446655440102",
+      "text": "Si les OGM n'étaient pas sûrs, comment expliquer que plus de 2 000 études indépendantes n'aient trouvé aucun danger ?",
+      "kind": "challenge",
+      "createdAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440502",
+      "targetId": "f50e8400-e29b-41d4-a716-446655440106",
+      "text": "Comment réguler les brevets sur le vivant pour protéger l'autonomie des agriculteurs ?",
+      "kind": "clarification",
+      "createdAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440503",
+      "targetId": "f50e8400-e29b-41d4-a716-446655440109",
+      "text": "Si la production alimentaire mondiale suffit déjà à nourrir 10 milliards de personnes, les OGM sont-ils vraiment la solution ?",
+      "kind": "challenge",
+      "createdAt": "2025-01-15T20:00:00Z"
+    }
+  ],
+  "sources": [
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440401",
+      "title": "Genetically Engineered Crops: Experiences and Prospects",
+      "citation": "National Academies of Sciences (2016).",
+      "url": "https://www.nap.edu/catalog/23395/",
+      "publisher": "National Academies Press",
+      "date": "2016",
+      "reliabilityScore": 0.98,
+      "notes": "Rapport exhaustif de l'Académie des sciences américaine",
+      "createdAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440402",
+      "title": "A Meta-Analysis of the Impacts of Genetically Modified Crops",
+      "citation": "Klümper, W., & Qaim, M. (2014). PLOS ONE, 9(11), e111629.",
+      "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0111629",
+      "publisher": "PLOS ONE",
+      "date": "2014",
+      "reliabilityScore": 0.92,
+      "notes": "Méta-analyse de 147 études",
+      "createdAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440403",
+      "title": "Impacts of genetically engineered crops on pesticide use in the U.S.",
+      "citation": "Benbrook, C. M. (2012). Environmental Sciences Europe, 24(1), 24.",
+      "url": "https://enveurope.springeropen.com/articles/10.1186/2190-4715-24-24",
+      "publisher": "Springer",
+      "date": "2012",
+      "reliabilityScore": 0.88,
+      "notes": "Analyse critique de l'usage de pesticides",
+      "createdAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440404",
+      "title": "Bt Cotton and Farmer Suicides in India",
+      "citation": "Gruère, G., & Sengupta, D. (2011). The Journal of Development Studies, 47(2), 316-337.",
+      "url": "https://www.tandfonline.com/doi/abs/10.1080/00220388.2010.492863",
+      "publisher": "Taylor & Francis",
+      "date": "2011",
+      "reliabilityScore": 0.86,
+      "notes": "Étude sur les impacts socio-économiques en Inde",
+      "createdAt": "2025-01-15T20:00:00Z"
+    },
+    {
+      "id": "f50e8400-e29b-41d4-a716-446655440405",
+      "title": "Transgenic DNA introgressed into traditional maize landraces in Oaxaca, Mexico",
+      "citation": "Quist, D., & Chapela, I. H. (2001). Nature, 414(6863), 541-543.",
+      "url": "https://www.nature.com/articles/35107068",
+      "publisher": "Nature",
+      "date": "2001",
+      "reliabilityScore": 0.82,
+      "notes": "Étude controversée mais documentée sur la contamination génétique",
+      "createdAt": "2025-01-15T20:00:00Z"
+    }
+  ],
+  "tags": [
+    {
+      "id": "tag_science",
+      "label": "Science",
+      "color": "#2196F3"
+    },
+    {
+      "id": "tag_agriculture",
+      "label": "Agriculture",
+      "color": "#8BC34A"
+    },
+    {
+      "id": "tag_sante",
+      "label": "Santé",
+      "color": "#F44336"
+    },
+    {
+      "id": "tag_environnement",
+      "label": "Environnement",
+      "color": "#4CAF50"
+    }
+  ]
+}
