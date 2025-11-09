@@ -16,6 +16,7 @@ import com.argumentor.app.ui.screens.ethics.EthicsWarningScreen
 import com.argumentor.app.ui.screens.home.HomeScreen
 import com.argumentor.app.ui.screens.importexport.ImportExportScreen
 import com.argumentor.app.ui.screens.permissions.PermissionsScreen
+import com.argumentor.app.ui.screens.question.QuestionCreateEditScreen
 import com.argumentor.app.ui.screens.settings.SettingsScreen
 import com.argumentor.app.ui.screens.statistics.StatisticsScreen
 import com.argumentor.app.ui.screens.topic.TopicCreateEditScreen
@@ -116,6 +117,14 @@ fun ArguMentorNavigation() {
                     }
                     navController.navigate(route)
                 },
+                onNavigateToAddQuestion = { tId, qId ->
+                    val route = if (qId != null) {
+                        "question/create?targetId=$tId&questionId=$qId"
+                    } else {
+                        "question/create?targetId=$tId"
+                    }
+                    navController.navigate(route)
+                },
                 onNavigateToCreate = {
                     navController.navigate(Screen.TopicCreate.route)
                 },
@@ -170,6 +179,29 @@ fun ArguMentorNavigation() {
             ClaimCreateEditScreen(
                 claimId = claimId,
                 topicId = topicId,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Question create/edit
+        composable(
+            route = "question/create?targetId={targetId}&questionId={questionId}",
+            arguments = listOf(
+                navArgument("targetId") {
+                    type = NavType.StringType
+                    nullable = true
+                },
+                navArgument("questionId") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
+        ) { backStackEntry ->
+            val targetId = backStackEntry.arguments?.getString("targetId")
+            val questionId = backStackEntry.arguments?.getString("questionId")
+            QuestionCreateEditScreen(
+                questionId = questionId,
+                targetId = targetId,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

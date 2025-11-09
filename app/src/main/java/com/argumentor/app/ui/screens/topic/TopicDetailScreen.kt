@@ -38,6 +38,7 @@ fun TopicDetailScreen(
     onNavigateToEdit: (String) -> Unit,
     onNavigateToDebate: (String) -> Unit,
     onNavigateToAddClaim: (String, String?) -> Unit,
+    onNavigateToAddQuestion: (String, String?) -> Unit,
     onNavigateToCreate: () -> Unit,
     onNavigateToStatistics: () -> Unit,
     onNavigateToImportExport: () -> Unit,
@@ -209,9 +210,12 @@ fun TopicDetailScreen(
             )
         },
         floatingActionButton = {
-            if (selectedTab == 0) {
-                FloatingActionButton(onClick = { onNavigateToAddClaim(topicId, null) }) {
+            when (selectedTab) {
+                0 -> FloatingActionButton(onClick = { onNavigateToAddClaim(topicId, null) }) {
                     Icon(Icons.Default.Add, contentDescription = "Ajouter une affirmation")
+                }
+                1 -> FloatingActionButton(onClick = { onNavigateToAddQuestion(topicId, null) }) {
+                    Icon(Icons.Default.Add, contentDescription = "Ajouter une question")
                 }
             }
         }
