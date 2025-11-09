@@ -66,12 +66,12 @@ class MarkdownExporter(private val context: Context) {
                             else -> "🔵"
                         }
 
-                        appendLine("### $stanceIcon ${claim.title}")
+                        appendLine("### $stanceIcon ${claim.text.take(50)}...")
                         appendLine()
                         appendLine("**Position:** ${claim.stance.name}")
                         appendLine("**Force:** ${claim.strength.name}")
                         appendLine()
-                        appendLine(claim.content)
+                        appendLine(claim.text)
                         appendLine()
 
                         // Evidence for this claim
@@ -79,9 +79,9 @@ class MarkdownExporter(private val context: Context) {
                             if (evidenceList.isNotEmpty()) {
                                 appendLine("**Preuves:**")
                                 evidenceList.forEach { ev ->
-                                    appendLine("- **${ev.title}** (${ev.type.name})")
+                                    appendLine("- (${ev.type.name})")
                                     appendLine("  ${ev.content}")
-                                    if (ev.sourceId.isNotEmpty()) {
+                                    if (ev.sourceId != null && ev.sourceId.isNotEmpty()) {
                                         sources[ev.sourceId]?.let { source ->
                                             appendLine("  *Source: ${source.title}*")
                                         }
@@ -97,9 +97,9 @@ class MarkdownExporter(private val context: Context) {
                                 appendLine("**Contre-arguments:**")
                                 appendLine()
                                 rebuttalList.forEach { rebuttal ->
-                                    appendLine("#### ↳ ${rebuttal.title}")
+                                    appendLine("#### ↳ ${rebuttal.text.take(50)}...")
                                     appendLine()
-                                    appendLine(rebuttal.content)
+                                    appendLine(rebuttal.text)
                                     appendLine()
 
                                     // Evidence for this rebuttal
@@ -107,9 +107,9 @@ class MarkdownExporter(private val context: Context) {
                                         if (rebuttalEvidence.isNotEmpty()) {
                                             appendLine("**Preuves:**")
                                             rebuttalEvidence.forEach { ev ->
-                                                appendLine("- **${ev.title}** (${ev.type.name})")
+                                                appendLine("- (${ev.type.name})")
                                                 appendLine("  ${ev.content}")
-                                                if (ev.sourceId.isNotEmpty()) {
+                                                if (ev.sourceId != null && ev.sourceId.isNotEmpty()) {
                                                     sources[ev.sourceId]?.let { source ->
                                                         appendLine("  *Source: ${source.title}*")
                                                     }
@@ -132,10 +132,7 @@ class MarkdownExporter(private val context: Context) {
                     appendLine("## Questions en suspens")
                     appendLine()
                     questions.forEach { question ->
-                        appendLine("- ${question.content}")
-                        if (question.context.isNotEmpty()) {
-                            appendLine("  *${question.context}*")
-                        }
+                        appendLine("- ${question.text}")
                     }
                     appendLine()
                 }
@@ -148,20 +145,29 @@ class MarkdownExporter(private val context: Context) {
                     allSources.forEach { source ->
                         appendLine("### ${source.title}")
                         appendLine()
-                        appendLine("**Type:** ${source.type.name}")
-                        if (source.author.isNotEmpty()) {
-                            appendLine("**Auteur:** ${source.author}")
+                        source.citation?.let {
+                            appendLine("**Citation:** $it")
                         }
-                        if (source.url.isNotEmpty()) {
-                            appendLine("**URL:** [${source.url}](${source.url})")
+                        source.url?.let {
+                            if (it.isNotEmpty()) {
+                                appendLine("**URL:** [$it]($it)")
+                            }
                         }
-                        if (source.publicationDate.isNotEmpty()) {
-                            appendLine("**Date de publication:** ${source.publicationDate}")
+                        source.date?.let {
+                            if (it.isNotEmpty()) {
+                                appendLine("**Date:** $it")
+                            }
                         }
                         appendLine()
-                        appendLine(source.summary)
-                        appendLine()
-                        appendLine("**Fiabilité:** ${source.reliability.name}")
+                        source.notes?.let {
+                            if (it.isNotEmpty()) {
+                                appendLine(it)
+                                appendLine()
+                            }
+                        }
+                        source.reliabilityScore?.let {
+                            appendLine("**Fiabilité:** ${(it * 100).toInt()}%")
+                        }
                         appendLine()
                     }
                 }

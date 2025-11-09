@@ -2,9 +2,7 @@ package com.argumentor.app.data.repository
 
 import com.argumentor.app.data.local.dao.*
 import com.argumentor.app.data.model.Claim
-import com.argumentor.app.data.model.Posture
-import com.argumentor.app.data.model.Stance
-import com.argumentor.app.data.model.Strength
+import com.argumentor.app.data.model.Topic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -23,9 +21,9 @@ data class Statistics(
     val totalEvidence: Int = 0,
     val totalQuestions: Int = 0,
     val totalSources: Int = 0,
-    val claimsByStance: Map<Stance, Int> = emptyMap(),
-    val claimsByStrength: Map<Strength, Int> = emptyMap(),
-    val topicsByPosture: Map<Posture, Int> = emptyMap(),
+    val claimsByStance: Map<Claim.Stance, Int> = emptyMap(),
+    val claimsByStrength: Map<Claim.Strength, Int> = emptyMap(),
+    val topicsByPosture: Map<Topic.Posture, Int> = emptyMap(),
     val mostDebatedTopics: List<TopicStats> = emptyList(),
     val averageClaimsPerTopic: Double = 0.0,
     val averageRebuttalsPerClaim: Double = 0.0,

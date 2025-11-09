@@ -5,6 +5,7 @@ import com.argumentor.app.data.model.Question
 import com.argumentor.app.util.SearchUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emitAll
 import javax.inject.Inject
 import javax.inject.Singleton
 

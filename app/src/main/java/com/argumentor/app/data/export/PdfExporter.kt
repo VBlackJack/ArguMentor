@@ -109,11 +109,11 @@ class PdfExporter(private val context: Context) {
                 }
 
                 // Draw claim
-                val claimHeader = "• [${claim.stance.name}] ${claim.title}"
+                val claimHeader = "• [${claim.stance.name}] ${claim.text.take(40)}..."
                 canvas.drawText(claimHeader, MARGIN.toFloat(), yPosition.toFloat(), bodyPaint)
                 yPosition += LINE_HEIGHT
 
-                val claimContentLines = wrapText(claim.content, PAGE_WIDTH - (MARGIN * 3), bodyPaint)
+                val claimContentLines = wrapText(claim.text, PAGE_WIDTH - (MARGIN * 3), bodyPaint)
                 claimContentLines.forEach { line ->
                     if (yPosition > PAGE_HEIGHT - MARGIN) {
                         document.finishPage(page)
@@ -138,10 +138,10 @@ class PdfExporter(private val context: Context) {
                         yPosition = MARGIN
                     }
 
-                    canvas.drawText("  ↳ ${rebuttal.title}", (MARGIN + 40).toFloat(), yPosition.toFloat(), bodyPaint)
+                    canvas.drawText("  ↳ ${rebuttal.text.take(30)}...", (MARGIN + 40).toFloat(), yPosition.toFloat(), bodyPaint)
                     yPosition += LINE_HEIGHT
 
-                    val rebuttalLines = wrapText(rebuttal.content, PAGE_WIDTH - (MARGIN * 4), bodyPaint)
+                    val rebuttalLines = wrapText(rebuttal.text, PAGE_WIDTH - (MARGIN * 4), bodyPaint)
                     rebuttalLines.forEach { line ->
                         if (yPosition > PAGE_HEIGHT - MARGIN) {
                             document.finishPage(page)

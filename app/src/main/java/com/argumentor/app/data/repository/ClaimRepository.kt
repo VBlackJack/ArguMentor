@@ -6,6 +6,7 @@ import com.argumentor.app.util.FingerprintUtils
 import com.argumentor.app.util.SearchUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOf
