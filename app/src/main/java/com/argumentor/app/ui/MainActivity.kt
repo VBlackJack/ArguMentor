@@ -1,9 +1,6 @@
 package com.argumentor.app.ui
 
 import android.os.Bundle
-import android.view.View
-import android.view.WindowInsets
-import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -26,6 +23,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Enable modern edge-to-edge (content draws behind system bars)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContent {
             val isDarkTheme by viewModel.isDarkTheme.collectAsState()
 
@@ -37,24 +37,6 @@ class MainActivity : ComponentActivity() {
                     ArguMentorNavigation()
                 }
             }
-        }
-
-        // Enable edge-to-edge and immersive mode after content is set
-        enableImmersiveMode()
-    }
-
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) {
-            enableImmersiveMode()
-        }
-    }
-
-    private fun enableImmersiveMode() {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        window.insetsController?.apply {
-            hide(WindowInsets.Type.systemBars())
-            systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
     }
 }

@@ -2,6 +2,12 @@ package com.argumentor.app.ui.screens.topic
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -233,18 +239,27 @@ fun TopicDetailScreen(
             )
         },
         floatingActionButton = {
-            when (selectedTab) {
-                0 -> FloatingActionButton(onClick = { onNavigateToAddClaim(topicId, null) }) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = stringResource(R.string.accessibility_create_claim)
-                    )
-                }
-                1 -> FloatingActionButton(onClick = { onNavigateToAddQuestion(topicId, null) }) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = stringResource(R.string.accessibility_create_question)
-                    )
+            AnimatedContent(
+                targetState = selectedTab,
+                transitionSpec = {
+                    (fadeIn() + scaleIn(initialScale = 0.8f)) with
+                        (fadeOut() + scaleOut(targetScale = 0.8f))
+                },
+                label = "FAB Animation"
+            ) { tab ->
+                when (tab) {
+                    0 -> FloatingActionButton(onClick = { onNavigateToAddClaim(topicId, null) }) {
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = stringResource(R.string.accessibility_create_claim)
+                        )
+                    }
+                    else -> FloatingActionButton(onClick = { onNavigateToAddQuestion(topicId, null) }) {
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = stringResource(R.string.accessibility_create_question)
+                        )
+                    }
                 }
             }
         }
@@ -373,7 +388,8 @@ fun TopicDetailScreen(
                                 snackbarHostState.showSnackbar("Affirmation supprimée")
                             }
                         }
-                    }
+                    },
+                    onAddClaim = { onNavigateToAddClaim(topicId, null) }
                 )
                 1 -> QuestionsTab(
                     questions = questions,
@@ -403,15 +419,17 @@ fun TopicDetailScreen(
 private fun ClaimsTab(
     claims: List<Claim>,
     onEditClaim: (String) -> Unit,
-    onDeleteClaim: (Claim) -> Unit
+    onDeleteClaim: (Claim) -> Unit,
+    onAddClaim: () -> Unit
 ) {
     if (claims.isEmpty()) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = androidx.compose.ui.Alignment.Center
-        ) {
-            Text("Aucune affirmation", style = MaterialTheme.typography.bodyLarge)
-        }
+        EngagingEmptyState(
+            icon = Icons.Default.Comment,
+            title = "Aucune affirmation pour l'instant",
+            description = "Les affirmations sont les arguments principaux de votre débat. Ajoutez votre première affirmation pour structurer votre réflexion.",
+            actionText = "Ajouter une affirmation",
+            onAction = onAddClaim
+        )
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),

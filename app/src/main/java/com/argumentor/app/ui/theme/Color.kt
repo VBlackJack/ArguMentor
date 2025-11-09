@@ -26,12 +26,12 @@ val OnPrimaryDark = Color(0xFF000000)
 val OnBackgroundDark = Color(0xFFFFFFFF)
 val OnSurfaceDark = Color(0xFFFFFFFF)
 
-// Semantic colors for claims
-val StancePro = Color(0xFF4CAF50)
-val StanceCon = Color(0xFFF44336)
-val StanceNeutral = Color(0xFF9E9E9E)
+// Semantic colors for claims (distinct colors for stance)
+val StancePro = Color(0xFF2E7D32)        // Vert foncé pour "Pour"
+val StanceCon = Color(0xFFC62828)        // Rouge foncé pour "Contre"
+val StanceNeutral = Color(0xFF616161)    // Gris pour "Neutre"
 
-// Evidence quality colors
-val QualityHigh = Color(0xFF4CAF50)
-val QualityMedium = Color(0xFFFF9800)
-val QualityLow = Color(0xFFF44336)
+// Evidence quality colors (distinct from stance colors)
+val QualityHigh = Color(0xFF1B5E20)      // Vert très foncé (différent de StancePro)
+val QualityMedium = Color(0xFFEF6C00)    // Orange vif
+val QualityLow = Color(0xFFD32F2F)       // Rouge (différent de StanceCon)
