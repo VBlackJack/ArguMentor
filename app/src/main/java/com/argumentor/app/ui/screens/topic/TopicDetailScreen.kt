@@ -2,18 +2,24 @@ package com.argumentor.app.ui.screens.topic
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.R
 import com.argumentor.app.data.model.Claim
@@ -199,11 +205,23 @@ fun TopicDetailScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = "Résumé",
-                                style = MaterialTheme.typography.labelLarge,
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
                                 modifier = Modifier.weight(1f)
-                            )
+                            ) {
+                                Icon(
+                                    Icons.Default.Description,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Résumé",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
                             IconButton(
                                 onClick = { showSummary = !showSummary },
                                 modifier = Modifier.size(32.dp)
@@ -289,8 +307,8 @@ private fun ClaimsTab(
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 80.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(claims, key = { it.id }) { claim ->
                 ClaimCard(
@@ -334,17 +352,18 @@ private fun ClaimCard(
         )
     }
 
+    val (backgroundColor, stanceColor) = when (claim.stance) {
+        Claim.Stance.PRO -> Pair(Color(0xFFDFF7DF), Color(0xFF2E7D32))
+        Claim.Stance.CON -> Pair(Color(0xFFFBE4E4), Color(0xFFC62828))
+        Claim.Stance.NEUTRAL -> Pair(Color(0xFFF5F5F5), Color(0xFF616161))
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = when (claim.stance) {
-                Claim.Stance.PRO -> StancePro.copy(alpha = 0.1f)
-                Claim.Stance.CON -> StanceCon.copy(alpha = 0.1f)
-                Claim.Stance.NEUTRAL -> StanceNeutral.copy(alpha = 0.1f)
-            }
-        )
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -352,58 +371,84 @@ private fun ClaimCard(
             ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(
-                        text = when (claim.stance) {
-                            Claim.Stance.PRO -> "Pour"
-                            Claim.Stance.CON -> "Contre"
-                            Claim.Stance.NEUTRAL -> "Neutre"
-                        },
-                        style = MaterialTheme.typography.labelMedium,
-                        color = when (claim.stance) {
-                            Claim.Stance.PRO -> StancePro
-                            Claim.Stance.CON -> StanceCon
-                            Claim.Stance.NEUTRAL -> StanceNeutral
-                        }
-                    )
-                    Text(
-                        text = when (claim.strength) {
-                            Claim.Strength.LOW -> "Faible"
-                            Claim.Strength.MEDIUM -> "Moyen"
-                            Claim.Strength.HIGH -> "Fort"
-                        },
-                        style = MaterialTheme.typography.labelMedium
-                    )
+                    // Stance badge
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(stanceColor)
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = when (claim.stance) {
+                                Claim.Stance.PRO -> "Pour"
+                                Claim.Stance.CON -> "Contre"
+                                Claim.Stance.NEUTRAL -> "Neutre"
+                            },
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 11.sp
+                            ),
+                            color = Color.White
+                        )
+                    }
+                    // Strength badge
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(MaterialTheme.colorScheme.secondaryContainer)
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = when (claim.strength) {
+                                Claim.Strength.LOW -> "Faible"
+                                Claim.Strength.MEDIUM -> "Moyen"
+                                Claim.Strength.HIGH -> "Fort"
+                            },
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 11.sp,
+                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                            ),
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
                 }
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
                     IconButton(
                         onClick = onEdit,
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(36.dp)
                     ) {
                         Icon(
                             Icons.Default.Edit,
                             contentDescription = "Modifier",
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(20.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     IconButton(
                         onClick = { showDeleteDialog = true },
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(36.dp)
                     ) {
                         Icon(
                             Icons.Default.Delete,
                             contentDescription = "Supprimer",
                             tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = claim.text,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontSize = 15.sp,
+                    lineHeight = 22.sp
+                ),
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -416,7 +461,30 @@ private fun QuestionsTab(questions: List<com.argumentor.app.data.model.Question>
             modifier = Modifier.fillMaxSize(),
             contentAlignment = androidx.compose.ui.Alignment.Center
         ) {
-            Text("Aucune question", style = MaterialTheme.typography.bodyLarge)
+            Column(
+                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+                modifier = Modifier.padding(32.dp)
+            ) {
+                Icon(
+                    Icons.Default.QuestionAnswer,
+                    contentDescription = null,
+                    modifier = Modifier.size(64.dp),
+                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    "Aucune question pour l'instant",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    "Les questions permettent d'approfondir votre réflexion et d'explorer les nuances du sujet.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+            }
         }
     } else {
         LazyColumn(
