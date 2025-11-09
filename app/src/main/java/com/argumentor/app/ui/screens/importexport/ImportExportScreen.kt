@@ -37,8 +37,16 @@ fun ImportExportScreen(
         ActivityResultContracts.OpenDocument()
     ) { uri ->
         uri?.let {
-            context.contentResolver.openInputStream(it)?.use { inputStream ->
-                viewModel.importData(inputStream)
+            try {
+                // Read the entire content in the .use block before passing to ViewModel
+                val jsonContent = context.contentResolver.openInputStream(it)?.use { inputStream ->
+                    inputStream.bufferedReader().readText()
+                }
+                jsonContent?.let { json ->
+                    viewModel.importDataFromString(json)
+                }
+            } catch (e: Exception) {
+                viewModel.setError("Erreur lors de la lecture du fichier: ${e.message}")
             }
         }
     }

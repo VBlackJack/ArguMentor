@@ -74,6 +74,33 @@ class ImportExportViewModel @Inject constructor(
         }
     }
 
+    fun importDataFromString(jsonContent: String) {
+        viewModelScope.launch {
+            _state.value = ImportExportState.Loading
+
+            // Create an InputStream from the string
+            val inputStream = jsonContent.byteInputStream(Charsets.UTF_8)
+
+            importExportRepository.importFromJson(
+                inputStream,
+                _similarityThreshold.value
+            ).fold(
+                onSuccess = { result ->
+                    _state.value = ImportExportState.ImportPreview(result)
+                },
+                onFailure = { error ->
+                    _state.value = ImportExportState.Error(
+                        error.message ?: "Erreur lors de l'import"
+                    )
+                }
+            )
+        }
+    }
+
+    fun setError(message: String) {
+        _state.value = ImportExportState.Error(message)
+    }
+
     fun confirmImport() {
         // Already imported in preview, just confirm
         val currentState = _state.value
