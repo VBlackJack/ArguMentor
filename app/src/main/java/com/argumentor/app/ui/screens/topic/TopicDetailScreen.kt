@@ -3,6 +3,7 @@ package com.argumentor.app.ui.screens.topic
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -199,7 +200,7 @@ fun TopicDetailScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFE8EEF8)
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
@@ -218,7 +219,7 @@ fun TopicDetailScreen(
                                     Icons.Default.Description,
                                     contentDescription = null,
                                     modifier = Modifier.size(18.dp),
-                                    tint = Color(0xFF1976D2)
+                                    tint = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
                                     text = "Résumé du sujet",
@@ -226,7 +227,7 @@ fun TopicDetailScreen(
                                         fontWeight = FontWeight.SemiBold,
                                         fontSize = 13.sp
                                     ),
-                                    color = Color(0xFF1976D2)
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                             IconButton(
@@ -236,7 +237,7 @@ fun TopicDetailScreen(
                                 Icon(
                                     if (showSummary) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
                                     contentDescription = if (showSummary) "Masquer" else "Afficher",
-                                    tint = Color(0xFF666666)
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -248,12 +249,13 @@ fun TopicDetailScreen(
                                     fontSize = 14.sp,
                                     lineHeight = 20.sp
                                 ),
-                                color = Color(0xFF333333)
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             if (currentTopic.tags.isNotEmpty()) {
                                 Spacer(modifier = Modifier.height(10.dp))
-                                Divider(color = Color(0xFFCCDDEE))
+                                Divider(color = MaterialTheme.colorScheme.outlineVariant)
                                 Spacer(modifier = Modifier.height(8.dp))
+                                val isDark = isSystemInDarkTheme()
                                 FlowRow(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -269,7 +271,11 @@ fun TopicDetailScreen(
                                                     tag,
                                                     style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp)
                                                 )
-                                            }
+                                            },
+                                            colors = AssistChipDefaults.assistChipColors(
+                                                containerColor = if (isDark) Color(0xFF2A2F36) else Color(0xFFE9EEF6),
+                                                labelColor = if (isDark) Color(0xFFEEF2F6) else Color(0xFF263238)
+                                            )
                                         )
                                     }
                                 }
@@ -377,10 +383,20 @@ private fun ClaimCard(
         )
     }
 
-    val (backgroundColor, stanceColor) = when (claim.stance) {
-        Claim.Stance.PRO -> Pair(Color(0xFFDFF7DF), Color(0xFF2E7D32))
-        Claim.Stance.CON -> Pair(Color(0xFFFBE4E4), Color(0xFFC62828))
-        Claim.Stance.NEUTRAL -> Pair(Color(0xFFF5F5F5), Color(0xFF616161))
+    val isDark = isSystemInDarkTheme()
+
+    // Backgrounds adaptés au mode sombre
+    val backgroundColor = when (claim.stance) {
+        Claim.Stance.PRO -> if (isDark) Color(0xFF1A2E1A) else Color(0xFFDFF7DF)
+        Claim.Stance.CON -> if (isDark) Color(0xFF2E1A1A) else Color(0xFFFBE4E4)
+        Claim.Stance.NEUTRAL -> if (isDark) Color(0xFF1E1E1E) else Color(0xFFF5F5F5)
+    }
+
+    // Badges avec contraste garanti (couleurs foncées + texte blanc)
+    val stanceColor = when (claim.stance) {
+        Claim.Stance.PRO -> Color(0xFF1B5E20)  // Vert foncé
+        Claim.Stance.CON -> Color(0xFFB71C1C)  // Rouge foncé
+        Claim.Stance.NEUTRAL -> Color(0xFF424242)  // Gris foncé
     }
 
     ElevatedCard(
@@ -398,7 +414,7 @@ private fun ClaimCard(
                         lineHeight = 24.sp,
                         fontWeight = FontWeight.Normal
                     ),
-                    color = Color(0xFF222222)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             },
             overlineContent = {
@@ -431,7 +447,7 @@ private fun ClaimCard(
                     Text(
                         text = "•",
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color(0xFF999999)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     // Strength text
                     Text(
@@ -445,7 +461,7 @@ private fun ClaimCard(
                             fontSize = 10.sp,
                             fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                         ),
-                        color = Color(0xFF666666)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             },
@@ -462,7 +478,7 @@ private fun ClaimCard(
                             Icons.Default.Edit,
                             contentDescription = "Modifier",
                             modifier = Modifier.size(20.dp),
-                            tint = Color(0xFF666666)
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     IconButton(
