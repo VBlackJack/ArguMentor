@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileOutputStream
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -48,7 +49,11 @@ class ExportRepository @Inject constructor(
                 }
             }
 
-            pdfExporter.exportTopicToPdf(topic, claims, rebuttals)
+            val file = File(context.cacheDir, "export_${topic.id}.pdf")
+            FileOutputStream(file).use { outputStream ->
+                pdfExporter.exportTopicToPdf(topic, claims, rebuttals, outputStream)
+            }
+            Result.success(file)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -83,33 +88,24 @@ class ExportRepository @Inject constructor(
 
                     // Collect sources
                     claimEvidence.forEach { ev ->
-                        if (ev.sourceId.isNotEmpty()) {
-                            sourceDao.getSourceById(ev.sourceId)?.let { source ->
-                                sources[source.id] = source
+                        ev.sourceId?.let { sourceId ->
+                            if (sourceId.isNotEmpty()) {
+                                sourceDao.getSourceById(sourceId)?.let { source ->
+                                    sources[source.id] = source
+                                }
                             }
                         }
                     }
                 }
             }
 
-            // Collect evidence for rebuttals
-            rebuttals.values.flatten().forEach { rebuttal ->
-                val rebuttalEvidence = evidenceDao.getEvidenceForRebuttal(rebuttal.id)
-                if (rebuttalEvidence.isNotEmpty()) {
-                    evidence[rebuttal.id] = rebuttalEvidence
+            // Note: Rebuttals don't have direct evidence in the current schema
 
-                    // Collect sources
-                    rebuttalEvidence.forEach { ev ->
-                        if (ev.sourceId.isNotEmpty()) {
-                            sourceDao.getSourceById(ev.sourceId)?.let { source ->
-                                sources[source.id] = source
-                            }
-                        }
-                    }
-                }
+            val file = File(context.cacheDir, "export_${topic.id}.md")
+            FileOutputStream(file).use { outputStream ->
+                markdownExporter.exportTopicToMarkdown(topic, claims, rebuttals, evidence, questions, sources, outputStream)
             }
-
-            markdownExporter.exportTopicToMarkdown(topic, claims, rebuttals, evidence, questions, sources)
+            Result.success(file)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -127,7 +123,11 @@ class ExportRepository @Inject constructor(
                 claimsMap[topic.id] = claimDao.getClaimsForTopic(topic.id)
             }
 
-            markdownExporter.exportMultipleTopicsToMarkdown(topics, claimsMap)
+            val file = File(context.cacheDir, "export_all_topics.md")
+            FileOutputStream(file).use { outputStream ->
+                markdownExporter.exportMultipleTopicsToMarkdown(topics, claimsMap, outputStream)
+            }
+            Result.success(file)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -146,14 +146,13 @@ class ExportRepository @Inject constructor(
 
             val text = buildString {
                 appendLine(topic.title)
-                appendLine("=" .repeat(topic.title.length))
+                appendLine("=".repeat(topic.title.length))
                 appendLine()
                 appendLine(topic.summary)
                 appendLine()
                 appendLine("Arguments:")
                 claims.forEach { claim ->
-                    appendLine("• [${claim.stance.name}] ${claim.title}")
-                    appendLine("  ${claim.content}")
+                    appendLine("• [${claim.stance.name}] ${claim.text.take(100)}...")
                     appendLine()
                 }
             }

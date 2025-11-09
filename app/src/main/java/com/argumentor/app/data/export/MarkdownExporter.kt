@@ -223,7 +223,7 @@ class MarkdownExporter(private val context: Context) {
                     claimsMap[topic.id]?.let { claims ->
                         appendLine("**Arguments:** ${claims.size}")
                         claims.take(3).forEach { claim ->
-                            appendLine("- [${claim.stance.name}] ${claim.title}")
+                            appendLine("- [${claim.stance.name}] ${claim.text.take(50)}...")
                         }
                         if (claims.size > 3) {
                             appendLine("- *... et ${claims.size - 3} autres*")
