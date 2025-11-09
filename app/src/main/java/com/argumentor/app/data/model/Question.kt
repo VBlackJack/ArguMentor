@@ -27,13 +27,15 @@ data class Question(
     val createdAt: String = getCurrentIsoTimestamp()
 ) {
     enum class QuestionKind {
-        SOCRATIC, CLARIFYING;
+        SOCRATIC, CLARIFYING, CHALLENGE, EVIDENCE;
 
         companion object {
             fun fromString(value: String): QuestionKind {
                 return when (value.lowercase()) {
                     "socratic" -> SOCRATIC
                     "clarifying" -> CLARIFYING
+                    "challenge" -> CHALLENGE
+                    "evidence" -> EVIDENCE
                     else -> CLARIFYING
                 }
             }

@@ -57,8 +57,24 @@ class TopicDetailViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            questionRepository.getQuestionsByTargetId(topicId).collect { questions ->
-                _questions.value = questions
+            // Combine questions for the topic and questions for all claims in the topic
+            combine(
+                questionRepository.getQuestionsByTargetId(topicId),
+                _claims
+            ) { topicQuestions, claims ->
+                val claimIds = claims.map { it.id }
+                val allQuestions = mutableListOf<Question>()
+                allQuestions.addAll(topicQuestions)
+
+                // Add questions from all claims
+                claimIds.forEach { claimId ->
+                    val claimQuestions = questionRepository.getQuestionsByTargetId(claimId).first()
+                    allQuestions.addAll(claimQuestions)
+                }
+
+                allQuestions.distinctBy { it.id }
+            }.collect { allQuestions ->
+                _questions.value = allQuestions
             }
         }
     }
@@ -79,6 +95,13 @@ class TopicDetailViewModel @Inject constructor(
     fun deleteClaim(claim: Claim, onDeleted: () -> Unit) {
         viewModelScope.launch {
             claimRepository.deleteClaim(claim)
+            onDeleted()
+        }
+    }
+
+    fun deleteQuestion(question: Question, onDeleted: () -> Unit) {
+        viewModelScope.launch {
+            questionRepository.deleteQuestion(question)
             onDeleted()
         }
     }

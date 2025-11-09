@@ -79,6 +79,8 @@ fun QuestionCreateEditScreen(
                                 when (kindOption) {
                                     Question.QuestionKind.SOCRATIC -> "Socratique"
                                     Question.QuestionKind.CLARIFYING -> "Clarification"
+                                    Question.QuestionKind.CHALLENGE -> "Contestation"
+                                    Question.QuestionKind.EVIDENCE -> "Preuve"
                                 }
                             )
                         }

@@ -346,7 +346,21 @@ fun TopicDetailScreen(
                         }
                     }
                 )
-                1 -> QuestionsTab(questions = questions)
+                1 -> QuestionsTab(
+                    questions = questions,
+                    topicId = topicId,
+                    claims = claims,
+                    onEditQuestion = { questionId ->
+                        onNavigateToAddQuestion(topicId, questionId)
+                    },
+                    onDeleteQuestion = { question ->
+                        viewModel.deleteQuestion(question) {
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar("Question supprimée")
+                            }
+                        }
+                    }
+                )
             }
         }
     }
@@ -530,7 +544,13 @@ private fun ClaimCard(
 }
 
 @Composable
-private fun QuestionsTab(questions: List<com.argumentor.app.data.model.Question>) {
+private fun QuestionsTab(
+    questions: List<com.argumentor.app.data.model.Question>,
+    topicId: String,
+    claims: List<Claim>,
+    onEditQuestion: (String) -> Unit,
+    onDeleteQuestion: (com.argumentor.app.data.model.Question) -> Unit
+) {
     if (questions.isEmpty()) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -564,23 +584,104 @@ private fun QuestionsTab(questions: List<com.argumentor.app.data.model.Question>
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 88.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(questions) { question ->
+                var showDeleteDialog by remember { mutableStateOf(false) }
+
+                if (showDeleteDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showDeleteDialog = false },
+                        title = { Text("Supprimer la question ?") },
+                        text = { Text("Cette action est irréversible.") },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    showDeleteDialog = false
+                                    onDeleteQuestion(question)
+                                }
+                            ) {
+                                Text("Supprimer", color = MaterialTheme.colorScheme.error)
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showDeleteDialog = false }) {
+                                Text("Annuler")
+                            }
+                        }
+                    )
+                }
+
                 Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = when (question.kind) {
-                                com.argumentor.app.data.model.Question.QuestionKind.SOCRATIC -> "Socratique"
-                                com.argumentor.app.data.model.Question.QuestionKind.CLARIFYING -> "Clarification"
-                            },
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(text = question.text, style = MaterialTheme.typography.bodyMedium)
-                    }
+                    ListItem(
+                        headlineContent = {
+                            Text(text = question.text, color = MaterialTheme.colorScheme.onSurface)
+                        },
+                        overlineContent = {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = when (question.kind) {
+                                        com.argumentor.app.data.model.Question.QuestionKind.SOCRATIC -> "Socratique"
+                                        com.argumentor.app.data.model.Question.QuestionKind.CLARIFYING -> "Clarification"
+                                        com.argumentor.app.data.model.Question.QuestionKind.CHALLENGE -> "Contestation"
+                                        com.argumentor.app.data.model.Question.QuestionKind.EVIDENCE -> "Preuve"
+                                    },
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                // Show if linked to a specific claim
+                                if (question.targetId != topicId) {
+                                    val targetClaim = claims.find { claim -> claim.id == question.targetId }
+                                    if (targetClaim != null) {
+                                        Text("•", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        Text(
+                                            text = "→ Affirmation",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.secondary
+                                        )
+                                    }
+                                }
+                            }
+                        },
+                        supportingContent = {
+                            // Show the related claim text if applicable
+                            if (question.targetId != topicId) {
+                                val targetClaim = claims.find { claim -> claim.id == question.targetId }
+                                if (targetClaim != null) {
+                                    Text(
+                                        text = "\"${targetClaim.text.take(100)}${if (targetClaim.text.length > 100) "..." else ""}\"",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                                    )
+                                }
+                            }
+                        },
+                        trailingContent = {
+                            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                IconButton(onClick = { onEditQuestion(question.id) }) {
+                                    Icon(
+                                        Icons.Default.Edit,
+                                        contentDescription = "Éditer",
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                                IconButton(onClick = { showDeleteDialog = true }) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = "Supprimer",
+                                        tint = MaterialTheme.colorScheme.error,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                        }
+                    )
                 }
             }
         }
