@@ -1,0 +1,271 @@
+{
+  "schemaVersion": "1.0",
+  "exportedAt": "2025-01-15T19:00:00Z",
+  "app": "ArguMentor",
+  "topics": [
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440001",
+      "title": "Transidentité et biologie : Genre et sexe",
+      "summary": "Analyse scientifique et éthique des questions liées à la transidentité, au genre et à la biologie",
+      "posture": "neutre_critique",
+      "tags": ["tag_genre", "tag_biologie", "tag_ethique", "tag_societe"],
+      "createdAt": "2025-01-15T19:00:00Z",
+      "updatedAt": "2025-01-15T19:00:00Z"
+    }
+  ],
+  "claims": [
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440101",
+      "text": "Le sexe biologique est binaire et déterminé par les chromosomes XX ou XY",
+      "stance": "pro",
+      "strength": "medium",
+      "topics": ["e50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T19:00:00Z",
+      "updatedAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440102",
+      "text": "Le sexe biologique est plus complexe qu'un simple binaire, avec des variations chromosomiques, hormonales et anatomiques",
+      "stance": "con",
+      "strength": "high",
+      "topics": ["e50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T19:00:00Z",
+      "updatedAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440103",
+      "text": "L'identité de genre est une construction sociale sans base biologique",
+      "stance": "pro",
+      "strength": "medium",
+      "topics": ["e50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T19:00:00Z",
+      "updatedAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440104",
+      "text": "Des études neurologiques montrent des différences cérébrales chez les personnes trans correspondant à leur genre d'identification",
+      "stance": "con",
+      "strength": "medium",
+      "topics": ["e50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T19:00:00Z",
+      "updatedAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440105",
+      "text": "Les transitions médicales chez les mineurs sont appropriées et réduisent le risque de suicide",
+      "stance": "pro",
+      "strength": "medium",
+      "topics": ["e50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T19:00:00Z",
+      "updatedAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440106",
+      "text": "Les interventions médicales irréversibles chez les mineurs soulèvent des questions éthiques importantes sur le consentement éclairé",
+      "stance": "con",
+      "strength": "high",
+      "topics": ["e50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T19:00:00Z",
+      "updatedAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440107",
+      "text": "Les femmes trans ne devraient pas participer aux compétitions sportives féminines pour des raisons d'équité",
+      "stance": "pro",
+      "strength": "medium",
+      "topics": ["e50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T19:00:00Z",
+      "updatedAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440108",
+      "text": "Après transition hormonale, les avantages physiologiques masculins sont largement réduits",
+      "stance": "con",
+      "strength": "medium",
+      "topics": ["e50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T19:00:00Z",
+      "updatedAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440109",
+      "text": "La dysphorie de genre est une condition psychiatrique qui nécessite un traitement psychologique",
+      "stance": "pro",
+      "strength": "weak",
+      "topics": ["e50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T19:00:00Z",
+      "updatedAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440110",
+      "text": "L'OMS a retiré la dysphorie de genre de la liste des troubles mentaux en 2019, reconnaissant qu'il s'agit d'une variation de l'identité",
+      "stance": "con",
+      "strength": "high",
+      "topics": ["e50e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T19:00:00Z",
+      "updatedAt": "2025-01-15T19:00:00Z"
+    }
+  ],
+  "rebuttals": [
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440201",
+      "claimId": "e50e8400-e29b-41d4-a716-446655440101",
+      "text": "1,7% de la population naît avec des variations intersexes (syndrome de Klinefelter XXY, syndrome de Turner XO, etc.), montrant que le sexe n'est pas strictement binaire",
+      "fallacyTag": "Simplification excessive",
+      "createdAt": "2025-01-15T19:00:00Z",
+      "updatedAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440202",
+      "claimId": "e50e8400-e29b-41d4-a716-446655440103",
+      "text": "Des études d'imagerie cérébrale (Zhou et al., 1995; Kruijver et al., 2000) montrent des différences structurelles dans le cerveau des personnes trans",
+      "fallacyTag": "Ignorance des données neurologiques",
+      "createdAt": "2025-01-15T19:00:00Z",
+      "updatedAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440203",
+      "claimId": "e50e8400-e29b-41d4-a716-446655440105",
+      "text": "Le rapport Cass (2024) au Royaume-Uni a critiqué les preuves insuffisantes pour les bloqueurs de puberté et recommandé plus de recherche",
+      "fallacyTag": "Manque de preuves long terme",
+      "createdAt": "2025-01-15T19:00:00Z",
+      "updatedAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440204",
+      "claimId": "e50e8400-e29b-41d4-a716-446655440108",
+      "text": "Étude de Hilton & Lundberg (2021) : Les femmes trans conservent des avantages significatifs en force et en masse musculaire même après 3 ans d'hormonothérapie",
+      "fallacyTag": "Avantages physiologiques persistants",
+      "createdAt": "2025-01-15T19:00:00Z",
+      "updatedAt": "2025-01-15T19:00:00Z"
+    }
+  ],
+  "evidences": [
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440301",
+      "claimId": "e50e8400-e29b-41d4-a716-446655440102",
+      "type": "statistic",
+      "content": "Selon l'ISNA, environ 1,7% des naissances présentent des variations intersexes, soit autant que les cheveux roux",
+      "sourceId": "e50e8400-e29b-41d4-a716-446655440401",
+      "quality": "high",
+      "createdAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440302",
+      "claimId": "e50e8400-e29b-41d4-a716-446655440104",
+      "type": "study",
+      "content": "Étude neuroanatomique (Nature, 1995) : Le noyau BNST du cerveau des femmes trans ressemble à celui des femmes cis, suggérant une base biologique",
+      "sourceId": "e50e8400-e29b-41d4-a716-446655440402",
+      "quality": "medium",
+      "createdAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440303",
+      "claimId": "e50e8400-e29b-41d4-a716-446655440106",
+      "type": "study",
+      "content": "Le rapport Cass (2024) conclut que les preuves sur l'efficacité des bloqueurs de puberté sont 'remarquablement faibles'",
+      "sourceId": "e50e8400-e29b-41d4-a716-446655440403",
+      "quality": "high",
+      "createdAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440304",
+      "claimId": "e50e8400-e29b-41d4-a716-446655440110",
+      "type": "citation",
+      "content": "CIM-11 (2019) : 'L'incongruence de genre n'est plus classifiée comme trouble mental mais comme condition relative à la santé sexuelle'",
+      "sourceId": "e50e8400-e29b-41d4-a716-446655440404",
+      "quality": "high",
+      "createdAt": "2025-01-15T19:00:00Z"
+    }
+  ],
+  "questions": [
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440501",
+      "targetId": "e50e8400-e29b-41d4-a716-446655440101",
+      "text": "Comment expliquer les personnes intersexes dans un modèle strictement binaire du sexe ?",
+      "kind": "challenge",
+      "createdAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440502",
+      "targetId": "e50e8400-e29b-41d4-a716-446655440106",
+      "text": "Comment déterminer l'âge approprié pour le consentement à des traitements médicaux irréversibles ?",
+      "kind": "clarification",
+      "createdAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440503",
+      "targetId": "e50e8400-e29b-41d4-a716-446655440107",
+      "text": "Comment concilier l'inclusion des femmes trans et l'équité sportive pour les femmes cis ?",
+      "kind": "challenge",
+      "createdAt": "2025-01-15T19:00:00Z"
+    }
+  ],
+  "sources": [
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440401",
+      "title": "How common is intersex?",
+      "citation": "Intersex Society of North America (2008).",
+      "url": "https://isna.org/faq/frequency/",
+      "publisher": "ISNA",
+      "date": "2008",
+      "reliabilityScore": 0.88,
+      "notes": "Organisation de référence sur l'intersexuation",
+      "createdAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440402",
+      "title": "A sex difference in the human brain and its relation to transsexuality",
+      "citation": "Zhou, J. N., et al. (1995). Nature, 378(6552), 68-70.",
+      "url": "https://www.nature.com/articles/378068a0",
+      "publisher": "Nature",
+      "date": "1995",
+      "reliabilityScore": 0.85,
+      "notes": "Étude pionnière sur les bases neurologiques",
+      "createdAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440403",
+      "title": "The Cass Review: Independent review of gender identity services for children and young people",
+      "citation": "Cass, H. (2024). NHS England.",
+      "url": "https://cass.independent-review.uk/",
+      "publisher": "NHS England",
+      "date": "2024",
+      "reliabilityScore": 0.92,
+      "notes": "Rapport indépendant du système de santé britannique",
+      "createdAt": "2025-01-15T19:00:00Z"
+    },
+    {
+      "id": "e50e8400-e29b-41d4-a716-446655440404",
+      "title": "ICD-11: International Classification of Diseases 11th Revision",
+      "citation": "WHO (2019).",
+      "url": "https://icd.who.int/en",
+      "publisher": "Organisation mondiale de la santé",
+      "date": "2019",
+      "reliabilityScore": 0.98,
+      "notes": "Classification internationale officielle",
+      "createdAt": "2025-01-15T19:00:00Z"
+    }
+  ],
+  "tags": [
+    {
+      "id": "tag_genre",
+      "label": "Genre",
+      "color": "#E91E63"
+    },
+    {
+      "id": "tag_biologie",
+      "label": "Biologie",
+      "color": "#8BC34A"
+    },
+    {
+      "id": "tag_ethique",
+      "label": "Éthique",
+      "color": "#3F51B5"
+    },
+    {
+      "id": "tag_societe",
+      "label": "Société",
+      "color": "#FF5722"
+    }
+  ]
+}

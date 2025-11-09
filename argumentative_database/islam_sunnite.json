@@ -1,0 +1,352 @@
+{
+  "schemaVersion": "1.0",
+  "exportedAt": "2025-01-15T11:00:00Z",
+  "app": "ArguMentor",
+  "topics": [
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440001",
+      "title": "Islam sunnite : Doctrines, pratiques et interprétations contemporaines",
+      "summary": "Analyse critique des enseignements, pratiques et débats contemporains au sein de l'Islam sunnite",
+      "posture": "neutre_critique",
+      "tags": ["tag_religion", "tag_islam", "tag_theologie", "tag_ethique"],
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    }
+  ],
+  "claims": [
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440101",
+      "text": "Le Coran est la parole littérale et inaltérée de Dieu révélée à Muhammad",
+      "stance": "pro",
+      "strength": "high",
+      "topics": ["650e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440102",
+      "text": "Les variantes textuelles et les Qira'at montrent une histoire textuelle plus complexe que l'idée d'un texte strictement inaltéré",
+      "stance": "con",
+      "strength": "high",
+      "topics": ["650e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440103",
+      "text": "La charia offre un cadre juridique complet compatible avec les droits humains modernes",
+      "stance": "pro",
+      "strength": "weak",
+      "topics": ["650e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440104",
+      "text": "Certaines interprétations traditionnelles de la charia entrent en conflit avec les droits humains universels (apostasie, homosexualité, égalité femmes-hommes)",
+      "stance": "con",
+      "strength": "high",
+      "topics": ["650e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440105",
+      "text": "Le hijab est une obligation religieuse claire pour toutes les femmes musulmanes",
+      "stance": "pro",
+      "strength": "medium",
+      "topics": ["650e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440106",
+      "text": "L'interprétation du hijab varie considérablement selon les écoles juridiques et les contextes historiques",
+      "stance": "con",
+      "strength": "high",
+      "topics": ["650e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440107",
+      "text": "L'Islam promeut la paix et le jihad ne désigne que la lutte spirituelle intérieure",
+      "stance": "pro",
+      "strength": "weak",
+      "topics": ["650e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440108",
+      "text": "Le jihad militaire est documenté dans les textes fondateurs et a été largement pratiqué historiquement",
+      "stance": "con",
+      "strength": "high",
+      "topics": ["650e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440109",
+      "text": "Muhammad était un prophète moral exemplaire dont la vie doit être imitée",
+      "stance": "pro",
+      "strength": "medium",
+      "topics": ["650e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440110",
+      "text": "Certains aspects de la vie de Muhammad (mariage avec Aisha, guerre, esclavage) posent des problèmes éthiques selon les standards contemporains",
+      "stance": "con",
+      "strength": "high",
+      "topics": ["650e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440111",
+      "text": "L'Islam garantit la liberté de conscience et interdit la contrainte en religion",
+      "stance": "pro",
+      "strength": "medium",
+      "topics": ["650e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440112",
+      "text": "La peine de mort pour apostasie est largement acceptée dans les quatre écoles juridiques sunnites",
+      "stance": "con",
+      "strength": "high",
+      "topics": ["650e8400-e29b-41d4-a716-446655440001"],
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    }
+  ],
+  "rebuttals": [
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440201",
+      "claimId": "650e8400-e29b-41d4-a716-446655440101",
+      "text": "Les manuscrits de Sanaa (1972) révèlent des variantes textuelles significatives datant du VIIe siècle",
+      "fallacyTag": "Preuve documentaire contradictoire",
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440202",
+      "claimId": "650e8400-e29b-41d4-a716-446655440103",
+      "text": "13 pays à majorité musulmane pénalisent l'homosexualité par la peine de mort selon leur interprétation de la charia",
+      "fallacyTag": "Conflit droits humains",
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440203",
+      "claimId": "650e8400-e29b-41d4-a716-446655440105",
+      "text": "Le mot 'hijab' n'apparaît qu'une fois dans le Coran (33:53) et désignait à l'origine un rideau séparateur, pas un vêtement",
+      "fallacyTag": "Interprétation anachronique",
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440204",
+      "claimId": "650e8400-e29b-41d4-a716-446655440107",
+      "text": "Le Coran contient plus de 100 versets sur le jihad militaire, et la Sira documente 27 batailles menées par Muhammad",
+      "fallacyTag": "Omission sélective",
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440205",
+      "claimId": "650e8400-e29b-41d4-a716-446655440109",
+      "text": "Aisha avait 6 ans lors de son mariage et 9 ans lors de sa consommation selon les hadiths sahih (Bukhari, Muslim)",
+      "fallacyTag": "Relativisme moral problématique",
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440206",
+      "claimId": "650e8400-e29b-41d4-a716-446655440111",
+      "text": "Le consensus des quatre écoles juridiques (hanafite, malikite, chaféite, hanbalite) établit la peine de mort pour l'apostat",
+      "fallacyTag": "Contradiction interne",
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
+    }
+  ],
+  "evidences": [
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440301",
+      "claimId": "650e8400-e29b-41d4-a716-446655440102",
+      "type": "study",
+      "content": "Gerd-R. Puin, chercheur en études coraniques, a documenté les variantes textuelles dans les manuscrits de Sanaa, montrant des différences orthographiques et lexicales",
+      "sourceId": "650e8400-e29b-41d4-a716-446655440401",
+      "quality": "high",
+      "createdAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440302",
+      "claimId": "650e8400-e29b-41d4-a716-446655440104",
+      "type": "statistic",
+      "content": "Selon le Pew Research Center (2013), 84% des musulmans au Pakistan, 86% en Jordanie, et 76% en Égypte soutiennent la peine de mort pour l'apostasie",
+      "sourceId": "650e8400-e29b-41d4-a716-446655440402",
+      "quality": "high",
+      "createdAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440303",
+      "claimId": "650e8400-e29b-41d4-a716-446655440106",
+      "type": "citation",
+      "content": "Fatima Mernissi, sociologue marocaine, dans 'Le harem politique' : 'Le voile est davantage une construction sociale et politique qu'une obligation coranique claire'",
+      "sourceId": "650e8400-e29b-41d4-a716-446655440403",
+      "quality": "high",
+      "createdAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440304",
+      "claimId": "650e8400-e29b-41d4-a716-446655440108",
+      "type": "citation",
+      "content": "Coran 9:29 : 'Combattez ceux qui ne croient ni en Allah ni au Jour dernier [...] jusqu'à ce qu'ils versent la capitation de leurs propres mains, après s'être humiliés'",
+      "sourceId": "650e8400-e29b-41d4-a716-446655440404",
+      "quality": "high",
+      "createdAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440305",
+      "claimId": "650e8400-e29b-41d4-a716-446655440110",
+      "type": "citation",
+      "content": "Sahih al-Bukhari 5134 : 'Le Prophète a épousé Aisha quand elle avait six ans et a consommé son mariage quand elle avait neuf ans'",
+      "sourceId": "650e8400-e29b-41d4-a716-446655440405",
+      "quality": "high",
+      "createdAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440306",
+      "claimId": "650e8400-e29b-41d4-a716-446655440112",
+      "type": "expert",
+      "content": "Yusuf al-Qaradawi, théologien sunnite influent : 'L'apostasie de l'islam est un crime qui mérite la peine de mort selon le consensus des juristes'",
+      "sourceId": "650e8400-e29b-41d4-a716-446655440406",
+      "quality": "high",
+      "createdAt": "2025-01-15T11:00:00Z"
+    }
+  ],
+  "questions": [
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440501",
+      "targetId": "650e8400-e29b-41d4-a716-446655440101",
+      "text": "Comment expliquer l'existence de sept lectures canoniques (Qira'at) différentes si le texte est strictement inaltéré ?",
+      "kind": "challenge",
+      "createdAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440502",
+      "targetId": "650e8400-e29b-41d4-a716-446655440103",
+      "text": "La charia peut-elle évoluer pour s'adapter aux contextes modernes sans perdre sa légitimité religieuse ?",
+      "kind": "clarification",
+      "createdAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440503",
+      "targetId": "650e8400-e29b-41d4-a716-446655440109",
+      "text": "Comment concilier l'exemplarité morale de Muhammad avec des pratiques (esclavage, mariages multiples, guerre) jugées problématiques aujourd'hui ?",
+      "kind": "challenge",
+      "createdAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440504",
+      "targetId": "650e8400-e29b-41d4-a716-446655440111",
+      "text": "Si 'nulle contrainte en religion' (Coran 2:256), pourquoi la peine de mort pour apostasie est-elle acceptée par les quatre écoles juridiques ?",
+      "kind": "challenge",
+      "createdAt": "2025-01-15T11:00:00Z"
+    }
+  ],
+  "sources": [
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440401",
+      "title": "The Hidden Origins of Islam",
+      "citation": "Ohlig, K.-H., & Puin, G.-R. (2010). Prometheus Books.",
+      "url": "https://www.prometheusbooks.com",
+      "publisher": "Prometheus Books",
+      "date": "2010",
+      "reliabilityScore": 0.85,
+      "notes": "Recherche académique sur l'histoire textuelle du Coran",
+      "createdAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440402",
+      "title": "The World's Muslims: Religion, Politics and Society",
+      "citation": "Pew Research Center (2013).",
+      "url": "https://www.pewresearch.org/religion/2013/04/30/the-worlds-muslims-religion-politics-society-overview/",
+      "publisher": "Pew Research Center",
+      "date": "2013",
+      "reliabilityScore": 0.95,
+      "notes": "Enquête mondiale sur les attitudes musulmanes",
+      "createdAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440403",
+      "title": "Le harem politique : Le Prophète et les femmes",
+      "citation": "Mernissi, F. (1987). Albin Michel.",
+      "url": "https://www.albin-michel.fr",
+      "publisher": "Albin Michel",
+      "date": "1987",
+      "reliabilityScore": 0.88,
+      "notes": "Analyse sociologique des rapports de genre dans l'Islam",
+      "createdAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440404",
+      "title": "Le Coran",
+      "citation": "Traduction française de Muhammad Hamidullah (1959).",
+      "url": "https://www.coran-en-ligne.com",
+      "publisher": "Texte fondateur de l'Islam",
+      "date": "VIIe siècle",
+      "reliabilityScore": 0.99,
+      "notes": "Texte sacré de référence",
+      "createdAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440405",
+      "title": "Sahih al-Bukhari",
+      "citation": "Al-Bukhari, Muhammad ibn Ismail (IXe siècle). Collection de hadiths authentiques.",
+      "url": "https://sunnah.com/bukhari",
+      "publisher": "Recueil de hadiths",
+      "date": "IXe siècle",
+      "reliabilityScore": 0.95,
+      "notes": "Collection de hadiths considérée comme la plus authentique en Islam sunnite",
+      "createdAt": "2025-01-15T11:00:00Z"
+    },
+    {
+      "id": "650e8400-e29b-41d4-a716-446655440406",
+      "title": "The Lawful and the Prohibited in Islam",
+      "citation": "Al-Qaradawi, Y. (1960). Islamic Book Trust.",
+      "url": "https://www.ibtbooks.com",
+      "publisher": "Islamic Book Trust",
+      "date": "1960",
+      "reliabilityScore": 0.90,
+      "notes": "Ouvrage de référence en jurisprudence islamique contemporaine",
+      "createdAt": "2025-01-15T11:00:00Z"
+    }
+  ],
+  "tags": [
+    {
+      "id": "tag_religion",
+      "label": "Religion",
+      "color": "#9C27B0"
+    },
+    {
+      "id": "tag_islam",
+      "label": "Islam",
+      "color": "#00897B"
+    },
+    {
+      "id": "tag_theologie",
+      "label": "Théologie",
+      "color": "#673AB7"
+    },
+    {
+      "id": "tag_ethique",
+      "label": "Éthique",
+      "color": "#3F51B5"
+    }
+  ]
+}
