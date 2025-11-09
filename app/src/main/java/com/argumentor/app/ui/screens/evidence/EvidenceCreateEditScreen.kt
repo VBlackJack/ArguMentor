@@ -19,6 +19,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.data.model.Evidence
+import com.argumentor.app.util.createSpeechIntent
+import com.argumentor.app.util.rememberSpeechToTextLauncher
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +41,19 @@ fun EvidenceCreateEditScreen(
     val isEditMode = evidenceId != null
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showSourceSelector by remember { mutableStateOf(false) }
+
+    // Speech-to-text launcher for content field
+    val speechLauncher = rememberSpeechToTextLauncher { text ->
+        if (text.isNotBlank()) {
+            val currentContent = content
+            val newContent = if (currentContent.isNotBlank()) {
+                "$currentContent $text"
+            } else {
+                text
+            }
+            viewModel.onContentChange(newContent)
+        }
+    }
 
     LaunchedEffect(evidenceId, claimId) {
         viewModel.loadEvidence(evidenceId, claimId)
@@ -105,22 +120,33 @@ fun EvidenceCreateEditScreen(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Content field
-                OutlinedTextField(
-                    value = content,
-                    onValueChange = { viewModel.onContentChange(it) },
-                    label = { Text("Contenu de la preuve *") },
-                    placeholder = { Text("Décrivez la preuve...") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = false,
-                    minLines = 4,
-                    maxLines = 10,
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Sentences,
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Default
+                // Content field with voice input button
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = content,
+                        onValueChange = { viewModel.onContentChange(it) },
+                        label = { Text("Contenu de la preuve *") },
+                        placeholder = { Text("Décrivez la preuve...") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = false,
+                        minLines = 4,
+                        maxLines = 10,
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Sentences,
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Default
+                        ),
+                        trailingIcon = {
+                            IconButton(onClick = { speechLauncher.launch(createSpeechIntent()) }) {
+                                Icon(
+                                    imageVector = Icons.Default.Mic,
+                                    contentDescription = "Dictée vocale",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
                     )
-                )
+                }
 
                 // Type selector
                 Text(

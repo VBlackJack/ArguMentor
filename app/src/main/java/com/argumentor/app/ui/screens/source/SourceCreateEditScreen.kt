@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,6 +21,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.R
+import com.argumentor.app.util.createSpeechIntent
+import com.argumentor.app.util.rememberSpeechToTextLauncher
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +42,31 @@ fun SourceCreateEditScreen(
     val linkedClaims by viewModel.linkedClaims.collectAsState()
 
     val isEditMode = sourceId != null
+
+    // Speech-to-text launchers for multiline fields
+    val citationSpeechLauncher = rememberSpeechToTextLauncher { text ->
+        if (text.isNotBlank()) {
+            val currentCitation = citation
+            val newCitation = if (currentCitation.isNotBlank()) {
+                "$currentCitation $text"
+            } else {
+                text
+            }
+            viewModel.onCitationChange(newCitation)
+        }
+    }
+
+    val notesSpeechLauncher = rememberSpeechToTextLauncher { text ->
+        if (text.isNotBlank()) {
+            val currentNotes = notes
+            val newNotes = if (currentNotes.isNotBlank()) {
+                "$currentNotes $text"
+            } else {
+                text
+            }
+            viewModel.onNotesChange(newNotes)
+        }
+    }
 
     LaunchedEffect(sourceId) {
         viewModel.loadSource(sourceId)
@@ -113,7 +141,7 @@ fun SourceCreateEditScreen(
                     )
                 )
 
-                // Citation field
+                // Citation field with voice input
                 OutlinedTextField(
                     value = citation,
                     onValueChange = { viewModel.onCitationChange(it) },
@@ -126,7 +154,16 @@ fun SourceCreateEditScreen(
                         capitalization = KeyboardCapitalization.Sentences,
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
-                    )
+                    ),
+                    trailingIcon = {
+                        IconButton(onClick = { citationSpeechLauncher.launch(createSpeechIntent()) }) {
+                            Icon(
+                                imageVector = Icons.Default.Mic,
+                                contentDescription = "Dictée vocale",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
                 )
 
                 // URL field
@@ -172,7 +209,7 @@ fun SourceCreateEditScreen(
                     )
                 )
 
-                // Notes field
+                // Notes field with voice input
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { viewModel.onNotesChange(it) },
@@ -186,7 +223,16 @@ fun SourceCreateEditScreen(
                         capitalization = KeyboardCapitalization.Sentences,
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Default
-                    )
+                    ),
+                    trailingIcon = {
+                        IconButton(onClick = { notesSpeechLauncher.launch(createSpeechIntent()) }) {
+                            Icon(
+                                imageVector = Icons.Default.Mic,
+                                contentDescription = "Dictée vocale",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
                 )
 
                 // Help text

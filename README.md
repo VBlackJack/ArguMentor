@@ -10,6 +10,7 @@ Fournir un outil rigoureux pour structurer la pensée critique sur des sujets se
 
 ### Core Features
 - ✅ **CRUD complet** : Création/modification/suppression de Sujets, Affirmations, Contre-arguments, Preuves, Questions, Sources, Tags
+- ✅ **Dictée vocale** : Reconnaissance vocale (Speech-to-Text) pour les champs multilignes (preuves, sources, citations, notes)
 - ✅ **Recherche plein-texte** : Recherche FTS (Full-Text Search) avec fallback automatique sur claims, rebuttals et questions
 - ✅ **Liens croisés** : Un claim peut appartenir à plusieurs topics
 - ✅ **Mode Débat** : Cartes recto/verso pour réviser arguments et contre-arguments
@@ -17,9 +18,9 @@ Fournir un outil rigoureux pour structurer la pensée critique sur des sujets se
 - ✅ **Export PDF/Markdown** : Export par sujet avec SAF (Android 13/14 compatible) - menu ⋮ depuis le détail du sujet
 - ✅ **Bibliothèque de modèles** : Templates pour arguments doctrinaux, scientifiques, témoignages, etc.
 - ✅ **Catalogue de sophismes** : 15+ fallacies cataloguées (ad hominem, straw man, post hoc, etc.)
-- ✅ **Avertissement éthique** : Écran d'avertissement au premier lancement
 - ✅ **Thème clair/sombre** : Support des deux thèmes
 - ✅ **Android 13/14 compatible** : Storage Access Framework (SAF) - aucune permission de stockage requise
+- ✅ **IME padding** : Clavier n'obstrue plus les champs de saisie lors de l'édition
 
 ### Architecture Technique
 
@@ -145,9 +146,10 @@ cd ArguMentor
 ## 📖 Utilisation
 
 ### Premier lancement
-1. Accepter l'avertissement éthique
+1. Accorder les permissions nécessaires (microphone pour la dictée vocale - optionnel)
 2. Créer un premier sujet (bouton +)
 3. Ajouter des affirmations, preuves, contre-arguments
+4. Utiliser le bouton 🎤 dans les champs multilignes pour la dictée vocale
 
 ### Import/Export
 
