@@ -27,7 +27,7 @@ import com.argumentor.app.ui.theme.StanceCon
 import com.argumentor.app.ui.theme.StanceNeutral
 import com.argumentor.app.ui.theme.StancePro
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun TopicDetailScreen(
     topicId: String,
@@ -254,9 +254,12 @@ fun TopicDetailScreen(
                                 Spacer(modifier = Modifier.height(10.dp))
                                 Divider(color = Color(0xFFCCDDEE))
                                 Spacer(modifier = Modifier.height(8.dp))
-                                Row(
+                                FlowRow(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .wrapContentHeight(),
                                     horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                    modifier = Modifier.fillMaxWidth()
+                                    verticalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
                                     currentTopic.tags.forEach { tag ->
                                         AssistChip(
@@ -380,21 +383,29 @@ private fun ClaimCard(
         Claim.Stance.NEUTRAL -> Pair(Color(0xFFF5F5F5), Color(0xFF616161))
     }
 
-    Card(
+    ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        colors = CardDefaults.elevatedCardColors(containerColor = backgroundColor),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(18.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            // Badges row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-            ) {
+        ListItem(
+            headlineContent = {
+                Text(
+                    text = claim.text,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontSize = 17.sp,
+                        lineHeight = 24.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    color = Color(0xFF222222)
+                )
+            },
+            overlineContent = {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                    modifier = Modifier.wrapContentHeight()
                 ) {
                     // Stance badge
                     Box(
@@ -422,7 +433,7 @@ private fun ClaimCard(
                         style = MaterialTheme.typography.labelSmall,
                         color = Color(0xFF999999)
                     )
-                    // Strength badge
+                    // Strength text
                     Text(
                         text = when (claim.strength) {
                             Claim.Strength.LOW -> "Faible"
@@ -437,7 +448,12 @@ private fun ClaimCard(
                         color = Color(0xFF666666)
                     )
                 }
-                Row(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
+            },
+            trailingContent = {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(0.dp),
+                    modifier = Modifier.wrapContentWidth()
+                ) {
                     IconButton(
                         onClick = onEdit,
                         modifier = Modifier.size(36.dp)
@@ -462,20 +478,7 @@ private fun ClaimCard(
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Claim text with better contrast
-            Text(
-                text = claim.text,
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontSize = 17.sp,
-                    lineHeight = 24.sp,
-                    fontWeight = FontWeight.Normal
-                ),
-                color = Color(0xFF222222)
-            )
-        }
+        )
     }
 }
 
