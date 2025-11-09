@@ -52,7 +52,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     NavigationDrawerItem(
-                        icon = { Icon(Icons.Default.Home, contentDescription = null) },
+                        icon = { Icon(Icons.Default.Home, contentDescription = stringResource(R.string.nav_home)) },
                         label = { Text(stringResource(R.string.nav_home)) },
                         selected = true,
                         onClick = {
@@ -61,7 +61,7 @@ fun HomeScreen(
                     )
 
                     NavigationDrawerItem(
-                        icon = { Icon(Icons.Default.Add, contentDescription = null) },
+                        icon = { Icon(Icons.Default.Add, contentDescription = stringResource(R.string.nav_new_topic)) },
                         label = { Text(stringResource(R.string.nav_new_topic)) },
                         selected = false,
                         onClick = {
@@ -75,7 +75,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     NavigationDrawerItem(
-                        icon = { Icon(Icons.Default.BarChart, contentDescription = null) },
+                        icon = { Icon(Icons.Default.BarChart, contentDescription = stringResource(R.string.nav_statistics)) },
                         label = { Text(stringResource(R.string.nav_statistics)) },
                         selected = false,
                         onClick = {
@@ -85,7 +85,7 @@ fun HomeScreen(
                     )
 
                     NavigationDrawerItem(
-                        icon = { Icon(Icons.Default.FileUpload, contentDescription = null) },
+                        icon = { Icon(Icons.Default.FileUpload, contentDescription = stringResource(R.string.nav_import_export)) },
                         label = { Text(stringResource(R.string.nav_import_export)) },
                         selected = false,
                         onClick = {
@@ -99,7 +99,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     NavigationDrawerItem(
-                        icon = { Icon(Icons.Default.Settings, contentDescription = null) },
+                        icon = { Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.nav_settings)) },
                         label = { Text(stringResource(R.string.nav_settings)) },
                         selected = false,
                         onClick = {

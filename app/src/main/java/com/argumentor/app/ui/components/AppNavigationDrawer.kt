@@ -36,7 +36,7 @@ fun AppNavigationDrawerContent(
             Spacer(modifier = Modifier.height(16.dp))
 
             NavigationDrawerItem(
-                icon = { Icon(Icons.Default.Home, contentDescription = null) },
+                icon = { Icon(Icons.Default.Home, contentDescription = "Accueil") },
                 label = { Text("Accueil") },
                 selected = currentRoute == "home",
                 onClick = {
@@ -46,7 +46,7 @@ fun AppNavigationDrawerContent(
             )
 
             NavigationDrawerItem(
-                icon = { Icon(Icons.Default.Add, contentDescription = null) },
+                icon = { Icon(Icons.Default.Add, contentDescription = "Nouveau sujet") },
                 label = { Text("Nouveau sujet") },
                 selected = false,
                 onClick = {
@@ -60,7 +60,7 @@ fun AppNavigationDrawerContent(
             Spacer(modifier = Modifier.height(8.dp))
 
             NavigationDrawerItem(
-                icon = { Icon(Icons.Default.BarChart, contentDescription = null) },
+                icon = { Icon(Icons.Default.BarChart, contentDescription = "Statistiques") },
                 label = { Text("Statistiques") },
                 selected = currentRoute == "statistics",
                 onClick = {
@@ -70,7 +70,7 @@ fun AppNavigationDrawerContent(
             )
 
             NavigationDrawerItem(
-                icon = { Icon(Icons.Default.FileUpload, contentDescription = null) },
+                icon = { Icon(Icons.Default.FileUpload, contentDescription = "Import/Export") },
                 label = { Text("Import/Export") },
                 selected = currentRoute == "import_export",
                 onClick = {
@@ -84,7 +84,7 @@ fun AppNavigationDrawerContent(
             Spacer(modifier = Modifier.height(8.dp))
 
             NavigationDrawerItem(
-                icon = { Icon(Icons.Default.Settings, contentDescription = null) },
+                icon = { Icon(Icons.Default.Settings, contentDescription = "Paramètres") },
                 label = { Text("Paramètres") },
                 selected = currentRoute == "settings",
                 onClick = {
