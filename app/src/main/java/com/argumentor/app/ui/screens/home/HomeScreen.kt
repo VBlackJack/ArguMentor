@@ -13,6 +13,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -139,30 +141,90 @@ fun HomeScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                // Search bar
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = viewModel::onSearchQueryChange,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    placeholder = { Text(stringResource(R.string.home_search_hint)) },
-                    leadingIcon = {
-                        Icon(
-                            Icons.Default.Search,
-                            contentDescription = stringResource(R.string.accessibility_search)
-                        )
-                    },
-                    singleLine = true,
-                    trailingIcon = {
-                        if (isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                strokeWidth = 2.dp
+                // Search bar with loading indicator
+                Column {
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = viewModel::onSearchQueryChange,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 16.dp),
+                        placeholder = { Text(stringResource(R.string.home_search_hint)) },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Search,
+                                contentDescription = stringResource(R.string.accessibility_search)
                             )
+                        },
+                        singleLine = true,
+                        trailingIcon = {
+                            if (searchQuery.isNotEmpty()) {
+                                IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
+                                    Icon(
+                                        Icons.Default.Close,
+                                        contentDescription = "Effacer la recherche"
+                                    )
+                                }
+                            }
+                        }
+                    )
+
+                    // Clear filters chip when active
+                    val hasActiveFilters = searchQuery.isNotEmpty() || selectedTag != null
+                    if (hasActiveFilters && selectedTag != null) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            FilterChip(
+                                selected = true,
+                                onClick = { viewModel.onTagSelected(null) },
+                                label = { Text(selectedTag) },
+                                trailingIcon = {
+                                    Icon(
+                                        Icons.Default.Close,
+                                        contentDescription = "Retirer le filtre",
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                            )
+
+                            if (searchQuery.isNotEmpty()) {
+                                TextButton(
+                                    onClick = {
+                                        viewModel.onSearchQueryChange("")
+                                        viewModel.onTagSelected(null)
+                                    }
+                                ) {
+                                    Icon(
+                                        Icons.Default.Clear,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text("Effacer tout")
+                                }
+                            }
                         }
                     }
-                )
+
+                    // Linear progress indicator (better visibility than circular in trailing icon)
+                    if (isLoading) {
+                        LinearProgressIndicator(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 8.dp)
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.height(if (hasActiveFilters) 8.dp else 16.dp))
+                    }
+                }
 
                 // Topics list
                 if (topics.isEmpty()) {
@@ -179,12 +241,16 @@ fun HomeScreen(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(topics) { topic ->
+                        items(
+                            items = topics,
+                            key = { it.id }
+                        ) { topic ->
                             TopicCard(
                                 topic = topic,
                                 selectedTag = selectedTag,
                                 onClick = { onNavigateToTopic(topic.id) },
-                                onTagClick = viewModel::onTagSelected
+                                onTagClick = viewModel::onTagSelected,
+                                modifier = Modifier.animateItemPlacement()
                             )
                         }
                     }
@@ -200,12 +266,18 @@ private fun TopicCard(
     topic: Topic,
     selectedTag: String?,
     onClick: () -> Unit,
-    onTagClick: (String) -> Unit
+    onTagClick: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
+    val haptic = LocalHapticFeedback.current
+
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .clickable {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                onClick()
+            },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
@@ -242,7 +314,10 @@ private fun TopicCard(
                     topic.tags.take(3).forEach { tag ->
                         FilterChip(
                             selected = tag == selectedTag,
-                            onClick = { onTagClick(tag) },
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                onTagClick(tag)
+                            },
                             label = {
                                 Text(
                                     text = tag,

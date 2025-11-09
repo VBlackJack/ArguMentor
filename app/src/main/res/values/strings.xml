@@ -92,6 +92,33 @@
     <string name="debate_empty_title">Pas de contenu supplémentaire</string>
     <string name="debate_empty_message">Cette affirmation n\'a pas encore de contre-arguments, preuves ou questions associés</string>
 
+    <!-- Plurals -->
+    <plurals name="topic_count">
+        <item quantity="zero">Aucun sujet</item>
+        <item quantity="one">%d sujet</item>
+        <item quantity="other">%d sujets</item>
+    </plurals>
+    <plurals name="claim_count">
+        <item quantity="zero">Aucune affirmation</item>
+        <item quantity="one">%d affirmation</item>
+        <item quantity="other">%d affirmations</item>
+    </plurals>
+    <plurals name="question_count">
+        <item quantity="zero">Aucune question</item>
+        <item quantity="one">%d question</item>
+        <item quantity="other">%d questions</item>
+    </plurals>
+    <plurals name="tag_count">
+        <item quantity="zero">Aucun tag</item>
+        <item quantity="one">%d tag</item>
+        <item quantity="other">%d tags</item>
+    </plurals>
+    <plurals name="source_count">
+        <item quantity="zero">Aucune source</item>
+        <item quantity="one">%d source</item>
+        <item quantity="other">%d sources</item>
+    </plurals>
+
     <!-- Import/Export -->
     <string name="import_data">Importer des données</string>
     <string name="export_data">Exporter des données</string>
