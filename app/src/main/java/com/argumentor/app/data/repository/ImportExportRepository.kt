@@ -31,22 +31,24 @@ class ImportExportRepository @Inject constructor(
      */
     suspend fun exportToJson(outputStream: OutputStream): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            val exportData = ExportData(
-                schemaVersion = "1.0",
-                exportedAt = getCurrentIsoTimestamp(),
-                app = "ArguMentor",
-                topics = getAllTopics(),
-                claims = getAllClaims(),
-                rebuttals = getAllRebuttals(),
-                evidences = getAllEvidences(),
-                questions = getAllQuestions(),
-                sources = getAllSources(),
-                tags = getAllTags()
-            )
+            outputStream.use { stream ->
+                val exportData = ExportData(
+                    schemaVersion = "1.0",
+                    exportedAt = getCurrentIsoTimestamp(),
+                    app = "ArguMentor",
+                    topics = getAllTopics(),
+                    claims = getAllClaims(),
+                    rebuttals = getAllRebuttals(),
+                    evidences = getAllEvidences(),
+                    questions = getAllQuestions(),
+                    sources = getAllSources(),
+                    tags = getAllTags()
+                )
 
-            val json = gson.toJson(exportData)
-            outputStream.write(json.toByteArray())
-            outputStream.flush()
+                val json = gson.toJson(exportData)
+                stream.write(json.toByteArray())
+                stream.flush()
+            }
 
             Result.success(Unit)
         } catch (e: Exception) {

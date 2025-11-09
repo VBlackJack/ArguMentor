@@ -83,7 +83,8 @@ fun TopicDetailScreen(
         ActivityResultContracts.CreateDocument("application/pdf")
     ) { uri ->
         uri?.let {
-            context.contentResolver.openOutputStream(it)?.use { os ->
+            // Don't use .use {} here - the exporter closes the stream
+            context.contentResolver.openOutputStream(it)?.let { os ->
                 viewModel.exportTopicToPdf(topicId, os) { success, error ->
                     coroutineScope.launch {
                         snackbarHostState.showSnackbar(
@@ -100,7 +101,8 @@ fun TopicDetailScreen(
         ActivityResultContracts.CreateDocument("text/markdown")
     ) { uri ->
         uri?.let {
-            context.contentResolver.openOutputStream(it)?.use { os ->
+            // Don't use .use {} here - the exporter closes the stream
+            context.contentResolver.openOutputStream(it)?.let { os ->
                 viewModel.exportTopicToMarkdown(topicId, os) { success, error ->
                     coroutineScope.launch {
                         snackbarHostState.showSnackbar(

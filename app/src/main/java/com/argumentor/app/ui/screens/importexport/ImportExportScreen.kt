@@ -27,8 +27,12 @@ fun ImportExportScreen(
         ActivityResultContracts.CreateDocument("application/json")
     ) { uri ->
         uri?.let {
-            context.contentResolver.openOutputStream(it)?.use { outputStream ->
-                viewModel.exportData(outputStream)
+            try {
+                context.contentResolver.openOutputStream(it)?.let { outputStream ->
+                    viewModel.exportData(outputStream)
+                }
+            } catch (e: Exception) {
+                viewModel.setError("Erreur lors de l'export: ${e.message}")
             }
         }
     }
