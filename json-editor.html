@@ -592,6 +592,79 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Drag & Drop Zone */
+        .drop-zone {
+            border: 3px dashed var(--primary);
+            border-radius: var(--border-radius);
+            padding: 3rem;
+            text-align: center;
+            background: var(--background);
+            transition: var(--transition);
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone.drag-over {
+            background: var(--primary);
+            color: var(--on-primary);
+            transform: scale(1.02);
+        }
+
+        .drop-zone-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 0.75rem;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Character counter */
+        .char-counter {
+            font-size: 0.75rem;
+            color: var(--on-surface);
+            opacity: 0.6;
+            text-align: right;
+            margin-top: 0.25rem;
+        }
+
+        .char-counter.warning {
+            color: var(--quality-medium);
+            opacity: 1;
+        }
+
+        .char-counter.error {
+            color: var(--error);
+            opacity: 1;
+        }
+
         /* Utilities */
         .hidden { display: none !important; }
         .text-center { text-align: center; }
@@ -622,6 +695,13 @@
     </header>
 
     <div class="container">
+        <!-- Drag & Drop Zone -->
+        <div id="drop-zone" class="drop-zone">
+            <div class="drop-zone-icon">📥</div>
+            <h3>Glissez-déposez un fichier JSON ici</h3>
+            <p style="opacity: 0.7; margin-top: 0.5rem;">ou cliquez pour sélectionner un fichier</p>
+        </div>
+
         <!-- Mode Tabs -->
         <div class="mode-tabs">
             <button class="mode-tab active" onclick="switchMode('visual')">
@@ -689,7 +769,10 @@
             </div>
 
             <div id="entity-list-section" class="editor-section hidden">
-                <h2 class="mb-2">Liste des entités</h2>
+                <div class="flex-between mb-2">
+                    <h2>Liste des entités</h2>
+                    <input type="text" id="search-box" placeholder="🔍 Rechercher..." style="max-width: 300px; padding: 0.5rem; border-radius: 8px; border: 2px solid var(--primary);">
+                </div>
                 <div id="entity-list" class="entity-list"></div>
             </div>
         </div>
@@ -768,7 +851,7 @@
                 id: '',
                 title: '',
                 summary: '',
-                posture: 'neutre',
+                posture: 'neutral_critical',
                 tags: [],
                 createdAt: '',
                 updatedAt: ''
@@ -777,7 +860,7 @@
                 id: '',
                 text: '',
                 stance: 'neutral',
-                strength: 'medium',
+                strength: 'med',
                 topics: [],
                 createdAt: '',
                 updatedAt: '',
@@ -794,17 +877,17 @@
             evidences: {
                 id: '',
                 claimId: '',
-                type: 'citation',
+                type: 'quote',
                 content: '',
                 sourceId: '',
-                quality: 'medium',
+                quality: 'med',
                 createdAt: ''
             },
             questions: {
                 id: '',
                 targetId: '',
                 text: '',
-                kind: 'clarification',
+                kind: 'clarifying',
                 createdAt: ''
             },
             sources: {
@@ -832,11 +915,9 @@
                 { name: 'title', label: 'Titre', type: 'text', required: true },
                 { name: 'summary', label: 'Résumé', type: 'textarea', required: true },
                 { name: 'posture', label: 'Posture', type: 'select', required: true, options: [
-                    { value: 'neutre', label: 'Neutre' },
-                    { value: 'neutre_critique', label: 'Neutre Critique' },
-                    { value: 'sceptique', label: 'Sceptique' },
-                    { value: 'opposant', label: 'Opposant' },
-                    { value: 'comparatif_academique', label: 'Comparatif Académique' }
+                    { value: 'neutral_critical', label: 'Neutral Critical (Neutre Critique)' },
+                    { value: 'skeptical', label: 'Skeptical (Sceptique)' },
+                    { value: 'academic_comparative', label: 'Academic Comparative (Comparatif Académique)' }
                 ]},
                 { name: 'tags', label: 'Tags', type: 'tags', hint: 'IDs des tags (séparés par des virgules)' }
             ],
@@ -849,9 +930,9 @@
                     { value: 'neutral', label: '⚪ Neutre' }
                 ]},
                 { name: 'strength', label: 'Force', type: 'select', required: true, options: [
-                    { value: 'weak', label: 'Faible' },
-                    { value: 'medium', label: 'Moyenne' },
-                    { value: 'high', label: 'Forte' }
+                    { value: 'low', label: 'Low (Faible)' },
+                    { value: 'med', label: 'Med (Moyenne)' },
+                    { value: 'high', label: 'High (Forte)' }
                 ]},
                 { name: 'topics', label: 'Topics', type: 'tags', required: true, hint: 'IDs des topics (au moins un)' },
                 { name: 'claimFingerprint', label: 'Empreinte', type: 'text', hint: 'Généré automatiquement si vide' }
@@ -866,19 +947,17 @@
                 { name: 'id', label: 'ID', type: 'text', required: true },
                 { name: 'claimId', label: 'Claim ID', type: 'text', required: true },
                 { name: 'type', label: 'Type', type: 'select', required: true, options: [
-                    { value: 'citation', label: 'Citation' },
-                    { value: 'statistic', label: 'Statistique' },
-                    { value: 'study', label: 'Étude' },
-                    { value: 'expert', label: 'Expert' },
-                    { value: 'example', label: 'Exemple' },
-                    { value: 'anecdote', label: 'Anecdote' }
+                    { value: 'quote', label: 'Quote (Citation)' },
+                    { value: 'stat', label: 'Stat (Statistique)' },
+                    { value: 'study', label: 'Study (Étude)' },
+                    { value: 'example', label: 'Example (Exemple)' }
                 ]},
                 { name: 'content', label: 'Contenu', type: 'textarea', required: true },
                 { name: 'sourceId', label: 'Source ID', type: 'text', hint: 'ID de la source (optionnel)' },
                 { name: 'quality', label: 'Qualité', type: 'select', required: true, options: [
-                    { value: 'low', label: 'Faible' },
-                    { value: 'medium', label: 'Moyenne' },
-                    { value: 'high', label: 'Élevée' }
+                    { value: 'low', label: 'Low (Faible)' },
+                    { value: 'med', label: 'Med (Moyenne)' },
+                    { value: 'high', label: 'High (Élevée)' }
                 ]}
             ],
             questions: [
@@ -886,10 +965,10 @@
                 { name: 'targetId', label: 'Target ID', type: 'text', required: true, hint: 'ID du topic ou claim ciblé' },
                 { name: 'text', label: 'Question', type: 'textarea', required: true },
                 { name: 'kind', label: 'Type', type: 'select', required: true, options: [
-                    { value: 'clarification', label: 'Clarification' },
-                    { value: 'challenge', label: 'Contestation' },
-                    { value: 'followup', label: 'Suivi' },
-                    { value: 'evidence', label: 'Preuve' }
+                    { value: 'clarifying', label: 'Clarifying (Clarification)' },
+                    { value: 'socratic', label: 'Socratic (Socratique)' },
+                    { value: 'challenge', label: 'Challenge (Contestation)' },
+                    { value: 'evidence', label: 'Evidence (Preuve)' }
                 ]}
             ],
             sources: [
@@ -913,6 +992,86 @@
         function init() {
             updateCounts();
             updateCodeEditor();
+            initDragAndDrop();
+        }
+
+        // Initialize Drag & Drop
+        function initDragAndDrop() {
+            const dropZone = document.getElementById('drop-zone');
+
+            // Click to select file
+            dropZone.addEventListener('click', () => {
+                importJSON();
+            });
+
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+
+            // Highlight drop zone when item is dragged over
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.add('drag-over');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.remove('drag-over');
+                }, false);
+            });
+
+            // Handle dropped files
+            dropZone.addEventListener('drop', handleDrop, false);
+        }
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        }
+
+        function handleFile(file) {
+            if (!file.name.endsWith('.json')) {
+                alert('❌ Veuillez sélectionner un fichier JSON (.json)');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = event => {
+                try {
+                    const imported = JSON.parse(event.target.result);
+                    const validation = validateJSONStructure(imported);
+
+                    if (validation.errors.length === 0 && validation.warnings.length === 0) {
+                        jsonData = imported;
+                        updateCounts();
+                        updateCodeEditor();
+                        alert('✅ JSON importé avec succès !');
+                    } else if (validation.errors.length === 0) {
+                        if (confirm(`⚠️ Le JSON contient ${validation.warnings.length} avertissement(s). Voulez-vous l'importer ?\n\n${validation.warnings.join('\n')}`)) {
+                            jsonData = imported;
+                            updateCounts();
+                            updateCodeEditor();
+                        }
+                    } else {
+                        alert(`❌ Le JSON contient ${validation.errors.length} erreur(s) critique(s) et ne peut pas être importé :\n\n${validation.errors.join('\n')}`);
+                    }
+                } catch (error) {
+                    alert(`❌ Erreur lors de l'import: ${error.message}`);
+                }
+            };
+            reader.readAsText(file);
         }
 
         // Mode Switching
@@ -947,6 +1106,13 @@
             document.getElementById('entity-editor').classList.remove('hidden');
             document.getElementById('entity-list-section').classList.remove('hidden');
             document.getElementById('entity-editor-title').textContent = `Gérer les ${entityType}`;
+
+            // Reset search box
+            const searchBox = document.getElementById('search-box');
+            if (searchBox) {
+                searchBox.value = '';
+                searchBox.removeAttribute('data-listener');
+            }
 
             // Render entity list
             renderEntityList();
@@ -984,14 +1150,22 @@
                     });
                     html += `</select>`;
                 } else if (field.type === 'textarea') {
-                    html += `<textarea id="${field.name}" ${field.required ? 'required' : ''}>${value}</textarea>`;
+                    html += `<textarea id="${field.name}" ${field.required ? 'required' : ''} oninput="updateCharCounter('${field.name}')">${value}</textarea>`;
+                    html += `<div id="${field.name}-counter" class="char-counter"></div>`;
                 } else if (field.type === 'tags') {
                     const tagsValue = Array.isArray(value) ? value.join(', ') : value;
-                    html += `<input type="text" id="${field.name}" value="${tagsValue}" ${field.required ? 'required' : ''}>`;
+                    html += `<input type="text" id="${field.name}" value="${tagsValue}" ${field.required ? 'required' : ''} list="${field.name}-datalist">`;
+                    // Add autocomplete datalist based on field
+                    html += generateDatalist(field.name);
                 } else {
                     const inputType = field.type || 'text';
                     const extraAttrs = field.min !== undefined ? `min="${field.min}" max="${field.max}" step="${field.step}"` : '';
-                    html += `<input type="${inputType}" id="${field.name}" value="${value}" ${field.required ? 'required' : ''} ${extraAttrs}>`;
+                    // Add autocomplete for specific fields
+                    const datalist = needsAutocomplete(field.name) ? `list="${field.name}-datalist"` : '';
+                    html += `<input type="${inputType}" id="${field.name}" value="${value}" ${field.required ? 'required' : ''} ${extraAttrs} ${datalist}>`;
+                    if (needsAutocomplete(field.name)) {
+                        html += generateDatalist(field.name);
+                    }
                 }
 
                 if (field.hint) {
@@ -1003,11 +1177,52 @@
             document.getElementById(targetId).innerHTML = html;
         }
 
+        // Check if field needs autocomplete
+        function needsAutocomplete(fieldName) {
+            return ['claimId', 'targetId', 'sourceId'].includes(fieldName);
+        }
+
+        // Generate datalist for autocomplete
+        function generateDatalist(fieldName) {
+            let options = [];
+
+            if (fieldName === 'tags') {
+                options = jsonData.tags.map(t => ({ id: t.id, label: `${t.id} - ${t.label}` }));
+            } else if (fieldName === 'claimId' || fieldName === 'targetId') {
+                // For claims and topics
+                jsonData.topics.forEach(t => {
+                    options.push({ id: t.id, label: `${t.id} (Topic: ${t.title})` });
+                });
+                jsonData.claims.forEach(c => {
+                    const preview = c.text.substring(0, 50) + (c.text.length > 50 ? '...' : '');
+                    options.push({ id: c.id, label: `${c.id} (Claim: ${preview})` });
+                });
+            } else if (fieldName === 'sourceId') {
+                options = jsonData.sources.map(s => ({ id: s.id, label: `${s.id} - ${s.title}` }));
+            }
+
+            let html = `<datalist id="${fieldName}-datalist">`;
+            options.forEach(opt => {
+                html += `<option value="${opt.id}">${opt.label}</option>`;
+            });
+            html += `</datalist>`;
+
+            return html;
+        }
+
         // Open Modal
         function openModal(entity) {
             generateFormHTML(entity, 'modal-form');
             document.getElementById('modal-title').textContent = editingIndex === -1 ? 'Ajouter une entité' : 'Éditer l\'entité';
             document.getElementById('entity-modal').classList.add('active');
+
+            // Initialize character counters for textareas
+            setTimeout(() => {
+                const textareas = document.querySelectorAll('#modal-form textarea');
+                textareas.forEach(textarea => {
+                    updateCharCounter(textarea.id);
+                });
+            }, 50);
         }
 
         // Close Modal
@@ -1041,6 +1256,11 @@
                 entity.createdAt = new Date().toISOString();
             }
 
+            // Auto-generate fingerprint for claims
+            if (currentEntity === 'claims' && (!entity.claimFingerprint || entity.claimFingerprint === '')) {
+                entity.claimFingerprint = generateFingerprint(entity.text);
+            }
+
             // Save to data
             if (editingIndex === -1) {
                 jsonData[currentEntity].push(entity);
@@ -1053,6 +1273,51 @@
             renderEntityList();
             updateCounts();
             updateCodeEditor();
+        }
+
+        // Generate fingerprint (SHA-256 simulation with simple hash)
+        function generateFingerprint(text) {
+            if (!text) return '';
+
+            // Normalize text (lowercase, remove punctuation, trim)
+            const normalized = text.toLowerCase()
+                .replace(/[^\w\s]/g, '')
+                .replace(/\s+/g, '_')
+                .trim();
+
+            // Simple hash function (for demo - in production use crypto.subtle.digest)
+            let hash = 0;
+            for (let i = 0; i < normalized.length; i++) {
+                const char = normalized.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32bit integer
+            }
+
+            return normalized.substring(0, 50) + '_' + Math.abs(hash).toString(16);
+        }
+
+        // Update character counter for textarea
+        function updateCharCounter(fieldName) {
+            const textarea = document.getElementById(fieldName);
+            const counter = document.getElementById(fieldName + '-counter');
+
+            if (!textarea || !counter) return;
+
+            const length = textarea.value.length;
+            const recommended = fieldName === 'summary' ? 200 : (fieldName === 'text' ? 300 : 500);
+            const max = recommended * 2;
+
+            counter.textContent = `${length} caractères`;
+
+            // Apply color based on length
+            counter.classList.remove('warning', 'error');
+            if (length > max) {
+                counter.classList.add('error');
+                counter.textContent += ` (⚠️ Trop long - recommandé: ${recommended})`;
+            } else if (length > recommended) {
+                counter.classList.add('warning');
+                counter.textContent += ` (recommandé: ${recommended})`;
+            }
         }
 
         // Edit Entity
@@ -1073,7 +1338,7 @@
         }
 
         // Render Entity List
-        function renderEntityList() {
+        function renderEntityList(searchTerm = '') {
             const listContainer = document.getElementById('entity-list');
             const entities = jsonData[currentEntity];
 
@@ -1082,12 +1347,38 @@
                 return;
             }
 
+            // Filter entities based on search term
+            const filteredEntities = searchTerm ?
+                entities.filter((entity, index) => {
+                    const searchLower = searchTerm.toLowerCase();
+                    const title = (entity.title || entity.text || entity.label || entity.id || '').toLowerCase();
+                    const content = (entity.summary || entity.content || entity.citation || '').toLowerCase();
+                    return title.includes(searchLower) || content.includes(searchLower) || entity.id.toLowerCase().includes(searchLower);
+                }).map((entity, _, arr) => {
+                    return { entity, index: entities.indexOf(entity) };
+                }) :
+                entities.map((entity, index) => ({ entity, index }));
+
+            if (filteredEntities.length === 0) {
+                listContainer.innerHTML = '<p style="text-align: center; opacity: 0.5; padding: 2rem;">Aucun résultat trouvé pour "' + searchTerm + '"</p>';
+                return;
+            }
+
             let html = '';
-            entities.forEach((entity, index) => {
+            filteredEntities.forEach(({ entity, index }) => {
                 html += renderEntityCard(entity, index);
             });
 
             listContainer.innerHTML = html;
+
+            // Add search box listener
+            const searchBox = document.getElementById('search-box');
+            if (searchBox && !searchBox.hasAttribute('data-listener')) {
+                searchBox.setAttribute('data-listener', 'true');
+                searchBox.addEventListener('input', (e) => {
+                    renderEntityList(e.target.value);
+                });
+            }
         }
 
         // Render Entity Card
@@ -1158,18 +1449,36 @@
 
             try {
                 const parsed = JSON.parse(editor.value);
-                const errors = validateJSONStructure(parsed);
+                const validation = validateJSONStructure(parsed);
 
-                if (errors.length === 0) {
+                if (validation.errors.length === 0 && validation.warnings.length === 0) {
                     jsonData = parsed;
                     updateCounts();
                     messagesDiv.innerHTML = '<div class="validation-message success"><span>✅</span><span>JSON valide ! Toutes les validations ont réussi.</span></div>';
                 } else {
-                    let html = '<div class="validation-message error"><div><strong>❌ Erreurs de validation:</strong><ul style="margin-top: 0.5rem;">';
-                    errors.forEach(err => {
-                        html += `<li>${err}</li>`;
-                    });
-                    html += '</ul></div></div>';
+                    let html = '';
+
+                    if (validation.errors.length > 0) {
+                        html += '<div class="validation-message error"><div><strong>❌ Erreurs critiques:</strong><ul style="margin-top: 0.5rem;">';
+                        validation.errors.forEach(err => {
+                            html += `<li>${err}</li>`;
+                        });
+                        html += '</ul></div></div>';
+                    }
+
+                    if (validation.warnings.length > 0) {
+                        html += '<div class="validation-message warning"><div><strong>⚠️ Avertissements:</strong><ul style="margin-top: 0.5rem;">';
+                        validation.warnings.forEach(warn => {
+                            html += `<li>${warn}</li>`;
+                        });
+                        html += '</ul></div></div>';
+                    }
+
+                    if (validation.errors.length === 0) {
+                        jsonData = parsed;
+                        updateCounts();
+                    }
+
                     messagesDiv.innerHTML = html;
                 }
             } catch (error) {
@@ -1179,6 +1488,7 @@
 
         function validateJSONStructure(data) {
             const errors = [];
+            const warnings = [];
 
             // Check required fields
             if (data.schemaVersion !== "1.0") {
@@ -1205,6 +1515,15 @@
                     if (!claim.topics || claim.topics.length === 0) {
                         errors.push(`Claim #${i + 1} (${claim.id}) doit avoir au moins un topic`);
                     }
+                    // Check if topics exist
+                    if (data.topics && claim.topics) {
+                        const topicIds = data.topics.map(t => t.id);
+                        claim.topics.forEach(topicId => {
+                            if (!topicIds.includes(topicId)) {
+                                warnings.push(`Claim #${i + 1} (${claim.id}) référence un topic inexistant: ${topicId}`);
+                            }
+                        });
+                    }
                 });
             }
 
@@ -1218,17 +1537,42 @@
                 });
             }
 
-            // Validate evidences have valid claimId
+            // Validate evidences have valid claimId and sourceId
             if (data.evidences && data.claims) {
                 const claimIds = data.claims.map(c => c.id);
+                const sourceIds = data.sources ? data.sources.map(s => s.id) : [];
                 data.evidences.forEach((evidence, i) => {
                     if (!claimIds.includes(evidence.claimId)) {
                         errors.push(`Evidence #${i + 1} (${evidence.id}) référence un claim inexistant: ${evidence.claimId}`);
                     }
+                    if (evidence.sourceId && !sourceIds.includes(evidence.sourceId)) {
+                        warnings.push(`Evidence #${i + 1} (${evidence.id}) référence une source inexistante: ${evidence.sourceId}`);
+                    }
                 });
             }
 
-            return errors;
+            // Validate questions have valid targetId
+            if (data.questions && data.topics && data.claims) {
+                const validTargets = [...data.topics.map(t => t.id), ...data.claims.map(c => c.id)];
+                data.questions.forEach((question, i) => {
+                    if (!validTargets.includes(question.targetId)) {
+                        warnings.push(`Question #${i + 1} (${question.id}) référence une cible inexistante: ${question.targetId}`);
+                    }
+                });
+            }
+
+            // Check for duplicate IDs
+            requiredArrays.forEach(arr => {
+                if (data[arr]) {
+                    const ids = data[arr].map(item => item.id);
+                    const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
+                    if (duplicates.length > 0) {
+                        errors.push(`IDs dupliqués dans ${arr}: ${[...new Set(duplicates)].join(', ')}`);
+                    }
+                }
+            });
+
+            return { errors, warnings };
         }
 
         // Preview Functions
@@ -1263,17 +1607,30 @@
         }
 
         function updateValidationPreview() {
-            const errors = validateJSONStructure(jsonData);
+            const validation = validateJSONStructure(jsonData);
             const div = document.getElementById('validation-preview');
 
-            if (errors.length === 0) {
+            if (validation.errors.length === 0 && validation.warnings.length === 0) {
                 div.innerHTML = '<div class="validation-message success"><span>✅</span><span>Toutes les validations ont réussi !</span></div>';
             } else {
-                let html = '<div class="validation-message warning"><div><strong>⚠️ Avertissements:</strong><ul style="margin-top: 0.5rem;">';
-                errors.forEach(err => {
-                    html += `<li>${err}</li>`;
-                });
-                html += '</ul></div></div>';
+                let html = '';
+
+                if (validation.errors.length > 0) {
+                    html += '<div class="validation-message error"><div><strong>❌ Erreurs critiques:</strong><ul style="margin-top: 0.5rem;">';
+                    validation.errors.forEach(err => {
+                        html += `<li>${err}</li>`;
+                    });
+                    html += '</ul></div></div>';
+                }
+
+                if (validation.warnings.length > 0) {
+                    html += '<div class="validation-message warning"><div><strong>⚠️ Avertissements:</strong><ul style="margin-top: 0.5rem;">';
+                    validation.warnings.forEach(warn => {
+                        html += `<li>${warn}</li>`;
+                    });
+                    html += '</ul></div></div>';
+                }
+
                 div.innerHTML = html;
             }
         }
@@ -1282,39 +1639,73 @@
             const section = document.getElementById('preview-section');
             let html = '';
 
-            // Topics Preview
+            // Topics Preview with bar chart
             if (jsonData.topics.length > 0) {
+                const postureCounts = {};
+                jsonData.topics.forEach(t => {
+                    postureCounts[t.posture] = (postureCounts[t.posture] || 0) + 1;
+                });
+
                 html += `
                     <div class="preview-card">
                         <h3>🎯 Topics <span class="preview-count">${jsonData.topics.length}</span></h3>
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
                             ${jsonData.topics.slice(0, 5).map(t => `<div>• ${t.title}</div>`).join('')}
                             ${jsonData.topics.length > 5 ? `<div style="opacity: 0.5;">... et ${jsonData.topics.length - 5} autres</div>` : ''}
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <small style="opacity: 0.7;">Postures:</small>
+                            ${Object.entries(postureCounts).map(([posture, count]) => `
+                                <div style="margin: 0.25rem 0;">
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
+                                        <span>${posture}</span>
+                                        <span>${count}</span>
+                                    </div>
+                                    <div style="background: rgba(0,0,0,0.1); border-radius: 4px; height: 6px; overflow: hidden;">
+                                        <div style="background: var(--primary); height: 100%; width: ${(count / jsonData.topics.length) * 100}%;"></div>
+                                    </div>
+                                </div>
+                            `).join('')}
                         </div>
                     </div>
                 `;
             }
 
-            // Claims Preview
+            // Claims Preview with enhanced stats
             if (jsonData.claims.length > 0) {
                 const stanceCounts = {
                     pro: jsonData.claims.filter(c => c.stance === 'pro').length,
                     con: jsonData.claims.filter(c => c.stance === 'con').length,
                     neutral: jsonData.claims.filter(c => c.stance === 'neutral').length
                 };
+
+                const strengthCounts = {
+                    low: jsonData.claims.filter(c => c.strength === 'low').length,
+                    med: jsonData.claims.filter(c => c.strength === 'med').length,
+                    high: jsonData.claims.filter(c => c.strength === 'high').length
+                };
+
                 html += `
                     <div class="preview-card">
                         <h3>💬 Claims <span class="preview-count">${jsonData.claims.length}</span></h3>
-                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
                             <span class="badge badge-pro">Pro: ${stanceCounts.pro}</span>
                             <span class="badge badge-con">Con: ${stanceCounts.con}</span>
                             <span class="badge badge-neutral">Neutral: ${stanceCounts.neutral}</span>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <small style="opacity: 0.7;">Force:</small>
+                            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                                <span class="badge badge-low">Low: ${strengthCounts.low}</span>
+                                <span class="badge badge-medium">Med: ${strengthCounts.med}</span>
+                                <span class="badge badge-high">High: ${strengthCounts.high}</span>
+                            </div>
                         </div>
                     </div>
                 `;
             }
 
-            // Other entities
+            // Other entities with progress bars
             ['rebuttals', 'evidences', 'questions', 'sources', 'tags'].forEach(entity => {
                 if (jsonData[entity].length > 0) {
                     const icons = {
@@ -1324,9 +1715,29 @@
                         sources: '🔗',
                         tags: '🏷️'
                     };
+
+                    let extraInfo = '';
+                    if (entity === 'evidences') {
+                        const qualityCounts = {
+                            low: jsonData.evidences.filter(e => e.quality === 'low').length,
+                            med: jsonData.evidences.filter(e => e.quality === 'med').length,
+                            high: jsonData.evidences.filter(e => e.quality === 'high').length
+                        };
+                        extraInfo = `
+                            <div style="margin-top: 0.5rem; font-size: 0.75rem;">
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <span class="badge badge-low">Low: ${qualityCounts.low}</span>
+                                    <span class="badge badge-medium">Med: ${qualityCounts.med}</span>
+                                    <span class="badge badge-high">High: ${qualityCounts.high}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+
                     html += `
                         <div class="preview-card">
                             <h3>${icons[entity]} ${entity.charAt(0).toUpperCase() + entity.slice(1)} <span class="preview-count">${jsonData[entity].length}</span></h3>
+                            ${extraInfo}
                         </div>
                     `;
                 }
@@ -1346,19 +1757,21 @@
                 reader.onload = event => {
                     try {
                         const imported = JSON.parse(event.target.result);
-                        const errors = validateJSONStructure(imported);
+                        const validation = validateJSONStructure(imported);
 
-                        if (errors.length === 0) {
+                        if (validation.errors.length === 0 && validation.warnings.length === 0) {
                             jsonData = imported;
                             updateCounts();
                             updateCodeEditor();
                             alert('✅ JSON importé avec succès !');
-                        } else {
-                            if (confirm(`⚠️ Le JSON contient ${errors.length} erreur(s). Voulez-vous quand même l'importer ?\n\n${errors.join('\n')}`)) {
+                        } else if (validation.errors.length === 0) {
+                            if (confirm(`⚠️ Le JSON contient ${validation.warnings.length} avertissement(s). Voulez-vous l'importer ?\n\n${validation.warnings.join('\n')}`)) {
                                 jsonData = imported;
                                 updateCounts();
                                 updateCodeEditor();
                             }
+                        } else {
+                            alert(`❌ Le JSON contient ${validation.errors.length} erreur(s) critique(s) et ne peut pas être importé :\n\n${validation.errors.join('\n')}`);
                         }
                     } catch (error) {
                         alert(`❌ Erreur lors de l'import: ${error.message}`);

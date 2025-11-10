@@ -16,7 +16,7 @@
       "id": "topic_002",
       "title": "Intelligence Artificielle et Éthique",
       "summary": "Les implications éthiques du développement de l'IA",
-      "posture": "neutre",
+      "posture": "neutral_critical",
       "tags": ["tag_003"],
       "createdAt": "2025-11-10T10:15:00Z",
       "updatedAt": "2025-11-10T10:15:00Z"
@@ -27,7 +27,7 @@
       "id": "claim_001",
       "text": "La Bible enseigne explicitement la doctrine de la Trinité",
       "stance": "pro",
-      "strength": "medium",
+      "strength": "med",
       "topics": ["topic_001"],
       "createdAt": "2025-11-10T10:30:00Z",
       "updatedAt": "2025-11-10T10:30:00Z",
@@ -76,7 +76,7 @@
     {
       "id": "evidence_001",
       "claimId": "claim_001",
-      "type": "citation",
+      "type": "quote",
       "content": "Matthieu 28:19 - 'Allez, faites de toutes les nations des disciples, les baptisant au nom du Père, du Fils et du Saint-Esprit'",
       "sourceId": "source_001",
       "quality": "high",
@@ -85,7 +85,7 @@
     {
       "id": "evidence_002",
       "claimId": "claim_001",
-      "type": "citation",
+      "type": "quote",
       "content": "Jean 1:1 - 'Au commencement était la Parole, et la Parole était avec Dieu, et la Parole était Dieu'",
       "sourceId": "source_001",
       "quality": "high",
@@ -106,14 +106,14 @@
       "id": "question_001",
       "targetId": "topic_001",
       "text": "Quels sont les passages bibliques qui soutiennent ou contredisent la Trinité ?",
-      "kind": "clarification",
+      "kind": "clarifying",
       "createdAt": "2025-11-10T11:45:00Z"
     },
     {
       "id": "question_002",
       "targetId": "claim_003",
       "text": "Quelles méthodes concrètes peuvent être utilisées pour réduire les biais dans les modèles d'IA ?",
-      "kind": "followup",
+      "kind": "socratic",
       "createdAt": "2025-11-10T11:50:00Z"
     }
   ],
