@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -93,9 +94,9 @@ fun TopicCreateEditScreen(
                         label = {
                             Text(
                                 when (postureOption) {
-                                    Topic.Posture.NEUTRAL_CRITIQUE -> "Neutre & Critique"
-                                    Topic.Posture.SCEPTIQUE -> "Sceptique"
-                                    Topic.Posture.COMPARATIF_ACADEMIQUE -> "Comparatif Académique"
+                                    Topic.Posture.NEUTRAL_CRITICAL -> "Neutre & Critique"
+                                    Topic.Posture.SKEPTICAL -> "Sceptique"
+                                    Topic.Posture.ACADEMIC_COMPARATIVE -> "Comparatif Académique"
                                 }
                             )
                         }
@@ -137,7 +138,7 @@ fun TopicCreateEditScreen(
                         label = { Text(tag) },
                         trailingIcon = {
                             Icon(
-                                imageVector = Icons.Default.Clear,
+                                imageVector = Icons.Default.Close,
                                 contentDescription = "Supprimer",
                                 modifier = Modifier.size(16.dp)
                             )

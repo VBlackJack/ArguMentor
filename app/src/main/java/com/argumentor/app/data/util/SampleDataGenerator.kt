@@ -66,7 +66,7 @@ class SampleDataGenerator @Inject constructor(
         val topic = Topic(
             title = context.getString(R.string.demo_topic_title),
             summary = context.getString(R.string.demo_topic_summary),
-            posture = Topic.Posture.NEUTRAL_CRITIQUE,
+            posture = Topic.Posture.NEUTRAL_CRITICAL,
             tags = tags
         )
         topicRepository.insertTopic(topic)
