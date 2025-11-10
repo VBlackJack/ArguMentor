@@ -20,6 +20,10 @@
     <string name="home_empty_title">No topics yet</string>
     <string name="home_empty_description">Start structuring your arguments by creating your first debate topic. Each topic can contain claims, counter-arguments and questions.</string>
     <string name="home_empty_action">Create a topic</string>
+    <string name="home_subjects_found">%d topics found</string>
+    <string name="home_error_title">Oops, something went wrong</string>
+    <string name="home_error_description">Unable to load your topics. Check your connection and try again.</string>
+    <string name="home_topic_card_description">Topic: %1$s. %2$s. %3$d tags</string>
 
     <!-- Topic -->
     <string name="topic_create">Create a topic</string>
@@ -38,9 +42,13 @@
     <!-- Claim -->
     <string name="claim_create">Create a claim</string>
     <string name="claim_edit">Edit claim</string>
+    <string name="claim_new_title">New claim</string>
+    <string name="claim_edit_title">Edit claim</string>
     <string name="claim_text_hint">Claim text</string>
+    <string name="claim_text_label">Claim text</string>
     <string name="claim_stance">Stance</string>
     <string name="claim_strength">Strength</string>
+    <string name="claim_error_text_required">Claim text is required</string>
 
     <!-- Stance -->
     <string name="stance_pro">Pro</string>
@@ -181,6 +189,10 @@
     <string name="close">Close</string>
     <string name="search">Search</string>
     <string name="filter">Filter</string>
+    <string name="action_clear_search">Clear search</string>
+    <string name="action_remove_filter">Remove filter</string>
+    <string name="action_clear_all">Clear all</string>
+    <string name="action_retry">Retry</string>
     <string name="created_at">Created on %1$s</string>
     <string name="updated_at">Updated on %1$s</string>
     <string name="more_tags">+%1$d</string>
@@ -216,6 +228,8 @@
     <string name="settings_appearance">Appearance</string>
     <string name="settings_dark_theme">Dark theme</string>
     <string name="settings_dark_theme_description">Use dark theme</string>
+    <string name="settings_immersive_mode">Immersive mode</string>
+    <string name="settings_immersive_mode_description">Hide system bars (swipe to show)</string>
     <string name="settings_font_size">Font size</string>
     <string name="settings_font_small">Small</string>
     <string name="settings_font_medium">Medium</string>

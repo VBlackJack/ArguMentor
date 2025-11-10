@@ -24,6 +24,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val isDarkTheme by viewModel.isDarkTheme.collectAsState()
+    val isImmersiveMode by viewModel.isImmersiveMode.collectAsState()
     val fontSize by viewModel.fontSize.collectAsState()
     val defaultPosture by viewModel.defaultPosture.collectAsState()
     val language by viewModel.language.collectAsState()
@@ -57,6 +58,15 @@ fun SettingsScreen(
                     description = stringResource(R.string.settings_dark_theme_description),
                     checked = isDarkTheme,
                     onCheckedChange = { viewModel.toggleDarkTheme() }
+                )
+
+                Divider()
+
+                SettingsSwitchItem(
+                    title = stringResource(R.string.settings_immersive_mode),
+                    description = stringResource(R.string.settings_immersive_mode_description),
+                    checked = isImmersiveMode,
+                    onCheckedChange = { viewModel.toggleImmersiveMode() }
                 )
 
                 Divider()
