@@ -16,6 +16,7 @@ import java.util.UUID
  * @property sourceId Optional reference to a Source entity
  * @property quality Quality rating: low, med, high
  * @property createdAt Creation timestamp in ISO 8601 format
+ * @property updatedAt Last update timestamp in ISO 8601 format
  */
 @Entity(
     tableName = "evidences",
@@ -43,7 +44,8 @@ data class Evidence(
     val content: String,
     val sourceId: String? = null,
     val quality: Quality = Quality.MEDIUM,
-    val createdAt: String = getCurrentIsoTimestamp()
+    val createdAt: String = getCurrentIsoTimestamp(),
+    val updatedAt: String = getCurrentIsoTimestamp()
 ) {
     enum class EvidenceType {
         STUDY, STAT, QUOTE, EXAMPLE;

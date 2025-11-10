@@ -38,6 +38,13 @@ class EvidenceCreateEditViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
+    fun clearError() {
+        _errorMessage.value = null
+    }
+
     private var evidenceId: String? = null
     private var claimId: String = ""
     private var isEditMode = false
@@ -100,42 +107,50 @@ class EvidenceCreateEditViewModel @Inject constructor(
 
     fun saveEvidence(onSaved: () -> Unit) {
         if (_content.value.isBlank()) {
+            _errorMessage.value = "Evidence content cannot be empty"
             return
         }
 
+        _errorMessage.value = null
+
         viewModelScope.launch {
-            // Validate that selected source still exists if one is selected
-            val validatedSourceId = _selectedSource.value?.id?.let { sourceId ->
-                val sourceExists = sourceRepository.getSourceById(sourceId).first() != null
-                if (sourceExists) sourceId else null
-            }
-
-            val evidence = if (isEditMode && evidenceId != null) {
-                // Update existing evidence
-                evidenceRepository.getEvidenceById(evidenceId!!)?.copy(
-                    content = _content.value.trim(),
-                    type = _type.value,
-                    quality = _quality.value,
-                    sourceId = validatedSourceId
-                )
-            } else {
-                // Create new evidence
-                Evidence(
-                    claimId = claimId,
-                    content = _content.value.trim(),
-                    type = _type.value,
-                    quality = _quality.value,
-                    sourceId = validatedSourceId
-                )
-            }
-
-            evidence?.let {
-                if (isEditMode) {
-                    evidenceRepository.updateEvidence(it)
-                } else {
-                    evidenceRepository.insertEvidence(it)
+            try {
+                // Validate that selected source still exists if one is selected
+                val validatedSourceId = _selectedSource.value?.id?.let { sourceId ->
+                    val sourceExists = sourceRepository.getSourceById(sourceId).first() != null
+                    if (sourceExists) sourceId else null
                 }
-                onSaved()
+
+                val evidence = if (isEditMode && evidenceId != null) {
+                    // Update existing evidence
+                    evidenceRepository.getEvidenceById(evidenceId!!)?.copy(
+                        content = _content.value.trim(),
+                        type = _type.value,
+                        quality = _quality.value,
+                        sourceId = validatedSourceId,
+                        updatedAt = com.argumentor.app.data.model.getCurrentIsoTimestamp()
+                    )
+                } else {
+                    // Create new evidence
+                    Evidence(
+                        claimId = claimId,
+                        content = _content.value.trim(),
+                        type = _type.value,
+                        quality = _quality.value,
+                        sourceId = validatedSourceId
+                    )
+                }
+
+                evidence?.let {
+                    if (isEditMode) {
+                        evidenceRepository.updateEvidence(it)
+                    } else {
+                        evidenceRepository.insertEvidence(it)
+                    }
+                    onSaved()
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to save evidence: ${e.message}"
             }
         }
     }

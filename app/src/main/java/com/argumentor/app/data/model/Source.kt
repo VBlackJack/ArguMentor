@@ -16,6 +16,7 @@ import java.util.UUID
  * @property reliabilityScore Optional reliability score (0.0-1.0)
  * @property notes Additional notes about the source
  * @property createdAt Creation timestamp in ISO 8601 format
+ * @property updatedAt Last update timestamp in ISO 8601 format
  */
 @Entity(tableName = "sources")
 data class Source(
@@ -28,5 +29,6 @@ data class Source(
     val date: String? = null,
     val reliabilityScore: Double? = null,
     val notes: String? = null,
-    val createdAt: String = getCurrentIsoTimestamp()
+    val createdAt: String = getCurrentIsoTimestamp(),
+    val updatedAt: String = getCurrentIsoTimestamp()
 )

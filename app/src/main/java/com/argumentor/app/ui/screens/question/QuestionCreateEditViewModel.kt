@@ -31,6 +31,13 @@ class QuestionCreateEditViewModel @Inject constructor(
     private val _isSaving = MutableStateFlow(false)
     val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
 
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
+    fun clearError() {
+        _errorMessage.value = null
+    }
+
     private val _availableClaims = MutableStateFlow<List<Claim>>(emptyList())
     val availableClaims: StateFlow<List<Claim>> = _availableClaims.asStateFlow()
 
@@ -121,11 +128,19 @@ class QuestionCreateEditViewModel @Inject constructor(
     }
 
     fun saveQuestion(onSaved: () -> Unit) {
-        if (_text.value.isBlank()) return
+        if (_text.value.isBlank()) {
+            _errorMessage.value = "Question text cannot be empty"
+            return
+        }
 
         // Determine final targetId: claim if selected, otherwise topic
         val finalTargetId = _selectedClaim.value?.id ?: initialTopicId ?: targetId
-        if (finalTargetId == null) return
+        if (finalTargetId == null) {
+            _errorMessage.value = "No target selected for question"
+            return
+        }
+
+        _errorMessage.value = null
 
         viewModelScope.launch {
             _isSaving.value = true
@@ -135,7 +150,8 @@ class QuestionCreateEditViewModel @Inject constructor(
                     questionRepository.getQuestionById(questionId!!)?.copy(
                         targetId = finalTargetId,
                         text = _text.value,
-                        kind = _kind.value
+                        kind = _kind.value,
+                        updatedAt = com.argumentor.app.data.model.getCurrentIsoTimestamp()
                     )
                 } else {
                     // Create new question
@@ -150,6 +166,8 @@ class QuestionCreateEditViewModel @Inject constructor(
                     questionRepository.insertQuestion(it)
                     onSaved()
                 }
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to save question: ${e.message}"
             } finally {
                 _isSaving.value = false
             }

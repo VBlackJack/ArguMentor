@@ -1,0 +1,55 @@
+package com.argumentor.app.data.local
+
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.argumentor.app.data.model.getCurrentIsoTimestamp
+
+/**
+ * Database migrations for ArguMentor.
+ */
+object DatabaseMigrations {
+
+    /**
+     * Migration from version 1 to 2.
+     *
+     * Changes:
+     * - Added createdAt and updatedAt columns to tags table
+     * - Added updatedAt column to evidences table
+     * - Added updatedAt column to sources table
+     * - Added updatedAt column to questions table
+     * - Topic.Posture enum values renamed (backward compatible via fromString)
+     */
+    val MIGRATION_1_2 = object : Migration(1, 2) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            val currentTimestamp = getCurrentIsoTimestamp()
+
+            // Add timestamps to tags table
+            db.execSQL("ALTER TABLE tags ADD COLUMN createdAt TEXT NOT NULL DEFAULT '$currentTimestamp'")
+            db.execSQL("ALTER TABLE tags ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$currentTimestamp'")
+
+            // Add updatedAt to evidences table
+            db.execSQL("ALTER TABLE evidences ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$currentTimestamp'")
+
+            // Add updatedAt to sources table
+            db.execSQL("ALTER TABLE sources ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$currentTimestamp'")
+
+            // Add updatedAt to questions table
+            db.execSQL("ALTER TABLE questions ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$currentTimestamp'")
+
+            // Update Topic.Posture enum values for backward compatibility
+            // Old: neutral_critique, sceptique, comparatif_academique
+            // New: neutral_critical, skeptical, academic_comparative
+            // The fromString method handles both old and new values, so existing data remains compatible
+            db.execSQL("UPDATE topics SET posture = 'neutral_critical' WHERE posture = 'neutral_critique'")
+            db.execSQL("UPDATE topics SET posture = 'skeptical' WHERE posture = 'sceptique'")
+            db.execSQL("UPDATE topics SET posture = 'academic_comparative' WHERE posture = 'comparatif_academique'")
+        }
+    }
+
+    /**
+     * All migrations in order.
+     */
+    val ALL_MIGRATIONS = arrayOf(
+        MIGRATION_1_2
+    )
+}

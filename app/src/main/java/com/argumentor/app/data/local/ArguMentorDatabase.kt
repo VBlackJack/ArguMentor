@@ -9,6 +9,7 @@ import com.argumentor.app.data.model.*
 /**
  * ArguMentor Room Database.
  * Version 1 - Initial schema with FTS support.
+ * Version 2 - Added timestamps to Tag, Evidence, Source, Question; renamed Topic.Posture enum values
  */
 @Database(
     entities = [
@@ -23,7 +24,7 @@ import com.argumentor.app.data.model.*
         RebuttalFts::class,
         QuestionFts::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 @TypeConverters(Converters::class)

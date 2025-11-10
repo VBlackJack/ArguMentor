@@ -270,6 +270,14 @@ class ImportExportRepository @Inject constructor(
             try {
                 val rebuttal = rebuttalDto.toModel()
 
+                // Validate foreign key: claimId must exist
+                val referencedClaim = database.claimDao().getClaimById(rebuttal.claimId)
+                if (referencedClaim == null) {
+                    errors++
+                    errorMessages.add("Rebuttal ${rebuttal.id}: Referenced claim ${rebuttal.claimId} not found")
+                    return@forEach
+                }
+
                 val existing = database.rebuttalDao().getRebuttalById(rebuttal.id)
                 if (existing != null) {
                     if (rebuttal.updatedAt > existing.updatedAt) {
@@ -325,11 +333,31 @@ class ImportExportRepository @Inject constructor(
         // Import Evidences
         importData.evidences.forEach { evidenceDto ->
             try {
-                val existing = database.evidenceDao().getEvidenceById(evidenceDto.id)
+                val evidence = evidenceDto.toModel()
+
+                // Validate foreign key: claimId must exist
+                val referencedClaim = database.claimDao().getClaimById(evidence.claimId)
+                if (referencedClaim == null) {
+                    errors++
+                    errorMessages.add("Evidence ${evidence.id}: Referenced claim ${evidence.claimId} not found")
+                    return@forEach
+                }
+
+                // Validate foreign key: sourceId must exist if provided
+                if (evidence.sourceId != null) {
+                    val referencedSource = database.sourceDao().getSourceById(evidence.sourceId)
+                    if (referencedSource == null) {
+                        errors++
+                        errorMessages.add("Evidence ${evidence.id}: Referenced source ${evidence.sourceId} not found")
+                        return@forEach
+                    }
+                }
+
+                val existing = database.evidenceDao().getEvidenceById(evidence.id)
                 if (existing != null) {
                     duplicates++
                 } else {
-                    database.evidenceDao().insertEvidence(evidenceDto.toModel())
+                    database.evidenceDao().insertEvidence(evidence)
                     created++
                 }
             } catch (e: Exception) {
@@ -341,11 +369,21 @@ class ImportExportRepository @Inject constructor(
         // Import Questions
         importData.questions.forEach { questionDto ->
             try {
-                val existing = database.questionDao().getQuestionById(questionDto.id)
+                val question = questionDto.toModel()
+
+                // Validate foreign key: targetId must exist (as Topic or Claim)
+                val targetAsTopic = database.topicDao().getTopicById(question.targetId)
+                val targetAsClaim = database.claimDao().getClaimById(question.targetId)
+                if (targetAsTopic == null && targetAsClaim == null) {
+                    errors++
+                    errorMessages.add("Question ${question.id}: Referenced target ${question.targetId} not found (neither Topic nor Claim)")
+                    return@forEach
+                }
+
+                val existing = database.questionDao().getQuestionById(question.id)
                 if (existing != null) {
                     duplicates++
                 } else {
-                    val question = questionDto.toModel()
                     database.questionDao().insertQuestion(question)
                     created++
                 }
