@@ -43,7 +43,19 @@ fun SourceCreateEditScreen(
 
     val isEditMode = sourceId != null
 
-    // Speech-to-text launchers for multiline fields
+    // Speech-to-text launchers for text fields
+    val titleSpeechLauncher = rememberSpeechToTextLauncher { text ->
+        if (text.isNotBlank()) {
+            val currentTitle = title
+            val newTitle = if (currentTitle.isNotBlank()) {
+                "$currentTitle $text"
+            } else {
+                text
+            }
+            viewModel.onTitleChange(newTitle)
+        }
+    }
+
     val citationSpeechLauncher = rememberSpeechToTextLauncher { text ->
         if (text.isNotBlank()) {
             val currentCitation = citation
@@ -53,6 +65,18 @@ fun SourceCreateEditScreen(
                 text
             }
             viewModel.onCitationChange(newCitation)
+        }
+    }
+
+    val publisherSpeechLauncher = rememberSpeechToTextLauncher { text ->
+        if (text.isNotBlank()) {
+            val currentPublisher = publisher
+            val newPublisher = if (currentPublisher.isNotBlank()) {
+                "$currentPublisher $text"
+            } else {
+                text
+            }
+            viewModel.onPublisherChange(newPublisher)
         }
     }
 
@@ -125,7 +149,7 @@ fun SourceCreateEditScreen(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Title field (required)
+                // Title field (required) with voice input
                 OutlinedTextField(
                     value = title,
                     onValueChange = { viewModel.onTitleChange(it) },
@@ -138,7 +162,16 @@ fun SourceCreateEditScreen(
                         capitalization = KeyboardCapitalization.Words,
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
-                    )
+                    ),
+                    trailingIcon = {
+                        IconButton(onClick = { titleSpeechLauncher.launch(createSpeechIntent()) }) {
+                            Icon(
+                                imageVector = Icons.Default.Mic,
+                                contentDescription = "Dictée vocale",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
                 )
 
                 // Citation field with voice input
@@ -180,7 +213,7 @@ fun SourceCreateEditScreen(
                     )
                 )
 
-                // Publisher field
+                // Publisher field with voice input
                 OutlinedTextField(
                     value = publisher,
                     onValueChange = { viewModel.onPublisherChange(it) },
@@ -192,7 +225,16 @@ fun SourceCreateEditScreen(
                         capitalization = KeyboardCapitalization.Words,
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
-                    )
+                    ),
+                    trailingIcon = {
+                        IconButton(onClick = { publisherSpeechLauncher.launch(createSpeechIntent()) }) {
+                            Icon(
+                                imageVector = Icons.Default.Mic,
+                                contentDescription = "Dictée vocale",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
                 )
 
                 // Date field

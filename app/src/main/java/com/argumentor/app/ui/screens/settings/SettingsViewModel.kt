@@ -3,6 +3,8 @@ package com.argumentor.app.ui.screens.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.argumentor.app.data.datastore.SettingsDataStore
+import com.argumentor.app.data.preferences.LanguagePreferences
+import com.argumentor.app.data.preferences.AppLanguage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val settingsDataStore: SettingsDataStore
+    private val settingsDataStore: SettingsDataStore,
+    private val languagePreferences: LanguagePreferences
 ) : ViewModel() {
 
     private val _isDarkTheme = MutableStateFlow(false)
@@ -26,6 +29,9 @@ class SettingsViewModel @Inject constructor(
 
     private val _defaultPosture = MutableStateFlow("neutral_critique")
     val defaultPosture: StateFlow<String> = _defaultPosture.asStateFlow()
+
+    private val _language = MutableStateFlow(AppLanguage.FRENCH)
+    val language: StateFlow<AppLanguage> = _language.asStateFlow()
 
     init {
         loadSettings()
@@ -50,6 +56,11 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             settingsDataStore.defaultPosture.collect { posture ->
                 _defaultPosture.value = posture
+            }
+        }
+        viewModelScope.launch {
+            languagePreferences.languageFlow.collect { lang ->
+                _language.value = lang
             }
         }
     }
@@ -81,6 +92,13 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _defaultPosture.value = posture
             settingsDataStore.setDefaultPosture(posture)
+        }
+    }
+
+    fun setLanguage(language: AppLanguage) {
+        viewModelScope.launch {
+            _language.value = language
+            languagePreferences.setLanguage(language)
         }
     }
 
