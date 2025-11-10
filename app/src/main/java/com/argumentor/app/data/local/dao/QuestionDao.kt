@@ -36,6 +36,9 @@ interface QuestionDao {
     @Query("DELETE FROM questions WHERE id = :questionId")
     suspend fun deleteQuestionById(questionId: String)
 
+    @Query("DELETE FROM questions WHERE targetId = :targetId")
+    suspend fun deleteQuestionsByTargetId(targetId: String)
+
     // Full-text search
     @Query("""
         SELECT questions.* FROM questions

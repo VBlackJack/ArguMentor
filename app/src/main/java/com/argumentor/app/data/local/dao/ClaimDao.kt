@@ -36,6 +36,9 @@ interface ClaimDao {
     @Query("DELETE FROM claims WHERE id = :claimId")
     suspend fun deleteClaimById(claimId: String)
 
+    @Query("DELETE FROM claims WHERE :topicId IN (SELECT value FROM json_each(topics))")
+    suspend fun deleteClaimsByTopicId(topicId: String)
+
     // Full-text search
     @Query("""
         SELECT claims.* FROM claims
