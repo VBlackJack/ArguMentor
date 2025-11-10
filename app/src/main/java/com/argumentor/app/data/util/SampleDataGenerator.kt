@@ -183,9 +183,7 @@ class SampleDataGenerator @Inject constructor(
         // Delete each claim (this will cascade delete rebuttals and evidence)
         // Or if claim belongs to multiple topics, just remove this topicId
         claims.forEach { claim ->
-            // Collect evidences for this claim to delete their sources
-            val claimEvidences = evidenceRepository.getEvidencesForClaim(claim.id)
-            evidenceIds.addAll(claimEvidences.map { it.id })
+            // Note: Evidence deletion is handled by cascade in Room database
 
             if (claim.topics.size == 1 && claim.topics.contains(topicId)) {
                 // Claim only belongs to this topic, delete it completely
@@ -205,7 +203,7 @@ class SampleDataGenerator @Inject constructor(
 
         // Delete associated sources (demo sources only)
         // Get all sources and delete those created for demo
-        val allSources = sourceRepository.getAllSourcesSync()
+        val allSources = sourceRepository.getAllSources().first()
         allSources.forEach { source ->
             // Delete sources that match demo patterns (simplified check)
             if (source.title.contains("Démo", ignoreCase = true) ||

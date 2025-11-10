@@ -56,9 +56,8 @@ class EvidenceCreateEditViewModel @Inject constructor(
         // Load available sources
         viewModelScope.launch {
             try {
-                sourceRepository.getAllSources().collect { sources ->
-                    _availableSources.value = sources
-                }
+                val sources = sourceRepository.getAllSources().first()
+                _availableSources.value = sources
             } finally {
                 if (evidenceId == null) {
                     _isLoading.value = false

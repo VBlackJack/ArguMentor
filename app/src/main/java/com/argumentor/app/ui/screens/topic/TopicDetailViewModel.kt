@@ -82,17 +82,9 @@ class TopicDetailViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            // Load sources - collect all sources from evidences
-            _claims.collect { claims ->
-                val claimIds = claims.map { it.id }
-                val allEvidences = claimIds.flatMap { claimId ->
-                    evidenceRepository.getEvidencesByClaimId(claimId).first()
-                }
-                val sourceIds = allEvidences.mapNotNull { it.sourceId }.filter { it.isNotEmpty() }.distinct()
-                val sources = sourceIds.mapNotNull { sourceId ->
-                    sourceRepository.getSourceById(sourceId).first()
-                }
-                _sources.value = sources
+            // Load all sources
+            sourceRepository.getAllSources().collect { allSources ->
+                _sources.value = allSources
             }
         }
     }

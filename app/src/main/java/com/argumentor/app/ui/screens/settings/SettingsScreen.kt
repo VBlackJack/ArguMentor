@@ -185,7 +185,7 @@ fun SettingsScreen(
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
                 SettingsItem(title = stringResource(R.string.settings_version)) {
-                    Text("1.1.0", style = MaterialTheme.typography.bodyMedium)
+                    Text("1.2.0", style = MaterialTheme.typography.bodyMedium)
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))

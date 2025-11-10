@@ -284,6 +284,16 @@ fun TopicDetailScreen(
                         },
                         text = { Text("Affirmation") }
                     )
+                    1 -> ExtendedFloatingActionButton(
+                        onClick = { onNavigateToAddQuestion(topicId, null) },
+                        icon = {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = null
+                            )
+                        },
+                        text = { Text("Question") }
+                    )
                     2 -> ExtendedFloatingActionButton(
                         onClick = { onNavigateToAddSource(null) },
                         icon = {
@@ -294,7 +304,7 @@ fun TopicDetailScreen(
                         },
                         text = { Text("Source") }
                     )
-                    else -> null // No FAB for Questions tab (has its own button)
+                    else -> null
                 }
             }
         }
