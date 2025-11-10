@@ -219,7 +219,8 @@ fun HomeScreen(
                                         contentDescription = stringResource(R.string.action_remove_filter),
                                         modifier = Modifier.size(18.dp)
                                     )
-                                }
+                                },
+                                modifier = Modifier.heightIn(min = 48.dp)
                             )
 
                             if (searchQuery.isNotEmpty()) {
@@ -425,7 +426,8 @@ private fun TopicCard(
                                     text = tag,
                                     style = MaterialTheme.typography.labelSmall
                                 )
-                            }
+                            },
+                            modifier = Modifier.heightIn(min = 48.dp)
                         )
                     }
                     if (topic.tags.size > 3) {

@@ -86,7 +86,8 @@ fun SettingsScreen(
                                             SettingsViewModel.FontSize.EXTRA_LARGE -> stringResource(R.string.settings_font_extra_large)
                                         }
                                     )
-                                }
+                                },
+                                modifier = Modifier.heightIn(min = 48.dp)
                             )
                         }
                     }
@@ -104,7 +105,8 @@ fun SettingsScreen(
                                 FilterChip(
                                     selected = (pendingLanguage ?: language) == lang,
                                     onClick = { viewModel.selectLanguage(lang) },
-                                    label = { Text(lang.displayName) }
+                                    label = { Text(lang.displayName) },
+                                    modifier = Modifier.heightIn(min = 48.dp)
                                 )
                             }
                         }
@@ -140,7 +142,8 @@ fun SettingsScreen(
                             FilterChip(
                                 selected = defaultPosture == value,
                                 onClick = { viewModel.setDefaultPosture(value) },
-                                label = { Text(label) }
+                                label = { Text(label) },
+                                modifier = Modifier.heightIn(min = 48.dp)
                             )
                         }
                     }

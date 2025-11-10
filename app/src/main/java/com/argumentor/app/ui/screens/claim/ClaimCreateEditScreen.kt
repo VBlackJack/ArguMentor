@@ -99,7 +99,8 @@ fun ClaimCreateEditScreen(
                                     Claim.Stance.NEUTRAL -> R.string.stance_neutral
                                 }
                             ))
-                        }
+                        },
+                        modifier = Modifier.heightIn(min = 48.dp)
                     )
                 }
             }
@@ -122,7 +123,8 @@ fun ClaimCreateEditScreen(
                                     Claim.Strength.HIGH -> R.string.strength_high
                                 }
                             ))
-                        }
+                        },
+                        modifier = Modifier.heightIn(min = 48.dp)
                     )
                 }
             }
