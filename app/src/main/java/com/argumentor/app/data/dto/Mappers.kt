@@ -37,7 +37,7 @@ fun Claim.toDto(): ClaimDto = ClaimDto(
     topics = topics,
     createdAt = createdAt,
     updatedAt = updatedAt,
-    claimFingerprint = claimFingerprint.ifEmpty { FingerprintUtils.generateClaimFingerprint(this) }
+    claimFingerprint = claimFingerprint.ifEmpty { FingerprintUtils.generateTextFingerprint(text) }
 )
 
 fun ClaimDto.toModel(): Claim = Claim(

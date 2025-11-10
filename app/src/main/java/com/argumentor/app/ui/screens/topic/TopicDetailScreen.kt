@@ -726,8 +726,12 @@ private fun ClaimCard(
                                 confirmButton = {
                                     TextButton(
                                         onClick = {
-                                            showDeleteEvidenceDialog = false
-                                            // TODO: Delete evidence
+                                            viewModel.deleteEvidence(evidence) {
+                                                showDeleteEvidenceDialog = false
+                                                coroutineScope.launch {
+                                                    snackbarHostState.showSnackbar("Preuve supprimée")
+                                                }
+                                            }
                                         }
                                     ) {
                                         Text("Supprimer", color = MaterialTheme.colorScheme.error)
