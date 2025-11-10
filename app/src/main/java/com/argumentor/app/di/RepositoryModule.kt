@@ -16,9 +16,11 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideTopicRepository(
-        topicDao: TopicDao
+        topicDao: TopicDao,
+        claimDao: ClaimDao,
+        questionDao: QuestionDao
     ): TopicRepository {
-        return TopicRepository(topicDao)
+        return TopicRepository(topicDao, claimDao, questionDao)
     }
 
     @Provides
