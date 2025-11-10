@@ -38,6 +38,9 @@ fun DebateModeScreen(
     val debateCards by viewModel.debateCards.collectAsState()
     val currentCardIndex by viewModel.currentCardIndex.collectAsState()
     val isCardFlipped by viewModel.isCardFlipped.collectAsState()
+    val cardsReviewed by viewModel.cardsReviewed.collectAsState()
+    val sessionScore by viewModel.sessionScore.collectAsState()
+    val streak by viewModel.streak.collectAsState()
     var showCardMenu by remember { mutableStateOf(false) }
 
     LaunchedEffect(topicId) {
@@ -145,13 +148,72 @@ fun DebateModeScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text(
-                    stringResource(R.string.debate_card_progress, currentCardIndex + 1, debateCards.size),
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier.semantics {
-                        liveRegion = LiveRegionMode.Polite
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                ) {
+                    Text(
+                        stringResource(R.string.debate_card_progress, currentCardIndex + 1, debateCards.size),
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.semantics {
+                            liveRegion = LiveRegionMode.Polite
+                        }
+                    )
+
+                    // Gamification stats
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    ) {
+                        // Score
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Default.Star,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                "$sessionScore",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        // Streak
+                        if (streak >= 3) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    Icons.Default.LocalFireDepartment,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp),
+                                    tint = MaterialTheme.colorScheme.tertiary
+                                )
+                                Text(
+                                    "$streak",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+
+                        // Cards reviewed
+                        Text(
+                            "${cardsReviewed.size}/${debateCards.size}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
-                )
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 

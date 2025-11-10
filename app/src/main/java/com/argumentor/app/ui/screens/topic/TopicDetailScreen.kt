@@ -3,10 +3,13 @@ package com.argumentor.app.ui.screens.topic
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,7 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.stringResource
@@ -68,6 +73,7 @@ fun TopicDetailScreen(
     viewModel: TopicDetailViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
     val topic by viewModel.topic.collectAsState()
     val claims by viewModel.claims.collectAsState()
     val questions by viewModel.questions.collectAsState()
@@ -421,6 +427,7 @@ fun TopicDetailScreen(
                         onNavigateToAddClaim(topicId, claimId)
                     },
                     onDeleteClaim = { claim ->
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         viewModel.deleteClaim(claim) {
                             coroutineScope.launch {
                                 val result = snackbarHostState.showSnackbar(
@@ -448,6 +455,7 @@ fun TopicDetailScreen(
                         onNavigateToAddQuestion(topicId, questionId)
                     },
                     onDeleteQuestion = { question ->
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         viewModel.deleteQuestion(question) {
                             coroutineScope.launch {
                                 val result = snackbarHostState.showSnackbar(
@@ -761,6 +769,7 @@ private fun ClaimCard(
                                     TextButton(
                                         onClick = {
                                             val deletedEvidence = evidence
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                             viewModel.deleteEvidence(evidence) {
                                                 showDeleteEvidenceDialog = false
                                                 coroutineScope.launch {
