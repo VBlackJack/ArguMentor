@@ -25,7 +25,7 @@ class TopicCreateEditViewModel @Inject constructor(
     private val _summary = MutableStateFlow("")
     val summary: StateFlow<String> = _summary.asStateFlow()
 
-    private val _posture = MutableStateFlow(Topic.Posture.NEUTRAL_CRITIQUE)
+    private val _posture = MutableStateFlow(Topic.Posture.NEUTRAL_CRITICAL)
     val posture: StateFlow<Topic.Posture> = _posture.asStateFlow()
 
     private val _tags = MutableStateFlow<List<String>>(emptyList())
@@ -36,6 +36,13 @@ class TopicCreateEditViewModel @Inject constructor(
 
     private val _isSaving = MutableStateFlow(false)
     val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
+
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
+    fun clearError() {
+        _errorMessage.value = null
+    }
 
     fun loadTopic(topicId: String?) {
         if (topicId == null) {
@@ -79,9 +86,13 @@ class TopicCreateEditViewModel @Inject constructor(
     }
 
     fun saveTopic(onSaved: () -> Unit) {
-        if (_title.value.isBlank()) return
+        if (_title.value.isBlank()) {
+            _errorMessage.value = "Topic title cannot be empty"
+            return
+        }
 
         _isSaving.value = true
+        _errorMessage.value = null
 
         viewModelScope.launch {
             try {
@@ -109,6 +120,8 @@ class TopicCreateEditViewModel @Inject constructor(
                     topicRepository.insertTopic(topic)
                 }
                 onSaved()
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to save topic: ${e.message}"
             } finally {
                 _isSaving.value = false
             }

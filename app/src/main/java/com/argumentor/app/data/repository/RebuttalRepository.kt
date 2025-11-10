@@ -32,17 +32,10 @@ class RebuttalRepository @Inject constructor(
      * Search rebuttals using FTS with automatic fallback to LIKE search if FTS fails.
      */
     fun searchRebuttals(query: String): Flow<List<Rebuttal>> {
-        val sanitizedQuery = SearchUtils.sanitizeLikeQuery(query)
-
-        return if (SearchUtils.isSafeFtsQuery(query)) {
-            // Try FTS first
-            rebuttalDao.searchRebuttalsFts(query).catch { error ->
-                // If FTS fails (e.g., invalid query syntax), fall back to LIKE
-                emitAll(rebuttalDao.searchRebuttalsLike(sanitizedQuery))
-            }
-        } else {
-            // Query looks unsafe for FTS, use LIKE directly
-            rebuttalDao.searchRebuttalsLike(sanitizedQuery)
-        }
+        return searchWithFtsFallback(
+            query = query,
+            ftsSearch = { rebuttalDao.searchRebuttalsFts(it) },
+            likeSearch = { rebuttalDao.searchRebuttalsLike(it) }
+        )
     }
 }

@@ -3,6 +3,7 @@ package com.argumentor.app.di
 import android.content.Context
 import androidx.room.Room
 import com.argumentor.app.data.local.ArguMentorDatabase
+import com.argumentor.app.data.local.DatabaseMigrations
 import com.argumentor.app.data.local.dao.*
 import dagger.Module
 import dagger.Provides
@@ -23,7 +24,7 @@ object DatabaseModule {
             ArguMentorDatabase::class.java,
             ArguMentorDatabase.DATABASE_NAME
         )
-            .fallbackToDestructiveMigration() // For MVP - in production use proper migrations
+            .addMigrations(*DatabaseMigrations.ALL_MIGRATIONS)
             .build()
     }
 

@@ -112,7 +112,26 @@ class ImportExportRepository @Inject constructor(
     }
 
     /**
-     * Process import with anti-duplicate logic.
+     * Processes import with comprehensive anti-duplicate logic.
+     *
+     * Import order (respects foreign key dependencies):
+     * 1. Tags (no dependencies)
+     * 2. Sources (no dependencies)
+     * 3. Topics (references Tags)
+     * 4. Claims (references Topics, uses fingerprint + similarity matching)
+     * 5. Rebuttals (references Claims, uses similarity matching)
+     * 6. Evidences (references Claims and Sources, validates foreign keys)
+     * 7. Questions (references Topics or Claims, validates foreign keys)
+     *
+     * Duplicate detection strategies:
+     * - **Exact ID match**: Updates if incoming is newer, otherwise marks as duplicate
+     * - **Fingerprint match** (Claims): Detects identical content via normalized hash
+     * - **Similarity match** (Claims, Rebuttals, Sources): Uses fuzzy text matching with configurable threshold (default 0.90)
+     * - **Foreign key validation** (Evidences, Rebuttals, Questions): Ensures referenced entities exist
+     *
+     * @param importData The data to import
+     * @param similarityThreshold Threshold for fuzzy text matching (0.0-1.0), default 0.90
+     * @return ImportResult containing statistics and items flagged for review
      */
     private suspend fun processImport(
         importData: ExportData,
@@ -147,19 +166,58 @@ class ImportExportRepository @Inject constructor(
             }
         }
 
-        // Import Sources (no dependencies)
+        // Import Sources with fingerprint checking
+        val allExistingSources = database.sourceDao().getAllSourcesSync()
+
         importData.sources.forEach { sourceDto ->
             try {
-                val existing = database.sourceDao().getSourceById(sourceDto.id)
-                if (existing != null) {
-                    duplicates++
-                } else {
-                    val source = sourceDto.toModel()
-                    val fingerprint = FingerprintUtils.generateSourceFingerprint(source)
+                val source = sourceDto.toModel()
+                val fingerprint = FingerprintUtils.generateSourceFingerprint(source)
 
-                    // Check for similar sources (simplified - in production would check all)
-                    database.sourceDao().insertSource(source)
-                    created++
+                val existing = database.sourceDao().getSourceById(source.id)
+                if (existing != null) {
+                    // Update if incoming is newer
+                    if (source.updatedAt > existing.updatedAt) {
+                        database.sourceDao().updateSource(source)
+                        updated++
+                    } else {
+                        duplicates++
+                    }
+                } else {
+                    // Check for near-duplicates using title similarity
+                    var isNearDuplicate = false
+                    var similarTo: String? = null
+
+                    for (candidate in allExistingSources) {
+                        if (FingerprintUtils.areSimilar(source.title, candidate.title, similarityThreshold)) {
+                            isNearDuplicate = true
+                            similarTo = candidate.id
+                            break
+                        }
+                    }
+
+                    if (isNearDuplicate) {
+                        nearDuplicates++
+                        itemsForReview.add(
+                            ReviewItem(
+                                type = "Source",
+                                incomingId = source.id,
+                                existingId = similarTo ?: "",
+                                incomingText = source.title.take(100),
+                                existingText = allExistingSources.find { it.id == similarTo }?.title?.take(100) ?: "",
+                                similarityScore = allExistingSources.find { it.id == similarTo }?.let {
+                                    FingerprintUtils.similarityRatio(
+                                        FingerprintUtils.normalizeText(source.title),
+                                        FingerprintUtils.normalizeText(it.title)
+                                    )
+                                } ?: 0.0,
+                                action = "review"
+                            )
+                        )
+                    } else {
+                        database.sourceDao().insertSource(source)
+                        created++
+                    }
                 }
             } catch (e: Exception) {
                 errors++
@@ -270,6 +328,14 @@ class ImportExportRepository @Inject constructor(
             try {
                 val rebuttal = rebuttalDto.toModel()
 
+                // Validate foreign key: claimId must exist
+                val referencedClaim = database.claimDao().getClaimById(rebuttal.claimId)
+                if (referencedClaim == null) {
+                    errors++
+                    errorMessages.add("Rebuttal ${rebuttal.id}: Referenced claim ${rebuttal.claimId} not found")
+                    return@forEach
+                }
+
                 val existing = database.rebuttalDao().getRebuttalById(rebuttal.id)
                 if (existing != null) {
                     if (rebuttal.updatedAt > existing.updatedAt) {
@@ -325,11 +391,31 @@ class ImportExportRepository @Inject constructor(
         // Import Evidences
         importData.evidences.forEach { evidenceDto ->
             try {
-                val existing = database.evidenceDao().getEvidenceById(evidenceDto.id)
+                val evidence = evidenceDto.toModel()
+
+                // Validate foreign key: claimId must exist
+                val referencedClaim = database.claimDao().getClaimById(evidence.claimId)
+                if (referencedClaim == null) {
+                    errors++
+                    errorMessages.add("Evidence ${evidence.id}: Referenced claim ${evidence.claimId} not found")
+                    return@forEach
+                }
+
+                // Validate foreign key: sourceId must exist if provided
+                if (evidence.sourceId != null) {
+                    val referencedSource = database.sourceDao().getSourceById(evidence.sourceId)
+                    if (referencedSource == null) {
+                        errors++
+                        errorMessages.add("Evidence ${evidence.id}: Referenced source ${evidence.sourceId} not found")
+                        return@forEach
+                    }
+                }
+
+                val existing = database.evidenceDao().getEvidenceById(evidence.id)
                 if (existing != null) {
                     duplicates++
                 } else {
-                    database.evidenceDao().insertEvidence(evidenceDto.toModel())
+                    database.evidenceDao().insertEvidence(evidence)
                     created++
                 }
             } catch (e: Exception) {
@@ -341,11 +427,21 @@ class ImportExportRepository @Inject constructor(
         // Import Questions
         importData.questions.forEach { questionDto ->
             try {
-                val existing = database.questionDao().getQuestionById(questionDto.id)
+                val question = questionDto.toModel()
+
+                // Validate foreign key: targetId must exist (as Topic or Claim)
+                val targetAsTopic = database.topicDao().getTopicById(question.targetId)
+                val targetAsClaim = database.claimDao().getClaimById(question.targetId)
+                if (targetAsTopic == null && targetAsClaim == null) {
+                    errors++
+                    errorMessages.add("Question ${question.id}: Referenced target ${question.targetId} not found (neither Topic nor Claim)")
+                    return@forEach
+                }
+
+                val existing = database.questionDao().getQuestionById(question.id)
                 if (existing != null) {
                     duplicates++
                 } else {
-                    val question = questionDto.toModel()
                     database.questionDao().insertQuestion(question)
                     created++
                 }

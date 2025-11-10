@@ -13,45 +13,78 @@ import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Repository for managing claim entities.
+ * Handles CRUD operations, search functionality, and fingerprint generation for claims.
+ */
 @Singleton
 class ClaimRepository @Inject constructor(
     private val claimDao: ClaimDao
 ) {
+    /**
+     * Observes all claims in the database.
+     * @return Flow emitting list of all claims, updated automatically when data changes
+     */
     fun getAllClaims(): Flow<List<Claim>> = claimDao.getAllClaims()
 
+    /**
+     * Observes a specific claim by ID.
+     * @param claimId The unique identifier of the claim
+     * @return Flow emitting the claim or null if not found, updated automatically when data changes
+     */
     fun getClaimById(claimId: String): Flow<Claim?> = claimDao.observeClaimById(claimId)
 
+    /**
+     * Retrieves a claim by ID (one-time fetch, not observed).
+     * @param claimId The unique identifier of the claim
+     * @return The claim or null if not found
+     */
     suspend fun getClaimByIdSync(claimId: String): Claim? = claimDao.getClaimById(claimId)
 
+    /**
+     * Retrieves all claims associated with a specific topic.
+     * @param topicId The topic identifier
+     * @return List of claims belonging to the topic
+     */
     suspend fun getClaimsForTopic(topicId: String): List<Claim> = claimDao.getClaimsForTopic(topicId)
 
+    /**
+     * Inserts a new claim into the database.
+     * Automatically generates and adds fingerprint for duplicate detection.
+     * @param claim The claim to insert
+     */
     suspend fun insertClaim(claim: Claim) {
         val fingerprint = FingerprintUtils.generateClaimFingerprint(claim)
         claimDao.insertClaim(claim.copy(claimFingerprint = fingerprint))
     }
 
+    /**
+     * Updates an existing claim in the database.
+     * Automatically regenerates fingerprint to reflect changes.
+     * @param claim The claim to update (must have existing ID)
+     */
     suspend fun updateClaim(claim: Claim) {
         val fingerprint = FingerprintUtils.generateClaimFingerprint(claim)
         claimDao.updateClaim(claim.copy(claimFingerprint = fingerprint))
     }
 
+    /**
+     * Deletes a claim from the database.
+     * Cascading delete will remove associated evidences and rebuttals.
+     * @param claim The claim to delete
+     */
     suspend fun deleteClaim(claim: Claim) = claimDao.deleteClaim(claim)
 
     /**
-     * Search claims using FTS with automatic fallback to LIKE search if FTS fails.
+     * Searches claims using full-text search with automatic fallback to LIKE search if FTS fails.
+     * @param query The search query string
+     * @return Flow emitting list of matching claims
      */
     fun searchClaims(query: String): Flow<List<Claim>> {
-        val sanitizedQuery = SearchUtils.sanitizeLikeQuery(query)
-
-        return if (SearchUtils.isSafeFtsQuery(query)) {
-            // Try FTS first
-            claimDao.searchClaimsFts(query).catch { error ->
-                // If FTS fails (e.g., invalid query syntax), fall back to LIKE
-                emitAll(claimDao.searchClaimsLike(sanitizedQuery))
-            }
-        } else {
-            // Query looks unsafe for FTS, use LIKE directly
-            claimDao.searchClaimsLike(sanitizedQuery)
-        }
+        return searchWithFtsFallback(
+            query = query,
+            ftsSearch = { claimDao.searchClaimsFts(it) },
+            likeSearch = { claimDao.searchClaimsLike(it) }
+        )
     }
 }

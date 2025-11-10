@@ -44,6 +44,13 @@ class SourceCreateEditViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
+    fun clearError() {
+        _errorMessage.value = null
+    }
+
     private val _linkedEvidences = MutableStateFlow<List<Evidence>>(emptyList())
     val linkedEvidences: StateFlow<List<Evidence>> = _linkedEvidences.asStateFlow()
 
@@ -117,40 +124,48 @@ class SourceCreateEditViewModel @Inject constructor(
 
     fun saveSource(onSaved: () -> Unit) {
         if (_title.value.isBlank()) {
+            _errorMessage.value = "Source title cannot be empty"
             return
         }
 
-        viewModelScope.launch {
-            val source = if (isEditMode && sourceId != null) {
-                // Update existing source
-                val existingSource = sourceRepository.getSourceById(sourceId!!).first()
-                existingSource?.copy(
-                    title = _title.value.trim(),
-                    citation = _citation.value.trim().takeIf { it.isNotEmpty() },
-                    url = _url.value.trim().takeIf { it.isNotEmpty() },
-                    publisher = _publisher.value.trim().takeIf { it.isNotEmpty() },
-                    date = _date.value.trim().takeIf { it.isNotEmpty() },
-                    notes = _notes.value.trim().takeIf { it.isNotEmpty() }
-                )
-            } else {
-                // Create new source
-                Source(
-                    title = _title.value.trim(),
-                    citation = _citation.value.trim().takeIf { it.isNotEmpty() },
-                    url = _url.value.trim().takeIf { it.isNotEmpty() },
-                    publisher = _publisher.value.trim().takeIf { it.isNotEmpty() },
-                    date = _date.value.trim().takeIf { it.isNotEmpty() },
-                    notes = _notes.value.trim().takeIf { it.isNotEmpty() }
-                )
-            }
+        _errorMessage.value = null
 
-            source?.let {
-                if (isEditMode) {
-                    sourceRepository.updateSource(it)
+        viewModelScope.launch {
+            try {
+                val source = if (isEditMode && sourceId != null) {
+                    // Update existing source
+                    val existingSource = sourceRepository.getSourceById(sourceId!!).first()
+                    existingSource?.copy(
+                        title = _title.value.trim(),
+                        citation = _citation.value.trim().takeIf { it.isNotEmpty() },
+                        url = _url.value.trim().takeIf { it.isNotEmpty() },
+                        publisher = _publisher.value.trim().takeIf { it.isNotEmpty() },
+                        date = _date.value.trim().takeIf { it.isNotEmpty() },
+                        notes = _notes.value.trim().takeIf { it.isNotEmpty() },
+                        updatedAt = com.argumentor.app.data.model.getCurrentIsoTimestamp()
+                    )
                 } else {
-                    sourceRepository.insertSource(it)
+                    // Create new source
+                    Source(
+                        title = _title.value.trim(),
+                        citation = _citation.value.trim().takeIf { it.isNotEmpty() },
+                        url = _url.value.trim().takeIf { it.isNotEmpty() },
+                        publisher = _publisher.value.trim().takeIf { it.isNotEmpty() },
+                        date = _date.value.trim().takeIf { it.isNotEmpty() },
+                        notes = _notes.value.trim().takeIf { it.isNotEmpty() }
+                    )
                 }
-                onSaved()
+
+                source?.let {
+                    if (isEditMode) {
+                        sourceRepository.updateSource(it)
+                    } else {
+                        sourceRepository.insertSource(it)
+                    }
+                    onSaved()
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to save source: ${e.message}"
             }
         }
     }

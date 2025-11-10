@@ -35,6 +35,13 @@ class ClaimCreateEditViewModel @Inject constructor(
     private val _isSaving = MutableStateFlow(false)
     val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
 
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
+    fun clearError() {
+        _errorMessage.value = null
+    }
+
     fun loadClaim(claimId: String?, topicId: String?) {
         topicId?.let {
             _selectedTopics.value = listOf(it)
@@ -81,9 +88,13 @@ class ClaimCreateEditViewModel @Inject constructor(
     }
 
     fun saveClaim(onSaved: () -> Unit) {
-        if (_text.value.isBlank()) return
+        if (_text.value.isBlank()) {
+            _errorMessage.value = "Claim text cannot be empty"
+            return
+        }
 
         _isSaving.value = true
+        _errorMessage.value = null
 
         viewModelScope.launch {
             try {
@@ -111,6 +122,8 @@ class ClaimCreateEditViewModel @Inject constructor(
                     claimRepository.insertClaim(claim)
                 }
                 onSaved()
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to save claim: ${e.message}"
             } finally {
                 _isSaving.value = false
             }

@@ -12,7 +12,7 @@ import java.util.UUID
  * @property id Unique identifier (UUID v4)
  * @property title Topic title
  * @property summary Topic summary/description
- * @property posture Tone setting: neutral_critique, sceptique, comparatif_academique
+ * @property posture Tone setting: neutral_critical, skeptical, academic_comparative
  * @property tags List of tag IDs associated with this topic
  * @property createdAt Creation timestamp in ISO 8601 format
  * @property updatedAt Last update timestamp in ISO 8601 format
@@ -24,32 +24,32 @@ data class Topic(
     val id: String = UUID.randomUUID().toString(),
     val title: String,
     val summary: String,
-    val posture: Posture = Posture.NEUTRAL_CRITIQUE,
+    val posture: Posture = Posture.NEUTRAL_CRITICAL,
     val tags: List<String> = emptyList(),
     val createdAt: String = getCurrentIsoTimestamp(),
     val updatedAt: String = getCurrentIsoTimestamp()
 ) {
     enum class Posture {
-        NEUTRAL_CRITIQUE,
-        SCEPTIQUE,
-        COMPARATIF_ACADEMIQUE;
+        NEUTRAL_CRITICAL,
+        SKEPTICAL,
+        ACADEMIC_COMPARATIVE;
 
         companion object {
             fun fromString(value: String): Posture {
                 return when (value.lowercase()) {
-                    "neutral_critique", "neutre_critique" -> NEUTRAL_CRITIQUE
-                    "sceptique" -> SCEPTIQUE
-                    "comparatif_academique" -> COMPARATIF_ACADEMIQUE
-                    else -> NEUTRAL_CRITIQUE
+                    "neutral_critical", "neutral_critique", "neutre_critique" -> NEUTRAL_CRITICAL
+                    "skeptical", "sceptique" -> SKEPTICAL
+                    "academic_comparative", "comparatif_academique" -> ACADEMIC_COMPARATIVE
+                    else -> NEUTRAL_CRITICAL
                 }
             }
         }
 
         override fun toString(): String {
             return when (this) {
-                NEUTRAL_CRITIQUE -> "neutral_critique"
-                SCEPTIQUE -> "sceptique"
-                COMPARATIF_ACADEMIQUE -> "comparatif_academique"
+                NEUTRAL_CRITICAL -> "neutral_critical"
+                SKEPTICAL -> "skeptical"
+                ACADEMIC_COMPARATIVE -> "academic_comparative"
             }
         }
     }

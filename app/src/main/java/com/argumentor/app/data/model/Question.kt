@@ -13,6 +13,7 @@ import java.util.UUID
  * @property text The question text
  * @property kind Question type: socratic or clarifying
  * @property createdAt Creation timestamp in ISO 8601 format
+ * @property updatedAt Last update timestamp in ISO 8601 format
  */
 @Entity(
     tableName = "questions",
@@ -24,7 +25,8 @@ data class Question(
     val targetId: String,
     val text: String,
     val kind: QuestionKind = QuestionKind.CLARIFYING,
-    val createdAt: String = getCurrentIsoTimestamp()
+    val createdAt: String = getCurrentIsoTimestamp(),
+    val updatedAt: String = getCurrentIsoTimestamp()
 ) {
     enum class QuestionKind {
         SOCRATIC, CLARIFYING, CHALLENGE, EVIDENCE;
