@@ -112,7 +112,26 @@ class ImportExportRepository @Inject constructor(
     }
 
     /**
-     * Process import with anti-duplicate logic.
+     * Processes import with comprehensive anti-duplicate logic.
+     *
+     * Import order (respects foreign key dependencies):
+     * 1. Tags (no dependencies)
+     * 2. Sources (no dependencies)
+     * 3. Topics (references Tags)
+     * 4. Claims (references Topics, uses fingerprint + similarity matching)
+     * 5. Rebuttals (references Claims, uses similarity matching)
+     * 6. Evidences (references Claims and Sources, validates foreign keys)
+     * 7. Questions (references Topics or Claims, validates foreign keys)
+     *
+     * Duplicate detection strategies:
+     * - **Exact ID match**: Updates if incoming is newer, otherwise marks as duplicate
+     * - **Fingerprint match** (Claims): Detects identical content via normalized hash
+     * - **Similarity match** (Claims, Rebuttals, Sources): Uses fuzzy text matching with configurable threshold (default 0.90)
+     * - **Foreign key validation** (Evidences, Rebuttals, Questions): Ensures referenced entities exist
+     *
+     * @param importData The data to import
+     * @param similarityThreshold Threshold for fuzzy text matching (0.0-1.0), default 0.90
+     * @return ImportResult containing statistics and items flagged for review
      */
     private suspend fun processImport(
         importData: ExportData,
@@ -147,19 +166,58 @@ class ImportExportRepository @Inject constructor(
             }
         }
 
-        // Import Sources (no dependencies)
+        // Import Sources with fingerprint checking
+        val allExistingSources = database.sourceDao().getAllSourcesSync()
+
         importData.sources.forEach { sourceDto ->
             try {
-                val existing = database.sourceDao().getSourceById(sourceDto.id)
-                if (existing != null) {
-                    duplicates++
-                } else {
-                    val source = sourceDto.toModel()
-                    val fingerprint = FingerprintUtils.generateSourceFingerprint(source)
+                val source = sourceDto.toModel()
+                val fingerprint = FingerprintUtils.generateSourceFingerprint(source)
 
-                    // Check for similar sources (simplified - in production would check all)
-                    database.sourceDao().insertSource(source)
-                    created++
+                val existing = database.sourceDao().getSourceById(source.id)
+                if (existing != null) {
+                    // Update if incoming is newer
+                    if (source.updatedAt > existing.updatedAt) {
+                        database.sourceDao().updateSource(source)
+                        updated++
+                    } else {
+                        duplicates++
+                    }
+                } else {
+                    // Check for near-duplicates using title similarity
+                    var isNearDuplicate = false
+                    var similarTo: String? = null
+
+                    for (candidate in allExistingSources) {
+                        if (FingerprintUtils.areSimilar(source.title, candidate.title, similarityThreshold)) {
+                            isNearDuplicate = true
+                            similarTo = candidate.id
+                            break
+                        }
+                    }
+
+                    if (isNearDuplicate) {
+                        nearDuplicates++
+                        itemsForReview.add(
+                            ReviewItem(
+                                type = "Source",
+                                incomingId = source.id,
+                                existingId = similarTo ?: "",
+                                incomingText = source.title.take(100),
+                                existingText = allExistingSources.find { it.id == similarTo }?.title?.take(100) ?: "",
+                                similarityScore = allExistingSources.find { it.id == similarTo }?.let {
+                                    FingerprintUtils.similarityRatio(
+                                        FingerprintUtils.normalizeText(source.title),
+                                        FingerprintUtils.normalizeText(it.title)
+                                    )
+                                } ?: 0.0,
+                                action = "review"
+                            )
+                        )
+                    } else {
+                        database.sourceDao().insertSource(source)
+                        created++
+                    }
                 }
             } catch (e: Exception) {
                 errors++

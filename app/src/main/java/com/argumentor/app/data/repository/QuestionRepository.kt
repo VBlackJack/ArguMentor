@@ -35,17 +35,10 @@ class QuestionRepository @Inject constructor(
      * Search questions using FTS with automatic fallback to LIKE search if FTS fails.
      */
     fun searchQuestions(query: String): Flow<List<Question>> {
-        val sanitizedQuery = SearchUtils.sanitizeLikeQuery(query)
-
-        return if (SearchUtils.isSafeFtsQuery(query)) {
-            // Try FTS first
-            questionDao.searchQuestionsFts(query).catch { error ->
-                // If FTS fails (e.g., invalid query syntax), fall back to LIKE
-                emitAll(questionDao.searchQuestionsLike(sanitizedQuery))
-            }
-        } else {
-            // Query looks unsafe for FTS, use LIKE directly
-            questionDao.searchQuestionsLike(sanitizedQuery)
-        }
+        return searchWithFtsFallback(
+            query = query,
+            ftsSearch = { questionDao.searchQuestionsFts(it) },
+            likeSearch = { questionDao.searchQuestionsLike(it) }
+        )
     }
 }
