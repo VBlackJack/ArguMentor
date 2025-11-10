@@ -1,0 +1,161 @@
+{
+  "schemaVersion": "1.0",
+  "exportedAt": "2025-11-10T12:00:00Z",
+  "app": "ArguMentor",
+  "topics": [
+    {
+      "id": "topic_001",
+      "title": "La Trinité dans le christianisme",
+      "summary": "Débat sur la doctrine chrétienne de la Trinité - Dieu en trois personnes",
+      "posture": "neutre_critique",
+      "tags": ["tag_001", "tag_002"],
+      "createdAt": "2025-11-10T10:00:00Z",
+      "updatedAt": "2025-11-10T10:00:00Z"
+    },
+    {
+      "id": "topic_002",
+      "title": "Intelligence Artificielle et Éthique",
+      "summary": "Les implications éthiques du développement de l'IA",
+      "posture": "neutre",
+      "tags": ["tag_003"],
+      "createdAt": "2025-11-10T10:15:00Z",
+      "updatedAt": "2025-11-10T10:15:00Z"
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim_001",
+      "text": "La Bible enseigne explicitement la doctrine de la Trinité",
+      "stance": "pro",
+      "strength": "medium",
+      "topics": ["topic_001"],
+      "createdAt": "2025-11-10T10:30:00Z",
+      "updatedAt": "2025-11-10T10:30:00Z",
+      "claimFingerprint": "bible_enseigne_doctrine_trinite"
+    },
+    {
+      "id": "claim_002",
+      "text": "Le terme 'Trinité' n'apparaît jamais dans la Bible",
+      "stance": "con",
+      "strength": "high",
+      "topics": ["topic_001"],
+      "createdAt": "2025-11-10T10:45:00Z",
+      "updatedAt": "2025-11-10T10:45:00Z",
+      "claimFingerprint": "terme_trinite_absent_bible"
+    },
+    {
+      "id": "claim_003",
+      "text": "L'IA générative peut reproduire des biais humains",
+      "stance": "pro",
+      "strength": "high",
+      "topics": ["topic_002"],
+      "createdAt": "2025-11-10T11:00:00Z",
+      "updatedAt": "2025-11-10T11:00:00Z",
+      "claimFingerprint": "ia_reproduit_biais_humains"
+    }
+  ],
+  "rebuttals": [
+    {
+      "id": "rebuttal_001",
+      "claimId": "claim_001",
+      "text": "Cette interprétation ignore le fait que la doctrine a été formalisée au Concile de Nicée en 325, bien après la rédaction des textes bibliques",
+      "fallacyTag": "Anachronisme",
+      "createdAt": "2025-11-10T11:15:00Z",
+      "updatedAt": "2025-11-10T11:15:00Z"
+    },
+    {
+      "id": "rebuttal_002",
+      "claimId": "claim_002",
+      "text": "L'absence du terme exact n'implique pas l'absence du concept. Le mot 'Bible' lui-même n'apparaît pas dans la Bible",
+      "fallacyTag": "Argument du silence",
+      "createdAt": "2025-11-10T11:20:00Z",
+      "updatedAt": "2025-11-10T11:20:00Z"
+    }
+  ],
+  "evidences": [
+    {
+      "id": "evidence_001",
+      "claimId": "claim_001",
+      "type": "citation",
+      "content": "Matthieu 28:19 - 'Allez, faites de toutes les nations des disciples, les baptisant au nom du Père, du Fils et du Saint-Esprit'",
+      "sourceId": "source_001",
+      "quality": "high",
+      "createdAt": "2025-11-10T11:30:00Z"
+    },
+    {
+      "id": "evidence_002",
+      "claimId": "claim_001",
+      "type": "citation",
+      "content": "Jean 1:1 - 'Au commencement était la Parole, et la Parole était avec Dieu, et la Parole était Dieu'",
+      "sourceId": "source_001",
+      "quality": "high",
+      "createdAt": "2025-11-10T11:35:00Z"
+    },
+    {
+      "id": "evidence_003",
+      "claimId": "claim_003",
+      "type": "study",
+      "content": "Une étude de 2023 montre que 78% des modèles d'IA testés reproduisent des biais de genre présents dans leurs données d'entraînement",
+      "sourceId": "source_002",
+      "quality": "high",
+      "createdAt": "2025-11-10T11:40:00Z"
+    }
+  ],
+  "questions": [
+    {
+      "id": "question_001",
+      "targetId": "topic_001",
+      "text": "Quels sont les passages bibliques qui soutiennent ou contredisent la Trinité ?",
+      "kind": "clarification",
+      "createdAt": "2025-11-10T11:45:00Z"
+    },
+    {
+      "id": "question_002",
+      "targetId": "claim_003",
+      "text": "Quelles méthodes concrètes peuvent être utilisées pour réduire les biais dans les modèles d'IA ?",
+      "kind": "followup",
+      "createdAt": "2025-11-10T11:50:00Z"
+    }
+  ],
+  "sources": [
+    {
+      "id": "source_001",
+      "title": "Bible Louis Segond 1910",
+      "citation": "Bible LSG, Société Biblique de France, 1910",
+      "url": "https://www.bible.com/fr/bible/93",
+      "publisher": "Société Biblique de France",
+      "date": "1910",
+      "reliabilityScore": 0.95,
+      "notes": "Traduction française classique et largement utilisée",
+      "createdAt": "2025-11-10T12:00:00Z"
+    },
+    {
+      "id": "source_002",
+      "title": "AI Bias Study 2023",
+      "citation": "Smith, J. et al. (2023). Gender Bias in Large Language Models. Journal of AI Ethics, 15(2), 234-256.",
+      "url": "https://example.com/ai-bias-study-2023",
+      "publisher": "Journal of AI Ethics",
+      "date": "2023",
+      "reliabilityScore": 0.9,
+      "notes": "Étude peer-reviewed sur les biais dans les modèles de langage",
+      "createdAt": "2025-11-10T12:05:00Z"
+    }
+  ],
+  "tags": [
+    {
+      "id": "tag_001",
+      "label": "Théologie",
+      "color": "#4CAF50"
+    },
+    {
+      "id": "tag_002",
+      "label": "Christianisme",
+      "color": "#2196F3"
+    },
+    {
+      "id": "tag_003",
+      "label": "Technologie",
+      "color": "#FF9800"
+    }
+  ]
+}
