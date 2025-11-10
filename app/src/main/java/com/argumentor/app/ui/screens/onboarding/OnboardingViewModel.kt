@@ -74,6 +74,9 @@ class OnboardingViewModel @Inject constructor(
             settingsDataStore.setOnboardingCompleted(true)
             // Generate sample data to help users get started
             sampleDataGenerator.generateSampleData()
+            // Automatically disable tutorial after first viewing
+            // User can re-enable it in Settings to see it again
+            settingsDataStore.setTutorialEnabled(false)
             onComplete()
         }
     }
