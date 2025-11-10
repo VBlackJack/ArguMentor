@@ -34,6 +34,9 @@ fun ClaimCreateEditScreen(
     // Dialog state for unsaved changes confirmation
     var showUnsavedChangesDialog by remember { mutableStateOf(false) }
 
+    // Track validation state - show errors after first save attempt
+    var hasAttemptedSave by remember { mutableStateOf(false) }
+
     LaunchedEffect(claimId, topicId) {
         viewModel.loadClaim(claimId, topicId)
     }
@@ -92,8 +95,13 @@ fun ClaimCreateEditScreen(
                 },
                 actions = {
                     TextButton(
-                        onClick = { viewModel.saveClaim(onNavigateBack) },
-                        enabled = !isSaving && text.isNotBlank()
+                        onClick = {
+                            hasAttemptedSave = true
+                            if (text.isNotBlank()) {
+                                viewModel.saveClaim(onNavigateBack)
+                            }
+                        },
+                        enabled = !isSaving
                     ) {
                         Text(stringResource(R.string.save))
                     }
@@ -117,7 +125,11 @@ fun ClaimCreateEditScreen(
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
                 maxLines = 8,
-                locale = currentLocale
+                locale = currentLocale,
+                isError = hasAttemptedSave && text.isBlank(),
+                supportingText = if (hasAttemptedSave && text.isBlank()) {
+                    { Text(stringResource(R.string.claim_error_text_required)) }
+                } else null
             )
 
             // Stance selector

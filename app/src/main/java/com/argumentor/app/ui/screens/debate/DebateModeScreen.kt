@@ -3,6 +3,7 @@ package com.argumentor.app.ui.screens.debate
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -11,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -23,6 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.R
 import com.argumentor.app.ui.theme.StanceCon
 import com.argumentor.app.ui.theme.StancePro
+import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -152,11 +155,21 @@ fun DebateModeScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Flip card
+                // Flip card with swipe gestures
                 FlipCard(
                     card = currentCard,
                     isFlipped = isCardFlipped,
                     onFlip = { viewModel.flipCard() },
+                    onSwipeLeft = {
+                        if (currentCardIndex < debateCards.size - 1) {
+                            viewModel.nextCard()
+                        }
+                    },
+                    onSwipeRight = {
+                        if (currentCardIndex > 0) {
+                            viewModel.previousCard()
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
@@ -218,6 +231,8 @@ private fun FlipCard(
     card: DebateCard,
     isFlipped: Boolean,
     onFlip: () -> Unit,
+    onSwipeLeft: () -> Unit,
+    onSwipeRight: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val rotation by animateFloatAsState(
@@ -230,6 +245,29 @@ private fun FlipCard(
             .graphicsLayer {
                 rotationY = rotation
                 cameraDistance = 12f * density
+            }
+            .pointerInput(Unit) {
+                var totalDrag = 0f
+                detectHorizontalDragGestures(
+                    onDragStart = { totalDrag = 0f },
+                    onDragEnd = {
+                        // Detect swipe threshold (100dp minimum)
+                        if (abs(totalDrag) > 100f) {
+                            if (totalDrag > 0) {
+                                // Swipe right (previous card)
+                                onSwipeRight()
+                            } else {
+                                // Swipe left (next card)
+                                onSwipeLeft()
+                            }
+                        }
+                    },
+                    onDragCancel = { totalDrag = 0f },
+                    onHorizontalDrag = { change, dragAmount ->
+                        change.consume()
+                        totalDrag += dragAmount
+                    }
+                )
             }
             .clickable { onFlip() }
             .semantics {

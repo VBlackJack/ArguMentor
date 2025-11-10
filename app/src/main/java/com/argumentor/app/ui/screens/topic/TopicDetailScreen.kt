@@ -268,18 +268,26 @@ fun TopicDetailScreen(
                 label = "FAB Animation"
             ) { tab ->
                 when (tab) {
-                    0 -> FloatingActionButton(onClick = { onNavigateToAddClaim(topicId, null) }) {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = stringResource(R.string.accessibility_create_claim)
-                        )
-                    }
-                    else -> FloatingActionButton(onClick = { onNavigateToAddQuestion(topicId, null) }) {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = stringResource(R.string.accessibility_create_question)
-                        )
-                    }
+                    0 -> ExtendedFloatingActionButton(
+                        onClick = { onNavigateToAddClaim(topicId, null) },
+                        icon = {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = null
+                            )
+                        },
+                        text = { Text("Affirmation") }
+                    )
+                    else -> ExtendedFloatingActionButton(
+                        onClick = { onNavigateToAddQuestion(topicId, null) },
+                        icon = {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = null
+                            )
+                        },
+                        text = { Text("Question") }
+                    )
                 }
             }
         }
@@ -415,7 +423,14 @@ fun TopicDetailScreen(
                     onDeleteClaim = { claim ->
                         viewModel.deleteClaim(claim) {
                             coroutineScope.launch {
-                                snackbarHostState.showSnackbar("Affirmation supprimée")
+                                val result = snackbarHostState.showSnackbar(
+                                    message = "Affirmation supprimée",
+                                    actionLabel = "Annuler",
+                                    duration = SnackbarDuration.Short
+                                )
+                                if (result == SnackbarResult.ActionPerformed) {
+                                    viewModel.restoreClaim(claim)
+                                }
                             }
                         }
                     },
@@ -435,7 +450,14 @@ fun TopicDetailScreen(
                     onDeleteQuestion = { question ->
                         viewModel.deleteQuestion(question) {
                             coroutineScope.launch {
-                                snackbarHostState.showSnackbar("Question supprimée")
+                                val result = snackbarHostState.showSnackbar(
+                                    message = "Question supprimée",
+                                    actionLabel = "Annuler",
+                                    duration = SnackbarDuration.Short
+                                )
+                                if (result == SnackbarResult.ActionPerformed) {
+                                    viewModel.restoreQuestion(question)
+                                }
                             }
                         }
                     },
@@ -738,10 +760,18 @@ private fun ClaimCard(
                                 confirmButton = {
                                     TextButton(
                                         onClick = {
+                                            val deletedEvidence = evidence
                                             viewModel.deleteEvidence(evidence) {
                                                 showDeleteEvidenceDialog = false
                                                 coroutineScope.launch {
-                                                    snackbarHostState.showSnackbar("Preuve supprimée")
+                                                    val result = snackbarHostState.showSnackbar(
+                                                        message = "Preuve supprimée",
+                                                        actionLabel = "Annuler",
+                                                        duration = SnackbarDuration.Short
+                                                    )
+                                                    if (result == SnackbarResult.ActionPerformed) {
+                                                        viewModel.restoreEvidence(deletedEvidence)
+                                                    }
                                                 }
                                             }
                                         }

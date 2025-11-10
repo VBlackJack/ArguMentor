@@ -34,6 +34,9 @@ fun TopicCreateEditScreen(
     // Dialog state for unsaved changes confirmation
     var showUnsavedChangesDialog by remember { mutableStateOf(false) }
 
+    // Track validation state - show errors after first save attempt
+    var hasAttemptedSave by remember { mutableStateOf(false) }
+
     LaunchedEffect(topicId) {
         viewModel.loadTopic(topicId)
     }
@@ -84,8 +87,13 @@ fun TopicCreateEditScreen(
                 },
                 actions = {
                     TextButton(
-                        onClick = { viewModel.saveTopic(onNavigateBack) },
-                        enabled = !isSaving && title.isNotBlank()
+                        onClick = {
+                            hasAttemptedSave = true
+                            if (title.isNotBlank()) {
+                                viewModel.saveTopic(onNavigateBack)
+                            }
+                        },
+                        enabled = !isSaving
                     ) {
                         Text("Enregistrer")
                     }
@@ -108,7 +116,11 @@ fun TopicCreateEditScreen(
                 label = "Titre",
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                locale = currentLocale
+                locale = currentLocale,
+                isError = hasAttemptedSave && title.isBlank(),
+                supportingText = if (hasAttemptedSave && title.isBlank()) {
+                    { Text("Le titre est requis") }
+                } else null
             )
 
             // Summary field

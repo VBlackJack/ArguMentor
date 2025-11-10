@@ -117,6 +117,12 @@ class TopicDetailViewModel @Inject constructor(
         }
     }
 
+    fun restoreClaim(claim: Claim) {
+        viewModelScope.launch {
+            claimRepository.insertClaim(claim)
+        }
+    }
+
     fun deleteQuestion(question: Question, onDeleted: () -> Unit) {
         viewModelScope.launch {
             questionRepository.deleteQuestion(question)
@@ -124,10 +130,22 @@ class TopicDetailViewModel @Inject constructor(
         }
     }
 
+    fun restoreQuestion(question: Question) {
+        viewModelScope.launch {
+            questionRepository.insertQuestion(question)
+        }
+    }
+
     fun deleteEvidence(evidence: Evidence, onDeleted: () -> Unit) {
         viewModelScope.launch {
             evidenceRepository.deleteEvidence(evidence)
             onDeleted()
+        }
+    }
+
+    fun restoreEvidence(evidence: Evidence) {
+        viewModelScope.launch {
+            evidenceRepository.insertEvidence(evidence)
         }
     }
 
