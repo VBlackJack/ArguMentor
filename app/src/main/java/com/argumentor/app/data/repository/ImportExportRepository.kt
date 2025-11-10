@@ -341,20 +341,15 @@ class ImportExportRepository @Inject constructor(
         // Import Questions
         importData.questions.forEach { questionDto ->
             try {
-                android.util.Log.d("ImportExport", "Importing question: id=${questionDto.id}, targetId=${questionDto.targetId}, kind=${questionDto.kind}, text=${questionDto.text.take(50)}")
                 val existing = database.questionDao().getQuestionById(questionDto.id)
                 if (existing != null) {
-                    android.util.Log.d("ImportExport", "Question ${questionDto.id} already exists (duplicate)")
                     duplicates++
                 } else {
                     val question = questionDto.toModel()
-                    android.util.Log.d("ImportExport", "Inserting question: id=${question.id}, targetId=${question.targetId}, kind=${question.kind}")
                     database.questionDao().insertQuestion(question)
                     created++
-                    android.util.Log.d("ImportExport", "Question ${questionDto.id} inserted successfully")
                 }
             } catch (e: Exception) {
-                android.util.Log.e("ImportExport", "Error importing question ${questionDto.id}: ${e.message}", e)
                 errors++
                 errorMessages.add("Question ${questionDto.id}: ${e.message}")
             }

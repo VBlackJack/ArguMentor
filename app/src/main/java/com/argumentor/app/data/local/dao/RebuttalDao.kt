@@ -6,16 +6,16 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RebuttalDao {
-    @Query("SELECT * FROM rebuttals ORDER BY createdAt DESC")
+    @Query("SELECT * FROM rebuttals ORDER BY updatedAt DESC")
     fun getAllRebuttals(): Flow<List<Rebuttal>>
 
-    @Query("SELECT * FROM rebuttals ORDER BY createdAt DESC")
+    @Query("SELECT * FROM rebuttals ORDER BY updatedAt DESC")
     suspend fun getAllRebuttalsSync(): List<Rebuttal>
 
-    @Query("SELECT * FROM rebuttals WHERE claimId = :claimId ORDER BY createdAt DESC")
+    @Query("SELECT * FROM rebuttals WHERE claimId = :claimId ORDER BY updatedAt DESC")
     fun getRebuttalsByClaimId(claimId: String): Flow<List<Rebuttal>>
 
-    @Query("SELECT * FROM rebuttals WHERE claimId = :claimId ORDER BY createdAt DESC")
+    @Query("SELECT * FROM rebuttals WHERE claimId = :claimId ORDER BY updatedAt DESC")
     suspend fun getRebuttalsForClaim(claimId: String): List<Rebuttal>
 
     @Query("SELECT * FROM rebuttals WHERE id = :rebuttalId")
@@ -41,7 +41,7 @@ interface RebuttalDao {
         SELECT rebuttals.* FROM rebuttals
         JOIN rebuttals_fts ON rebuttals.rowid = rebuttals_fts.rowid
         WHERE rebuttals_fts MATCH :query
-        ORDER BY createdAt DESC
+        ORDER BY updatedAt DESC
     """)
     fun searchRebuttalsFts(query: String): Flow<List<Rebuttal>>
 
@@ -49,7 +49,7 @@ interface RebuttalDao {
     @Query("""
         SELECT * FROM rebuttals
         WHERE text LIKE '%' || :query || '%'
-        ORDER BY createdAt DESC
+        ORDER BY updatedAt DESC
     """)
     fun searchRebuttalsLike(query: String): Flow<List<Rebuttal>>
 
