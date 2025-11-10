@@ -168,7 +168,7 @@ fun SettingsScreen(
                 Divider()
 
                 SettingsItem(title = stringResource(R.string.settings_version)) {
-                    Text("1.0.0", style = MaterialTheme.typography.bodyMedium)
+                    Text("1.1.0", style = MaterialTheme.typography.bodyMedium)
                 }
 
                 Divider()
