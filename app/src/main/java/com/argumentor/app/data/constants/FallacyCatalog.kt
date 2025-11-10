@@ -102,6 +102,90 @@ object FallacyCatalog {
             name = "Généralisation Hâtive",
             description = "Tirer une conclusion générale à partir d'exemples insuffisants",
             example = "J'ai rencontré deux Français arrogants, donc tous les Français sont arrogants"
+        ),
+        Fallacy(
+            id = "red_herring",
+            name = "Diversion (Red Herring)",
+            description = "Détourner l'attention du sujet principal par un argument non pertinent",
+            example = "Pourquoi parler de la pollution ? Il y a des gens qui meurent de faim !"
+        ),
+        Fallacy(
+            id = "no_true_scotsman",
+            name = "Aucun Vrai Écossais",
+            description = "Modifier la définition pour exclure les contre-exemples gênants",
+            example = "Aucun vrai chrétien ne ferait cela. - Mais Paul l'a fait ! - Alors Paul n'était pas un vrai chrétien."
+        ),
+        Fallacy(
+            id = "loaded_question",
+            name = "Question Piège",
+            description = "Poser une question contenant une présupposition problématique",
+            example = "Avez-vous arrêté de mentir ?"
+        ),
+        Fallacy(
+            id = "appeal_to_emotion",
+            name = "Appel à l'Émotion",
+            description = "Manipuler les émotions plutôt que présenter des arguments rationnels",
+            example = "Comment pouvez-vous être contre cette loi ? Pensez aux enfants !"
+        ),
+        Fallacy(
+            id = "appeal_to_nature",
+            name = "Appel à la Nature",
+            description = "Affirmer qu'une chose est bonne parce qu'elle est naturelle",
+            example = "Les remèdes naturels sont meilleurs car ils sont naturels"
+        ),
+        Fallacy(
+            id = "false_equivalence",
+            name = "Fausse Équivalence",
+            description = "Comparer deux choses incomparables comme si elles étaient équivalentes",
+            example = "Les scientifiques ont déjà eu tort, donc la science vaut autant que mon opinion"
+        ),
+        Fallacy(
+            id = "burden_of_proof",
+            name = "Renversement de la Charge de la Preuve",
+            description = "Exiger que l'adversaire prouve que l'affirmation est fausse",
+            example = "Prouvez-moi que les fantômes n'existent pas !"
+        ),
+        Fallacy(
+            id = "texas_sharpshooter",
+            name = "Tireur d'Élite Texan",
+            description = "Choisir sélectivement les données pour créer un motif illusoire",
+            example = "Regardez toutes ces coïncidences dans cette prophétie (en ignorant les erreurs)"
+        ),
+        Fallacy(
+            id = "middle_ground",
+            name = "Juste Milieu",
+            description = "Affirmer que le compromis entre deux positions est nécessairement correct",
+            example = "La Terre est ronde vs plate ? Disons qu'elle est légèrement courbée."
+        ),
+        Fallacy(
+            id = "anecdotal",
+            name = "Preuve Anecdotique",
+            description = "Utiliser une expérience personnelle comme preuve générale",
+            example = "Mon grand-père fumait et a vécu 90 ans, donc le tabac n'est pas dangereux"
+        ),
+        Fallacy(
+            id = "composition",
+            name = "Sophisme de Composition",
+            description = "Affirmer que ce qui est vrai d'une partie est vrai du tout",
+            example = "Chaque joueur est excellent, donc l'équipe sera excellente"
+        ),
+        Fallacy(
+            id = "division",
+            name = "Sophisme de Division",
+            description = "Affirmer que ce qui est vrai du tout est vrai de chaque partie",
+            example = "L'équipe est riche, donc chaque joueur doit être riche"
+        ),
+        Fallacy(
+            id = "genetic_fallacy",
+            name = "Sophisme Génétique",
+            description = "Juger quelque chose uniquement par son origine",
+            example = "Cette théorie vient de Nazi, donc elle est fausse"
+        ),
+        Fallacy(
+            id = "bandwagon",
+            name = "Effet de Mode",
+            description = "Affirmer qu'une chose est correcte parce que tout le monde le fait",
+            example = "Tout le monde utilise ce produit, tu devrais aussi"
         )
     )
 

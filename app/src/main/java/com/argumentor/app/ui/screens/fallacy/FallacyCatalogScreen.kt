@@ -1,0 +1,172 @@
+package com.argumentor.app.ui.screens.fallacy
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.argumentor.app.R
+import com.argumentor.app.data.constants.FallacyCatalog
+import com.argumentor.app.ui.components.EngagingEmptyState
+
+/**
+ * Screen displaying a catalog of logical fallacies.
+ * Users can browse, search, and learn about different fallacies.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FallacyCatalogScreen(
+    viewModel: FallacyCatalogViewModel = hiltViewModel(),
+    onNavigateBack: () -> Unit,
+    onNavigateToDetail: (String) -> Unit
+) {
+    val searchQuery by viewModel.searchQuery.collectAsState()
+    val fallacies by viewModel.fallacies.collectAsState()
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        stringResource(R.string.fallacy_catalog_title),
+                        modifier = Modifier.semantics { heading() }
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = stringResource(R.string.accessibility_back)
+                        )
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            // Search bar
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = viewModel::onSearchQueryChange,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 16.dp),
+                placeholder = { Text(stringResource(R.string.fallacy_search_hint)) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = stringResource(R.string.accessibility_search)
+                    )
+                },
+                singleLine = true,
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = stringResource(R.string.accessibility_close)
+                            )
+                        }
+                    }
+                }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Fallacies list
+            if (fallacies.isEmpty()) {
+                EngagingEmptyState(
+                    icon = Icons.Default.SearchOff,
+                    title = stringResource(R.string.fallacy_empty_title),
+                    description = stringResource(R.string.fallacy_empty_description),
+                    actionText = null,
+                    onAction = null
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(
+                        items = fallacies,
+                        key = { it.id }
+                    ) { fallacy ->
+                        FallacyCard(
+                            fallacy = fallacy,
+                            onClick = { onNavigateToDetail(fallacy.id) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FallacyCard(
+    fallacy: FallacyCatalog.Fallacy,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            // Fallacy name
+            Text(
+                text = fallacy.name,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Short description
+            Text(
+                text = fallacy.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 2
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // "Tap to learn more" hint
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Icon(
+                    Icons.Default.ChevronRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+    }
+}
