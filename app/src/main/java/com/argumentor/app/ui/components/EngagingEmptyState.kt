@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.dp
  * @param icon The icon to display (large, with transparency)
  * @param title Main heading text
  * @param description Supporting text that explains what the user can do
- * @param actionText Text for the primary action button
- * @param onAction Callback when the action button is clicked
+ * @param actionText Text for the primary action button (optional)
+ * @param onAction Callback when the action button is clicked (optional)
  * @param modifier Optional modifier for the container
  */
 @Composable
@@ -27,8 +27,8 @@ fun EngagingEmptyState(
     icon: ImageVector,
     title: String,
     description: String,
-    actionText: String,
-    onAction: () -> Unit,
+    actionText: String? = null,
+    onAction: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -67,20 +67,22 @@ fun EngagingEmptyState(
             modifier = Modifier.widthIn(max = 400.dp)
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        // Primary action button (only show if actionText and onAction are provided)
+        if (actionText != null && onAction != null) {
+            Spacer(modifier = Modifier.height(32.dp))
 
-        // Primary action button
-        Button(
-            onClick = onAction,
-            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = actionText)
+            Button(
+                onClick = onAction,
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = actionText)
+            }
         }
     }
 }
