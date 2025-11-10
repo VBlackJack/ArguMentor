@@ -162,6 +162,10 @@
     <string name="onboarding_page4_title">Pratiquez en Mode Débat</string>
     <string name="onboarding_page4_description">Le mode débat affiche vos affirmations sous forme de cartes à retourner. Parfait pour réviser et mémoriser vos arguments !</string>
 
+    <!-- Language Selection -->
+    <string name="language_selection_title">Choisissez votre langue</string>
+    <string name="language_selection_description">Sélectionnez la langue de l\'application. Vous pourrez la modifier à tout moment dans les paramètres.</string>
+
     <!-- About -->
     <string name="about_author">Auteur</string>
     <string name="about_author_name">Julien Bombled</string>
@@ -222,6 +226,9 @@
     <string name="settings_language_description">Change la langue de l\'interface et de la saisie vocale</string>
     <string name="settings_content">Contenu</string>
     <string name="settings_default_posture">Posture par défaut</string>
+    <string name="settings_tutorial">Tutoriel</string>
+    <string name="settings_tutorial_enabled">Activer le tutoriel</string>
+    <string name="settings_tutorial_enabled_description">Affiche un sujet d\'exemple au lancement. Le sujet sera mis à jour lors du changement de langue.</string>
     <string name="settings_about">À propos</string>
     <string name="settings_app_author">Auteur de l\'application</string>
     <string name="settings_version">Version</string>
@@ -338,4 +345,35 @@
     <string name="fallacy_division_example">L\'équipe est riche, donc chaque joueur doit être riche</string>
     <string name="fallacy_genetic_fallacy_example">Cette théorie vient de Nazi, donc elle est fausse</string>
     <string name="fallacy_bandwagon_example">Tout le monde utilise ce produit, tu devrais aussi</string>
+
+    <!-- Demo Topic Data -->
+    <string name="demo_topic_title">Faut-il apprendre à coder ?</string>
+    <string name="demo_topic_summary">Un débat sur l\'importance de l\'apprentissage de la programmation dans l\'éducation moderne</string>
+    <string-array name="demo_topic_tags">
+        <item>éducation</item>
+        <item>technologie</item>
+        <item>compétences</item>
+    </string-array>
+
+    <!-- Demo Claims -->
+    <string name="demo_claim_1">Apprendre à coder développe la pensée logique et la résolution de problèmes</string>
+    <string name="demo_claim_2">La programmation est une compétence de plus en plus demandée sur le marché du travail</string>
+    <string name="demo_claim_3">Tout le monde n\'a pas besoin de programmer, il faut prioriser d\'autres compétences</string>
+    <string name="demo_claim_4">L\'apprentissage du code peut être frustrant et démotivant pour certains</string>
+
+    <!-- Demo Rebuttals -->
+    <string name="demo_rebuttal_1">Même sans devenir programmeur, la pensée computationnelle aide dans de nombreux domaines</string>
+    <string name="demo_rebuttal_2">Avec les bonnes méthodes pédagogiques, l\'apprentissage peut être ludique et motivant</string>
+
+    <!-- Demo Evidence -->
+    <string name="demo_source_title">Rapport sur l\'éducation numérique</string>
+    <string name="demo_source_citation">L\'apprentissage de la programmation améliore les compétences en résolution de problèmes de 35%</string>
+    <string name="demo_source_url">https://example.com/education-numerique</string>
+    <string name="demo_evidence_1">Plusieurs études montrent que l\'apprentissage du code renforce la pensée logique</string>
+    <string name="demo_evidence_2">Les offres d\'emploi en informatique ont augmenté de 40% ces 5 dernières années</string>
+
+    <!-- Demo Questions -->
+    <string name="demo_question_1">Quel est le meilleur âge pour commencer à apprendre la programmation ?</string>
+    <string name="demo_question_2">Peut-on développer la pensée logique par d\'autres moyens que la programmation ?</string>
+    <string name="demo_question_3">Cette tendance du marché du travail est-elle durable à long terme ?</string>
 </resources>

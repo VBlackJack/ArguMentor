@@ -28,6 +28,7 @@ fun SettingsScreen(
     val defaultPosture by viewModel.defaultPosture.collectAsState()
     val language by viewModel.language.collectAsState()
     val pendingLanguage by viewModel.pendingLanguage.collectAsState()
+    val tutorialEnabled by viewModel.tutorialEnabled.collectAsState()
     val context = LocalContext.current
     var showRestartDialog by remember { mutableStateOf(false) }
 
@@ -134,6 +135,18 @@ fun SettingsScreen(
                         }
                     }
                 }
+            }
+
+            Divider(thickness = 8.dp, color = MaterialTheme.colorScheme.surfaceVariant)
+
+            // Tutorial section
+            SettingsSection(title = stringResource(R.string.settings_tutorial)) {
+                SettingsSwitchItem(
+                    title = stringResource(R.string.settings_tutorial_enabled),
+                    description = stringResource(R.string.settings_tutorial_enabled_description),
+                    checked = tutorialEnabled,
+                    onCheckedChange = { viewModel.toggleTutorialEnabled() }
+                )
             }
 
             Divider(thickness = 8.dp, color = MaterialTheme.colorScheme.surfaceVariant)

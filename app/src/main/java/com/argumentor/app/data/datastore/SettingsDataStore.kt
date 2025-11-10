@@ -26,6 +26,9 @@ class SettingsDataStore @Inject constructor(
         val DEFAULT_POSTURE = stringPreferencesKey("default_posture")
         val ETHICS_WARNING_SHOWN = booleanPreferencesKey("ethics_warning_shown")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
+        val FIRST_LAUNCH_COMPLETED = booleanPreferencesKey("first_launch_completed")
+        val TUTORIAL_ENABLED = booleanPreferencesKey("tutorial_enabled")
+        val DEMO_SUBJECT_ID = stringPreferencesKey("demo_subject_id")
     }
 
     val isDarkTheme: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -50,6 +53,18 @@ class SettingsDataStore @Inject constructor(
 
     val onboardingCompleted: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false
+    }
+
+    val firstLaunchCompleted: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.FIRST_LAUNCH_COMPLETED] ?: false
+    }
+
+    val tutorialEnabled: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.TUTORIAL_ENABLED] ?: true
+    }
+
+    val demoSubjectId: Flow<String?> = context.dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.DEMO_SUBJECT_ID]
     }
 
     suspend fun setDarkTheme(isDark: Boolean) {
@@ -85,6 +100,28 @@ class SettingsDataStore @Inject constructor(
     suspend fun setOnboardingCompleted(completed: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.ONBOARDING_COMPLETED] = completed
+        }
+    }
+
+    suspend fun setFirstLaunchCompleted(completed: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.FIRST_LAUNCH_COMPLETED] = completed
+        }
+    }
+
+    suspend fun setTutorialEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.TUTORIAL_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setDemoSubjectId(id: String?) {
+        context.dataStore.edit { preferences ->
+            if (id != null) {
+                preferences[PreferencesKeys.DEMO_SUBJECT_ID] = id
+            } else {
+                preferences.remove(PreferencesKeys.DEMO_SUBJECT_ID)
+            }
         }
     }
 }
