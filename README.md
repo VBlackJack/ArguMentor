@@ -1,277 +1,466 @@
 # ArguMentor
 
-**ArguMentor** est une application Android personnelle pour créer, organiser et consulter des sujets d'argumentation avec arguments, contre-arguments, questions socratiques et sources bibliographiques.
+**ArguMentor** est votre compagnon personnel pour la pensée critique et l'argumentation rigoureuse. Structurez vos réflexions, analysez des débats complexes et développez des arguments solides sur les sujets qui vous tiennent à cœur.
 
-## 🎯 Objectif
+## 🎯 Pourquoi ArguMentor ?
 
-Fournir un outil rigoureux pour structurer la pensée critique sur des sujets sensibles (religion, politique, santé, sciences) avec bienveillance et rigueur intellectuelle.
+Dans un monde saturé d'informations et d'opinions, ArguMentor vous aide à :
 
-## ✨ Fonctionnalités MVP (v1.0)
+- **📚 Structurer votre pensée** : Organisez vos idées de manière claire et méthodique
+- **🔍 Analyser en profondeur** : Examinez tous les angles d'un sujet avec rigueur
+- **💡 Développer des arguments solides** : Construisez des raisonnements bien documentés
+- **🛡️ Détecter les sophismes** : Identifiez les erreurs logiques dans les arguments
+- **📊 Garder une trace** : Conservez toutes vos réflexions et sources au même endroit
 
-### Core Features
-- ✅ **CRUD complet** : Création/modification/suppression de Sujets, Affirmations, Contre-arguments, Preuves, Questions, Sources, Tags
-- ✅ **Dictée vocale** : Reconnaissance vocale (Speech-to-Text) pour les champs multilignes (preuves, sources, citations, notes)
-- ✅ **Recherche plein-texte** : Recherche FTS (Full-Text Search) avec fallback automatique sur claims, rebuttals et questions
-- ✅ **Liens croisés** : Un claim peut appartenir à plusieurs topics
-- ✅ **Mode Débat** : Cartes recto/verso pour réviser arguments et contre-arguments
-- ✅ **Import/Export JSON** : Format versionné (schema v1.0) avec anti-doublons intelligent et détection de similarité
-- ✅ **Export PDF/Markdown** : Export par sujet avec SAF (Android 13/14 compatible) - menu ⋮ depuis le détail du sujet
-- ✅ **Bibliothèque de modèles** : Templates pour arguments doctrinaux, scientifiques, témoignages, etc.
-- ✅ **Catalogue de sophismes** : 15+ fallacies cataloguées (ad hominem, straw man, post hoc, etc.)
-- ✅ **Thème clair/sombre** : Support des deux thèmes
-- ✅ **Android 13/14 compatible** : Storage Access Framework (SAF) - aucune permission de stockage requise
-- ✅ **IME padding** : Clavier n'obstrue plus les champs de saisie lors de l'édition
+Idéal pour les débats sur la religion, la politique, la santé, les sciences et tout sujet nécessitant une réflexion approfondie.
 
-### Architecture Technique
+---
 
-#### Stack
-- **Langage** : Kotlin
-- **UI** : Jetpack Compose avec Material 3
-- **Architecture** : MVVM (Model-View-ViewModel)
-- **Injection de dépendances** : Hilt
-- **Base de données** : Room avec FTS4 pour la recherche
-- **Navigation** : Jetpack Navigation Compose
-- **Concurrence** : Kotlin Coroutines + Flow
-- **Tâches en arrière-plan** : WorkManager
+## 📚 Documentation
 
-#### Structure du projet
-```
-app/
-├── data/
-│   ├── constants/          # Catalogs (fallacies, templates)
-│   ├── dto/                # Data Transfer Objects pour JSON
-│   ├── local/              # Room database, DAOs, FTS
-│   ├── model/              # Entités du domaine
-│   └── repository/         # Couche d'accès aux données
-├── di/                     # Modules Hilt
-├── ui/
-│   ├── navigation/         # Navigation Compose
-│   ├── screens/            # Écrans Compose
-│   └── theme/              # Thème Material 3
-└── util/                   # Utilities (fingerprints, etc.)
-```
+- **🚀 [Guide de Démarrage Rapide](GUIDE_DEMARRAGE.md)** - Prenez en main l'app en 5 minutes
+- **🔧 [Guide de Build](BUILD_GUIDE.md)** - Pour compiler l'application
+- **📄 [Guide JSON](IMPORT_JSON_GUIDE.md)** - Format d'import/export détaillé
+- **💻 [Éditeur JSON HTML5](JSON_EDITOR_README.md)** - Créez des fichiers JSON sur PC
 
-### Modèle de données
+---
 
-#### Entités principales
-- **Topic** : Sujet de discussion avec posture (neutre/sceptique/comparatif)
-- **Claim** : Affirmation avec stance (pro/con/neutral) et strength (low/med/high)
-- **Rebuttal** : Contre-argument lié à un claim, avec tag sophisme optionnel
-- **Evidence** : Preuve (étude/stat/citation/exemple) avec quality rating
-- **Question** : Question (socratique/clarification) liée à un topic ou claim
-- **Source** : Source bibliographique avec score de fiabilité
-- **Tag** : Étiquette pour catégoriser topics et claims
+## ✨ Ce que vous pouvez faire avec ArguMentor
 
-#### Format d'export JSON (v1.0)
+### 📝 Organiser vos idées
 
-```json
-{
-  "schemaVersion": "1.0",
-  "exportedAt": "2025-11-08T13:00:00Z",
-  "app": "ArguMentor",
-  "topics": [...],
-  "claims": [...],
-  "rebuttals": [...],
-  "evidences": [...],
-  "questions": [...],
-  "sources": [...],
-  "tags": [...]
-}
-```
+#### Créer et gérer des sujets de débat
+- **Créez des sujets** sur n'importe quel thème qui vous intéresse
+- **Définissez votre posture** : neutre, critique, sceptique, opposant ou comparative
+- **Ajoutez un résumé** pour contextualiser le débat
+- **Classez avec des tags** pour retrouver facilement vos sujets
 
-### Anti-Duplicate Logic
+#### Construire des arguments structurés
+- **Formulez des affirmations claires** pour ou contre un sujet
+- **Évaluez la force** de chaque argument (faible, moyenne, forte)
+- **Liez vos arguments** à un ou plusieurs sujets pour explorer les connexions
+- **Dictée vocale disponible** : parlez plutôt que de taper pour gagner du temps
 
-L'import utilise plusieurs stratégies :
-1. **Correspondance exacte par ID** : Mise à jour si `updatedAt` plus récent
-2. **Fingerprints** : Hash SHA-256 du texte normalisé (claims, rebuttals, sources)
-3. **Similarité Levenshtein** : Détection des quasi-doublons avec seuil configurable
-4. **Revue manuelle** : Items marqués `needs_review` en cas de conflit
+### 🔍 Analyser en profondeur
 
-#### Seuil de Similarité
+#### Documenter vos preuves
+- **Ajoutez des preuves** pour soutenir vos arguments :
+  - 📖 Citations textuelles
+  - 📊 Statistiques et données
+  - 🔬 Études scientifiques
+  - 👨‍🎓 Témoignages d'experts
+  - 📋 Exemples concrets
+- **Évaluez la qualité** de chaque preuve (faible, moyenne, élevée)
+- **Reliez aux sources** pour tracer la provenance de l'information
 
-Le seuil de similarité est configurable entre 0.85 et 0.95 (par défaut 0.90) :
-- **0.85** : Plus permissif - détecte plus de quasi-doublons potentiels
-- **0.90** (défaut) : Équilibré - bon compromis précision/rappel
-- **0.95** : Plus strict - uniquement les doublons très proches
+#### Identifier les contre-arguments
+- **Formulez des réfutations** pour challenger vos propres arguments
+- **Identifiez les sophismes** grâce au catalogue intégré de 15+ erreurs logiques courantes
+- **Développez un esprit critique** en examinant les failles de raisonnement
 
-Le calcul utilise la distance de Levenshtein normalisée sur le texte sans accents/ponctuation.
+#### Poser les bonnes questions
+- **Questions socratiques** pour approfondir la réflexion
+- **Questions de clarification** pour mieux comprendre
+- **Questions de contestation** pour tester la solidité d'un argument
+- **Questions sur les preuves** pour vérifier les sources
 
-#### Normalisation du texte
-- Lowercase
-- Suppression des accents (NFD decomposition)
-- Suppression de la ponctuation Unicode
-- Collapse des espaces multiples
-- Trim
+### 📚 Gérer vos sources
 
-### Permissions
+- **Cataloguez vos références** bibliographiques
+- **Notez les informations clés** : auteur, éditeur, date, URL
+- **Évaluez la fiabilité** de chaque source avec un score de confiance
+- **Ajoutez des notes** pour vous rappeler du contexte
 
-ArguMentor requiert un minimum de permissions :
-- ✅ **RECORD_AUDIO** : Pour la reconnaissance vocale (Speech-to-Text) - optionnelle
-- ✅ **INTERNET** : Pour les futures fonctionnalités de synchro cloud (v2.0)
-- ❌ **Aucune permission de stockage** : SAF utilisé pour import/export
+### 🎯 Modes d'utilisation
 
-## 🚀 Installation & Build
+#### Mode Débat : Révisez vos arguments
+- **Cartes interactives** style flashcards
+- **Recto** : l'affirmation
+- **Verso** : les contre-arguments
+- **Parfait pour** préparer un débat ou réviser vos positions
+
+#### Mode Recherche : Trouvez rapidement
+- **Recherche plein-texte** dans tous vos contenus
+- **Résultats instantanés** dans les affirmations, réfutations et questions
+- **Surlignage des termes** recherchés
+
+### 🎨 Bibliothèques intégrées
+
+#### 15+ Sophismes catalogués
+Apprenez à reconnaître les erreurs logiques courantes :
+- Ad Hominem, Épouvantail (Straw Man), Pente Glissante
+- Appel à l'ignorance, Faux Dilemme, Pétition de Principe
+- Cherry Picking, Appels à la tradition/autorité/popularité
+- Et bien d'autres...
+
+Chaque sophisme inclut :
+- ✅ Une définition claire
+- ✅ Un exemple concret
+- ✅ Comment l'identifier dans un débat
+
+#### 6 Modèles d'arguments
+Templates prêts à l'emploi pour structurer vos analyses :
+- **Affirmation Doctrinale** : Religion, philosophie, idéologie
+- **Argument d'Autorité** : Évaluation d'expert
+- **Fait Scientifique** : Études, protocoles, résultats
+- **Témoignage** : Évaluation de fiabilité
+- **Comparatif Académique** : Comparer deux thèses
+- **Affirmation Historique** : Événements et sources historiques
+
+### 💾 Import/Export de vos données
+
+#### Partagez et sauvegardez
+- **Export JSON** : Sauvegardez toutes vos données
+- **Import intelligent** : Détecte et évite les doublons automatiquement
+- **Export PDF** : Créez des documents imprimables par sujet
+- **Export Markdown** : Format texte pour partager facilement
+
+#### Éditeur JSON externe
+- **Éditeur HTML5 complet** inclus pour créer des fichiers JSON sur PC
+- **Interface visuelle** : créez sans toucher au code
+- **Mode code** : pour les utilisateurs avancés
+- **Validation en temps réel** : évite les erreurs
+
+### ⚙️ Confort d'utilisation
+
+- **🌙 Thème sombre** : Confort visuel en toutes circonstances
+- **🎤 Dictée vocale** : Créez du contenu en parlant
+- **📱 Interface moderne** : Design Material 3 épuré et intuitif
+- **⚡ Pas de connexion requise** : Toutes vos données restent sur votre appareil
+- **🔒 Aucune permission intrusive** : Respect de votre vie privée
+
+---
+
+## 📖 Guide d'utilisation rapide
+
+### Premier pas : Créer votre premier sujet
+
+1. **Ouvrez ArguMentor** et accordez les permissions optionnelles (microphone pour la dictée vocale)
+2. **Appuyez sur le bouton +** pour créer un nouveau sujet
+3. **Donnez un titre** à votre sujet (ex: "La Trinité dans le christianisme")
+4. **Choisissez votre posture** vis-à-vis du sujet
+5. **Ajoutez un résumé** pour contextualiser
+6. **Sauvegardez** !
+
+### Construire votre argumentation
+
+#### Ajouter une affirmation
+1. Ouvrez votre sujet
+2. Appuyez sur "Ajouter une affirmation"
+3. Formulez votre argument clairement
+4. Choisissez si c'est un argument **Pour**, **Contre** ou **Neutre**
+5. Évaluez sa force (faible/moyenne/forte)
+6. **Astuce** : Utilisez le bouton 🎤 pour dicter plutôt que taper !
+
+#### Documenter avec des preuves
+1. Depuis une affirmation, ajoutez une preuve
+2. Choisissez le type (citation, statistique, étude...)
+3. Ajoutez le contenu de la preuve
+4. Liez-la à une source bibliographique
+5. Évaluez sa qualité
+
+#### Ajouter des contre-arguments
+1. Depuis une affirmation, créez une réfutation
+2. Formulez le contre-argument
+3. Si c'est un sophisme, sélectionnez-le dans le catalogue
+4. Exemple : "Épouvantail", "Ad Hominem", etc.
+
+#### Poser des questions
+1. Ajoutez une question depuis un sujet ou une affirmation
+2. Choisissez le type :
+   - **Clarification** : pour mieux comprendre
+   - **Contestation** : pour challenger l'argument
+   - **Suivi** : pour approfondir
+   - **Preuve** : pour demander des sources
+
+### Réviser avec le Mode Débat
+
+1. Ouvrez un sujet
+2. Appuyez sur l'icône "Mode Débat"
+3. Swipez les cartes pour réviser :
+   - **Recto** : l'affirmation
+   - **Verso** : les contre-arguments
+4. Parfait pour préparer un débat ou réviser vos positions !
+
+### Rechercher dans vos contenus
+
+1. Utilisez la barre de recherche en haut
+2. Tapez n'importe quel mot-clé
+3. L'application cherche dans :
+   - Les titres de sujets
+   - Les affirmations
+   - Les contre-arguments
+   - Les questions
+4. Les résultats sont surlignés
+
+### Exporter vos travaux
+
+#### Export PDF ou Markdown (par sujet)
+1. Ouvrez un sujet
+2. Menu ⋮ (Plus d'options)
+3. Choisissez "Exporter en PDF" ou "Exporter en Markdown"
+4. Sélectionnez où sauvegarder le fichier
+5. Le document inclut tout : arguments, preuves, questions, sources
+
+#### Export/Import JSON (toutes vos données)
+1. Menu → Import/Export
+2. **Pour exporter** : "Exporter en JSON" → choisissez l'emplacement
+3. **Pour importer** :
+   - "Importer" → sélectionnez le fichier JSON
+   - Ajustez le seuil de détection des doublons si nécessaire
+   - Prévisualisez les changements
+   - Confirmez l'import
+
+### Utiliser l'éditeur JSON sur PC
+
+L'application inclut un éditeur HTML5 pour créer des fichiers JSON sur ordinateur :
+
+1. Ouvrez le fichier `json-editor.html` dans votre navigateur
+2. **Mode Éditeur Visuel** : Interface graphique pour créer vos données
+3. **Mode Code** : Éditez le JSON directement
+4. **Mode Aperçu** : Visualisez et validez vos données
+5. Exportez le fichier JSON
+6. Importez-le dans l'application mobile
+
+---
+
+## 🧩 Concepts clés
+
+### Les 7 types d'éléments dans ArguMentor
+
+| Élément | Icône | Description |
+|---------|-------|-------------|
+| **Sujets** | 🎯 | Le thème central d'un débat |
+| **Affirmations** | 💬 | Les arguments pour ou contre un sujet |
+| **Réfutations** | 🔄 | Les contre-arguments qui challengent une affirmation |
+| **Preuves** | 📚 | Les sources qui soutiennent une affirmation (citations, études...) |
+| **Questions** | ❓ | Les questions pour approfondir ou clarifier |
+| **Sources** | 🔗 | Les références bibliographiques |
+| **Tags** | 🏷️ | Les étiquettes pour organiser vos sujets |
+
+### Pourquoi structurer ainsi ?
+
+Cette organisation vous permet de :
+- ✅ **Voir toutes les facettes** d'un sujet complexe
+- ✅ **Tester la solidité** de vos propres arguments
+- ✅ **Documenter rigoureusement** vos sources
+- ✅ **Préparer des débats** de manière méthodique
+- ✅ **Développer votre esprit critique**
+
+---
+
+## 🛠️ Installation et Configuration
 
 ### Prérequis
-- Android Studio Hedgehog (2023.1.1) ou supérieur
-- JDK 17
-- Android SDK (minSdk 24, targetSdk 34)
-- Gradle 8.2+
+- Appareil Android avec version 7.0 (API 24) ou supérieure
+- ~50 MB d'espace de stockage disponible
 
-### Build
+1. Téléchargez l'APK depuis la section [Releases](https://github.com/VBlackJack/ArguMentor/releases)
+2. Activez l'installation depuis des sources inconnues dans les paramètres Android
+3. Installez l'APK
+4. Ouvrez ArguMentor et suivez le guide d'intégration
+
+### Permissions requises
+
+ArguMentor respecte votre vie privée et ne demande que le strict nécessaire :
+
+| Permission | Obligatoire ? | Usage |
+|------------|---------------|-------|
+| **🎤 Microphone** | ❌ Optionnel | Pour la dictée vocale dans les champs de texte |
+| **🌐 Internet** | ✅ Oui | Pour les futures fonctionnalités de synchronisation (v2.0) |
+| **💾 Stockage** | ❌ Non requis | L'app utilise le sélecteur de fichiers Android (pas d'accès direct) |
+
+**Note** : Vous pouvez refuser la permission microphone et utiliser quand même l'application. Seule la dictée vocale sera désactivée.
+
+---
+
+## 🔧 Pour les développeurs
+
+### Technologies utilisées
+
+ArguMentor est développé avec des technologies Android modernes :
+
+- **Langage** : Kotlin 100%
+- **Interface** : Jetpack Compose avec Material Design 3
+- **Architecture** : MVVM (Model-View-ViewModel)
+- **Base de données** : Room avec recherche FTS4 (Full-Text Search)
+- **Injection de dépendances** : Hilt
+- **Navigation** : Jetpack Navigation Compose
+- **Asynchrone** : Kotlin Coroutines + Flow
+
+### Build depuis les sources
+
 ```bash
-# Clone le repo
+# Cloner le dépôt
 git clone https://github.com/VBlackJack/ArguMentor.git
 cd ArguMentor
 
 # Build debug APK
 ./gradlew assembleDebug
 
-# Run tests
+# Lancer les tests
 ./gradlew test
 
-# Run instrumented tests
-./gradlew connectedAndroidTest
-```
-
-### Linting & Code Quality
-```bash
-# Detekt static analysis
+# Analyse de code statique
 ./gradlew detekt
-
-# Ktlint
-./gradlew ktlintCheck
 ```
 
-## 📖 Utilisation
+**Prérequis** : Android Studio Hedgehog+ (2023.1.1), JDK 17, Android SDK (API 24-34)
 
-### Premier lancement
-1. Accorder les permissions nécessaires (microphone pour la dictée vocale - optionnel)
-2. Créer un premier sujet (bouton +)
-3. Ajouter des affirmations, preuves, contre-arguments
-4. Utiliser le bouton 🎤 dans les champs multilignes pour la dictée vocale
+Consultez [BUILD_GUIDE.md](BUILD_GUIDE.md) pour plus de détails sur le build.
 
-### Import/Export
+### Structure du projet
 
-#### Compatibilité Android 13/14 (Storage Access Framework)
+```
+app/
+├── data/           # Données, modèles, repositories
+│   ├── constants/  # Catalogues (sophismes, templates)
+│   ├── local/      # Base de données Room
+│   └── export/     # Export PDF/Markdown
+├── ui/             # Interface utilisateur Compose
+│   ├── screens/    # Écrans de l'app
+│   ├── components/ # Composants réutilisables
+│   └── theme/      # Thème Material 3
+└── util/           # Utilitaires (recherche, empreintes...)
+```
 
-ArguMentor utilise le **Storage Access Framework (SAF)** pour l'import/export :
-- ✅ **Aucune permission de stockage requise** (READ/WRITE_EXTERNAL_STORAGE supprimées)
-- ✅ **Compatible Android 13/14** (targetSdk 34)
-- ✅ **Sélecteur de fichiers natif Android** pour import/export
-- ✅ **Sécurité renforcée** : accès fichier uniquement via consentement utilisateur
+### Documentation technique
 
-#### Export JSON
-1. Menu → Import/Export → "Exporter en JSON"
-2. Choisir l'emplacement de sauvegarde via le sélecteur de fichiers
-3. Le fichier JSON est créé avec toutes les données
-
-#### Import JSON
-1. Menu → Import/Export → "Importer"
-2. Ajuster le seuil de similarité si nécessaire (slider 85%-95%)
-3. Sélectionner le fichier JSON via le sélecteur
-4. Prévisualisation des changements :
-   - Items créés
-   - Items mis à jour
-   - Doublons exacts
-   - Quasi-doublons détectés
-   - Erreurs éventuelles
-5. Confirmer l'import
-
-#### Export PDF/Markdown
-1. Ouvrir un sujet
-2. Menu ⋮ (Plus d'options) → "Exporter en PDF" ou "Exporter en Markdown"
-3. Choisir l'emplacement de sauvegarde via le sélecteur de fichiers
-4. Le fichier est créé avec tous les arguments, contre-arguments, preuves, questions et sources du sujet
-
-### Mode Débat
-- Ouvrir un topic
-- Menu → Mode Débat
-- Swiper les cartes pour réviser
-
-## 📚 Catalogues
-
-### Sophismes (15 types)
-- Ad Hominem
-- Straw Man (Épouvantail)
-- Appeal to Ignorance
-- Post Hoc
-- False Dilemma
-- Begging the Question
-- Slippery Slope
-- Postdiction
-- Cherry Picking
-- Appeal to Authority/Tradition/Popularity
-- Circular Reasoning
-- Tu Quoque
-- Hasty Generalization
-
-### Templates (6 types)
-1. **Affirmation Doctrinale** : Religion, philosophie, idéologie
-2. **Argument d'Autorité** : Évaluation d'expert
-3. **Fait Scientifique** : Études, expériences
-4. **Témoignage** : Évaluation de fiabilité
-5. **Comparatif Académique** : Comparaison systématique
-6. **Affirmation Historique** : Événements historiques
-
-## 🧪 Tests
-
-### Unit Tests
-- Repositories (CRUD, search, fingerprints)
-- Import/Export (anti-doublons, conflits)
-- FingerprintUtils (normalisation, Levenshtein)
-
-### Tests instrumentés
-- Navigation
-- CRUD flows
-- Search/FTS
-- Import/Export avec Room
-
-**Objectif de couverture** : ≥70%
-
-## 🗺️ Roadmap
-
-### v1.1 (Q2 2025)
-- [ ] Tests de performance FTS (< 200ms sur 2000 items)
-- [ ] Tests unitaires import engine (5 cas de figure)
-- [ ] Export global PDF/Markdown (tous les sujets)
-- [ ] Scoring automatique de qualité de preuve
-- [ ] Favoris/bookmarks
-- [ ] Partage de topics individuels
-
-### v2.0 (Q3 2025)
-- [ ] OCR pour capturer textes papier (ML Kit)
-- [ ] Détection assistée de sophismes (NLP)
-- [ ] Chiffrement local (SQLCipher) + biométrie
-- [ ] Synchro cloud chiffrée (Firebase)
-- [ ] Assistant IA pour suggestions d'arguments
-
-## 📄 Licence
-
-**Apache License 2.0**
-
-Copyright 2025 VBlackJack
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-## 🤝 Contribution
-
-Ce projet est actuellement en phase MVP et développement personnel. Les contributions externes ne sont pas encore acceptées. Pour signaler des bugs ou suggérer des fonctionnalités, merci d'ouvrir une issue.
-
-## 📧 Contact
-
-Pour toute question : [Ouvrir une issue](https://github.com/VBlackJack/ArguMentor/issues)
+- **[BUILD_GUIDE.md](BUILD_GUIDE.md)** : Guide de build complet avec gestion d'erreurs
+- **[IMPORT_JSON_GUIDE.md](IMPORT_JSON_GUIDE.md)** : Format JSON détaillé et validation
+- **[JSON_EDITOR_README.md](JSON_EDITOR_README.md)** : Guide de l'éditeur JSON HTML5
 
 ---
 
-**Note** : Ce projet vise à promouvoir la pensée critique rigoureuse et le dialogue respectueux, même sur les sujets les plus sensibles.
+## 🗺️ Prochaines fonctionnalités
+
+### Version 1.1 (T2 2025)
+- [ ] **Export global** : Exportez tous vos sujets en un seul PDF ou Markdown
+- [ ] **Favoris** : Marquez vos sujets et arguments préférés
+- [ ] **Partage simple** : Partagez un sujet avec quelqu'un d'autre
+- [ ] **Scoring automatique** : Évaluation automatique de la qualité des preuves
+- [ ] **Statistiques avancées** : Visualisez vos habitudes d'argumentation
+
+### Version 2.0 (T3 2025)
+- [ ] **Scan de documents** : Capturez du texte depuis des livres ou articles papier (OCR)
+- [ ] **Détection intelligente de sophismes** : L'app suggère automatiquement les erreurs logiques
+- [ ] **Sécurité renforcée** : Chiffrement local et déverrouillage biométrique
+- [ ] **Synchronisation cloud** : Accédez à vos données depuis plusieurs appareils
+- [ ] **Assistant IA** : Suggestions d'arguments et contre-arguments
+
+**💡 Vous avez une idée ?** Ouvrez une [issue](https://github.com/VBlackJack/ArguMentor/issues) pour proposer de nouvelles fonctionnalités !
+
+---
+
+## ❓ FAQ
+
+### Est-ce que mes données sont privées ?
+**Oui, absolument.** Toutes vos données restent sur votre appareil. ArguMentor ne collecte aucune information personnelle et ne nécessite pas de connexion Internet pour fonctionner (sauf pour les futures fonctionnalités de synchro v2.0, qui seront optionnelles).
+
+### Puis-je utiliser ArguMentor sans connexion Internet ?
+**Oui !** ArguMentor fonctionne 100% hors ligne. La connexion Internet n'est requise que pour les futures fonctionnalités de synchronisation cloud (version 2.0).
+
+### Comment sauvegarder mes données ?
+Utilisez la fonction **Export JSON** depuis le menu Import/Export. Cela crée un fichier de sauvegarde complet que vous pouvez stocker où vous voulez (Google Drive, Dropbox, PC...). Pour restaurer, importez simplement le fichier JSON.
+
+### Puis-je partager mes arguments avec quelqu'un ?
+**Oui, de plusieurs façons :**
+- Export PDF ou Markdown d'un sujet spécifique
+- Export JSON pour partager toutes vos données
+- Utilisation de l'éditeur JSON HTML5 pour créer des fichiers collaboratifs
+
+### L'application est-elle gratuite ?
+**Oui**, ArguMentor est gratuit et open-source sous licence Apache 2.0.
+
+### Sur quels appareils puis-je utiliser ArguMentor ?
+ArguMentor fonctionne sur tous les appareils Android avec version 7.0 (Nougat) ou supérieure. Cela couvre ~95% des appareils Android en circulation.
+
+### Comment créer des fichiers JSON sur mon ordinateur ?
+Utilisez l'éditeur HTML5 fourni (`json-editor.html`). Ouvrez-le dans n'importe quel navigateur moderne (Chrome, Firefox, Edge, Safari) et créez vos données visuellement. Consultez le [guide de l'éditeur JSON](JSON_EDITOR_README.md).
+
+---
+
+## 💬 Support et Contribution
+
+### Signaler un bug
+Si vous rencontrez un problème :
+1. Vérifiez qu'il n'a pas déjà été signalé dans les [issues](https://github.com/VBlackJack/ArguMentor/issues)
+2. Ouvrez une nouvelle issue avec :
+   - Description du problème
+   - Étapes pour reproduire
+   - Version d'Android
+   - Captures d'écran si pertinent
+
+### Proposer une fonctionnalité
+Vous avez une idée pour améliorer ArguMentor ? Ouvrez une [issue](https://github.com/VBlackJack/ArguMentor/issues) avec le tag "enhancement".
+
+### Contribuer au code
+Les contributions sont les bienvenues ! Ce projet est actuellement en phase MVP. Pour contribuer :
+1. Forkez le projet
+2. Créez une branche pour votre fonctionnalité
+3. Committez vos changements
+4. Ouvrez une Pull Request
+
+**Note** : Consultez les bonnes pratiques de contribution dans le fichier CONTRIBUTING.md (à venir).
+
+---
+
+## 📄 Licence et Mentions Légales
+
+ArguMentor est distribué sous la licence **Apache 2.0** - vous êtes libre de :
+- ✅ Utiliser l'application personnellement ou commercialement
+- ✅ Modifier le code source
+- ✅ Distribuer des copies
+- ✅ Breveter des améliorations
+
+**Copyright © 2025 VBlackJack**
+
+Pour les détails complets de la licence : [LICENSE](LICENSE)
+
+---
+
+## 🌟 Philosophie du projet
+
+ArguMentor a été créé avec une conviction simple : **la pensée critique rigoureuse est essentielle dans notre monde saturé d'informations**.
+
+### Notre mission
+Fournir un outil qui encourage :
+- 🧠 **La rigueur intellectuelle** : Exiger des preuves, documenter ses sources
+- 🤝 **Le respect dans le débat** : Comprendre avant de critiquer
+- 🔍 **L'honnêteté intellectuelle** : Examiner les arguments opposés avec la même rigueur
+- 📚 **L'apprentissage continu** : Identifier ses propres biais et erreurs de raisonnement
+
+### Pour qui ?
+- Étudiants en philosophie, théologie, sciences politiques
+- Chercheurs et journalistes
+- Toute personne intéressée par les débats de société
+- Ceux qui veulent structurer leur pensée sur des sujets complexes
+
+**Notre espoir** : Que cet outil contribue à des discussions plus éclairées, respectueuses et productives, même sur les sujets les plus sensibles (religion, politique, santé, sciences).
+
+---
+
+## 📧 Contact
+
+- **Issues & Bugs** : [GitHub Issues](https://github.com/VBlackJack/ArguMentor/issues)
+- **Discussions** : [GitHub Discussions](https://github.com/VBlackJack/ArguMentor/discussions)
+- **Email** : Disponible sur le profil GitHub
+
+---
+
+## 🙏 Remerciements
+
+Merci à tous ceux qui contribuent à rendre la pensée critique plus accessible :
+- La communauté Android et Jetpack Compose
+- Les contributeurs open-source
+- Tous les utilisateurs qui testent et donnent leur feedback
+
+---
+
+<div align="center">
+
+**Développé avec ❤️ pour la pensée critique**
+
+[⬆️ Retour en haut](#argumentor)
+
+</div>
