@@ -59,16 +59,4 @@ class TopicRepository @Inject constructor(
     }
 
     fun searchTopics(query: String): Flow<List<Topic>> = topicDao.searchTopics(query)
-
-    /**
-     * Get topics filtered by tag and/or search query using SQL-based filtering.
-     * Much more efficient than loading all topics and filtering in memory.
-     *
-     * @param tag Optional tag to filter by (null for no tag filter)
-     * @param query Optional search text (null for no text filter)
-     * @return Flow of filtered topics, sorted by last updated
-     */
-    fun getFilteredTopics(tag: String?, query: String?): Flow<List<Topic>> {
-        return topicDao.getFilteredTopics(tag, query)
-    }
 }
