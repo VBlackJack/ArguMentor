@@ -417,7 +417,9 @@ fun TopicDetailScreen(
                     },
                     onAddClaim = { onNavigateToAddClaim(topicId, null) },
                     onAddEvidence = onNavigateToAddEvidence,
-                    onEditEvidence = onNavigateToEditEvidence
+                    onEditEvidence = onNavigateToEditEvidence,
+                    snackbarHostState = snackbarHostState,
+                    coroutineScope = coroutineScope
                 )
                 1 -> QuestionsTab(
                     questions = questions,
@@ -460,7 +462,9 @@ private fun ClaimsTab(
     onDeleteClaim: (Claim) -> Unit,
     onAddClaim: () -> Unit,
     onAddEvidence: (String) -> Unit,
-    onEditEvidence: (String, String) -> Unit
+    onEditEvidence: (String, String) -> Unit,
+    snackbarHostState: SnackbarHostState,
+    coroutineScope: kotlinx.coroutines.CoroutineScope
 ) {
     if (claims.isEmpty()) {
         EngagingEmptyState(
@@ -483,7 +487,9 @@ private fun ClaimsTab(
                     onEdit = { onEditClaim(claim.id) },
                     onDelete = { onDeleteClaim(claim) },
                     onAddEvidence = { onAddEvidence(claim.id) },
-                    onEditEvidence = { evidenceId -> onEditEvidence(evidenceId, claim.id) }
+                    onEditEvidence = { evidenceId -> onEditEvidence(evidenceId, claim.id) },
+                    snackbarHostState = snackbarHostState,
+                    coroutineScope = coroutineScope
                 )
             }
         }
@@ -497,7 +503,9 @@ private fun ClaimCard(
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     onAddEvidence: () -> Unit,
-    onEditEvidence: (String) -> Unit
+    onEditEvidence: (String) -> Unit,
+    snackbarHostState: SnackbarHostState,
+    coroutineScope: kotlinx.coroutines.CoroutineScope
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showEvidenceSection by remember { mutableStateOf(true) }
