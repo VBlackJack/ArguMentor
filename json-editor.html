@@ -592,6 +592,79 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Drag & Drop Zone */
+        .drop-zone {
+            border: 3px dashed var(--primary);
+            border-radius: var(--border-radius);
+            padding: 3rem;
+            text-align: center;
+            background: var(--background);
+            transition: var(--transition);
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone.drag-over {
+            background: var(--primary);
+            color: var(--on-primary);
+            transform: scale(1.02);
+        }
+
+        .drop-zone-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 0.75rem;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Character counter */
+        .char-counter {
+            font-size: 0.75rem;
+            color: var(--on-surface);
+            opacity: 0.6;
+            text-align: right;
+            margin-top: 0.25rem;
+        }
+
+        .char-counter.warning {
+            color: var(--quality-medium);
+            opacity: 1;
+        }
+
+        .char-counter.error {
+            color: var(--error);
+            opacity: 1;
+        }
+
         /* Utilities */
         .hidden { display: none !important; }
         .text-center { text-align: center; }
@@ -622,6 +695,13 @@
     </header>
 
     <div class="container">
+        <!-- Drag & Drop Zone -->
+        <div id="drop-zone" class="drop-zone">
+            <div class="drop-zone-icon">📥</div>
+            <h3>Glissez-déposez un fichier JSON ici</h3>
+            <p style="opacity: 0.7; margin-top: 0.5rem;">ou cliquez pour sélectionner un fichier</p>
+        </div>
+
         <!-- Mode Tabs -->
         <div class="mode-tabs">
             <button class="mode-tab active" onclick="switchMode('visual')">
@@ -912,6 +992,86 @@
         function init() {
             updateCounts();
             updateCodeEditor();
+            initDragAndDrop();
+        }
+
+        // Initialize Drag & Drop
+        function initDragAndDrop() {
+            const dropZone = document.getElementById('drop-zone');
+
+            // Click to select file
+            dropZone.addEventListener('click', () => {
+                importJSON();
+            });
+
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+
+            // Highlight drop zone when item is dragged over
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.add('drag-over');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.remove('drag-over');
+                }, false);
+            });
+
+            // Handle dropped files
+            dropZone.addEventListener('drop', handleDrop, false);
+        }
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        }
+
+        function handleFile(file) {
+            if (!file.name.endsWith('.json')) {
+                alert('❌ Veuillez sélectionner un fichier JSON (.json)');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = event => {
+                try {
+                    const imported = JSON.parse(event.target.result);
+                    const validation = validateJSONStructure(imported);
+
+                    if (validation.errors.length === 0 && validation.warnings.length === 0) {
+                        jsonData = imported;
+                        updateCounts();
+                        updateCodeEditor();
+                        alert('✅ JSON importé avec succès !');
+                    } else if (validation.errors.length === 0) {
+                        if (confirm(`⚠️ Le JSON contient ${validation.warnings.length} avertissement(s). Voulez-vous l'importer ?\n\n${validation.warnings.join('\n')}`)) {
+                            jsonData = imported;
+                            updateCounts();
+                            updateCodeEditor();
+                        }
+                    } else {
+                        alert(`❌ Le JSON contient ${validation.errors.length} erreur(s) critique(s) et ne peut pas être importé :\n\n${validation.errors.join('\n')}`);
+                    }
+                } catch (error) {
+                    alert(`❌ Erreur lors de l'import: ${error.message}`);
+                }
+            };
+            reader.readAsText(file);
         }
 
         // Mode Switching
@@ -990,7 +1150,8 @@
                     });
                     html += `</select>`;
                 } else if (field.type === 'textarea') {
-                    html += `<textarea id="${field.name}" ${field.required ? 'required' : ''}>${value}</textarea>`;
+                    html += `<textarea id="${field.name}" ${field.required ? 'required' : ''} oninput="updateCharCounter('${field.name}')">${value}</textarea>`;
+                    html += `<div id="${field.name}-counter" class="char-counter"></div>`;
                 } else if (field.type === 'tags') {
                     const tagsValue = Array.isArray(value) ? value.join(', ') : value;
                     html += `<input type="text" id="${field.name}" value="${tagsValue}" ${field.required ? 'required' : ''} list="${field.name}-datalist">`;
@@ -1054,6 +1215,14 @@
             generateFormHTML(entity, 'modal-form');
             document.getElementById('modal-title').textContent = editingIndex === -1 ? 'Ajouter une entité' : 'Éditer l\'entité';
             document.getElementById('entity-modal').classList.add('active');
+
+            // Initialize character counters for textareas
+            setTimeout(() => {
+                const textareas = document.querySelectorAll('#modal-form textarea');
+                textareas.forEach(textarea => {
+                    updateCharCounter(textarea.id);
+                });
+            }, 50);
         }
 
         // Close Modal
@@ -1087,6 +1256,11 @@
                 entity.createdAt = new Date().toISOString();
             }
 
+            // Auto-generate fingerprint for claims
+            if (currentEntity === 'claims' && (!entity.claimFingerprint || entity.claimFingerprint === '')) {
+                entity.claimFingerprint = generateFingerprint(entity.text);
+            }
+
             // Save to data
             if (editingIndex === -1) {
                 jsonData[currentEntity].push(entity);
@@ -1099,6 +1273,51 @@
             renderEntityList();
             updateCounts();
             updateCodeEditor();
+        }
+
+        // Generate fingerprint (SHA-256 simulation with simple hash)
+        function generateFingerprint(text) {
+            if (!text) return '';
+
+            // Normalize text (lowercase, remove punctuation, trim)
+            const normalized = text.toLowerCase()
+                .replace(/[^\w\s]/g, '')
+                .replace(/\s+/g, '_')
+                .trim();
+
+            // Simple hash function (for demo - in production use crypto.subtle.digest)
+            let hash = 0;
+            for (let i = 0; i < normalized.length; i++) {
+                const char = normalized.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32bit integer
+            }
+
+            return normalized.substring(0, 50) + '_' + Math.abs(hash).toString(16);
+        }
+
+        // Update character counter for textarea
+        function updateCharCounter(fieldName) {
+            const textarea = document.getElementById(fieldName);
+            const counter = document.getElementById(fieldName + '-counter');
+
+            if (!textarea || !counter) return;
+
+            const length = textarea.value.length;
+            const recommended = fieldName === 'summary' ? 200 : (fieldName === 'text' ? 300 : 500);
+            const max = recommended * 2;
+
+            counter.textContent = `${length} caractères`;
+
+            // Apply color based on length
+            counter.classList.remove('warning', 'error');
+            if (length > max) {
+                counter.classList.add('error');
+                counter.textContent += ` (⚠️ Trop long - recommandé: ${recommended})`;
+            } else if (length > recommended) {
+                counter.classList.add('warning');
+                counter.textContent += ` (recommandé: ${recommended})`;
+            }
         }
 
         // Edit Entity
@@ -1420,39 +1639,73 @@
             const section = document.getElementById('preview-section');
             let html = '';
 
-            // Topics Preview
+            // Topics Preview with bar chart
             if (jsonData.topics.length > 0) {
+                const postureCounts = {};
+                jsonData.topics.forEach(t => {
+                    postureCounts[t.posture] = (postureCounts[t.posture] || 0) + 1;
+                });
+
                 html += `
                     <div class="preview-card">
                         <h3>🎯 Topics <span class="preview-count">${jsonData.topics.length}</span></h3>
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
                             ${jsonData.topics.slice(0, 5).map(t => `<div>• ${t.title}</div>`).join('')}
                             ${jsonData.topics.length > 5 ? `<div style="opacity: 0.5;">... et ${jsonData.topics.length - 5} autres</div>` : ''}
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <small style="opacity: 0.7;">Postures:</small>
+                            ${Object.entries(postureCounts).map(([posture, count]) => `
+                                <div style="margin: 0.25rem 0;">
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
+                                        <span>${posture}</span>
+                                        <span>${count}</span>
+                                    </div>
+                                    <div style="background: rgba(0,0,0,0.1); border-radius: 4px; height: 6px; overflow: hidden;">
+                                        <div style="background: var(--primary); height: 100%; width: ${(count / jsonData.topics.length) * 100}%;"></div>
+                                    </div>
+                                </div>
+                            `).join('')}
                         </div>
                     </div>
                 `;
             }
 
-            // Claims Preview
+            // Claims Preview with enhanced stats
             if (jsonData.claims.length > 0) {
                 const stanceCounts = {
                     pro: jsonData.claims.filter(c => c.stance === 'pro').length,
                     con: jsonData.claims.filter(c => c.stance === 'con').length,
                     neutral: jsonData.claims.filter(c => c.stance === 'neutral').length
                 };
+
+                const strengthCounts = {
+                    low: jsonData.claims.filter(c => c.strength === 'low').length,
+                    med: jsonData.claims.filter(c => c.strength === 'med').length,
+                    high: jsonData.claims.filter(c => c.strength === 'high').length
+                };
+
                 html += `
                     <div class="preview-card">
                         <h3>💬 Claims <span class="preview-count">${jsonData.claims.length}</span></h3>
-                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
                             <span class="badge badge-pro">Pro: ${stanceCounts.pro}</span>
                             <span class="badge badge-con">Con: ${stanceCounts.con}</span>
                             <span class="badge badge-neutral">Neutral: ${stanceCounts.neutral}</span>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <small style="opacity: 0.7;">Force:</small>
+                            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                                <span class="badge badge-low">Low: ${strengthCounts.low}</span>
+                                <span class="badge badge-medium">Med: ${strengthCounts.med}</span>
+                                <span class="badge badge-high">High: ${strengthCounts.high}</span>
+                            </div>
                         </div>
                     </div>
                 `;
             }
 
-            // Other entities
+            // Other entities with progress bars
             ['rebuttals', 'evidences', 'questions', 'sources', 'tags'].forEach(entity => {
                 if (jsonData[entity].length > 0) {
                     const icons = {
@@ -1462,9 +1715,29 @@
                         sources: '🔗',
                         tags: '🏷️'
                     };
+
+                    let extraInfo = '';
+                    if (entity === 'evidences') {
+                        const qualityCounts = {
+                            low: jsonData.evidences.filter(e => e.quality === 'low').length,
+                            med: jsonData.evidences.filter(e => e.quality === 'med').length,
+                            high: jsonData.evidences.filter(e => e.quality === 'high').length
+                        };
+                        extraInfo = `
+                            <div style="margin-top: 0.5rem; font-size: 0.75rem;">
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <span class="badge badge-low">Low: ${qualityCounts.low}</span>
+                                    <span class="badge badge-medium">Med: ${qualityCounts.med}</span>
+                                    <span class="badge badge-high">High: ${qualityCounts.high}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+
                     html += `
                         <div class="preview-card">
                             <h3>${icons[entity]} ${entity.charAt(0).toUpperCase() + entity.slice(1)} <span class="preview-count">${jsonData[entity].length}</span></h3>
+                            ${extraInfo}
                         </div>
                     `;
                 }
