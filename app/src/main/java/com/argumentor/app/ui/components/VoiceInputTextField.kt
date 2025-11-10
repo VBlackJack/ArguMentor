@@ -31,7 +31,7 @@ fun VoiceInputTextField(
     singleLine: Boolean = false,
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
-    locale: Locale = Locale.FRENCH // Default to French
+    locale: Locale = Locale("fr", "FR") // Default to French
 ) {
     val voiceLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -56,6 +56,9 @@ fun VoiceInputTextField(
         "en" -> "Speak now..."
         else -> "Speak now..."
     }
+    
+    // Format: "fr-FR" or "en-US"
+    val languageCode = "${locale.language}-${locale.country}"
 
     OutlinedTextField(
         value = value,
@@ -73,7 +76,7 @@ fun VoiceInputTextField(
                             RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                             RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
                         )
-                        putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale.language)
+                        putExtra(RecognizerIntent.EXTRA_LANGUAGE, languageCode)
                         putExtra(RecognizerIntent.EXTRA_PROMPT, promptText)
                     }
                     voiceLauncher.launch(intent)

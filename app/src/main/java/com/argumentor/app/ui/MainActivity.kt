@@ -1,9 +1,7 @@
 package com.argumentor.app.ui
 
-import android.os.Build
+import android.content.Context
 import android.os.Bundle
-import android.view.View
-import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -16,14 +14,37 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.argumentor.app.data.preferences.LanguagePreferences
 import com.argumentor.app.ui.navigation.ArguMentorNavigation
 import com.argumentor.app.ui.theme.ArguMentorTheme
+import com.argumentor.app.util.LocaleHelper
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
+    
+    @Inject
+    lateinit var languagePreferences: LanguagePreferences
+
+    override fun attachBaseContext(newBase: Context) {
+        // Read language from a simple preferences file
+        // We use a separate SharedPreferences file for quick access
+        val prefs = newBase.getSharedPreferences("app_language_prefs", Context.MODE_PRIVATE)
+        val languageCode = prefs.getString("language_code", "fr") ?: "fr"
+        
+        val locale = when (languageCode) {
+            "en" -> java.util.Locale("en", "US")
+            "fr" -> java.util.Locale("fr", "FR")
+            else -> java.util.Locale("fr", "FR")
+        }
+        
+        val context = LocaleHelper.setLocale(newBase, locale)
+        super.attachBaseContext(context)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

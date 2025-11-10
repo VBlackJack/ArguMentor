@@ -17,13 +17,20 @@ import javax.inject.Singleton
  * Available languages in the app
  */
 enum class AppLanguage(val code: String, val displayName: String, val locale: Locale) {
-    FRENCH("fr", "Français", Locale.FRENCH),
-    ENGLISH("en", "English", Locale.ENGLISH);
+    FRENCH("fr", "Français", Locale("fr", "FR")),
+    ENGLISH("en", "English", Locale("en", "US"));
 
     companion object {
         fun fromCode(code: String): AppLanguage {
             return values().find { it.code == code } ?: FRENCH
         }
+    }
+    
+    /**
+     * Get language code in format suitable for Android Speech Recognition
+     */
+    fun getSpeechLanguageCode(): String {
+        return "${locale.language}-${locale.country}"
     }
 }
 
@@ -39,6 +46,8 @@ class LanguagePreferences @Inject constructor(
 
     companion object {
         private val LANGUAGE_KEY = stringPreferencesKey("app_language")
+        private const val SHARED_PREFS_NAME = "app_language_prefs"
+        private const val LANGUAGE_CODE_KEY = "language_code"
     }
 
     /**
@@ -54,9 +63,16 @@ class LanguagePreferences @Inject constructor(
      * Set the app language
      */
     suspend fun setLanguage(language: AppLanguage) {
+        // Save to DataStore
         context.dataStore.edit { preferences ->
             preferences[LANGUAGE_KEY] = language.code
         }
+        
+        // Also save to SharedPreferences for quick access in attachBaseContext
+        context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(LANGUAGE_CODE_KEY, language.code)
+            .apply()
     }
 
     /**

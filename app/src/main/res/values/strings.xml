@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ArguMentor</string>
 
@@ -207,4 +207,30 @@
     <string name="accessibility_statistics">Statistiques</string>
     <string name="accessibility_settings">Paramètres</string>
     <string name="accessibility_import_export">Import/Export</string>
+    <!-- Settings Screen -->
+    <string name="settings_title">Paramètres</string>
+    <string name="settings_appearance">Apparence</string>
+    <string name="settings_dark_theme">Thème sombre</string>
+    <string name="settings_dark_theme_description">Utiliser le thème sombre</string>
+    <string name="settings_font_size">Taille de police</string>
+    <string name="settings_font_small">Petite</string>
+    <string name="settings_font_medium">Moyenne</string>
+    <string name="settings_font_large">Grande</string>
+    <string name="settings_font_extra_large">Très grande</string>
+    <string name="settings_language">Langue</string>
+    <string name="settings_language_app">Langue de l\'application</string>
+    <string name="settings_language_description">Change la langue de l\'interface et de la saisie vocale</string>
+    <string name="settings_content">Contenu</string>
+    <string name="settings_default_posture">Posture par défaut</string>
+    <string name="settings_about">À propos</string>
+    <string name="settings_app_author">Auteur de l\'application</string>
+    <string name="settings_version">Version</string>
+    <string name="settings_license">Licence</string>
+    <string name="settings_description">Description</string>
+    <string name="settings_app_description">ArguMentor est un outil d\'organisation de débats et d\'arguments. Chaque utilisateur l\'adapte à ses propres thématiques.</string>
+    <string name="settings_author_disclaimer">Note : L\'auteur développe uniquement l\'application. Il n\'est pas responsable du contenu stocké par les utilisateurs.</string>
+    <string name="settings_apply_and_restart">Appliquer et redémarrer</string>
+    <string name="settings_restart_required_title">Redémarrage requis</string>
+    <string name="settings_restart_required_message">Pour appliquer le changement de langue, l\'application doit redémarrer. Voulez-vous continuer\u00a0?</string>
+    <string name="settings_restart_now">Redémarrer maintenant</string>
 </resources>

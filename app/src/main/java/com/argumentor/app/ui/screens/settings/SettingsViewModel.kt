@@ -32,6 +32,12 @@ class SettingsViewModel @Inject constructor(
 
     private val _language = MutableStateFlow(AppLanguage.FRENCH)
     val language: StateFlow<AppLanguage> = _language.asStateFlow()
+    
+    private val _pendingLanguage = MutableStateFlow<AppLanguage?>(null)
+    val pendingLanguage: StateFlow<AppLanguage?> = _pendingLanguage.asStateFlow()
+    
+    private val _languageSaveCompleted = MutableStateFlow(false)
+    val languageSaveCompleted: StateFlow<Boolean> = _languageSaveCompleted.asStateFlow()
 
     init {
         loadSettings()
@@ -95,11 +101,28 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun setLanguage(language: AppLanguage) {
-        viewModelScope.launch {
-            _language.value = language
-            languagePreferences.setLanguage(language)
+    fun selectLanguage(language: AppLanguage) {
+        if (language != _language.value) {
+            _pendingLanguage.value = language
+        } else {
+            _pendingLanguage.value = null
         }
+    }
+    
+    fun applyLanguageChange(onComplete: () -> Unit) {
+        viewModelScope.launch {
+            _pendingLanguage.value?.let { newLang ->
+                languagePreferences.setLanguage(newLang)
+                _language.value = newLang
+                _pendingLanguage.value = null
+                // Notify completion
+                onComplete()
+            }
+        }
+    }
+    
+    fun cancelLanguageChange() {
+        _pendingLanguage.value = null
     }
 
     enum class FontSize(val scale: Float) {
