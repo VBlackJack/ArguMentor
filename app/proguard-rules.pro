@@ -22,6 +22,7 @@
 
 # Keep Room entities
 -keep class com.argumentor.app.data.model.** { *; }
+-keep class com.argumentor.app.data.dto.** { *; }
 
 # Keep Gson models
 -keepattributes Signature
@@ -32,3 +33,25 @@
 -keep class * implements com.google.gson.TypeAdapterFactory
 -keep class * implements com.google.gson.JsonSerializer
 -keep class * implements com.google.gson.JsonDeserializer
+
+# Keep DTO classes for JSON serialization
+-keep class com.argumentor.app.data.dto.ExportData { *; }
+-keep class com.argumentor.app.data.dto.ImportResult { *; }
+
+# Keep Hilt generated components
+-keep class dagger.hilt.** { *; }
+-keep class javax.inject.** { *; }
+
+# Keep Room DAOs
+-keep interface com.argumentor.app.data.local.dao.** { *; }
+
+# Kotlin coroutines
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+-keepclassmembers class kotlinx.coroutines.** {
+    volatile <fields>;
+}
+
+# Preserve line numbers for debugging stack traces
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile

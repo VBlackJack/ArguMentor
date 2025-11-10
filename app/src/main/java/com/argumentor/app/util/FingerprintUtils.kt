@@ -108,34 +108,60 @@ object FingerprintUtils {
     }
 
     /**
-     * Calculate Levenshtein distance between two strings.
-     * Used for fuzzy matching of potential duplicates.
+     * Calculate Levenshtein distance with optimized space complexity.
+     *
+     * Time complexity: O(m × n)
+     * Space complexity: O(min(m, n)) instead of O(m × n)
+     *
+     * @param s1 First string (max 5000 chars)
+     * @param s2 Second string (max 5000 chars)
+     * @return Edit distance between strings
+     * @throws IllegalArgumentException if strings exceed max length
      */
     fun levenshteinDistance(s1: String, s2: String): Int {
-        val m = s1.length
-        val n = s2.length
-        val dp = Array(m + 1) { IntArray(n + 1) }
-
-        for (i in 0..m) dp[i][0] = i
-        for (j in 0..n) dp[0][j] = j
-
-        for (i in 1..m) {
-            for (j in 1..n) {
-                val cost = if (s1[i - 1] == s2[j - 1]) 0 else 1
-                dp[i][j] = minOf(
-                    dp[i - 1][j] + 1,      // deletion
-                    dp[i][j - 1] + 1,      // insertion
-                    dp[i - 1][j - 1] + cost // substitution
-                )
-            }
+        // Prevent DoS attacks with very long strings
+        val MAX_LENGTH = 5000
+        require(s1.length <= MAX_LENGTH && s2.length <= MAX_LENGTH) {
+            "Text too long for similarity comparison (max: $MAX_LENGTH characters)"
         }
 
-        return dp[m][n]
+        // Early exit for identical strings
+        if (s1 == s2) return 0
+        if (s1.isEmpty()) return s2.length
+        if (s2.isEmpty()) return s1.length
+
+        // Use shorter string for inner loop to optimize space
+        val shorter = if (s1.length <= s2.length) s1 else s2
+        val longer = if (s1.length > s2.length) s1 else s2
+
+        // Only need two rows instead of full matrix
+        var previous = IntArray(shorter.length + 1) { it }
+        var current = IntArray(shorter.length + 1)
+
+        for (i in 1..longer.length) {
+            current[0] = i
+            for (j in 1..shorter.length) {
+                val cost = if (longer[i - 1] == shorter[j - 1]) 0 else 1
+                current[j] = minOf(
+                    current[j - 1] + 1,      // insertion
+                    previous[j] + 1,          // deletion
+                    previous[j - 1] + cost    // substitution
+                )
+            }
+            // Swap arrays instead of copying
+            val temp = previous
+            previous = current
+            current = temp
+        }
+
+        return previous[shorter.length]
     }
 
     /**
      * Calculate similarity ratio between two strings (0.0 to 1.0).
      * 1.0 means identical, 0.0 means completely different.
+     *
+     * @throws IllegalArgumentException if strings exceed max length for comparison
      */
     fun similarityRatio(s1: String, s2: String): Double {
         if (s1 == s2) return 1.0
@@ -150,10 +176,16 @@ object FingerprintUtils {
     /**
      * Check if two texts are similar based on normalized comparison.
      * @param threshold Similarity threshold (0.0-1.0), default 0.90
+     * @return true if similarity >= threshold, false if texts too long or not similar
      */
     fun areSimilar(text1: String, text2: String, threshold: Double = 0.90): Boolean {
-        val normalized1 = normalizeText(text1)
-        val normalized2 = normalizeText(text2)
-        return similarityRatio(normalized1, normalized2) >= threshold
+        return try {
+            val normalized1 = normalizeText(text1)
+            val normalized2 = normalizeText(text2)
+            similarityRatio(normalized1, normalized2) >= threshold
+        } catch (e: IllegalArgumentException) {
+            // Text too long for comparison - consider not similar
+            false
+        }
     }
 }
