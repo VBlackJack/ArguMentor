@@ -55,7 +55,8 @@ Idéal pour analyser des débats d'opinion, des choix de société, des question
 
 #### Identifier les contre-arguments
 - **Formulez des réfutations** pour challenger vos propres arguments
-- **Identifiez les sophismes** grâce au catalogue intégré de 15+ erreurs logiques courantes
+- **Identifiez les sophismes** grâce au catalogue intégré de 30 erreurs logiques courantes
+- **Consultez le catalogue** depuis le menu pour apprendre à reconnaître chaque sophisme
 - **Développez un esprit critique** en examinant les failles de raisonnement
 
 #### Poser les bonnes questions
@@ -86,17 +87,24 @@ Idéal pour analyser des débats d'opinion, des choix de société, des question
 
 ### 🎨 Bibliothèques intégrées
 
-#### 15+ Sophismes catalogués
+#### 30 Sophismes catalogués
 Apprenez à reconnaître les erreurs logiques courantes :
 - Ad Hominem, Épouvantail (Straw Man), Pente Glissante
 - Appel à l'ignorance, Faux Dilemme, Pétition de Principe
 - Cherry Picking, Appels à la tradition/autorité/popularité
+- Diversion (Red Herring), Question Piège, Fausse Équivalence
+- Appel à l'Émotion, Appel à la Nature, Aucun Vrai Écossais
+- Renversement de la Charge de la Preuve, Tireur d'Élite Texan
+- Preuve Anecdotique, Effet de Mode, Sophismes de Composition/Division
 - Et bien d'autres...
 
-Chaque sophisme inclut :
-- ✅ Une définition claire
-- ✅ Un exemple concret
-- ✅ Comment l'identifier dans un débat
+**Accès au catalogue complet :**
+- Menu → **Catalogue des Sophismes** pour consulter tous les sophismes
+- Interface de navigation intuitive avec recherche
+- Écran de détail pour chaque sophisme avec :
+  - ✅ Une définition claire
+  - ✅ Un exemple concret
+  - ✅ Des conseils pour l'identifier dans un débat
 
 #### 6 Modèles d'arguments
 Templates prêts à l'emploi pour structurer vos analyses :
@@ -124,7 +132,9 @@ Templates prêts à l'emploi pour structurer vos analyses :
 ### ⚙️ Confort d'utilisation
 
 - **🌙 Thème sombre** : Confort visuel en toutes circonstances
-- **🎤 Dictée vocale** : Créez du contenu en parlant
+- **🎤 Dictée vocale multilingue** : Créez du contenu en parlant en français ou en anglais
+- **🌍 Support multilingue** : Interface et saisie vocale en Français et English
+- **⚙️ Personnalisation de la langue** : Changez la langue dans Paramètres → Langue
 - **📱 Interface moderne** : Design Material 3 épuré et intuitif
 - **⚡ Pas de connexion requise** : Toutes vos données restent sur votre appareil
 - **🔒 Aucune permission intrusive** : Respect de votre vie privée
@@ -182,6 +192,17 @@ Templates prêts à l'emploi pour structurer vos analyses :
    - **Verso** : les contre-arguments
 4. Parfait pour préparer un débat ou réviser vos positions !
 
+### Consulter le Catalogue des Sophismes
+
+1. Menu (☰) → "Catalogue des Sophismes"
+2. Parcourez les 30 sophismes disponibles
+3. Utilisez la barre de recherche pour trouver un sophisme spécifique
+4. Cliquez sur un sophisme pour voir :
+   - Sa définition détaillée
+   - Un exemple concret
+   - Des conseils pour l'identifier
+5. Utilisez cette référence lors de l'ajout de réfutations
+
 ### Rechercher dans vos contenus
 
 1. Utilisez la barre de recherche en haut
@@ -192,6 +213,16 @@ Templates prêts à l'emploi pour structurer vos analyses :
    - Les contre-arguments
    - Les questions
 4. Les résultats sont surlignés
+
+### Changer la langue de l'application
+
+1. Menu → Paramètres
+2. Section "Langue"
+3. Choisissez entre "Français" et "English"
+4. La langue change immédiatement pour :
+   - L'interface utilisateur
+   - Les prompts de la saisie vocale ("Parlez maintenant..." / "Speak now...")
+   - Tous les champs de texte avec dictée vocale
 
 ### Exporter vos travaux
 

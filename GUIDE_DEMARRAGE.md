@@ -231,11 +231,27 @@ Le **Mode Débat** transforme vos arguments en cartes interactives pour réviser
 2. **Appuyez sur "Thème sombre"**
 3. **L'app s'adapte** automatiquement
 
+### Langue de l'application
+
+**Changez la langue de l'interface et de la saisie vocale :**
+
+1. **Menu** → "Paramètres"
+2. **Section "Langue"**
+3. **Choisissez votre langue** :
+   - 🇫🇷 **Français** : Interface et dictée vocale en français
+   - 🇬🇧 **English** : Interface et dictée vocale en anglais
+4. **Le changement est immédiat** :
+   - ✅ Interface utilisateur traduite
+   - ✅ Prompts de dictée vocale ("Parlez maintenant..." / "Speak now...")
+   - ✅ Reconnaissance vocale dans la langue choisie
+
+💡 **Astuce** : Idéal pour les utilisateurs multilingues ou pour pratiquer une langue étrangère !
+
 ---
 
 ## 🧠 Catalogues intégrés
 
-### Catalogue de Sophismes (15+)
+### Catalogue de Sophismes (30 sophismes)
 
 **Identifiez les erreurs logiques courantes :**
 
@@ -247,12 +263,19 @@ Lors de l'ajout d'une réfutation, vous pouvez sélectionner un sophisme parmi :
 - **Appel à l'ignorance** : "Personne n'a prouvé le contraire, donc c'est vrai"
 - **Faux Dilemme** : "Soit A, soit B" en ignorant d'autres options
 - **Cherry Picking** : Sélectionner uniquement les données qui arrangent
-- **Et 10+ autres...**
+- **Et 24+ autres...**
 
-Chaque sophisme inclut :
-- ✅ Une définition claire
-- ✅ Un exemple concret
-- ✅ Comment l'identifier
+**Consultez le catalogue complet :**
+
+1. **Menu** → **"Catalogue des Sophismes"**
+2. **Parcourez les 30 sophismes** disponibles
+3. **Recherchez** un sophisme spécifique avec la barre de recherche
+4. **Cliquez sur un sophisme** pour voir :
+   - ✅ Une définition claire et détaillée
+   - ✅ Un exemple concret d'utilisation
+   - ✅ Des conseils pour l'identifier dans un débat
+
+💡 **Astuce éducative** : Consultez le catalogue avant d'ajouter une réfutation pour mieux identifier les erreurs logiques !
 
 ### Templates d'Arguments (6 types)
 
