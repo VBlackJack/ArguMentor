@@ -149,6 +149,19 @@ class TopicDetailViewModel @Inject constructor(
         }
     }
 
+    fun deleteSource(source: Source, onDeleted: () -> Unit) {
+        viewModelScope.launch {
+            sourceRepository.deleteSource(source)
+            onDeleted()
+        }
+    }
+
+    fun restoreSource(source: Source) {
+        viewModelScope.launch {
+            sourceRepository.insertSource(source)
+        }
+    }
+
     fun getClaimRebuttals(claimId: String): Flow<List<Rebuttal>> {
         return rebuttalRepository.getRebuttalsByClaimId(claimId)
     }

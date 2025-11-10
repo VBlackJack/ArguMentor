@@ -45,12 +45,19 @@ fun HomeScreen(
     onNavigateToSettings: () -> Unit,
     onNavigateToFallacyCatalog: () -> Unit
 ) {
-    val topics by viewModel.topics.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
     val selectedTag by viewModel.selectedTag.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
+
+    // Extract topics from uiState
+    val topics = when (val state = uiState) {
+        is UiState.Success -> state.data
+        else -> emptyList()
+    }
+
+    // Extract loading state from uiState
+    val isLoading = uiState is UiState.Loading
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }

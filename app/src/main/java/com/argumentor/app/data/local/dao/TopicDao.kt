@@ -36,6 +36,27 @@ interface TopicDao {
     @Query("SELECT * FROM topics WHERE title LIKE '%' || :query || '%' OR summary LIKE '%' || :query || '%'")
     fun searchTopics(query: String): Flow<List<Topic>>
 
+    /**
+     * Get filtered topics with SQL-based filtering for better performance.
+     * Filters by optional tag and optional search query.
+     * Much faster than loading all topics and filtering in Kotlin.
+     */
+    @Query("""
+        SELECT * FROM topics
+        WHERE (:tag IS NULL OR :tag IN (SELECT value FROM json_each(tags)))
+          AND (
+            :query IS NULL
+            OR title LIKE '%' || :query || '%'
+            OR summary LIKE '%' || :query || '%'
+            OR EXISTS (
+                SELECT 1 FROM json_each(tags)
+                WHERE value LIKE '%' || :query || '%'
+            )
+          )
+        ORDER BY updatedAt DESC
+    """)
+    fun getFilteredTopics(tag: String?, query: String?): Flow<List<Topic>>
+
     @Query("SELECT COUNT(*) FROM topics")
     suspend fun getTopicCount(): Int
 }

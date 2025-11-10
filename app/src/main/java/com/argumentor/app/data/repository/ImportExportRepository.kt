@@ -249,8 +249,8 @@ class ImportExportRepository @Inject constructor(
         }
 
         // Import Claims with fingerprint and similarity checking
-        // Fetch all existing claims once for similarity comparison
-        val allExistingClaims = database.claimDao().getAllClaimsSync()
+        // Use optimized batch approach to prevent OOM
+        val BATCH_LIMIT = 100
 
         importData.claims.forEach { claimDto ->
             try {
@@ -269,21 +269,24 @@ class ImportExportRepository @Inject constructor(
                         duplicates++
                     }
                 } else {
-                    // Check for exact fingerprint match
+                    // Check for exact fingerprint match (indexed lookup - O(1))
                     val duplicateByFingerprint = database.claimDao().getClaimByFingerprint(fingerprint)
                     if (duplicateByFingerprint != null) {
                         duplicates++
                     } else {
                         // Check for near-duplicates using similarity
-                        // Compare with existing claims that share at least one topic
-                        val candidateClaims = allExistingClaims.filter { existingClaim ->
-                            claim.topics.any { topic -> topic in existingClaim.topics }
+                        // Only load claims for same topics, limited to BATCH_LIMIT
+                        val candidateClaims = if (claim.topics.isNotEmpty()) {
+                            database.claimDao().getClaimsForTopics(claim.topics, BATCH_LIMIT)
+                        } else {
+                            emptyList()
                         }
 
                         var isNearDuplicate = false
                         var similarTo: String? = null
 
                         for (candidate in candidateClaims) {
+                            // areSimilar now handles IllegalArgumentException internally
                             if (FingerprintUtils.areSimilar(claim.text, candidate.text, similarityThreshold)) {
                                 isNearDuplicate = true
                                 similarTo = candidate.id
@@ -301,10 +304,14 @@ class ImportExportRepository @Inject constructor(
                                     incomingText = claim.text.take(100),
                                     existingText = candidateClaims.find { it.id == similarTo }?.text?.take(100) ?: "",
                                     similarityScore = candidateClaims.find { it.id == similarTo }?.let {
-                                        FingerprintUtils.similarityRatio(
-                                            FingerprintUtils.normalizeText(claim.text),
-                                            FingerprintUtils.normalizeText(it.text)
-                                        )
+                                        try {
+                                            FingerprintUtils.similarityRatio(
+                                                FingerprintUtils.normalizeText(claim.text),
+                                                FingerprintUtils.normalizeText(it.text)
+                                            )
+                                        } catch (e: IllegalArgumentException) {
+                                            0.0
+                                        }
                                     } ?: 0.0,
                                     action = "review"
                                 )

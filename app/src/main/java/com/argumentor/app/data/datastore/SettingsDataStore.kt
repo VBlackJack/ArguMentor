@@ -109,25 +109,47 @@ class SettingsDataStore @Inject constructor(
     }
 
     suspend fun setOnboardingCompleted(completed: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.ONBOARDING_COMPLETED] = completed
+        try {
+            // Write to SharedPreferences first (fast, synchronous)
+            context.getSharedPreferences("settings_cache", Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean("onboarding_completed", completed)
+                .commit()  // Use commit() for synchronous write
+
+            // Then write to DataStore (source of truth)
+            context.dataStore.edit { preferences ->
+                preferences[PreferencesKeys.ONBOARDING_COMPLETED] = completed
+            }
+        } catch (e: Exception) {
+            // Rollback SharedPreferences on DataStore failure
+            context.getSharedPreferences("settings_cache", Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean("onboarding_completed", !completed)
+                .commit()
+            throw e
         }
-        // Also save to SharedPreferences cache for fast startup
-        context.getSharedPreferences("settings_cache", Context.MODE_PRIVATE)
-            .edit()
-            .putBoolean("onboarding_completed", completed)
-            .apply()
     }
 
     suspend fun setFirstLaunchCompleted(completed: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.FIRST_LAUNCH_COMPLETED] = completed
+        try {
+            // Write to SharedPreferences first (fast, synchronous)
+            context.getSharedPreferences("settings_cache", Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean("first_launch_completed", completed)
+                .commit()  // Use commit() for synchronous write
+
+            // Then write to DataStore (source of truth)
+            context.dataStore.edit { preferences ->
+                preferences[PreferencesKeys.FIRST_LAUNCH_COMPLETED] = completed
+            }
+        } catch (e: Exception) {
+            // Rollback SharedPreferences on DataStore failure
+            context.getSharedPreferences("settings_cache", Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean("first_launch_completed", !completed)
+                .commit()
+            throw e
         }
-        // Also save to SharedPreferences cache for fast startup
-        context.getSharedPreferences("settings_cache", Context.MODE_PRIVATE)
-            .edit()
-            .putBoolean("first_launch_completed", completed)
-            .apply()
     }
 
     suspend fun setTutorialEnabled(enabled: Boolean) {
