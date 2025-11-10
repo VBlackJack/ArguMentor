@@ -233,4 +233,16 @@
     <string name="settings_restart_required_title">Restart required</string>
     <string name="settings_restart_required_message">To apply the language change, the app must restart. Do you want to continue?</string>
     <string name="settings_restart_now">Restart now</string>
+
+    <!-- Permissions Screen -->
+    <string name="permissions_title">Required permissions</string>
+    <string name="permissions_description">ArguMentor needs a few permissions to work properly.</string>
+    <string name="permissions_grant">Grant permissions</string>
+    <string name="permissions_skip">Skip for now</string>
+    <string name="permissions_microphone_title">Microphone</string>
+    <string name="permissions_microphone_description">For voice recognition (Speech-to-Text)</string>
+    <string name="permissions_granted">Granted</string>
+    <string name="permissions_file_management_title">File management</string>
+    <string name="permissions_file_management_description">Data import/export uses the Android File Picker (SAF). No storage permission required.</string>
+    <string name="permissions_settings_note">You can change these permissions at any time in the app settings.</string>
 </resources>

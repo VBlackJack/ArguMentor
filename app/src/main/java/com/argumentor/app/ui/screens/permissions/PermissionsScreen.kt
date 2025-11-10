@@ -11,7 +11,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.argumentor.app.R
 import com.argumentor.app.util.*
 
 @Composable
@@ -56,7 +58,7 @@ fun PermissionsScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Permissions requises",
+            text = stringResource(R.string.permissions_title),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary
         )
@@ -64,7 +66,7 @@ fun PermissionsScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "ArguMentor a besoin de quelques permissions pour fonctionner correctement.",
+            text = stringResource(R.string.permissions_description),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface
         )
@@ -96,13 +98,13 @@ fun PermissionsScreen(
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Autoriser les permissions")
+            Text(stringResource(R.string.permissions_grant))
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         TextButton(onClick = onSkip) {
-            Text("Passer pour le moment")
+            Text(stringResource(R.string.permissions_skip))
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -115,13 +117,13 @@ fun PermissionsScreen(
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "ℹ️ Gestion des fichiers",
+                    text = "ℹ️ ${stringResource(R.string.permissions_file_management_title)}",
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onTertiaryContainer
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "L'import/export de données utilise le Sélecteur de fichiers Android (SAF). Aucune permission de stockage n'est requise.",
+                    text = stringResource(R.string.permissions_file_management_description),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onTertiaryContainer
                 )
@@ -131,7 +133,7 @@ fun PermissionsScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Vous pourrez modifier ces permissions à tout moment dans les paramètres de l'application.",
+            text = stringResource(R.string.permissions_settings_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -146,8 +148,8 @@ private fun PermissionItem(
     val (icon, title, description) = when (permission) {
         AppPermission.RECORD_AUDIO -> Triple(
             Icons.Default.Mic,
-            "Microphone",
-            "Pour la reconnaissance vocale (Speech-to-Text)"
+            stringResource(R.string.permissions_microphone_title),
+            stringResource(R.string.permissions_microphone_description)
         )
     }
 
@@ -200,7 +202,7 @@ private fun PermissionItem(
             if (isGranted) {
                 Icon(
                     imageVector = Icons.Default.Check,
-                    contentDescription = "Accordée",
+                    contentDescription = stringResource(R.string.permissions_granted),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
