@@ -24,6 +24,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val isDarkTheme by viewModel.isDarkTheme.collectAsState()
+    val isImmersiveMode by viewModel.isImmersiveMode.collectAsState()
     val fontSize by viewModel.fontSize.collectAsState()
     val defaultPosture by viewModel.defaultPosture.collectAsState()
     val language by viewModel.language.collectAsState()
@@ -61,6 +62,15 @@ fun SettingsScreen(
 
                 Divider()
 
+                SettingsSwitchItem(
+                    title = stringResource(R.string.settings_immersive_mode),
+                    description = stringResource(R.string.settings_immersive_mode_description),
+                    checked = isImmersiveMode,
+                    onCheckedChange = { viewModel.toggleImmersiveMode() }
+                )
+
+                Divider()
+
                 SettingsItem(title = stringResource(R.string.settings_font_size)) {
                     Column {
                         SettingsViewModel.FontSize.values().forEach { size ->
@@ -76,7 +86,8 @@ fun SettingsScreen(
                                             SettingsViewModel.FontSize.EXTRA_LARGE -> stringResource(R.string.settings_font_extra_large)
                                         }
                                     )
-                                }
+                                },
+                                modifier = Modifier.heightIn(min = 48.dp)
                             )
                         }
                     }
@@ -94,7 +105,8 @@ fun SettingsScreen(
                                 FilterChip(
                                     selected = (pendingLanguage ?: language) == lang,
                                     onClick = { viewModel.selectLanguage(lang) },
-                                    label = { Text(lang.displayName) }
+                                    label = { Text(lang.displayName) },
+                                    modifier = Modifier.heightIn(min = 48.dp)
                                 )
                             }
                         }
@@ -130,7 +142,8 @@ fun SettingsScreen(
                             FilterChip(
                                 selected = defaultPosture == value,
                                 onClick = { viewModel.setDefaultPosture(value) },
-                                label = { Text(label) }
+                                label = { Text(label) },
+                                modifier = Modifier.heightIn(min = 48.dp)
                             )
                         }
                     }

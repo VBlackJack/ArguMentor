@@ -8,8 +8,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.argumentor.app.R
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.ui.components.VoiceInputTextField
 import com.argumentor.app.ui.components.rememberCurrentLocale
@@ -35,10 +37,18 @@ fun ClaimCreateEditScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (claimId == null) "Nouvelle affirmation" else "Modifier l'affirmation") },
+                title = {
+                    Text(stringResource(
+                        if (claimId == null) R.string.claim_new_title
+                        else R.string.claim_edit_title
+                    ))
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Retour")
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = stringResource(R.string.accessibility_back)
+                        )
                     }
                 },
                 actions = {
@@ -46,7 +56,7 @@ fun ClaimCreateEditScreen(
                         onClick = { viewModel.saveClaim(onNavigateBack) },
                         enabled = !isSaving && text.isNotBlank()
                     ) {
-                        Text("Enregistrer")
+                        Text(stringResource(R.string.save))
                     }
                 }
             )
@@ -64,7 +74,7 @@ fun ClaimCreateEditScreen(
             VoiceInputTextField(
                 value = text,
                 onValueChange = viewModel::onTextChange,
-                label = "Texte de l'affirmation",
+                label = stringResource(R.string.claim_text_label),
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
                 maxLines = 8,
@@ -72,41 +82,49 @@ fun ClaimCreateEditScreen(
             )
 
             // Stance selector
-            Text("Position", style = MaterialTheme.typography.titleMedium)
+            Text(
+                stringResource(R.string.claim_stance),
+                style = MaterialTheme.typography.titleMedium
+            )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Claim.Stance.values().forEach { stanceOption ->
                     FilterChip(
                         selected = stance == stanceOption,
                         onClick = { viewModel.onStanceChange(stanceOption) },
                         label = {
-                            Text(
+                            Text(stringResource(
                                 when (stanceOption) {
-                                    Claim.Stance.PRO -> "Pour"
-                                    Claim.Stance.CON -> "Contre"
-                                    Claim.Stance.NEUTRAL -> "Neutre"
+                                    Claim.Stance.PRO -> R.string.stance_pro
+                                    Claim.Stance.CON -> R.string.stance_con
+                                    Claim.Stance.NEUTRAL -> R.string.stance_neutral
                                 }
-                            )
-                        }
+                            ))
+                        },
+                        modifier = Modifier.heightIn(min = 48.dp)
                     )
                 }
             }
 
             // Strength selector
-            Text("Force", style = MaterialTheme.typography.titleMedium)
+            Text(
+                stringResource(R.string.claim_strength),
+                style = MaterialTheme.typography.titleMedium
+            )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Claim.Strength.values().forEach { strengthOption ->
                     FilterChip(
                         selected = strength == strengthOption,
                         onClick = { viewModel.onStrengthChange(strengthOption) },
                         label = {
-                            Text(
+                            Text(stringResource(
                                 when (strengthOption) {
-                                    Claim.Strength.LOW -> "Faible"
-                                    Claim.Strength.MEDIUM -> "Moyen"
-                                    Claim.Strength.HIGH -> "Fort"
+                                    Claim.Strength.LOW -> R.string.strength_low
+                                    Claim.Strength.MEDIUM -> R.string.strength_medium
+                                    Claim.Strength.HIGH -> R.string.strength_high
                                 }
-                            )
-                        }
+                            ))
+                        },
+                        modifier = Modifier.heightIn(min = 48.dp)
                     )
                 }
             }

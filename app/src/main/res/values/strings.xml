@@ -20,6 +20,10 @@
     <string name="home_empty_title">Aucun sujet pour l\'instant</string>
     <string name="home_empty_description">Commencez à structurer vos arguments en créant votre premier sujet de débat. Chaque sujet peut contenir des affirmations, contre-arguments et questions.</string>
     <string name="home_empty_action">Créer un sujet</string>
+    <string name="home_subjects_found">%d sujets trouvés</string>
+    <string name="home_error_title">Oups, quelque chose a mal tourné</string>
+    <string name="home_error_description">Impossible de charger vos sujets. Vérifiez votre connexion et réessayez.</string>
+    <string name="home_topic_card_description">Sujet: %1$s. %2$s. %3$d tags</string>
 
     <!-- Topic -->
     <string name="topic_create">Créer un sujet</string>
@@ -38,9 +42,13 @@
     <!-- Claim -->
     <string name="claim_create">Créer une affirmation</string>
     <string name="claim_edit">Modifier l\'affirmation</string>
+    <string name="claim_new_title">Nouvelle affirmation</string>
+    <string name="claim_edit_title">Modifier l\'affirmation</string>
     <string name="claim_text_hint">Texte de l\'affirmation</string>
+    <string name="claim_text_label">Texte de l\'affirmation</string>
     <string name="claim_stance">Position</string>
     <string name="claim_strength">Force</string>
+    <string name="claim_error_text_required">Le texte de l\'affirmation est obligatoire</string>
 
     <!-- Stance -->
     <string name="stance_pro">Pour</string>
@@ -181,6 +189,10 @@
     <string name="close">Fermer</string>
     <string name="search">Rechercher</string>
     <string name="filter">Filtrer</string>
+    <string name="action_clear_search">Effacer la recherche</string>
+    <string name="action_remove_filter">Retirer le filtre</string>
+    <string name="action_clear_all">Effacer tout</string>
+    <string name="action_retry">Réessayer</string>
     <string name="created_at">Créé le %1$s</string>
     <string name="updated_at">Mis à jour le %1$s</string>
     <string name="more_tags">+%1$d</string>
@@ -216,6 +228,8 @@
     <string name="settings_appearance">Apparence</string>
     <string name="settings_dark_theme">Thème sombre</string>
     <string name="settings_dark_theme_description">Utiliser le thème sombre</string>
+    <string name="settings_immersive_mode">Mode immersif</string>
+    <string name="settings_immersive_mode_description">Masquer les barres système (glisser pour afficher)</string>
     <string name="settings_font_size">Taille de police</string>
     <string name="settings_font_small">Petite</string>
     <string name="settings_font_medium">Moyenne</string>
