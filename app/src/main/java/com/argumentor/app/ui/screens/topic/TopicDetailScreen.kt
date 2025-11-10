@@ -45,6 +45,8 @@ import com.argumentor.app.ui.theme.StanceNeutral
 import com.argumentor.app.ui.theme.StancePro
 import androidx.compose.animation.ExperimentalAnimationApi
 
+private const val CURRENT_ROUTE = "topic_detail"
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun TopicDetailScreen(
@@ -152,7 +154,7 @@ fun TopicDetailScreen(
         drawerState = drawerState,
         drawerContent = {
             AppNavigationDrawerContent(
-                currentRoute = "topic_detail",
+                currentRoute = CURRENT_ROUTE,
                 drawerState = drawerState,
                 scope = coroutineScope,
                 onNavigateToHome = onNavigateToHome,

@@ -357,12 +357,18 @@ private fun ClaimBack(card: DebateCard, modifier: Modifier = Modifier) {
                                 text = evidence.content,
                                 style = MaterialTheme.typography.bodyMedium
                             )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = evidence.type.toString(),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
                             if (evidence.sourceId != null) {
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(2.dp))
                                 Text(
-                                    text = evidence.type.toString(),
+                                    text = "Avec source",
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = MaterialTheme.colorScheme.secondary
                                 )
                             }
                         }
