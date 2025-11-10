@@ -104,13 +104,19 @@ class EvidenceCreateEditViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            // Validate that selected source still exists if one is selected
+            val validatedSourceId = _selectedSource.value?.id?.let { sourceId ->
+                val sourceExists = sourceRepository.getSourceById(sourceId).first() != null
+                if (sourceExists) sourceId else null
+            }
+
             val evidence = if (isEditMode && evidenceId != null) {
                 // Update existing evidence
                 evidenceRepository.getEvidenceById(evidenceId!!)?.copy(
                     content = _content.value.trim(),
                     type = _type.value,
                     quality = _quality.value,
-                    sourceId = _selectedSource.value?.id
+                    sourceId = validatedSourceId
                 )
             } else {
                 // Create new evidence
@@ -119,7 +125,7 @@ class EvidenceCreateEditViewModel @Inject constructor(
                     content = _content.value.trim(),
                     type = _type.value,
                     quality = _quality.value,
-                    sourceId = _selectedSource.value?.id
+                    sourceId = validatedSourceId
                 )
             }
 

@@ -138,11 +138,11 @@ fun ArguMentorNavigation(
                         popUpTo(Screen.Home.route) { inclusive = false }
                     }
                 },
-                onNavigateToEdit = { id ->
-                    navController.navigate(Screen.TopicEdit.createRoute(id))
+                onNavigateToEdit = { topicId ->
+                    navController.navigate(Screen.TopicEdit.createRoute(topicId))
                 },
-                onNavigateToDebate = { id ->
-                    navController.navigate(Screen.DebateMode.createRoute(id))
+                onNavigateToDebate = { topicId ->
+                    navController.navigate(Screen.DebateMode.createRoute(topicId))
                 },
                 onNavigateToAddClaim = { topicId, existingClaimId ->
                     navController.navigate(Screen.ClaimCreate.createRoute(topicId, existingClaimId))
