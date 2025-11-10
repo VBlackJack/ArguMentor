@@ -23,6 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.R
 import com.argumentor.app.util.createSpeechIntent
 import com.argumentor.app.util.rememberSpeechToTextLauncher
+import com.argumentor.app.ui.components.rememberCurrentLocale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +41,7 @@ fun SourceCreateEditScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val linkedEvidences by viewModel.linkedEvidences.collectAsState()
     val linkedClaims by viewModel.linkedClaims.collectAsState()
+    val currentLocale = rememberCurrentLocale()
 
     val isEditMode = sourceId != null
 
@@ -164,7 +166,7 @@ fun SourceCreateEditScreen(
                         imeAction = ImeAction.Next
                     ),
                     trailingIcon = {
-                        IconButton(onClick = { titleSpeechLauncher.launch(createSpeechIntent()) }) {
+                        IconButton(onClick = { titleSpeechLauncher.launch(createSpeechIntent(currentLocale)) }) {
                             Icon(
                                 imageVector = Icons.Default.Mic,
                                 contentDescription = "Dictée vocale",
@@ -189,7 +191,7 @@ fun SourceCreateEditScreen(
                         imeAction = ImeAction.Next
                     ),
                     trailingIcon = {
-                        IconButton(onClick = { citationSpeechLauncher.launch(createSpeechIntent()) }) {
+                        IconButton(onClick = { citationSpeechLauncher.launch(createSpeechIntent(currentLocale)) }) {
                             Icon(
                                 imageVector = Icons.Default.Mic,
                                 contentDescription = "Dictée vocale",
@@ -227,7 +229,7 @@ fun SourceCreateEditScreen(
                         imeAction = ImeAction.Next
                     ),
                     trailingIcon = {
-                        IconButton(onClick = { publisherSpeechLauncher.launch(createSpeechIntent()) }) {
+                        IconButton(onClick = { publisherSpeechLauncher.launch(createSpeechIntent(currentLocale)) }) {
                             Icon(
                                 imageVector = Icons.Default.Mic,
                                 contentDescription = "Dictée vocale",
@@ -267,7 +269,7 @@ fun SourceCreateEditScreen(
                         imeAction = ImeAction.Default
                     ),
                     trailingIcon = {
-                        IconButton(onClick = { notesSpeechLauncher.launch(createSpeechIntent()) }) {
+                        IconButton(onClick = { notesSpeechLauncher.launch(createSpeechIntent(currentLocale)) }) {
                             Icon(
                                 imageVector = Icons.Default.Mic,
                                 contentDescription = "Dictée vocale",

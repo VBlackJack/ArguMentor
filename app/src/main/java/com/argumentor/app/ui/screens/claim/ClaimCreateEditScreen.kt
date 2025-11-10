@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.ui.components.VoiceInputTextField
+import com.argumentor.app.ui.components.rememberCurrentLocale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,6 +26,7 @@ fun ClaimCreateEditScreen(
     val stance by viewModel.stance.collectAsState()
     val strength by viewModel.strength.collectAsState()
     val isSaving by viewModel.isSaving.collectAsState()
+    val currentLocale = rememberCurrentLocale()
 
     LaunchedEffect(claimId, topicId) {
         viewModel.loadClaim(claimId, topicId)
@@ -65,7 +67,8 @@ fun ClaimCreateEditScreen(
                 label = "Texte de l'affirmation",
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
-                maxLines = 8
+                maxLines = 8,
+                locale = currentLocale
             )
 
             // Stance selector

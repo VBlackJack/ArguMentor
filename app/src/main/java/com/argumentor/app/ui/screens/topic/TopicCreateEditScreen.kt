@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.data.model.Topic
 import com.argumentor.app.ui.components.VoiceInputTextField
+import com.argumentor.app.ui.components.rememberCurrentLocale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,6 +28,7 @@ fun TopicCreateEditScreen(
     val isSaving by viewModel.isSaving.collectAsState()
 
     var newTagText by remember { mutableStateOf("") }
+    val currentLocale = rememberCurrentLocale()
 
     LaunchedEffect(topicId) {
         viewModel.loadTopic(topicId)
@@ -66,7 +68,8 @@ fun TopicCreateEditScreen(
                 onValueChange = viewModel::onTitleChange,
                 label = "Titre",
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                locale = currentLocale
             )
 
             // Summary field
@@ -76,7 +79,8 @@ fun TopicCreateEditScreen(
                 label = "Résumé",
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
-                maxLines = 6
+                maxLines = 6,
+                locale = currentLocale
             )
 
             // Posture selector

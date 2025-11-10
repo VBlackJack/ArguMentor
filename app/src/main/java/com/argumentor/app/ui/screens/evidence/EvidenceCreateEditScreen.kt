@@ -21,6 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.data.model.Evidence
 import com.argumentor.app.util.createSpeechIntent
 import com.argumentor.app.util.rememberSpeechToTextLauncher
+import com.argumentor.app.ui.components.rememberCurrentLocale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,6 +38,7 @@ fun EvidenceCreateEditScreen(
     val selectedSource by viewModel.selectedSource.collectAsState()
     val availableSources by viewModel.availableSources.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val currentLocale = rememberCurrentLocale()
 
     val isEditMode = evidenceId != null
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -137,7 +139,7 @@ fun EvidenceCreateEditScreen(
                             imeAction = ImeAction.Default
                         ),
                         trailingIcon = {
-                            IconButton(onClick = { speechLauncher.launch(createSpeechIntent()) }) {
+                            IconButton(onClick = { speechLauncher.launch(createSpeechIntent(currentLocale)) }) {
                                 Icon(
                                     imageVector = Icons.Default.Mic,
                                     contentDescription = "Dictée vocale",

@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.data.model.Question
 import com.argumentor.app.ui.components.VoiceInputTextField
+import com.argumentor.app.ui.components.rememberCurrentLocale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,6 +28,7 @@ fun QuestionCreateEditScreen(
     val availableClaims by viewModel.availableClaims.collectAsState()
     val selectedClaim by viewModel.selectedClaim.collectAsState()
     val isTopicLevel by viewModel.isTopicLevel.collectAsState()
+    val currentLocale = rememberCurrentLocale()
 
     LaunchedEffect(questionId, targetId) {
         viewModel.loadQuestion(questionId, targetId)
@@ -67,7 +69,8 @@ fun QuestionCreateEditScreen(
                 label = "Texte de la question",
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
-                maxLines = 8
+                maxLines = 8,
+                locale = currentLocale
             )
 
             // Target selector (topic vs claim)
