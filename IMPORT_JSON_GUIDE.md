@@ -51,10 +51,10 @@ Un sujet représente un thème de débat.
 ```json
 {
   "id": "topic_001",
-  "title": "La Trinité dans le christianisme",
-  "summary": "Débat sur la doctrine de la Trinité",
+  "title": "Les chats comme animaux de compagnie",
+  "summary": "Analyse des avantages et inconvénients des chats comme animaux domestiques",
   "posture": "neutre_critique",
-  "tags": ["tag_theologie", "tag_christianisme"],
+  "tags": ["tag_animaux", "tag_comportement"],
   "createdAt": "2025-01-15T10:00:00Z",
   "updatedAt": "2025-01-15T10:00:00Z"
 }
@@ -95,13 +95,13 @@ Une affirmation représente un argument ou une thèse liée à un ou plusieurs s
 ```json
 {
   "id": "claim_001",
-  "text": "La Bible enseigne la doctrine de la Trinité",
+  "text": "Les chats sont des animaux de compagnie plus indépendants que les chiens",
   "stance": "pro",
   "strength": "high",
   "topics": ["topic_001"],
   "createdAt": "2025-01-15T10:00:00Z",
   "updatedAt": "2025-01-15T10:00:00Z",
-  "claimFingerprint": "bible_enseigne_doctrine_trinite"
+  "claimFingerprint": "chats_animaux_independants_chiens"
 }
 ```
 
@@ -148,8 +148,8 @@ Une réfutation conteste ou critique une affirmation.
 {
   "id": "rebuttal_001",
   "claimId": "claim_001",
-  "text": "Cette interprétation ignore le contexte historique du Ier siècle",
-  "fallacyTag": "Anachronisme",
+  "text": "Les chats peuvent développer de l'anxiété de séparation comme les chiens",
+  "fallacyTag": null,
   "createdAt": "2025-01-15T10:00:00Z",
   "updatedAt": "2025-01-15T10:00:00Z"
 }
@@ -178,8 +178,8 @@ Une preuve soutient une affirmation avec des données factuelles.
 {
   "id": "evidence_001",
   "claimId": "claim_001",
-  "type": "citation",
-  "content": "Jean 1:1 - 'Au commencement était la Parole, et la Parole était avec Dieu, et la Parole était Dieu'",
+  "type": "study",
+  "content": "Étude comportementale 2023 : Les chats peuvent passer 12-16h seuls sans stress, contrairement aux chiens",
   "sourceId": "source_001",
   "quality": "high",
   "createdAt": "2025-01-15T10:00:00Z"
@@ -229,7 +229,7 @@ Les questions servent à clarifier ou approfondir un sujet ou une affirmation.
 {
   "id": "question_001",
   "targetId": "topic_001",
-  "text": "Quels sont les passages bibliques qui soutiennent ou contredisent la Trinité ?",
+  "text": "Quels facteurs influencent le niveau d'indépendance des chats ?",
   "kind": "clarification",
   "createdAt": "2025-01-15T10:00:00Z"
 }
@@ -265,13 +265,13 @@ Les sources documentent l'origine des preuves et citations.
 ```json
 {
   "id": "source_001",
-  "title": "Bible Louis Segond 1910",
-  "citation": "Bible LSG, Jean 1:1",
-  "url": "https://www.bible.com/fr/bible/93/JHN.1.1.LSG",
-  "publisher": "Société Biblique de France",
-  "date": "1910",
-  "reliabilityScore": 0.95,
-  "notes": "Traduction française classique",
+  "title": "Journal of Feline Behavior",
+  "citation": "Turner, D.C. (2023). Feline Independence and Attachment Patterns",
+  "url": "https://www.felinebehavior.org/studies/2023",
+  "publisher": "Association Internationale de Comportement Félin",
+  "date": "2023",
+  "reliabilityScore": 0.85,
+  "notes": "Étude comportementale sur 500 chats domestiques",
   "createdAt": "2025-01-15T10:00:00Z"
 }
 ```
@@ -300,8 +300,8 @@ Les tags permettent de catégoriser les sujets.
 
 ```json
 {
-  "id": "tag_theologie",
-  "label": "Théologie",
+  "id": "tag_animaux",
+  "label": "Animaux",
   "color": "#4CAF50"
 }
 ```
@@ -416,8 +416,8 @@ Voici un exemple minimal mais complet :
   "topics": [
     {
       "id": "topic_001",
-      "title": "La Trinité",
-      "summary": "Doctrine chrétienne de la Trinité",
+      "title": "Les chats comme animaux de compagnie",
+      "summary": "Analyse des avantages et inconvénients des chats comme animaux domestiques",
       "posture": "neutre_critique",
       "tags": []
     }
@@ -425,7 +425,7 @@ Voici un exemple minimal mais complet :
   "claims": [
     {
       "id": "claim_001",
-      "text": "La Bible enseigne explicitement la Trinité",
+      "text": "Les chats sont des animaux de compagnie plus indépendants que les chiens",
       "stance": "pro",
       "strength": "medium",
       "topics": ["topic_001"],
@@ -437,7 +437,7 @@ Voici un exemple minimal mais complet :
     {
       "id": "rebuttal_001",
       "claimId": "claim_001",
-      "text": "Le mot 'Trinité' n'apparaît jamais dans la Bible",
+      "text": "Les chats peuvent développer de l'anxiété de séparation comme les chiens",
       "createdAt": "2025-01-15T10:00:00Z",
       "updatedAt": "2025-01-15T10:00:00Z"
     }
@@ -446,8 +446,8 @@ Voici un exemple minimal mais complet :
     {
       "id": "evidence_001",
       "claimId": "claim_001",
-      "type": "citation",
-      "content": "Matthieu 28:19 - 'baptisez-les au nom du Père, du Fils et du Saint-Esprit'",
+      "type": "study",
+      "content": "Étude comportementale 2023 : Les chats peuvent passer 12-16h seuls sans stress",
       "quality": "high",
       "createdAt": "2025-01-15T10:00:00Z"
     }
