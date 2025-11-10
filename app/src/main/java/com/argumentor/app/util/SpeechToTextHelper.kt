@@ -103,12 +103,18 @@ fun rememberSpeechToTextLauncher(
 }
 
 /**
- * Create a speech recognition intent.
+ * Create a speech recognition intent with specified locale.
  */
-fun createSpeechIntent(): Intent {
+fun createSpeechIntent(locale: Locale = Locale.FRENCH): Intent {
+    val promptText = when (locale.language) {
+        "fr" -> "Parlez maintenant..."
+        "en" -> "Speak now..."
+        else -> "Speak now..."
+    }
+
     return Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
         putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.FRENCH.toString())
-        putExtra(RecognizerIntent.EXTRA_PROMPT, "Parlez maintenant...")
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale.toString())
+        putExtra(RecognizerIntent.EXTRA_PROMPT, promptText)
     }
 }

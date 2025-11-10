@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.argumentor.app.data.preferences.AppLanguage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -20,6 +21,7 @@ fun SettingsScreen(
     val isDarkTheme by viewModel.isDarkTheme.collectAsState()
     val fontSize by viewModel.fontSize.collectAsState()
     val defaultPosture by viewModel.defaultPosture.collectAsState()
+    val language by viewModel.language.collectAsState()
 
     Scaffold(
         topBar = {
@@ -68,6 +70,30 @@ fun SettingsScreen(
                                 }
                             )
                         }
+                    }
+                }
+            }
+
+            Divider(thickness = 8.dp, color = MaterialTheme.colorScheme.surfaceVariant)
+
+            // Language section
+            SettingsSection(title = "Langue") {
+                SettingsItem(title = "Langue de l'application") {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            AppLanguage.values().forEach { lang ->
+                                FilterChip(
+                                    selected = language == lang,
+                                    onClick = { viewModel.setLanguage(lang) },
+                                    label = { Text(lang.displayName) }
+                                )
+                            }
+                        }
+                        Text(
+                            text = "Change la langue de l'interface et de la saisie vocale",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             }

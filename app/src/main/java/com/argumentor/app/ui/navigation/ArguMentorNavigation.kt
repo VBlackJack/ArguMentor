@@ -19,6 +19,8 @@ import com.argumentor.app.ui.screens.source.SourceCreateEditScreen
 import com.argumentor.app.ui.screens.statistics.StatisticsScreen
 import com.argumentor.app.ui.screens.topic.TopicCreateEditScreen
 import com.argumentor.app.ui.screens.topic.TopicDetailScreen
+import com.argumentor.app.ui.screens.fallacy.FallacyCatalogScreen
+import com.argumentor.app.ui.screens.fallacy.FallacyDetailScreen
 
 /**
  * Main navigation component for ArguMentor app.
@@ -75,6 +77,9 @@ fun ArguMentorNavigation() {
                 },
                 onNavigateToSettings = {
                     navController.navigate(Screen.Settings.route)
+                },
+                onNavigateToFallacyCatalog = {
+                    navController.navigate(Screen.FallacyCatalog.route)
                 }
             )
         }
@@ -299,6 +304,28 @@ fun ArguMentorNavigation() {
                 onNavigateToCreateSource = {
                     navController.navigate(Screen.SourceCreate.route)
                 }
+            )
+        }
+
+        // Fallacy catalog
+        composable(Screen.FallacyCatalog.route) {
+            FallacyCatalogScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToDetail = { fallacyId ->
+                    navController.navigate(Screen.FallacyDetail.createRoute(fallacyId))
+                }
+            )
+        }
+
+        // Fallacy detail
+        composable(
+            route = Screen.FallacyDetail.route,
+            arguments = listOf(navArgument("fallacyId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val fallacyId = backStackEntry.arguments?.getString("fallacyId") ?: return@composable
+            FallacyDetailScreen(
+                fallacyId = fallacyId,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }

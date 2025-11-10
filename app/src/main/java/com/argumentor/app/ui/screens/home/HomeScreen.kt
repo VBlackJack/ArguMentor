@@ -37,7 +37,8 @@ fun HomeScreen(
     onNavigateToCreate: () -> Unit,
     onNavigateToImportExport: () -> Unit,
     onNavigateToStatistics: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    onNavigateToFallacyCatalog: () -> Unit
 ) {
     val topics by viewModel.topics.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -101,6 +102,16 @@ fun HomeScreen(
                         onClick = {
                             scope.launch { drawerState.close() }
                             onNavigateToImportExport()
+                        }
+                    )
+
+                    NavigationDrawerItem(
+                        icon = { Icon(Icons.Default.School, contentDescription = stringResource(R.string.nav_fallacy_catalog)) },
+                        label = { Text(stringResource(R.string.nav_fallacy_catalog)) },
+                        selected = false,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            onNavigateToFallacyCatalog()
                         }
                     )
 

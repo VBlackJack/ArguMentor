@@ -10,6 +10,7 @@
     <string name="nav_new_topic">Nouveau sujet</string>
     <string name="nav_statistics">Statistiques</string>
     <string name="nav_import_export">Import/Export</string>
+    <string name="nav_fallacy_catalog">Catalogue des Sophismes</string>
 
     <!-- Home Screen -->
     <string name="home_title">ArguMentor</string>
@@ -91,6 +92,18 @@
     <string name="debate_fallacy">Sophisme: %1$s</string>
     <string name="debate_empty_title">Pas de contenu supplémentaire</string>
     <string name="debate_empty_message">Cette affirmation n\'a pas encore de contre-arguments, preuves ou questions associés</string>
+
+    <!-- Fallacy Catalog -->
+    <string name="fallacy_catalog_title">Catalogue des Sophismes</string>
+    <string name="fallacy_search_hint">Rechercher un sophisme…</string>
+    <string name="fallacy_empty_title">Aucun sophisme trouvé</string>
+    <string name="fallacy_empty_description">Aucun sophisme ne correspond à votre recherche. Essayez un autre terme.</string>
+    <string name="fallacy_detail_title">Détail du Sophisme</string>
+    <string name="fallacy_not_found">Sophisme introuvable</string>
+    <string name="fallacy_description_title">Description</string>
+    <string name="fallacy_example_title">Exemple</string>
+    <string name="fallacy_tip_title">Conseil</string>
+    <string name="fallacy_tip_description">Pour identifier ce sophisme dans un débat, recherchez ce type de raisonnement fallacieux et questionnez sa validité logique.</string>
 
     <!-- Plurals -->
     <plurals name="topic_count">
