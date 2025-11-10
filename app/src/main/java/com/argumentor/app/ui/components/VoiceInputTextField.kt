@@ -73,7 +73,7 @@ fun VoiceInputTextField(
                             RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                             RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
                         )
-                        putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale.toString())
+                        putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale.language)
                         putExtra(RecognizerIntent.EXTRA_PROMPT, promptText)
                     }
                     voiceLauncher.launch(intent)

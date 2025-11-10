@@ -67,7 +67,7 @@ class SpeechToTextHelper(
 
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.FRENCH.toString())
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.FRENCH.language)
             putExtra(RecognizerIntent.EXTRA_PROMPT, "Parlez maintenant...")
         }
 
@@ -114,7 +114,7 @@ fun createSpeechIntent(locale: Locale = Locale.FRENCH): Intent {
 
     return Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
         putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale.toString())
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale.language)
         putExtra(RecognizerIntent.EXTRA_PROMPT, promptText)
     }
 }
