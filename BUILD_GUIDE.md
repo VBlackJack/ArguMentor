@@ -1,5 +1,20 @@
 # ArguMentor - Guide de Build
 
+## 💡 Pourquoi builder ArguMentor depuis les sources ?
+
+Compiler ArguMentor vous-même vous permet de :
+
+- **🎨 Personnaliser l'application** : Modifier l'interface, les couleurs, les fonctionnalités selon vos besoins
+- **🤝 Contribuer au projet** : Corriger des bugs, ajouter des fonctionnalités, améliorer la documentation
+- **📚 Apprendre** : Découvrir les bonnes pratiques Android modernes (Compose, Clean Architecture, Hilt)
+- **🔒 Vérifier la sécurité** : Auditer le code source avant de l'utiliser
+- **🌍 Adapter à votre langue** : Ajouter des traductions pour votre langue maternelle
+- **🔧 Créer une version personnalisée** : Pour votre équipe, votre classe, ou votre usage personnel
+
+Ce guide vous accompagne pas à pas pour compiler l'application, même si vous débutez avec Android.
+
+---
+
 ## 🚀 Quick Start
 
 ### Option 1 : Menu Interactif (Recommandé)

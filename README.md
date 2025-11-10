@@ -12,6 +12,15 @@ Dans un monde saturé d'informations et d'opinions, ArguMentor vous aide à :
 - **🛡️ Détecter les sophismes** : Identifiez les erreurs logiques dans les arguments
 - **📊 Garder une trace** : Conservez toutes vos réflexions et sources au même endroit
 
+### 👥 Pour qui ?
+
+- **🎓 Étudiants** : Préparez vos dissertations, exposés et débats avec méthode
+- **👨‍🏫 Enseignants** : Créez des exercices d'analyse critique et de rhétorique
+- **🔬 Chercheurs** : Structurez vos analyses d'articles et thèses
+- **📰 Journalistes** : Organisez vos investigations et arguments
+- **🧠 Penseurs critiques** : Affinez votre raisonnement sur les débats de société
+- **💼 Professionnels** : Préparez des présentations argumentées et convaincantes
+
 Idéal pour analyser des débats d'opinion, des choix de société, des questions culturelles et tout sujet nécessitant une réflexion approfondie.
 
 ---
@@ -306,6 +315,14 @@ ArguMentor respecte votre vie privée et ne demande que le strict nécessaire :
 ---
 
 ## 🔧 Pour les développeurs
+
+### Pourquoi contribuer à ArguMentor ?
+
+En contribuant à ArguMentor, vous participez à un projet qui :
+- **Promeut la pensée critique** dans un monde saturé d'informations
+- **Respecte la vie privée** avec une approche offline-first et open-source
+- **Utilise des technologies modernes** pour apprendre et progresser
+- **Impacte positivement** l'éducation et la qualité des débats publics
 
 ### Technologies utilisées
 
