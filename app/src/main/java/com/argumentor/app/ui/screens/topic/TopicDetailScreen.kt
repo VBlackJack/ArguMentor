@@ -446,6 +446,7 @@ fun TopicDetailScreen(
                     onEditEvidence = onNavigateToEditEvidence,
                     snackbarHostState = snackbarHostState,
                     coroutineScope = coroutineScope
+                , haptic = haptic
                 )
                 1 -> QuestionsTab(
                     questions = questions,
@@ -498,7 +499,8 @@ private fun ClaimsTab(
     onAddEvidence: (String) -> Unit,
     onEditEvidence: (String, String) -> Unit,
     snackbarHostState: SnackbarHostState,
-    coroutineScope: kotlinx.coroutines.CoroutineScope
+    coroutineScope: kotlinx.coroutines.CoroutineScope,
+    haptic: androidx.compose.ui.hapticfeedback.HapticFeedback
 ) {
     if (claims.isEmpty()) {
         EngagingEmptyState(
@@ -524,6 +526,7 @@ private fun ClaimsTab(
                     onEditEvidence = { evidenceId -> onEditEvidence(evidenceId, claim.id) },
                     snackbarHostState = snackbarHostState,
                     coroutineScope = coroutineScope
+                , haptic = haptic
                 )
             }
         }
@@ -539,7 +542,8 @@ private fun ClaimCard(
     onAddEvidence: () -> Unit,
     onEditEvidence: (String) -> Unit,
     snackbarHostState: SnackbarHostState,
-    coroutineScope: kotlinx.coroutines.CoroutineScope
+    coroutineScope: kotlinx.coroutines.CoroutineScope,
+    haptic: androidx.compose.ui.hapticfeedback.HapticFeedback
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showEvidenceSection by remember { mutableStateOf(true) }

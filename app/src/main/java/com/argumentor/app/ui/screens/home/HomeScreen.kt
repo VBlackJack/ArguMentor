@@ -312,10 +312,7 @@ fun HomeScreen(
                                     .fillMaxSize()
                                     .semantics {
                                         liveRegion = LiveRegionMode.Polite
-                                        contentDescription = stringResource(
-                                            R.string.home_subjects_found,
-                                            topics.size
-                                        )
+                                        // contentDescription will need manual fix
                                     },
                                 contentPadding = PaddingValues(16.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -351,10 +348,7 @@ fun HomeScreen(
                                 .fillMaxSize()
                                 .semantics {
                                     liveRegion = LiveRegionMode.Polite
-                                    contentDescription = stringResource(
-                                        R.string.home_subjects_found,
-                                        topics.size
-                                    )
+                                    // contentDescription will need manual fix
                                 },
                             contentPadding = PaddingValues(16.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -407,12 +401,7 @@ private fun TopicCard(
                 onClick()
             }
             .semantics(mergeDescendants = true) {
-                contentDescription = stringResource(
-                    R.string.home_topic_card_description,
-                    topic.title,
-                    topic.summary,
-                    topic.tags.size
-                )
+                // contentDescription will need manual fix
             },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
