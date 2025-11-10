@@ -11,6 +11,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,15 +21,8 @@ class HomeViewModel @Inject constructor(
     private val topicRepository: TopicRepository
 ) : ViewModel() {
 
-    private val _allTopics = MutableStateFlow<List<Topic>>(emptyList())
-
-    // New UiState-based approach
     private val _uiState = MutableStateFlow<UiState<List<Topic>>>(UiState.Initial)
     val uiState: StateFlow<UiState<List<Topic>>> = _uiState.asStateFlow()
-
-    // Legacy properties for backward compatibility
-    private val _topics = MutableStateFlow<List<Topic>>(emptyList())
-    val topics: StateFlow<List<Topic>> = _topics.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -36,100 +30,65 @@ class HomeViewModel @Inject constructor(
     private val _selectedTag = MutableStateFlow<String?>(null)
     val selectedTag: StateFlow<String?> = _selectedTag.asStateFlow()
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
-    private var filterJob: Job? = null
+    private var topicsJob: Job? = null
 
     init {
         loadTopics()
-        observeSearchQuery()
+        observeFilters()
     }
 
     @OptIn(FlowPreview::class)
-    private fun observeSearchQuery() {
+    private fun observeFilters() {
         viewModelScope.launch {
-            _searchQuery
-                .debounce(300) // Wait 300ms after user stops typing
-                .collect {
-                    _isLoading.value = it.isNotBlank() || _selectedTag.value != null
-                    applyFilters()
-                }
+            // Combine search query and tag changes
+            combine(
+                _searchQuery.debounce(300),  // Wait 300ms after user stops typing
+                _selectedTag
+            ) { query, tag ->
+                Pair(query.takeIf { it.isNotBlank() }, tag)
+            }.collect { _ ->
+                loadTopics()
+            }
         }
     }
 
     private fun loadTopics() {
-        viewModelScope.launch {
+        // Cancel previous job to avoid multiple simultaneous loads
+        topicsJob?.cancel()
+
+        topicsJob = viewModelScope.launch {
             try {
                 _uiState.value = UiState.Loading
-                topicRepository.getAllTopics().collect { topicList ->
-                    _allTopics.value = topicList
-                    applyFilters()
+
+                val query = _searchQuery.value.takeIf { it.isNotBlank() }
+                val tag = _selectedTag.value
+
+                // Use SQL-based filtering for much better performance
+                topicRepository.getFilteredTopics(tag, query).collect { topics ->
+                    _uiState.value = if (topics.isEmpty()) {
+                        UiState.Empty
+                    } else {
+                        UiState.Success(topics)
+                    }
                 }
             } catch (e: Exception) {
                 _uiState.value = UiState.Error(
                     message = e.message ?: "Une erreur inconnue s'est produite",
                     exception = e
                 )
-                _isLoading.value = false
             }
         }
     }
 
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query
-        // Don't set isLoading here - let the debounced observer handle it
     }
 
     fun onTagSelected(tag: String?) {
         _selectedTag.value = if (_selectedTag.value == tag) null else tag
-        _isLoading.value = true
-        applyFilters()
-    }
-
-    private fun applyFilters() {
-        viewModelScope.launch {
-            try {
-                var filteredTopics = _allTopics.value
-
-                // Apply tag filter
-                val tag = _selectedTag.value
-                if (tag != null) {
-                    filteredTopics = filteredTopics.filter { topic ->
-                        topic.tags.contains(tag)
-                    }
-                }
-
-                // Apply search filter
-                val query = _searchQuery.value
-                if (query.isNotBlank()) {
-                    filteredTopics = filteredTopics.filter { topic ->
-                        topic.title.contains(query, ignoreCase = true) ||
-                        topic.summary.contains(query, ignoreCase = true) ||
-                        topic.tags.any { it.contains(query, ignoreCase = true) }
-                    }
-                }
-
-                _topics.value = filteredTopics
-
-                // Update UiState based on results
-                _uiState.value = if (filteredTopics.isEmpty()) {
-                    UiState.Empty
-                } else {
-                    UiState.Success(filteredTopics)
-                }
-            } catch (e: Exception) {
-                _uiState.value = UiState.Error(
-                    message = e.message ?: "Une erreur s'est produite lors du filtrage",
-                    exception = e
-                )
-            } finally {
-                _isLoading.value = false
-            }
-        }
     }
 
     fun deleteTopic(topic: Topic, onComplete: () -> Unit = {}) {
