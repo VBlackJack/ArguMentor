@@ -24,11 +24,11 @@ Au premier lancement, l'app vous demandera :
 
 Un **sujet** est le thème central d'un débat que vous voulez analyser.
 
-### Exemple : "La Trinité dans le christianisme"
+### Exemple : "Les chats comme animaux de compagnie"
 
 1. **Appuyez sur le bouton +** en bas à droite
-2. **Titre** : "La Trinité dans le christianisme"
-3. **Résumé** : "Analyse de la doctrine chrétienne de la Trinité"
+2. **Titre** : "Les chats comme animaux de compagnie"
+3. **Résumé** : "Analyse des avantages et inconvénients des chats comme animaux domestiques"
 4. **Posture** : Choisissez votre position
    - 🔵 **Neutre** : Vous explorez le sujet sans parti pris
    - 🟡 **Neutre critique** : Vous analysez de façon critique
@@ -37,7 +37,7 @@ Un **sujet** est le thème central d'un débat que vous voulez analyser.
    - 🟣 **Comparatif** : Vous comparez plusieurs thèses
 5. **Appuyez sur Sauvegarder** ✅
 
-🎉 **Bravo !** Vous venez de créer votre premier sujet.
+🎉 **Bravo !** Vous venez de créer votre premier sujet sur les chats !
 
 ---
 
@@ -47,9 +47,9 @@ Une **affirmation** est un argument pour ou contre le sujet.
 
 ### Exemple d'affirmation
 
-1. **Ouvrez votre sujet** "La Trinité"
+1. **Ouvrez votre sujet** "Les chats comme animaux de compagnie"
 2. **Appuyez sur "Ajouter une affirmation"**
-3. **Texte** : "La Bible enseigne explicitement la doctrine de la Trinité"
+3. **Texte** : "Les chats sont des animaux de compagnie plus indépendants que les chiens"
 4. **Position** :
    - ✅ **Pour** : Argument en faveur du sujet
    - ❌ **Contre** : Argument contre le sujet
@@ -78,7 +78,7 @@ Une **preuve** soutient votre affirmation avec des faits, citations, ou données
    - 👨‍🎓 **Expert** : Témoignage d'autorité
    - 📋 **Exemple** : Cas concret
    - 💬 **Anecdote** : Témoignage personnel
-3. **Contenu** : "Matthieu 28:19 - 'baptisez-les au nom du Père, du Fils et du Saint-Esprit'"
+3. **Contenu** : "Étude comportementale 2023 : Les chats peuvent passer 12-16h seuls sans stress, contrairement aux chiens"
 4. **Qualité** :
    - 🟢 **Élevée** : Source fiable et pertinente
    - 🟡 **Moyenne** : Source acceptable
@@ -95,7 +95,7 @@ Une **réfutation** challenge votre affirmation pour tester sa solidité.
 ### Exemple de réfutation
 
 1. **Depuis votre affirmation**, appuyez sur "Ajouter une réfutation"
-2. **Texte** : "Le mot 'Trinité' n'apparaît jamais dans la Bible"
+2. **Texte** : "Les chats peuvent développer de l'anxiété de séparation comme les chiens"
 3. **Sophisme** (optionnel) : Si c'est une erreur logique, sélectionnez-la
    - Exemple : "Épouvantail", "Ad Hominem", "Pente Glissante"...
 4. **Sauvegardez**
@@ -111,13 +111,13 @@ Une **source** documente l'origine de vos informations.
 ### Exemple de source
 
 1. **Menu** → "Sources" → "Ajouter"
-2. **Titre** : "Bible Louis Segond 1910"
-3. **Citation** : "Bible LSG, Matthieu 28:19"
-4. **URL** : https://www.bible.com/fr/bible/93/MAT.28.LSG
-5. **Éditeur** : "Société Biblique de France"
-6. **Date** : "1910"
-7. **Fiabilité** : 0.95 (sur une échelle de 0 à 1)
-8. **Notes** : "Traduction française classique, largement utilisée"
+2. **Titre** : "Journal of Feline Behavior"
+3. **Citation** : "Turner, D.C. (2023). Feline Independence and Attachment Patterns"
+4. **URL** : https://www.felinebehavior.org/studies/2023
+5. **Éditeur** : "Association Internationale de Comportement Félin"
+6. **Date** : "2023"
+7. **Fiabilité** : 0.85 (sur une échelle de 0 à 1)
+8. **Notes** : "Étude comportementale sur 500 chats domestiques"
 9. **Sauvegardez**
 
 ---
@@ -129,7 +129,7 @@ Les **questions** approfondissent votre réflexion.
 ### Types de questions
 
 1. **Depuis un sujet ou une affirmation**, appuyez sur "Ajouter une question"
-2. **Texte** : "Quels sont les passages bibliques qui contredisent la Trinité ?"
+2. **Texte** : "Quels facteurs influencent le niveau d'indépendance des chats ?"
 3. **Type** :
    - 🔍 **Clarification** : Pour mieux comprendre
    - ⚔️ **Contestation** : Pour challenger l'argument
@@ -162,7 +162,7 @@ Le **Mode Débat** transforme vos arguments en cartes interactives pour réviser
 ### Recherche rapide
 
 1. **Appuyez sur la barre de recherche** 🔍 en haut
-2. **Tapez un mot-clé** (ex: "Trinité", "Bible", "Jean")
+2. **Tapez un mot-clé** (ex: "chat", "indépendant", "comportement")
 3. **L'app cherche dans** :
    - Titres de sujets
    - Affirmations

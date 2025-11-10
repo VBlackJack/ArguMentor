@@ -12,7 +12,7 @@ Dans un monde saturé d'informations et d'opinions, ArguMentor vous aide à :
 - **🛡️ Détecter les sophismes** : Identifiez les erreurs logiques dans les arguments
 - **📊 Garder une trace** : Conservez toutes vos réflexions et sources au même endroit
 
-Idéal pour les débats sur la religion, la politique, la santé, les sciences et tout sujet nécessitant une réflexion approfondie.
+Idéal pour analyser des débats d'opinion, des choix de société, des questions culturelles et tout sujet nécessitant une réflexion approfondie.
 
 ---
 
@@ -137,7 +137,7 @@ Templates prêts à l'emploi pour structurer vos analyses :
 
 1. **Ouvrez ArguMentor** et accordez les permissions optionnelles (microphone pour la dictée vocale)
 2. **Appuyez sur le bouton +** pour créer un nouveau sujet
-3. **Donnez un titre** à votre sujet (ex: "La Trinité dans le christianisme")
+3. **Donnez un titre** à votre sujet (ex: "Les chats comme animaux de compagnie")
 4. **Choisissez votre posture** vis-à-vis du sujet
 5. **Ajoutez un résumé** pour contextualiser
 6. **Sauvegardez** !
@@ -431,12 +431,12 @@ Fournir un outil qui encourage :
 - 📚 **L'apprentissage continu** : Identifier ses propres biais et erreurs de raisonnement
 
 ### Pour qui ?
-- Étudiants en philosophie, théologie, sciences politiques
+- Étudiants en philosophie, sciences humaines, communication
 - Chercheurs et journalistes
 - Toute personne intéressée par les débats de société
 - Ceux qui veulent structurer leur pensée sur des sujets complexes
 
-**Notre espoir** : Que cet outil contribue à des discussions plus éclairées, respectueuses et productives, même sur les sujets les plus sensibles (religion, politique, santé, sciences).
+**Notre espoir** : Que cet outil contribue à des discussions plus éclairées, respectueuses et productives, quel que soit le sujet abordé.
 
 ---
 
