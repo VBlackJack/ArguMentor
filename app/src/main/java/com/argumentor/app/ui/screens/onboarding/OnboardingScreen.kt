@@ -86,7 +86,9 @@ fun OnboardingScreen(
 
             // Navigation buttons
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 // Previous button

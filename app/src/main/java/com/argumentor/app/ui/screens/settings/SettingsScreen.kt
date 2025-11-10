@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -60,7 +61,7 @@ fun SettingsScreen(
                     onCheckedChange = { viewModel.toggleDarkTheme() }
                 )
 
-                Divider()
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
                 SettingsSwitchItem(
                     title = stringResource(R.string.settings_immersive_mode),
@@ -69,10 +70,13 @@ fun SettingsScreen(
                     onCheckedChange = { viewModel.toggleImmersiveMode() }
                 )
 
-                Divider()
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
                 SettingsItem(title = stringResource(R.string.settings_font_size)) {
-                    Column {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         SettingsViewModel.FontSize.values().forEach { size ->
                             FilterChip(
                                 selected = fontSize == size,
@@ -87,14 +91,14 @@ fun SettingsScreen(
                                         }
                                     )
                                 },
-                                modifier = Modifier.heightIn(min = 48.dp)
+                                modifier = Modifier.weight(1f)
                             )
                         }
                     }
                 }
             }
 
-            Divider(thickness = 8.dp, color = MaterialTheme.colorScheme.surfaceVariant)
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Language section
             SettingsSection(title = stringResource(R.string.settings_language)) {
@@ -128,7 +132,7 @@ fun SettingsScreen(
                 }
             }
 
-            Divider(thickness = 8.dp, color = MaterialTheme.colorScheme.surfaceVariant)
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Content section
             SettingsSection(title = stringResource(R.string.settings_content)) {
@@ -143,14 +147,14 @@ fun SettingsScreen(
                                 selected = defaultPosture == value,
                                 onClick = { viewModel.setDefaultPosture(value) },
                                 label = { Text(label) },
-                                modifier = Modifier.heightIn(min = 48.dp)
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     }
                 }
             }
 
-            Divider(thickness = 8.dp, color = MaterialTheme.colorScheme.surfaceVariant)
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Tutorial section
             SettingsSection(title = stringResource(R.string.settings_tutorial)) {
@@ -162,7 +166,7 @@ fun SettingsScreen(
                 )
             }
 
-            Divider(thickness = 8.dp, color = MaterialTheme.colorScheme.surfaceVariant)
+            Spacer(modifier = Modifier.height(24.dp))
 
             // About section
             SettingsSection(title = stringResource(R.string.settings_about)) {
@@ -178,19 +182,19 @@ fun SettingsScreen(
                     }
                 }
 
-                Divider()
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
                 SettingsItem(title = stringResource(R.string.settings_version)) {
                     Text("1.1.0", style = MaterialTheme.typography.bodyMedium)
                 }
 
-                Divider()
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
                 SettingsItem(title = stringResource(R.string.settings_license)) {
                     Text(stringResource(R.string.about_license_name), style = MaterialTheme.typography.bodyMedium)
                 }
 
-                Divider()
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
                 SettingsItem(title = stringResource(R.string.settings_description)) {
                     Text(
