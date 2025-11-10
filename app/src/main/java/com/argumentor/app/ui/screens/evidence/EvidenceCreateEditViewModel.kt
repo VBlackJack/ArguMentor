@@ -44,11 +44,18 @@ class EvidenceCreateEditViewModel @Inject constructor(
 
     fun loadEvidence(evidenceId: String?, claimId: String) {
         this.claimId = claimId
+        _isLoading.value = true
 
         // Load available sources
         viewModelScope.launch {
-            sourceRepository.getAllSources().collect { sources ->
-                _availableSources.value = sources
+            try {
+                sourceRepository.getAllSources().collect { sources ->
+                    _availableSources.value = sources
+                }
+            } finally {
+                if (evidenceId == null) {
+                    _isLoading.value = false
+                }
             }
         }
 
@@ -59,7 +66,6 @@ class EvidenceCreateEditViewModel @Inject constructor(
 
         this.evidenceId = evidenceId
         isEditMode = true
-        _isLoading.value = true
 
         viewModelScope.launch {
             evidenceRepository.getEvidenceById(evidenceId)?.let { evidence ->
@@ -98,13 +104,19 @@ class EvidenceCreateEditViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            // Validate that selected source still exists if one is selected
+            val validatedSourceId = _selectedSource.value?.id?.let { sourceId ->
+                val sourceExists = sourceRepository.getSourceById(sourceId).first() != null
+                if (sourceExists) sourceId else null
+            }
+
             val evidence = if (isEditMode && evidenceId != null) {
                 // Update existing evidence
                 evidenceRepository.getEvidenceById(evidenceId!!)?.copy(
                     content = _content.value.trim(),
                     type = _type.value,
                     quality = _quality.value,
-                    sourceId = _selectedSource.value?.id
+                    sourceId = validatedSourceId
                 )
             } else {
                 // Create new evidence
@@ -113,7 +125,7 @@ class EvidenceCreateEditViewModel @Inject constructor(
                     content = _content.value.trim(),
                     type = _type.value,
                     quality = _quality.value,
-                    sourceId = _selectedSource.value?.id
+                    sourceId = validatedSourceId
                 )
             }
 

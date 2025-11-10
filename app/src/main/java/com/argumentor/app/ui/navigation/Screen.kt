@@ -36,4 +36,22 @@ sealed class Screen(val route: String) {
     object FallacyDetail : Screen("fallacy/{fallacyId}") {
         fun createRoute(fallacyId: String) = "fallacy/$fallacyId"
     }
+    object ClaimCreate : Screen("claim/create?topicId={topicId}&claimId={claimId}") {
+        fun createRoute(topicId: String, claimId: String? = null): String {
+            return if (claimId != null) {
+                "claim/create?topicId=$topicId&claimId=$claimId"
+            } else {
+                "claim/create?topicId=$topicId"
+            }
+        }
+    }
+    object QuestionCreate : Screen("question/create?targetId={targetId}&questionId={questionId}") {
+        fun createRoute(targetId: String, questionId: String? = null): String {
+            return if (questionId != null) {
+                "question/create?targetId=$targetId&questionId=$questionId"
+            } else {
+                "question/create?targetId=$targetId"
+            }
+        }
+    }
 }

@@ -24,6 +24,11 @@ class NavigationViewModel @Inject constructor(
     )
     val firstLaunchCompleted: StateFlow<Boolean> = _firstLaunchCompleted.asStateFlow()
 
+    private val _ethicsWarningShown = MutableStateFlow(
+        prefs.getBoolean("ethics_warning_shown", false)
+    )
+    val ethicsWarningShown: StateFlow<Boolean> = _ethicsWarningShown.asStateFlow()
+
     private val _onboardingCompleted = MutableStateFlow(
         prefs.getBoolean("onboarding_completed", false)
     )

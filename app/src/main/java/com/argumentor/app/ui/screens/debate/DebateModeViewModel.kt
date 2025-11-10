@@ -37,6 +37,12 @@ class DebateModeViewModel @Inject constructor(
     private val _isCardFlipped = MutableStateFlow(false)
     val isCardFlipped: StateFlow<Boolean> = _isCardFlipped.asStateFlow()
 
+    companion object {
+        private const val MAX_REBUTTALS_PER_CARD = 2
+        private const val MAX_EVIDENCES_PER_CARD = 2
+        private const val MAX_QUESTIONS_PER_CARD = 1
+    }
+
     fun loadTopic(topicId: String) {
         viewModelScope.launch {
             topicRepository.getTopicById(topicId).collect { topic ->
@@ -56,9 +62,9 @@ class DebateModeViewModel @Inject constructor(
 
                     DebateCard(
                         claim = claim,
-                        rebuttals = rebuttals.take(2), // Limit to 2 rebuttals
-                        evidences = evidences.take(2), // Limit to 2 evidences
-                        questions = questions.take(1)  // Limit to 1 question
+                        rebuttals = rebuttals.take(MAX_REBUTTALS_PER_CARD),
+                        evidences = evidences.take(MAX_EVIDENCES_PER_CARD),
+                        questions = questions.take(MAX_QUESTIONS_PER_CARD)
                     )
                 }
 

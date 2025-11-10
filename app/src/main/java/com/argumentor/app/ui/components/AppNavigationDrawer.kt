@@ -23,7 +23,8 @@ fun AppNavigationDrawerContent(
     onNavigateToCreate: () -> Unit,
     onNavigateToStatistics: () -> Unit,
     onNavigateToImportExport: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    onNavigateToFallacyCatalog: (() -> Unit)? = null
 ) {
     ModalDrawerSheet {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -92,6 +93,23 @@ fun AppNavigationDrawerContent(
                     onNavigateToSettings()
                 }
             )
+
+            // Fallacy catalog (optional)
+            onNavigateToFallacyCatalog?.let { callback ->
+                Spacer(modifier = Modifier.height(8.dp))
+                Divider()
+                Spacer(modifier = Modifier.height(8.dp))
+
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Info, contentDescription = "Catalogue des sophismes") },
+                    label = { Text("Catalogue des sophismes") },
+                    selected = currentRoute == "fallacy/catalog",
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        callback()
+                    }
+                )
+            }
         }
     }
 }

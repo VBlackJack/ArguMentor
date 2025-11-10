@@ -89,13 +89,14 @@ class ClaimCreateEditViewModel @Inject constructor(
             try {
                 if (_isEditMode.value && _claimId.value != null) {
                     // Update existing claim
+                    val existingClaim = claimRepository.getClaimByIdSync(_claimId.value!!)
                     val claim = Claim(
                         id = _claimId.value!!,
                         text = _text.value,
                         stance = _stance.value,
                         strength = _strength.value,
                         topics = _selectedTopics.value,
-                        createdAt = "",
+                        createdAt = existingClaim?.createdAt ?: getCurrentIsoTimestamp(),
                         updatedAt = getCurrentIsoTimestamp()
                     )
                     claimRepository.updateClaim(claim)
