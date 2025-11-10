@@ -40,6 +40,12 @@ class TopicCreateEditViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
+    // Track initial values to detect unsaved changes
+    private val _initialTitle = MutableStateFlow("")
+    private val _initialSummary = MutableStateFlow("")
+    private val _initialPosture = MutableStateFlow(Topic.Posture.NEUTRAL_CRITICAL)
+    private val _initialTags = MutableStateFlow<List<String>>(emptyList())
+
     fun clearError() {
         _errorMessage.value = null
     }
@@ -47,6 +53,11 @@ class TopicCreateEditViewModel @Inject constructor(
     fun loadTopic(topicId: String?) {
         if (topicId == null) {
             _isEditMode.value = false
+            // Reset initial values for new topic
+            _initialTitle.value = ""
+            _initialSummary.value = ""
+            _initialPosture.value = Topic.Posture.NEUTRAL_CRITICAL
+            _initialTags.value = emptyList()
             return
         }
 
@@ -59,8 +70,21 @@ class TopicCreateEditViewModel @Inject constructor(
                 _summary.value = topic.summary
                 _posture.value = topic.posture
                 _tags.value = topic.tags
+
+                // Store initial values
+                _initialTitle.value = topic.title
+                _initialSummary.value = topic.summary
+                _initialPosture.value = topic.posture
+                _initialTags.value = topic.tags
             }
         }
+    }
+
+    fun hasUnsavedChanges(): Boolean {
+        return _title.value != _initialTitle.value ||
+               _summary.value != _initialSummary.value ||
+               _posture.value != _initialPosture.value ||
+               _tags.value != _initialTags.value
     }
 
     fun onTitleChange(newTitle: String) {

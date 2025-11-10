@@ -38,6 +38,12 @@ class ClaimCreateEditViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
+    // Track initial values to detect unsaved changes
+    private val _initialText = MutableStateFlow("")
+    private val _initialStance = MutableStateFlow(Claim.Stance.NEUTRAL)
+    private val _initialStrength = MutableStateFlow(Claim.Strength.MEDIUM)
+    private val _initialTopics = MutableStateFlow<List<String>>(emptyList())
+
     fun clearError() {
         _errorMessage.value = null
     }
@@ -45,10 +51,18 @@ class ClaimCreateEditViewModel @Inject constructor(
     fun loadClaim(claimId: String?, topicId: String?) {
         topicId?.let {
             _selectedTopics.value = listOf(it)
+            _initialTopics.value = listOf(it)
         }
 
         if (claimId == null) {
             _isEditMode.value = false
+            // Reset initial values for new claim
+            _initialText.value = ""
+            _initialStance.value = Claim.Stance.NEUTRAL
+            _initialStrength.value = Claim.Strength.MEDIUM
+            if (topicId == null) {
+                _initialTopics.value = emptyList()
+            }
             return
         }
 
@@ -61,8 +75,21 @@ class ClaimCreateEditViewModel @Inject constructor(
                 _stance.value = claim.stance
                 _strength.value = claim.strength
                 _selectedTopics.value = claim.topics
+
+                // Store initial values
+                _initialText.value = claim.text
+                _initialStance.value = claim.stance
+                _initialStrength.value = claim.strength
+                _initialTopics.value = claim.topics
             }
         }
+    }
+
+    fun hasUnsavedChanges(): Boolean {
+        return _text.value != _initialText.value ||
+               _stance.value != _initialStance.value ||
+               _strength.value != _initialStrength.value ||
+               _selectedTopics.value != _initialTopics.value
     }
 
     fun onTextChange(newText: String) {

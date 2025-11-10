@@ -1,5 +1,6 @@
 package com.argumentor.app.ui.screens.claim
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -30,8 +31,43 @@ fun ClaimCreateEditScreen(
     val isSaving by viewModel.isSaving.collectAsState()
     val currentLocale = rememberCurrentLocale()
 
+    // Dialog state for unsaved changes confirmation
+    var showUnsavedChangesDialog by remember { mutableStateOf(false) }
+
+    // Track validation state - show errors after first save attempt
+    var hasAttemptedSave by remember { mutableStateOf(false) }
+
     LaunchedEffect(claimId, topicId) {
         viewModel.loadClaim(claimId, topicId)
+    }
+
+    // Handle back button press
+    BackHandler(enabled = viewModel.hasUnsavedChanges()) {
+        showUnsavedChangesDialog = true
+    }
+
+    // Unsaved changes confirmation dialog
+    if (showUnsavedChangesDialog) {
+        AlertDialog(
+            onDismissRequest = { showUnsavedChangesDialog = false },
+            title = { Text(stringResource(R.string.unsaved_changes_title)) },
+            text = { Text(stringResource(R.string.unsaved_changes_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showUnsavedChangesDialog = false
+                        onNavigateBack()
+                    }
+                ) {
+                    Text(stringResource(R.string.action_discard))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showUnsavedChangesDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -44,7 +80,13 @@ fun ClaimCreateEditScreen(
                     ))
                 },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(onClick = {
+                        if (viewModel.hasUnsavedChanges()) {
+                            showUnsavedChangesDialog = true
+                        } else {
+                            onNavigateBack()
+                        }
+                    }) {
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription = stringResource(R.string.accessibility_back)
@@ -53,8 +95,13 @@ fun ClaimCreateEditScreen(
                 },
                 actions = {
                     TextButton(
-                        onClick = { viewModel.saveClaim(onNavigateBack) },
-                        enabled = !isSaving && text.isNotBlank()
+                        onClick = {
+                            hasAttemptedSave = true
+                            if (text.isNotBlank()) {
+                                viewModel.saveClaim(onNavigateBack)
+                            }
+                        },
+                        enabled = !isSaving
                     ) {
                         Text(stringResource(R.string.save))
                     }
@@ -78,7 +125,11 @@ fun ClaimCreateEditScreen(
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
                 maxLines = 8,
-                locale = currentLocale
+                locale = currentLocale,
+                isError = hasAttemptedSave && text.isBlank(),
+                supportingText = if (hasAttemptedSave && text.isBlank()) {
+                    { Text(stringResource(R.string.claim_error_text_required)) }
+                } else null
             )
 
             // Stance selector
