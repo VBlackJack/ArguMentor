@@ -25,6 +25,7 @@ import com.argumentor.app.ui.screens.topic.TopicCreateEditScreen
 import com.argumentor.app.ui.screens.topic.TopicDetailScreen
 import com.argumentor.app.ui.screens.fallacy.FallacyCatalogScreen
 import com.argumentor.app.ui.screens.fallacy.FallacyDetailScreen
+import com.argumentor.app.ui.screens.ethics.EthicsWarningScreen
 
 /**
  * Main navigation component for ArguMentor app.
@@ -35,11 +36,13 @@ fun ArguMentorNavigation(
 ) {
     val navController = rememberNavController()
     val firstLaunchCompleted by viewModel.firstLaunchCompleted.collectAsState()
+    val ethicsWarningShown by viewModel.ethicsWarningShown.collectAsState()
     val onboardingCompleted by viewModel.onboardingCompleted.collectAsState()
 
     // Determine start destination based on state
     val startDestination = when {
         !firstLaunchCompleted -> Screen.LanguageSelection.route
+        !ethicsWarningShown -> Screen.EthicsWarning.route
         !onboardingCompleted -> Screen.Permissions.route
         else -> Screen.Home.route
     }
@@ -52,12 +55,24 @@ fun ArguMentorNavigation(
         composable(Screen.LanguageSelection.route) {
             LanguageSelectionScreen(
                 onComplete = {
-                    navController.navigate(Screen.Permissions.route) {
+                    navController.navigate(Screen.EthicsWarning.route) {
                         popUpTo(Screen.LanguageSelection.route) { inclusive = true }
                     }
                 }
             )
         }
+
+        // Ethics Warning Screen
+        composable(Screen.EthicsWarning.route) {
+            EthicsWarningScreen(
+                onAccept = {
+                    navController.navigate(Screen.Permissions.route) {
+                        popUpTo(Screen.EthicsWarning.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         // Permissions Screen
         composable(Screen.Permissions.route) {
             PermissionsScreen(
@@ -129,21 +144,11 @@ fun ArguMentorNavigation(
                 onNavigateToDebate = { id ->
                     navController.navigate(Screen.DebateMode.createRoute(id))
                 },
-                onNavigateToAddClaim = { tId, cId ->
-                    val route = if (cId != null) {
-                        "claim/create?topicId=$tId&claimId=$cId"
-                    } else {
-                        "claim/create?topicId=$tId"
-                    }
-                    navController.navigate(route)
+                onNavigateToAddClaim = { topicId, existingClaimId ->
+                    navController.navigate(Screen.ClaimCreate.createRoute(topicId, existingClaimId))
                 },
-                onNavigateToAddQuestion = { tId, qId ->
-                    val route = if (qId != null) {
-                        "question/create?targetId=$tId&questionId=$qId"
-                    } else {
-                        "question/create?targetId=$tId"
-                    }
-                    navController.navigate(route)
+                onNavigateToAddQuestion = { targetId, existingQuestionId ->
+                    navController.navigate(Screen.QuestionCreate.createRoute(targetId, existingQuestionId))
                 },
                 onNavigateToAddSource = { sourceId ->
                     if (sourceId != null) {
@@ -169,6 +174,9 @@ fun ArguMentorNavigation(
                 },
                 onNavigateToSettings = {
                     navController.navigate(Screen.Settings.route)
+                },
+                onNavigateToFallacyCatalog = {
+                    navController.navigate(Screen.FallacyCatalog.route)
                 }
             )
         }
@@ -195,7 +203,7 @@ fun ArguMentorNavigation(
 
         // Claim create/edit
         composable(
-            route = "claim/create?topicId={topicId}&claimId={claimId}",
+            route = Screen.ClaimCreate.route,
             arguments = listOf(
                 navArgument("topicId") {
                     type = NavType.StringType
@@ -218,7 +226,7 @@ fun ArguMentorNavigation(
 
         // Question create/edit
         composable(
-            route = "question/create?targetId={targetId}&questionId={questionId}",
+            route = Screen.QuestionCreate.route,
             arguments = listOf(
                 navArgument("targetId") {
                     type = NavType.StringType

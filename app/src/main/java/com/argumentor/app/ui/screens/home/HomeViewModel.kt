@@ -6,6 +6,7 @@ import com.argumentor.app.data.model.Topic
 import com.argumentor.app.data.repository.TopicRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,6 +36,8 @@ class HomeViewModel @Inject constructor(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
+    private var filterJob: Job? = null
+
     init {
         loadTopics()
         observeSearchQuery()
@@ -46,6 +49,7 @@ class HomeViewModel @Inject constructor(
             _searchQuery
                 .debounce(300) // Wait 300ms after user stops typing
                 .collect {
+                    _isLoading.value = it.isNotBlank() || _selectedTag.value != null
                     applyFilters()
                 }
         }
@@ -62,7 +66,7 @@ class HomeViewModel @Inject constructor(
 
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query
-        _isLoading.value = query.isNotBlank() || _selectedTag.value != null
+        // Don't set isLoading here - let the debounced observer handle it
     }
 
     fun onTagSelected(tag: String?) {

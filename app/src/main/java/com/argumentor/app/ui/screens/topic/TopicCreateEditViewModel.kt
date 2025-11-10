@@ -87,13 +87,14 @@ class TopicCreateEditViewModel @Inject constructor(
             try {
                 if (_isEditMode.value && _topicId.value != null) {
                     // Update existing topic
+                    val existingTopic = topicRepository.getTopicByIdSync(_topicId.value!!)
                     val topic = Topic(
                         id = _topicId.value!!,
                         title = _title.value,
                         summary = _summary.value,
                         posture = _posture.value,
                         tags = _tags.value,
-                        createdAt = "", // Will be preserved from DB
+                        createdAt = existingTopic?.createdAt ?: getCurrentIsoTimestamp(),
                         updatedAt = getCurrentIsoTimestamp()
                     )
                     topicRepository.updateTopic(topic)

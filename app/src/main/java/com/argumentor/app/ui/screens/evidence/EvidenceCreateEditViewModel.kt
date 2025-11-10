@@ -44,11 +44,18 @@ class EvidenceCreateEditViewModel @Inject constructor(
 
     fun loadEvidence(evidenceId: String?, claimId: String) {
         this.claimId = claimId
+        _isLoading.value = true
 
         // Load available sources
         viewModelScope.launch {
-            sourceRepository.getAllSources().collect { sources ->
-                _availableSources.value = sources
+            try {
+                sourceRepository.getAllSources().collect { sources ->
+                    _availableSources.value = sources
+                }
+            } finally {
+                if (evidenceId == null) {
+                    _isLoading.value = false
+                }
             }
         }
 
@@ -59,7 +66,6 @@ class EvidenceCreateEditViewModel @Inject constructor(
 
         this.evidenceId = evidenceId
         isEditMode = true
-        _isLoading.value = true
 
         viewModelScope.launch {
             evidenceRepository.getEvidenceById(evidenceId)?.let { evidence ->

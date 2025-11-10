@@ -186,14 +186,12 @@ class TopicDetailViewModel @Inject constructor(
                     claim.id to rebuttalRepository.getRebuttalsByClaimId(claim.id).first()
                 }
 
-                // Build evidences map (for claims and rebuttals)
+                // Build evidences map (for claims only)
                 val evidencesMap = mutableMapOf<String, List<Evidence>>()
                 claims.forEach { claim ->
                     evidencesMap[claim.id] = evidenceRepository.getEvidencesByClaimId(claim.id).first()
                 }
-                rebuttalsMap.values.flatten().forEach { rebuttal ->
-                    evidencesMap[rebuttal.id] = evidenceRepository.getEvidencesByClaimId(rebuttal.id).first()
-                }
+                // Note: Evidence is linked to claims, not rebuttals (as per EvidenceDao comment)
 
                 // Build sources map
                 val allEvidences = evidencesMap.values.flatten()

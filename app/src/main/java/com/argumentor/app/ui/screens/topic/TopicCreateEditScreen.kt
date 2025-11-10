@@ -137,7 +137,7 @@ fun TopicCreateEditScreen(
                         label = { Text(tag) },
                         trailingIcon = {
                             Icon(
-                                imageVector = Icons.Default.ArrowBack,
+                                imageVector = Icons.Default.Clear,
                                 contentDescription = "Supprimer",
                                 modifier = Modifier.size(16.dp)
                             )

@@ -62,6 +62,7 @@ fun TopicDetailScreen(
     onNavigateToStatistics: () -> Unit,
     onNavigateToImportExport: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    onNavigateToFallacyCatalog: () -> Unit,
     viewModel: TopicDetailViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -158,7 +159,8 @@ fun TopicDetailScreen(
                 onNavigateToCreate = onNavigateToCreate,
                 onNavigateToStatistics = onNavigateToStatistics,
                 onNavigateToImportExport = onNavigateToImportExport,
-                onNavigateToSettings = onNavigateToSettings
+                onNavigateToSettings = onNavigateToSettings,
+                onNavigateToFallacyCatalog = onNavigateToFallacyCatalog
             )
         }
     ) {

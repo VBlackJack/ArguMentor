@@ -89,11 +89,7 @@ fun QuestionCreateEditScreen(
                     )
                     FilterChip(
                         selected = !isTopicLevel,
-                        onClick = {
-                            if (isTopicLevel) {
-                                viewModel.onToggleLevel()
-                            }
-                        },
+                        onClick = { viewModel.onToggleLevel() },
                         label = { Text("Affirmation spécifique") }
                     )
                 }
