@@ -59,12 +59,19 @@ class TutorialManager @Inject constructor(
                     settingsDataStore.setDemoSubjectId(null)
                 }
             } else {
-                // Tutorial enabled - reset onboarding and generate demo topic
-                settingsDataStore.setOnboardingCompleted(false)
-                val demoTopicId = settingsDataStore.demoSubjectId.first()
-                if (demoTopicId == null) {
-                    sampleDataGenerator.generateSampleData()
+                // Tutorial enabled - always regenerate demo topic
+                // First, delete existing demo topic if any
+                val existingDemoTopicId = settingsDataStore.demoSubjectId.first()
+                if (existingDemoTopicId != null) {
+                    deleteDemoTopicCompletely(existingDemoTopicId)
+                    settingsDataStore.setDemoSubjectId(null)
                 }
+
+                // Then generate new demo topic
+                sampleDataGenerator.generateSampleData()
+
+                // Reset onboarding to show tutorial again
+                settingsDataStore.setOnboardingCompleted(false)
             }
         }
     }

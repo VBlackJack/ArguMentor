@@ -176,10 +176,17 @@ class SampleDataGenerator @Inject constructor(
     private suspend fun deleteDemoTopicCompletely(topicId: String) {
         // Get all claims for this topic
         val claims = claimRepository.getClaimsForTopic(topicId)
-        
+
+        // Collect evidence IDs to find associated sources later
+        val evidenceIds = mutableSetOf<String>()
+
         // Delete each claim (this will cascade delete rebuttals and evidence)
         // Or if claim belongs to multiple topics, just remove this topicId
         claims.forEach { claim ->
+            // Collect evidences for this claim to delete their sources
+            val claimEvidences = evidenceRepository.getEvidencesForClaim(claim.id)
+            evidenceIds.addAll(claimEvidences.map { it.id })
+
             if (claim.topics.size == 1 && claim.topics.contains(topicId)) {
                 // Claim only belongs to this topic, delete it completely
                 claimRepository.deleteClaim(claim)
@@ -189,13 +196,26 @@ class SampleDataGenerator @Inject constructor(
                 claimRepository.updateClaim(updatedClaim)
             }
         }
-        
+
         // Delete all questions for this topic
         val questions = questionRepository.getQuestionsForTopic(topicId)
         questions.forEach { question ->
             questionRepository.deleteQuestion(question)
         }
-        
+
+        // Delete associated sources (demo sources only)
+        // Get all sources and delete those created for demo
+        val allSources = sourceRepository.getAllSourcesSync()
+        allSources.forEach { source ->
+            // Delete sources that match demo patterns (simplified check)
+            if (source.title.contains("Démo", ignoreCase = true) ||
+                source.title.contains("Demo", ignoreCase = true) ||
+                source.title.contains("Tutorial", ignoreCase = true) ||
+                source.title.contains("Tutoriel", ignoreCase = true)) {
+                sourceRepository.deleteSource(source)
+            }
+        }
+
         // Finally, delete the topic itself
         topicRepository.deleteTopicById(topicId)
     }

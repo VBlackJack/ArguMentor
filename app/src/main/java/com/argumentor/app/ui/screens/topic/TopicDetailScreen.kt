@@ -284,16 +284,17 @@ fun TopicDetailScreen(
                         },
                         text = { Text("Affirmation") }
                     )
-                    else -> ExtendedFloatingActionButton(
-                        onClick = { onNavigateToAddQuestion(topicId, null) },
+                    2 -> ExtendedFloatingActionButton(
+                        onClick = { onNavigateToAddSource(null) },
                         icon = {
                             Icon(
                                 Icons.Default.Add,
                                 contentDescription = null
                             )
                         },
-                        text = { Text("Question") }
+                        text = { Text("Source") }
                     )
+                    else -> null // No FAB for Questions tab (has its own button)
                 }
             }
         }
@@ -481,6 +482,21 @@ fun TopicDetailScreen(
                     },
                     onEditSource = { sourceId ->
                         onNavigateToAddSource(sourceId)
+                    },
+                    onDeleteSource = { source ->
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        viewModel.deleteSource(source) {
+                            coroutineScope.launch {
+                                val result = snackbarHostState.showSnackbar(
+                                    message = "Source supprimée",
+                                    actionLabel = "Annuler",
+                                    duration = SnackbarDuration.Short
+                                )
+                                if (result == SnackbarResult.ActionPerformed) {
+                                    viewModel.restoreSource(source)
+                                }
+                            }
+                        }
                     }
                 )
             }
@@ -1045,38 +1061,18 @@ private fun QuestionsTab(
 private fun SourcesTab(
     sources: List<Source>,
     onAddSource: () -> Unit,
-    onEditSource: (String) -> Unit
+    onEditSource: (String) -> Unit,
+    onDeleteSource: (Source) -> Unit = {}
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        if (sources.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.padding(32.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.MenuBook,
-                        contentDescription = null,
-                        modifier = Modifier.size(120.dp),
-                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
-                    )
-                    Text(
-                        text = "Aucune source",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = "Les sources bibliographiques apparaîtront ici. Ajoutez des preuves avec sources à vos affirmations.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        } else {
+    if (sources.isEmpty()) {
+        EngagingEmptyState(
+            icon = Icons.Default.MenuBook,
+            title = "Aucune source",
+            description = "Les sources bibliographiques apparaîtront ici. Ajoutez des preuves avec sources à vos affirmations.",
+            actionText = "Ajouter une source",
+            onAction = onAddSource
+        )
+    } else {
         LazyColumn(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -1138,33 +1134,32 @@ private fun SourcesTab(
                             }
                         }
 
-                        // Edit button
-                        IconButton(
-                            onClick = { onEditSource(source.id) }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "Éditer la source",
-                                tint = MaterialTheme.colorScheme.primary
-                            )
+                        // Actions
+                        Row {
+                            // Edit button
+                            IconButton(
+                                onClick = { onEditSource(source.id) }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = "Éditer la source",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                            // Delete button
+                            IconButton(
+                                onClick = { onDeleteSource(source) }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Supprimer la source",
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                            }
                         }
                     }
                 }
             }
-        }
-        }
-
-        // FAB to add new source
-        FloatingActionButton(
-            onClick = onAddSource,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Ajouter une source"
-            )
         }
     }
 }
