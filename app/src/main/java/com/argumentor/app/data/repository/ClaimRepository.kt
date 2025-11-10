@@ -23,6 +23,8 @@ class ClaimRepository @Inject constructor(
 
     suspend fun getClaimByIdSync(claimId: String): Claim? = claimDao.getClaimById(claimId)
 
+    suspend fun getClaimsForTopic(topicId: String): List<Claim> = claimDao.getClaimsForTopic(topicId)
+
     suspend fun insertClaim(claim: Claim) {
         val fingerprint = FingerprintUtils.generateClaimFingerprint(claim)
         claimDao.insertClaim(claim.copy(claimFingerprint = fingerprint))

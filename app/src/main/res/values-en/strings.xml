@@ -376,4 +376,8 @@
     <string name="demo_question_1">What is the best age to start learning programming?</string>
     <string name="demo_question_2">Can logical thinking be developed through means other than programming?</string>
     <string name="demo_question_3">Is this job market trend sustainable in the long term?</string>
+
+    <!-- Onboarding Tutorial Toggle -->
+    <string name="onboarding_tutorial_toggle_title">Built-in tutorial</string>
+    <string name="onboarding_tutorial_toggle_description">Show a demo topic to discover the app</string>
 </resources>

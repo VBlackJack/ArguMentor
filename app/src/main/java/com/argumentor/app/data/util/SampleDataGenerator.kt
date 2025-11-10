@@ -50,7 +50,7 @@ class SampleDataGenerator @Inject constructor(
         // Delete existing demo topic if it exists
         val existingDemoTopicId = settingsDataStore.demoSubjectId.first()
         if (existingDemoTopicId != null) {
-            topicRepository.deleteTopic(existingDemoTopicId)
+            deleteDemoTopicCompletely(existingDemoTopicId)
             settingsDataStore.setDemoSubjectId(null)
         }
 
@@ -168,5 +168,35 @@ class SampleDataGenerator @Inject constructor(
             kind = Question.QuestionKind.CHALLENGE
         )
         questionRepository.insertQuestion(question3)
+    }
+
+    /**
+     * Delete demo topic and all its related entities
+     */
+    private suspend fun deleteDemoTopicCompletely(topicId: String) {
+        // Get all claims for this topic
+        val claims = claimRepository.getClaimsForTopic(topicId)
+        
+        // Delete each claim (this will cascade delete rebuttals and evidence)
+        // Or if claim belongs to multiple topics, just remove this topicId
+        claims.forEach { claim ->
+            if (claim.topics.size == 1 && claim.topics.contains(topicId)) {
+                // Claim only belongs to this topic, delete it completely
+                claimRepository.deleteClaim(claim)
+            } else if (claim.topics.contains(topicId)) {
+                // Claim belongs to multiple topics, just remove this topicId
+                val updatedClaim = claim.copy(topics = claim.topics - topicId)
+                claimRepository.updateClaim(updatedClaim)
+            }
+        }
+        
+        // Delete all questions for this topic
+        val questions = questionRepository.getQuestionsForTopic(topicId)
+        questions.forEach { question ->
+            questionRepository.deleteQuestion(question)
+        }
+        
+        // Finally, delete the topic itself
+        topicRepository.deleteTopicById(topicId)
     }
 }

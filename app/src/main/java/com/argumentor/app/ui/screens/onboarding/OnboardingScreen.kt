@@ -57,6 +57,7 @@ fun OnboardingScreen(
             ) { page ->
                 OnboardingPage(
                     page = page,
+                    viewModel = viewModel,
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -136,8 +137,10 @@ fun OnboardingScreen(
 @Composable
 private fun OnboardingPage(
     page: Int,
+    viewModel: OnboardingViewModel,
     modifier: Modifier = Modifier
 ) {
+    val tutorialEnabled by viewModel.tutorialEnabled.collectAsState()
     val icon: ImageVector
     val title: String
     val description: String
@@ -194,5 +197,41 @@ private fun OnboardingPage(
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+
+        // Add tutorial toggle switch on first page
+        if (page == 0) {
+            Spacer(modifier = Modifier.height(32.dp))
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.onboarding_tutorial_toggle_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = stringResource(R.string.onboarding_tutorial_toggle_description),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = tutorialEnabled,
+                        onCheckedChange = { viewModel.toggleTutorial() }
+                    )
+                }
+            }
+        }
     }
 }

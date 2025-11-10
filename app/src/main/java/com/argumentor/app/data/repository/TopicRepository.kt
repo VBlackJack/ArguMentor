@@ -22,5 +22,7 @@ class TopicRepository @Inject constructor(
 
     suspend fun deleteTopic(topic: Topic) = topicDao.deleteTopic(topic)
 
+    suspend fun deleteTopicById(topicId: String) = topicDao.deleteTopicById(topicId)
+
     fun searchTopics(query: String): Flow<List<Topic>> = topicDao.searchTopics(query)
 }

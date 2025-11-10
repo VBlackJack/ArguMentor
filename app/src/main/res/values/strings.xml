@@ -376,4 +376,8 @@
     <string name="demo_question_1">Quel est le meilleur âge pour commencer à apprendre la programmation ?</string>
     <string name="demo_question_2">Peut-on développer la pensée logique par d\'autres moyens que la programmation ?</string>
     <string name="demo_question_3">Cette tendance du marché du travail est-elle durable à long terme ?</string>
+
+    <!-- Onboarding Tutorial Toggle -->
+    <string name="onboarding_tutorial_toggle_title">Tutoriel intégré</string>
+    <string name="onboarding_tutorial_toggle_description">Afficher un sujet de démonstration pour découvrir les fonctionnalités</string>
 </resources>

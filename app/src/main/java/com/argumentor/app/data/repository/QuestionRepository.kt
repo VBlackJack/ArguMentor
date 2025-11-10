@@ -19,6 +19,9 @@ class QuestionRepository @Inject constructor(
     suspend fun getQuestionById(questionId: String): Question? =
         questionDao.getQuestionById(questionId)
 
+    suspend fun getQuestionsForTopic(topicId: String): List<Question> =
+        questionDao.getQuestionsForTopic(topicId)
+
     suspend fun insertQuestion(question: Question) =
         questionDao.insertQuestion(question)
 

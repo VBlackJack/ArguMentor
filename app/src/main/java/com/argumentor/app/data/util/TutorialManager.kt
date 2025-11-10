@@ -4,7 +4,7 @@ import android.content.Context
 import com.argumentor.app.data.datastore.SettingsDataStore
 import com.argumentor.app.data.preferences.AppLanguage
 import com.argumentor.app.data.preferences.LanguagePreferences
-import com.argumentor.app.data.repository.TopicRepository
+import com.argumentor.app.data.repository.*
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +20,9 @@ class TutorialManager @Inject constructor(
     private val settingsDataStore: SettingsDataStore,
     private val languagePreferences: LanguagePreferences,
     private val sampleDataGenerator: SampleDataGenerator,
-    private val topicRepository: TopicRepository
+    private val topicRepository: TopicRepository,
+    private val claimRepository: ClaimRepository,
+    private val questionRepository: QuestionRepository
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val prefs = context.getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
@@ -50,20 +52,51 @@ class TutorialManager @Inject constructor(
     fun handleTutorialToggle(enabled: Boolean) {
         scope.launch {
             if (!enabled) {
-                // Tutorial disabled - remove demo topic
+                // Tutorial disabled - remove demo topic and all related data
                 val demoTopicId = settingsDataStore.demoSubjectId.first()
                 if (demoTopicId != null) {
-                    topicRepository.deleteTopic(demoTopicId)
+                    deleteDemoTopicCompletely(demoTopicId)
                     settingsDataStore.setDemoSubjectId(null)
                 }
             } else {
-                // Tutorial enabled - generate demo topic if it doesn't exist
+                // Tutorial enabled - reset onboarding and generate demo topic
+                settingsDataStore.setOnboardingCompleted(false)
                 val demoTopicId = settingsDataStore.demoSubjectId.first()
                 if (demoTopicId == null) {
                     sampleDataGenerator.generateSampleData()
                 }
             }
         }
+    }
+
+    /**
+     * Delete demo topic and all its related entities
+     */
+    private suspend fun deleteDemoTopicCompletely(topicId: String) {
+        // Get all claims for this topic
+        val claims = claimRepository.getClaimsForTopic(topicId)
+        
+        // Delete each claim (this will cascade delete rebuttals and evidence)
+        // Or if claim belongs to multiple topics, just remove this topicId
+        claims.forEach { claim ->
+            if (claim.topics.size == 1 && claim.topics.contains(topicId)) {
+                // Claim only belongs to this topic, delete it completely
+                claimRepository.deleteClaim(claim)
+            } else if (claim.topics.contains(topicId)) {
+                // Claim belongs to multiple topics, just remove this topicId
+                val updatedClaim = claim.copy(topics = claim.topics - topicId)
+                claimRepository.updateClaim(updatedClaim)
+            }
+        }
+        
+        // Delete all questions for this topic
+        val questions = questionRepository.getQuestionsForTopic(topicId)
+        questions.forEach { question ->
+            questionRepository.deleteQuestion(question)
+        }
+        
+        // Finally, delete the topic itself
+        topicRepository.deleteTopicById(topicId)
     }
 
     private fun getLastLanguage(): AppLanguage? {
