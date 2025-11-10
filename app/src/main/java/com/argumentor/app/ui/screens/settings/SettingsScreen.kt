@@ -61,7 +61,7 @@ fun SettingsScreen(
                     onCheckedChange = { viewModel.toggleDarkTheme() }
                 )
 
-                Divider()
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
                 SettingsSwitchItem(
                     title = stringResource(R.string.settings_immersive_mode),
@@ -70,7 +70,7 @@ fun SettingsScreen(
                     onCheckedChange = { viewModel.toggleImmersiveMode() }
                 )
 
-                Divider()
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
                 SettingsItem(title = stringResource(R.string.settings_font_size)) {
                     Row(
@@ -182,19 +182,19 @@ fun SettingsScreen(
                     }
                 }
 
-                Divider()
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
                 SettingsItem(title = stringResource(R.string.settings_version)) {
                     Text("1.1.0", style = MaterialTheme.typography.bodyMedium)
                 }
 
-                Divider()
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
                 SettingsItem(title = stringResource(R.string.settings_license)) {
                     Text(stringResource(R.string.about_license_name), style = MaterialTheme.typography.bodyMedium)
                 }
 
-                Divider()
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
                 SettingsItem(title = stringResource(R.string.settings_description)) {
                     Text(
