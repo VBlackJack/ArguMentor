@@ -9,10 +9,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -25,8 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.R
 import com.argumentor.app.data.model.Topic
+import com.argumentor.app.ui.common.UiState
 import com.argumentor.app.ui.components.EngagingEmptyState
 import com.argumentor.app.ui.components.HighlightedText
+import com.argumentor.app.ui.components.TopicCardSkeleton
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -45,9 +50,27 @@ fun HomeScreen(
     val selectedTag by viewModel.selectedTag.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // Pull-to-refresh state
+    val pullToRefreshState = rememberPullToRefreshState()
+
+    // Trigger refresh when pull to refresh is triggered
+    LaunchedEffect(pullToRefreshState.isRefreshing) {
+        if (pullToRefreshState.isRefreshing) {
+            viewModel.refresh()
+        }
+    }
+
+    // Reset pull to refresh state when refresh completes
+    LaunchedEffect(isRefreshing) {
+        if (!isRefreshing) {
+            pullToRefreshState.endRefresh()
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -161,11 +184,16 @@ fun HomeScreen(
                 }
             }
         ) { paddingValues ->
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .nestedScroll(pullToRefreshState.nestedScrollConnection)
             ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                ) {
                 // Search bar with loading indicator
                 Column {
                     OutlinedTextField(
@@ -188,7 +216,7 @@ fun HomeScreen(
                                 IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
                                     Icon(
                                         Icons.Default.Close,
-                                        contentDescription = "Effacer la recherche"
+                                        contentDescription = stringResource(R.string.action_clear_search)
                                     )
                                 }
                             }
@@ -214,10 +242,11 @@ fun HomeScreen(
                                 trailingIcon = {
                                     Icon(
                                         Icons.Default.Close,
-                                        contentDescription = "Retirer le filtre",
+                                        contentDescription = stringResource(R.string.action_remove_filter),
                                         modifier = Modifier.size(18.dp)
                                     )
-                                }
+                                },
+                                modifier = Modifier.heightIn(min = 48.dp)
                             )
 
                             if (searchQuery.isNotEmpty()) {
@@ -233,7 +262,7 @@ fun HomeScreen(
                                         modifier = Modifier.size(16.dp)
                                     )
                                     Spacer(modifier = Modifier.width(4.dp))
-                                    Text("Effacer tout")
+                                    Text(stringResource(R.string.action_clear_all))
                                 }
                             }
                         }
@@ -252,42 +281,108 @@ fun HomeScreen(
                     }
                 }
 
-                // Topics list with live region for accessibility
-                if (topics.isEmpty()) {
-                    EngagingEmptyState(
-                        icon = Icons.Default.Topic,
-                        title = stringResource(R.string.home_empty_title),
-                        description = stringResource(R.string.home_empty_description),
-                        actionText = stringResource(R.string.home_empty_action),
-                        onAction = onNavigateToCreate
-                    )
-                } else {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .semantics {
-                                liveRegion = LiveRegionMode.Polite
-                                contentDescription = "${topics.size} sujets trouvés"
-                            },
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(
-                            items = topics,
-                            key = { it.id }
-                        ) { topic ->
-                            TopicCard(
-                                topic = topic,
-                                selectedTag = selectedTag,
-                                searchQuery = searchQuery,
-                                onClick = { onNavigateToTopic(topic.id) },
-                                onTagClick = viewModel::onTagSelected,
-                                modifier = Modifier.animateItemPlacement()
-                            )
+                // Topics list with live region for accessibility or error state
+                when (uiState) {
+                    is UiState.Error -> {
+                        EngagingEmptyState(
+                            icon = Icons.Default.ErrorOutline,
+                            title = stringResource(R.string.home_error_title),
+                            description = (uiState as UiState.Error).message,
+                            actionText = stringResource(R.string.action_retry),
+                            onAction = { viewModel.retry() }
+                        )
+                    }
+                    is UiState.Loading, is UiState.Initial -> {
+                        // Show loading indicator or keep existing list
+                        if (topics.isEmpty()) {
+                            // Show skeleton screens for better perceived performance
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                items(5) { // Show 5 skeleton cards
+                                    TopicCardSkeleton()
+                                }
+                            }
+                        } else {
+                            // Show existing list while loading
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .semantics {
+                                        liveRegion = LiveRegionMode.Polite
+                                        contentDescription = stringResource(
+                                            R.string.home_subjects_found,
+                                            topics.size
+                                        )
+                                    },
+                                contentPadding = PaddingValues(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                items(
+                                    items = topics,
+                                    key = { it.id }
+                                ) { topic ->
+                                    TopicCard(
+                                        topic = topic,
+                                        selectedTag = selectedTag,
+                                        searchQuery = searchQuery,
+                                        onClick = { onNavigateToTopic(topic.id) },
+                                        onTagClick = viewModel::onTagSelected,
+                                        modifier = Modifier.animateItemPlacement()
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    is UiState.Empty -> {
+                        EngagingEmptyState(
+                            icon = Icons.Default.Topic,
+                            title = stringResource(R.string.home_empty_title),
+                            description = stringResource(R.string.home_empty_description),
+                            actionText = stringResource(R.string.home_empty_action),
+                            onAction = onNavigateToCreate
+                        )
+                    }
+                    is UiState.Success -> {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .semantics {
+                                    liveRegion = LiveRegionMode.Polite
+                                    contentDescription = stringResource(
+                                        R.string.home_subjects_found,
+                                        topics.size
+                                    )
+                                },
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(
+                                items = topics,
+                                key = { it.id }
+                            ) { topic ->
+                                TopicCard(
+                                    topic = topic,
+                                    selectedTag = selectedTag,
+                                    searchQuery = searchQuery,
+                                    onClick = { onNavigateToTopic(topic.id) },
+                                    onTagClick = viewModel::onTagSelected,
+                                    modifier = Modifier.animateItemPlacement()
+                                )
+                            }
                         }
                     }
                 }
             }
+
+            // Pull-to-refresh indicator
+            PullToRefreshContainer(
+                state = pullToRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
+        }
         }
     }
 }
@@ -312,7 +407,12 @@ private fun TopicCard(
                 onClick()
             }
             .semantics(mergeDescendants = true) {
-                contentDescription = "Sujet: ${topic.title}. ${topic.summary}. ${topic.tags.size} tags"
+                contentDescription = stringResource(
+                    R.string.home_topic_card_description,
+                    topic.title,
+                    topic.summary,
+                    topic.tags.size
+                )
             },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -363,7 +463,8 @@ private fun TopicCard(
                                     text = tag,
                                     style = MaterialTheme.typography.labelSmall
                                 )
-                            }
+                            },
+                            modifier = Modifier.heightIn(min = 48.dp)
                         )
                     }
                     if (topic.tags.size > 3) {

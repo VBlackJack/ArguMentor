@@ -37,10 +37,22 @@ class DebateModeViewModel @Inject constructor(
     private val _isCardFlipped = MutableStateFlow(false)
     val isCardFlipped: StateFlow<Boolean> = _isCardFlipped.asStateFlow()
 
+    // Gamification states
+    private val _cardsReviewed = MutableStateFlow<Set<String>>(emptySet())
+    val cardsReviewed: StateFlow<Set<String>> = _cardsReviewed.asStateFlow()
+
+    private val _sessionScore = MutableStateFlow(0)
+    val sessionScore: StateFlow<Int> = _sessionScore.asStateFlow()
+
+    private val _streak = MutableStateFlow(0)
+    val streak: StateFlow<Int> = _streak.asStateFlow()
+
     companion object {
         private const val MAX_REBUTTALS_PER_CARD = 2
         private const val MAX_EVIDENCES_PER_CARD = 2
         private const val MAX_QUESTIONS_PER_CARD = 1
+        private const val POINTS_PER_CARD = 10
+        private const val BONUS_STREAK_MULTIPLIER = 2
     }
 
     fun loadTopic(topicId: String) {
@@ -96,11 +108,33 @@ class DebateModeViewModel @Inject constructor(
 
     fun flipCard() {
         _isCardFlipped.value = !_isCardFlipped.value
+
+        // Mark card as reviewed and update score when flipping to answer side
+        if (_isCardFlipped.value && _debateCards.value.isNotEmpty()) {
+            val currentCard = _debateCards.value[_currentCardIndex.value]
+            if (!_cardsReviewed.value.contains(currentCard.claim.id)) {
+                _cardsReviewed.value = _cardsReviewed.value + currentCard.claim.id
+
+                // Calculate score with streak bonus
+                val basePoints = POINTS_PER_CARD
+                val streakBonus = if (_streak.value >= 3) BONUS_STREAK_MULTIPLIER else 1
+                _sessionScore.value += basePoints * streakBonus
+                _streak.value += 1
+            }
+        }
+    }
+
+    fun markCardDifficult() {
+        // Reset streak if card is difficult
+        _streak.value = 0
     }
 
     fun resetProgress() {
         _currentCardIndex.value = 0
         _isCardFlipped.value = false
+        _cardsReviewed.value = emptySet()
+        _sessionScore.value = 0
+        _streak.value = 0
         _debateCards.value = _debateCards.value.shuffled()
     }
 }

@@ -21,6 +21,7 @@ class SettingsDataStore @Inject constructor(
 ) {
     private object PreferencesKeys {
         val IS_DARK_THEME = booleanPreferencesKey("is_dark_theme")
+        val IMMERSIVE_MODE = booleanPreferencesKey("immersive_mode")
         val FONT_SIZE = stringPreferencesKey("font_size")
         val SHOW_ETHICS_WARNING = booleanPreferencesKey("show_ethics_warning")
         val DEFAULT_POSTURE = stringPreferencesKey("default_posture")
@@ -33,6 +34,10 @@ class SettingsDataStore @Inject constructor(
 
     val isDarkTheme: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[PreferencesKeys.IS_DARK_THEME] ?: false
+    }
+
+    val isImmersiveMode: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.IMMERSIVE_MODE] ?: false
     }
 
     val fontSize: Flow<String> = context.dataStore.data.map { preferences ->
@@ -70,6 +75,12 @@ class SettingsDataStore @Inject constructor(
     suspend fun setDarkTheme(isDark: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.IS_DARK_THEME] = isDark
+        }
+    }
+
+    suspend fun setImmersiveMode(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.IMMERSIVE_MODE] = enabled
         }
     }
 

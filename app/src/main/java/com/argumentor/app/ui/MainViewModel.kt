@@ -24,6 +24,13 @@ class MainViewModel @Inject constructor(
             initialValue = false
         )
 
+    val isImmersiveMode: StateFlow<Boolean> = settingsDataStore.isImmersiveMode
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+
     val ethicsWarningShown: StateFlow<Boolean> = settingsDataStore.ethicsWarningShown
         .stateIn(
             scope = viewModelScope,

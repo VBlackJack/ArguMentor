@@ -23,6 +23,9 @@ class SettingsViewModel @Inject constructor(
     private val _isDarkTheme = MutableStateFlow(false)
     val isDarkTheme: StateFlow<Boolean> = _isDarkTheme.asStateFlow()
 
+    private val _isImmersiveMode = MutableStateFlow(false)
+    val isImmersiveMode: StateFlow<Boolean> = _isImmersiveMode.asStateFlow()
+
     private val _fontSize = MutableStateFlow(FontSize.MEDIUM)
     val fontSize: StateFlow<FontSize> = _fontSize.asStateFlow()
 
@@ -52,6 +55,11 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             settingsDataStore.isDarkTheme.collect { isDark ->
                 _isDarkTheme.value = isDark
+            }
+        }
+        viewModelScope.launch {
+            settingsDataStore.isImmersiveMode.collect { enabled ->
+                _isImmersiveMode.value = enabled
             }
         }
         viewModelScope.launch {
@@ -86,6 +94,14 @@ class SettingsViewModel @Inject constructor(
             val newValue = !_isDarkTheme.value
             _isDarkTheme.value = newValue
             settingsDataStore.setDarkTheme(newValue)
+        }
+    }
+
+    fun toggleImmersiveMode() {
+        viewModelScope.launch {
+            val newValue = !_isImmersiveMode.value
+            _isImmersiveMode.value = newValue
+            settingsDataStore.setImmersiveMode(newValue)
         }
     }
 

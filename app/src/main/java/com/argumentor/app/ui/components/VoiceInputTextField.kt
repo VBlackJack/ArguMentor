@@ -31,7 +31,9 @@ fun VoiceInputTextField(
     singleLine: Boolean = false,
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
-    locale: Locale = Locale("fr", "FR") // Default to French
+    locale: Locale = Locale("fr", "FR"), // Default to French
+    isError: Boolean = false,
+    supportingText: @Composable (() -> Unit)? = null
 ) {
     val voiceLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -68,6 +70,8 @@ fun VoiceInputTextField(
         singleLine = singleLine,
         minLines = minLines,
         maxLines = maxLines,
+        isError = isError,
+        supportingText = supportingText,
         trailingIcon = {
             IconButton(
                 onClick = {

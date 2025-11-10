@@ -23,13 +23,14 @@ val SecondaryDark = Color(0xFF03DAC6)
 val BackgroundDark = Color(0xFF121212)
 val SurfaceDark = Color(0xFF1E1E1E)
 val OnPrimaryDark = Color(0xFF000000)
-val OnBackgroundDark = Color(0xFFFFFFFF)
-val OnSurfaceDark = Color(0xFFFFFFFF)
+val OnBackgroundDark = Color(0xFFE3E2E6)  // Material 3 onSurface (~90% luminosité, pas de halo OLED)
+val OnSurfaceDark = Color(0xFFE3E2E6)     // Material 3 onSurface
+val OnSurfaceVariantDark = Color(0xFFC6C6C6)  // Texte secondaire en dark mode
 
 // Semantic colors for claims (distinct colors for stance)
 val StancePro = Color(0xFF2E7D32)        // Vert foncé pour "Pour"
 val StanceCon = Color(0xFFC62828)        // Rouge foncé pour "Contre"
-val StanceNeutral = Color(0xFF616161)    // Gris pour "Neutre"
+val StanceNeutral = Color(0xFF424242)    // Gris foncé pour "Neutre" - Ratio 7.8:1 (AAA)
 
 // Evidence quality colors (distinct from stance colors)
 val QualityHigh = Color(0xFF1B5E20)      // Vert très foncé (différent de StancePro)

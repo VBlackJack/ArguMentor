@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.argumentor.app.data.model.Topic
 import com.argumentor.app.data.repository.TopicRepository
+import com.argumentor.app.ui.common.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -21,6 +22,11 @@ class HomeViewModel @Inject constructor(
 
     private val _allTopics = MutableStateFlow<List<Topic>>(emptyList())
 
+    // New UiState-based approach
+    private val _uiState = MutableStateFlow<UiState<List<Topic>>>(UiState.Initial)
+    val uiState: StateFlow<UiState<List<Topic>>> = _uiState.asStateFlow()
+
+    // Legacy properties for backward compatibility
     private val _topics = MutableStateFlow<List<Topic>>(emptyList())
     val topics: StateFlow<List<Topic>> = _topics.asStateFlow()
 
@@ -57,9 +63,18 @@ class HomeViewModel @Inject constructor(
 
     private fun loadTopics() {
         viewModelScope.launch {
-            topicRepository.getAllTopics().collect { topicList ->
-                _allTopics.value = topicList
-                applyFilters()
+            try {
+                _uiState.value = UiState.Loading
+                topicRepository.getAllTopics().collect { topicList ->
+                    _allTopics.value = topicList
+                    applyFilters()
+                }
+            } catch (e: Exception) {
+                _uiState.value = UiState.Error(
+                    message = e.message ?: "Une erreur inconnue s'est produite",
+                    exception = e
+                )
+                _isLoading.value = false
             }
         }
     }
@@ -99,6 +114,18 @@ class HomeViewModel @Inject constructor(
                 }
 
                 _topics.value = filteredTopics
+
+                // Update UiState based on results
+                _uiState.value = if (filteredTopics.isEmpty()) {
+                    UiState.Empty
+                } else {
+                    UiState.Success(filteredTopics)
+                }
+            } catch (e: Exception) {
+                _uiState.value = UiState.Error(
+                    message = e.message ?: "Une erreur s'est produite lors du filtrage",
+                    exception = e
+                )
             } finally {
                 _isLoading.value = false
             }
@@ -129,5 +156,9 @@ class HomeViewModel @Inject constructor(
                 _isRefreshing.value = false
             }
         }
+    }
+
+    fun retry() {
+        loadTopics()
     }
 }

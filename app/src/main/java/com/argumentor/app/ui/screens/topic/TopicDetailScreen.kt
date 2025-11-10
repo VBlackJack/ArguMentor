@@ -3,10 +3,13 @@ package com.argumentor.app.ui.screens.topic
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,7 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.stringResource
@@ -68,6 +73,7 @@ fun TopicDetailScreen(
     viewModel: TopicDetailViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
     val topic by viewModel.topic.collectAsState()
     val claims by viewModel.claims.collectAsState()
     val questions by viewModel.questions.collectAsState()
@@ -268,18 +274,26 @@ fun TopicDetailScreen(
                 label = "FAB Animation"
             ) { tab ->
                 when (tab) {
-                    0 -> FloatingActionButton(onClick = { onNavigateToAddClaim(topicId, null) }) {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = stringResource(R.string.accessibility_create_claim)
-                        )
-                    }
-                    else -> FloatingActionButton(onClick = { onNavigateToAddQuestion(topicId, null) }) {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = stringResource(R.string.accessibility_create_question)
-                        )
-                    }
+                    0 -> ExtendedFloatingActionButton(
+                        onClick = { onNavigateToAddClaim(topicId, null) },
+                        icon = {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = null
+                            )
+                        },
+                        text = { Text("Affirmation") }
+                    )
+                    else -> ExtendedFloatingActionButton(
+                        onClick = { onNavigateToAddQuestion(topicId, null) },
+                        icon = {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = null
+                            )
+                        },
+                        text = { Text("Question") }
+                    )
                 }
             }
         }
@@ -413,9 +427,17 @@ fun TopicDetailScreen(
                         onNavigateToAddClaim(topicId, claimId)
                     },
                     onDeleteClaim = { claim ->
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         viewModel.deleteClaim(claim) {
                             coroutineScope.launch {
-                                snackbarHostState.showSnackbar("Affirmation supprimée")
+                                val result = snackbarHostState.showSnackbar(
+                                    message = "Affirmation supprimée",
+                                    actionLabel = "Annuler",
+                                    duration = SnackbarDuration.Short
+                                )
+                                if (result == SnackbarResult.ActionPerformed) {
+                                    viewModel.restoreClaim(claim)
+                                }
                             }
                         }
                     },
@@ -433,9 +455,17 @@ fun TopicDetailScreen(
                         onNavigateToAddQuestion(topicId, questionId)
                     },
                     onDeleteQuestion = { question ->
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         viewModel.deleteQuestion(question) {
                             coroutineScope.launch {
-                                snackbarHostState.showSnackbar("Question supprimée")
+                                val result = snackbarHostState.showSnackbar(
+                                    message = "Question supprimée",
+                                    actionLabel = "Annuler",
+                                    duration = SnackbarDuration.Short
+                                )
+                                if (result == SnackbarResult.ActionPerformed) {
+                                    viewModel.restoreQuestion(question)
+                                }
                             }
                         }
                     },
@@ -738,10 +768,19 @@ private fun ClaimCard(
                                 confirmButton = {
                                     TextButton(
                                         onClick = {
+                                            val deletedEvidence = evidence
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                             viewModel.deleteEvidence(evidence) {
                                                 showDeleteEvidenceDialog = false
                                                 coroutineScope.launch {
-                                                    snackbarHostState.showSnackbar("Preuve supprimée")
+                                                    val result = snackbarHostState.showSnackbar(
+                                                        message = "Preuve supprimée",
+                                                        actionLabel = "Annuler",
+                                                        duration = SnackbarDuration.Short
+                                                    )
+                                                    if (result == SnackbarResult.ActionPerformed) {
+                                                        viewModel.restoreEvidence(deletedEvidence)
+                                                    }
                                                 }
                                             }
                                         }
@@ -838,7 +877,7 @@ private fun ClaimCard(
                                 Row(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
                                     IconButton(
                                         onClick = { onEditEvidence(evidence.id) },
-                                        modifier = Modifier.size(32.dp)
+                                        modifier = Modifier.minimumInteractiveComponentSize()
                                     ) {
                                         Icon(
                                             Icons.Default.Edit,
@@ -849,7 +888,7 @@ private fun ClaimCard(
                                     }
                                     IconButton(
                                         onClick = { showDeleteEvidenceDialog = true },
-                                        modifier = Modifier.size(32.dp)
+                                        modifier = Modifier.minimumInteractiveComponentSize()
                                     ) {
                                         Icon(
                                             Icons.Default.Delete,
@@ -967,7 +1006,10 @@ private fun QuestionsTab(
                         },
                         trailingContent = {
                             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                IconButton(onClick = { onEditQuestion(question.id) }) {
+                                IconButton(
+                                    onClick = { onEditQuestion(question.id) },
+                                    modifier = Modifier.minimumInteractiveComponentSize()
+                                ) {
                                     Icon(
                                         Icons.Default.Edit,
                                         contentDescription = stringResource(R.string.accessibility_edit_question),
@@ -975,7 +1017,10 @@ private fun QuestionsTab(
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
-                                IconButton(onClick = { showDeleteDialog = true }) {
+                                IconButton(
+                                    onClick = { showDeleteDialog = true },
+                                    modifier = Modifier.minimumInteractiveComponentSize()
+                                ) {
                                     Icon(
                                         Icons.Default.Delete,
                                         contentDescription = stringResource(R.string.accessibility_delete_question),

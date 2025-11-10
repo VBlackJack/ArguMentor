@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -59,11 +60,18 @@ class MainActivity : ComponentActivity() {
         // Enable modern edge-to-edge (content draws behind system bars)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        // Enable immersive mode (hide system bars)
-        enableImmersiveMode()
-
         setContent {
             val isDarkTheme by viewModel.isDarkTheme.collectAsState()
+            val isImmersiveMode by viewModel.isImmersiveMode.collectAsState()
+
+            // Apply immersive mode based on user preference
+            LaunchedEffect(isImmersiveMode) {
+                if (isImmersiveMode) {
+                    enableImmersiveMode()
+                } else {
+                    disableImmersiveMode()
+                }
+            }
 
             ArguMentorTheme(darkTheme = isDarkTheme) {
                 Surface(
@@ -86,11 +94,13 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun disableImmersiveMode() {
+        val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+        windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+    }
+
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) {
-            // Re-enable immersive mode when window regains focus
-            enableImmersiveMode()
-        }
+        // No need to re-enable immersive mode here as it's handled by the state flow
     }
 }
