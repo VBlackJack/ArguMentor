@@ -7,26 +7,27 @@
     <string name="nav_topics">Topics</string>
     <string name="nav_search">Search</string>
     <string name="nav_settings">Settings</string>
-    <string name="nav_new_topic">New Topic</string>
+    <string name="nav_new_topic">New topic</string>
     <string name="nav_statistics">Statistics</string>
     <string name="nav_import_export">Import/Export</string>
+    <string name="nav_fallacy_catalog">Fallacy Catalog</string>
 
     <!-- Home Screen -->
     <string name="home_title">ArguMentor</string>
-    <string name="home_search_hint">Search for arguments, topics…</string>
-    <string name="home_recent_topics">Recent Topics</string>
+    <string name="home_search_hint">Search arguments, topics…</string>
+    <string name="home_recent_topics">Recent topics</string>
     <string name="home_empty_state">No topics. Create one to get started!</string>
     <string name="home_empty_title">No topics yet</string>
-    <string name="home_empty_description">Start structuring your arguments by creating your first debate topic. Each topic can contain claims, counter-arguments, and questions.</string>
-    <string name="home_empty_action">Create a Topic</string>
+    <string name="home_empty_description">Start structuring your arguments by creating your first debate topic. Each topic can contain claims, counter-arguments and questions.</string>
+    <string name="home_empty_action">Create a topic</string>
 
     <!-- Topic -->
-    <string name="topic_create">Create a Topic</string>
-    <string name="topic_edit">Edit Topic</string>
-    <string name="topic_delete">Delete Topic</string>
-    <string name="topic_title_hint">Topic Title</string>
-    <string name="topic_summary_hint">Topic Summary</string>
-    <string name="topic_posture">Stance</string>
+    <string name="topic_create">Create a topic</string>
+    <string name="topic_edit">Edit topic</string>
+    <string name="topic_delete">Delete topic</string>
+    <string name="topic_title_hint">Topic title</string>
+    <string name="topic_summary_hint">Topic summary</string>
+    <string name="topic_posture">Posture</string>
     <string name="topic_tags">Tags</string>
 
     <!-- Postures -->
@@ -35,62 +36,74 @@
     <string name="posture_comparatif_academique">Academic Comparative</string>
 
     <!-- Claim -->
-    <string name="claim_create">Create a Claim</string>
-    <string name="claim_edit">Edit Claim</string>
-    <string name="claim_text_hint">Claim Text</string>
-    <string name="claim_stance">Position</string>
+    <string name="claim_create">Create a claim</string>
+    <string name="claim_edit">Edit claim</string>
+    <string name="claim_text_hint">Claim text</string>
+    <string name="claim_stance">Stance</string>
     <string name="claim_strength">Strength</string>
 
     <!-- Stance -->
-    <string name="stance_pro">For</string>
-    <string name="stance_con">Against</string>
+    <string name="stance_pro">Pro</string>
+    <string name="stance_con">Con</string>
     <string name="stance_neutral">Neutral</string>
 
     <!-- Strength -->
-    <string name="strength_low">Weak</string>
+    <string name="strength_low">Low</string>
     <string name="strength_medium">Medium</string>
-    <string name="strength_high">Strong</string>
+    <string name="strength_high">High</string>
 
     <!-- Rebuttal -->
-    <string name="rebuttal_create">Create a Counter-Argument</string>
-    <string name="rebuttal_text_hint">Counter-Argument Text</string>
+    <string name="rebuttal_create">Create a rebuttal</string>
+    <string name="rebuttal_text_hint">Rebuttal text</string>
     <string name="rebuttal_fallacy">Fallacy</string>
 
     <!-- Evidence -->
-    <string name="evidence_create">Add Evidence</string>
-    <string name="evidence_type">Evidence Type</string>
-    <string name="evidence_content_hint">Evidence Content</string>
+    <string name="evidence_create">Add evidence</string>
+    <string name="evidence_type">Evidence type</string>
+    <string name="evidence_content_hint">Evidence content</string>
 
     <!-- Question -->
-    <string name="question_create">Add a Question</string>
-    <string name="question_text_hint">Question Text</string>
-    <string name="question_kind">Question Type</string>
+    <string name="question_create">Add a question</string>
+    <string name="question_text_hint">Question text</string>
+    <string name="question_kind">Question type</string>
     <string name="question_kind_socratic">Socratic</string>
     <string name="question_kind_clarifying">Clarifying</string>
     <string name="question_kind_challenge">Challenge</string>
-    <string name="question_kind_evidence">Evidence Request</string>
+    <string name="question_kind_evidence">Evidence request</string>
 
     <!-- Source -->
-    <string name="source_create">Add a Source</string>
-    <string name="source_title_hint">Source Title</string>
+    <string name="source_create">Add a source</string>
+    <string name="source_title_hint">Source title</string>
     <string name="source_citation_hint">Citation</string>
     <string name="source_url_hint">URL</string>
 
     <!-- Debate Mode -->
     <string name="debate_mode">Debate Mode</string>
-    <string name="debate_flip_card">Flip Card</string>
+    <string name="debate_flip_card">Flip card</string>
     <string name="debate_no_cards">No cards available</string>
     <string name="debate_card_progress">Card %1$d / %2$d</string>
     <string name="debate_previous">Previous</string>
     <string name="debate_next">Next</string>
     <string name="debate_view_claim">View Claim</string>
     <string name="debate_view_answer">View Answer</string>
-    <string name="debate_rebuttals">Counter-Arguments:</string>
+    <string name="debate_rebuttals">Rebuttals:</string>
     <string name="debate_evidence">Evidence:</string>
     <string name="debate_question">Question:</string>
     <string name="debate_fallacy">Fallacy: %1$s</string>
     <string name="debate_empty_title">No additional content</string>
-    <string name="debate_empty_message">This claim doesn\'t have any associated counter-arguments, evidence, or questions yet</string>
+    <string name="debate_empty_message">This claim doesn\'t have rebuttals, evidence or questions yet</string>
+
+    <!-- Fallacy Catalog -->
+    <string name="fallacy_catalog_title">Fallacy Catalog</string>
+    <string name="fallacy_search_hint">Search for a fallacy…</string>
+    <string name="fallacy_empty_title">No fallacy found</string>
+    <string name="fallacy_empty_description">No fallacy matches your search. Try another term.</string>
+    <string name="fallacy_detail_title">Fallacy Detail</string>
+    <string name="fallacy_not_found">Fallacy not found</string>
+    <string name="fallacy_description_title">Description</string>
+    <string name="fallacy_example_title">Example</string>
+    <string name="fallacy_tip_title">Tip</string>
+    <string name="fallacy_tip_description">To identify this fallacy in a debate, look for this type of fallacious reasoning and question its logical validity.</string>
 
     <!-- Plurals -->
     <plurals name="topic_count">
@@ -120,8 +133,8 @@
     </plurals>
 
     <!-- Import/Export -->
-    <string name="import_data">Import Data</string>
-    <string name="export_data">Export Data</string>
+    <string name="import_data">Import data</string>
+    <string name="export_data">Export data</string>
     <string name="import_success">Import successful: %1$d created, %2$d updated</string>
     <string name="import_error">Import error</string>
     <string name="export_success">Export successful</string>
@@ -129,8 +142,25 @@
 
     <!-- Ethics Warning -->
     <string name="ethics_title">Ethical Warning</string>
-    <string name="ethics_message">ArguMentor deals with sensitive topics (religion, politics, health). We encourage respect, kindness, and intellectual rigor in all debates.</string>
-    <string name="ethics_accept">I Accept</string>
+    <string name="ethics_message">ArguMentor deals with sensitive topics (religion, politics, health). We encourage respect, kindness and intellectual rigor in all debates.</string>
+    <string name="ethics_accept">I accept</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_start">Start</string>
+
+    <string name="onboarding_page1_title">Welcome to ArguMentor</string>
+    <string name="onboarding_page1_description">Structure your debates and sharpen your critical thinking with a rigorous method.</string>
+
+    <string name="onboarding_page2_title">Create Topics</string>
+    <string name="onboarding_page2_description">A topic is the main theme of your debate. Example: \"Should we learn to code?\"</string>
+
+    <string name="onboarding_page3_title">Add Claims</string>
+    <string name="onboarding_page3_description">Claims are PRO, CON or NEUTRAL arguments. Each claim can have rebuttals, evidence and questions.</string>
+
+    <string name="onboarding_page4_title">Practice in Debate Mode</string>
+    <string name="onboarding_page4_description">Debate mode displays your claims as flip cards. Perfect for reviewing and memorizing your arguments!</string>
 
     <!-- About -->
     <string name="about_author">Author</string>
@@ -151,8 +181,8 @@
     <string name="updated_at">Updated on %1$s</string>
     <string name="more_tags">+%1$d</string>
     <string name="questions_empty_title">No questions yet</string>
-    <string name="questions_empty_description">Questions stimulate critical thinking and deepen the debate. Create your first question to challenge this topic.</string>
-    <string name="questions_empty_action">Add a Question</string>
+    <string name="questions_empty_description">Questions stimulate critical thinking and deepen debate. Create your first question to challenge this topic.</string>
+    <string name="questions_empty_action">Add a question</string>
 
     <!-- Accessibility -->
     <string name="accessibility_menu">Open menu</string>
