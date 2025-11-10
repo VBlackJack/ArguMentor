@@ -4,6 +4,45 @@
 
 Ce guide explique comment créer des fichiers JSON compatibles avec le système d'import/export d'ArguMentor. Le format JSON suit le schéma version 1.0 et permet d'importer des sujets, affirmations, réfutations, preuves, questions, sources et tags.
 
+## 🎯 Pourquoi utiliser le format JSON ?
+
+Le format JSON d'ArguMentor vous offre des possibilités puissantes :
+
+### 📚 Cas d'usage principaux
+
+1. **Sauvegarder votre travail**
+   - Créez des backups de toutes vos analyses
+   - Restaurez vos données en cas de changement d'appareil
+   - Archivez vos projets terminés
+
+2. **Partager des analyses**
+   - Envoyez vos arguments à des collègues pour révision
+   - Publiez des corpus d'arguments sur des sujets spécifiques
+   - Collaborez avec une équipe sur un même débat
+
+3. **Créer des ressources pédagogiques**
+   - Professeurs : Préparez des exercices d'analyse critique
+   - Formateurs : Créez des cas d'étude pour vos formations
+   - Tuteurs : Partagez des exemples d'arguments bien structurés
+
+4. **Migrer depuis d'autres outils**
+   - Importez des données depuis Excel, Google Sheets, ou bases de données
+   - Convertissez vos notes existantes en arguments structurés
+   - Centralisez vos recherches dispersées
+
+5. **Automatiser la création de contenu**
+   - Générez des fichiers JSON par script
+   - Intégrez ArguMentor dans votre workflow de recherche
+   - Créez des templates réutilisables pour différents types d'analyses
+
+### 💡 Exemple concret
+
+Un chercheur en sciences politiques pourrait :
+1. Exporter toutes ses analyses sur les débats électoraux en JSON
+2. Partager ce fichier avec son laboratoire
+3. Ses collègues importent le fichier et ajoutent leurs propres arguments
+4. Le fichier enrichi est réimporté pour fusion des analyses
+
 ---
 
 ## Structure Globale

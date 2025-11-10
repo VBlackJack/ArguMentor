@@ -2,6 +2,7 @@ package com.argumentor.app.ui.screens.topic
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.argumentor.app.data.datastore.SettingsDataStore
 import com.argumentor.app.data.model.Topic
 import com.argumentor.app.data.model.getCurrentIsoTimestamp
 import com.argumentor.app.data.repository.TagRepository
@@ -16,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TopicCreateEditViewModel @Inject constructor(
     private val topicRepository: TopicRepository,
-    private val tagRepository: TagRepository
+    private val tagRepository: TagRepository,
+    private val settingsDataStore: SettingsDataStore
 ) : ViewModel() {
 
     private val _title = MutableStateFlow("")
@@ -46,6 +48,24 @@ class TopicCreateEditViewModel @Inject constructor(
     private val _initialPosture = MutableStateFlow(Topic.Posture.NEUTRAL_CRITICAL)
     private val _initialTags = MutableStateFlow<List<String>>(emptyList())
 
+    // Store the default posture from settings
+    private val _defaultPosture = MutableStateFlow(Topic.Posture.NEUTRAL_CRITICAL)
+
+    init {
+        // Load default posture from settings
+        viewModelScope.launch {
+            settingsDataStore.defaultPosture.collect { postureString ->
+                val posture = Topic.Posture.fromString(postureString)
+                _defaultPosture.value = posture
+                // Update current posture and initial posture if we're not in edit mode
+                if (!_isEditMode.value) {
+                    _posture.value = posture
+                    _initialPosture.value = posture
+                }
+            }
+        }
+    }
+
     fun clearError() {
         _errorMessage.value = null
     }
@@ -53,10 +73,15 @@ class TopicCreateEditViewModel @Inject constructor(
     fun loadTopic(topicId: String?) {
         if (topicId == null) {
             _isEditMode.value = false
-            // Reset initial values for new topic
+            // Reset to default values for new topic
+            _title.value = ""
+            _summary.value = ""
+            _posture.value = _defaultPosture.value
+            _tags.value = emptyList()
+            // Set initial values for new topic
             _initialTitle.value = ""
             _initialSummary.value = ""
-            _initialPosture.value = Topic.Posture.NEUTRAL_CRITICAL
+            _initialPosture.value = _defaultPosture.value
             _initialTags.value = emptyList()
             return
         }

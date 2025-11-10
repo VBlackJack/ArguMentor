@@ -4,6 +4,25 @@
 
 L'**ArguMentor JSON Editor** est un éditeur HTML5 complet et moderne qui permet de créer et éditer des fichiers JSON compatibles avec l'application ArguMentor directement depuis un ordinateur.
 
+### 🎯 À quoi sert l'éditeur JSON ?
+
+Créer des arguments structurés sur ordinateur est souvent plus confortable qu'sur mobile. L'éditeur JSON vous permet de :
+
+- **📚 Préparer des corpus d'arguments** : Créez des bases de données complètes sur un sujet avant de les importer sur mobile
+- **👥 Collaborer facilement** : Partagez des fichiers JSON avec vos collègues, étudiants ou pairs pour travailler ensemble
+- **🎓 Enseigner la pensée critique** : Les professeurs peuvent créer des exercices d'analyse argumentative
+- **💾 Sauvegarder et partager** : Exportez vos meilleures analyses pour les réutiliser ou les publier
+- **✍️ Éditer confortablement** : Grand écran, clavier complet, copier-coller facile
+- **🔄 Migrer des données** : Importer des arguments depuis d'autres sources (Excel, Google Sheets, etc.)
+
+### 👤 Qui devrait utiliser l'éditeur JSON ?
+
+- **Étudiants** : Préparer des exposés ou dissertations avec arguments structurés
+- **Enseignants** : Créer des ressources pédagogiques pour cours de philosophie, débat, rhétorique
+- **Chercheurs** : Structurer des analyses d'articles scientifiques ou thèses
+- **Journalistes** : Organiser les arguments d'un sujet d'investigation
+- **Toute personne** préférant travailler sur ordinateur plutôt que mobile
+
 ## 🚀 Fonctionnalités
 
 ### ✨ Interface Triple Mode
