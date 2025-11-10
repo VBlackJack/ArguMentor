@@ -9,10 +9,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -28,6 +31,7 @@ import com.argumentor.app.data.model.Topic
 import com.argumentor.app.ui.common.UiState
 import com.argumentor.app.ui.components.EngagingEmptyState
 import com.argumentor.app.ui.components.HighlightedText
+import com.argumentor.app.ui.components.TopicCardSkeleton
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -50,6 +54,23 @@ fun HomeScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // Pull-to-refresh state
+    val pullToRefreshState = rememberPullToRefreshState()
+
+    // Trigger refresh when pull to refresh is triggered
+    LaunchedEffect(pullToRefreshState.isRefreshing) {
+        if (pullToRefreshState.isRefreshing) {
+            viewModel.refresh()
+        }
+    }
+
+    // Reset pull to refresh state when refresh completes
+    LaunchedEffect(isRefreshing) {
+        if (!isRefreshing) {
+            pullToRefreshState.endRefresh()
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -163,11 +184,16 @@ fun HomeScreen(
                 }
             }
         ) { paddingValues ->
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .nestedScroll(pullToRefreshState.nestedScrollConnection)
             ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                ) {
                 // Search bar with loading indicator
                 Column {
                     OutlinedTextField(
@@ -269,11 +295,15 @@ fun HomeScreen(
                     is UiState.Loading, is UiState.Initial -> {
                         // Show loading indicator or keep existing list
                         if (topics.isEmpty()) {
-                            Box(
+                            // Show skeleton screens for better perceived performance
+                            LazyColumn(
                                 modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
+                                contentPadding = PaddingValues(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                CircularProgressIndicator()
+                                items(5) { // Show 5 skeleton cards
+                                    TopicCardSkeleton()
+                                }
                             }
                         } else {
                             // Show existing list while loading
@@ -346,6 +376,13 @@ fun HomeScreen(
                     }
                 }
             }
+
+            // Pull-to-refresh indicator
+            PullToRefreshContainer(
+                state = pullToRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
+        }
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.argumentor.app.ui.screens.claim
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -30,8 +31,40 @@ fun ClaimCreateEditScreen(
     val isSaving by viewModel.isSaving.collectAsState()
     val currentLocale = rememberCurrentLocale()
 
+    // Dialog state for unsaved changes confirmation
+    var showUnsavedChangesDialog by remember { mutableStateOf(false) }
+
     LaunchedEffect(claimId, topicId) {
         viewModel.loadClaim(claimId, topicId)
+    }
+
+    // Handle back button press
+    BackHandler(enabled = viewModel.hasUnsavedChanges()) {
+        showUnsavedChangesDialog = true
+    }
+
+    // Unsaved changes confirmation dialog
+    if (showUnsavedChangesDialog) {
+        AlertDialog(
+            onDismissRequest = { showUnsavedChangesDialog = false },
+            title = { Text(stringResource(R.string.unsaved_changes_title)) },
+            text = { Text(stringResource(R.string.unsaved_changes_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showUnsavedChangesDialog = false
+                        onNavigateBack()
+                    }
+                ) {
+                    Text(stringResource(R.string.action_discard))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showUnsavedChangesDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -44,7 +77,13 @@ fun ClaimCreateEditScreen(
                     ))
                 },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(onClick = {
+                        if (viewModel.hasUnsavedChanges()) {
+                            showUnsavedChangesDialog = true
+                        } else {
+                            onNavigateBack()
+                        }
+                    }) {
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription = stringResource(R.string.accessibility_back)

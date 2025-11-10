@@ -838,7 +838,7 @@ private fun ClaimCard(
                                 Row(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
                                     IconButton(
                                         onClick = { onEditEvidence(evidence.id) },
-                                        modifier = Modifier.size(32.dp)
+                                        modifier = Modifier.minimumInteractiveComponentSize()
                                     ) {
                                         Icon(
                                             Icons.Default.Edit,
@@ -849,7 +849,7 @@ private fun ClaimCard(
                                     }
                                     IconButton(
                                         onClick = { showDeleteEvidenceDialog = true },
-                                        modifier = Modifier.size(32.dp)
+                                        modifier = Modifier.minimumInteractiveComponentSize()
                                     ) {
                                         Icon(
                                             Icons.Default.Delete,
@@ -967,7 +967,10 @@ private fun QuestionsTab(
                         },
                         trailingContent = {
                             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                IconButton(onClick = { onEditQuestion(question.id) }) {
+                                IconButton(
+                                    onClick = { onEditQuestion(question.id) },
+                                    modifier = Modifier.minimumInteractiveComponentSize()
+                                ) {
                                     Icon(
                                         Icons.Default.Edit,
                                         contentDescription = stringResource(R.string.accessibility_edit_question),
@@ -975,7 +978,10 @@ private fun QuestionsTab(
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
-                                IconButton(onClick = { showDeleteDialog = true }) {
+                                IconButton(
+                                    onClick = { showDeleteDialog = true },
+                                    modifier = Modifier.minimumInteractiveComponentSize()
+                                ) {
                                     Icon(
                                         Icons.Default.Delete,
                                         contentDescription = stringResource(R.string.accessibility_delete_question),

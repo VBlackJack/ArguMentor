@@ -1,5 +1,6 @@
 package com.argumentor.app.ui.screens.topic
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -30,8 +31,40 @@ fun TopicCreateEditScreen(
     var newTagText by remember { mutableStateOf("") }
     val currentLocale = rememberCurrentLocale()
 
+    // Dialog state for unsaved changes confirmation
+    var showUnsavedChangesDialog by remember { mutableStateOf(false) }
+
     LaunchedEffect(topicId) {
         viewModel.loadTopic(topicId)
+    }
+
+    // Handle back button press
+    BackHandler(enabled = viewModel.hasUnsavedChanges()) {
+        showUnsavedChangesDialog = true
+    }
+
+    // Unsaved changes confirmation dialog
+    if (showUnsavedChangesDialog) {
+        AlertDialog(
+            onDismissRequest = { showUnsavedChangesDialog = false },
+            title = { Text("Modifications non sauvegardées") },
+            text = { Text("Vous avez des modifications non sauvegardées. Voulez-vous vraiment quitter sans enregistrer ?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showUnsavedChangesDialog = false
+                        onNavigateBack()
+                    }
+                ) {
+                    Text("Quitter")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showUnsavedChangesDialog = false }) {
+                    Text("Annuler")
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -39,7 +72,13 @@ fun TopicCreateEditScreen(
             TopAppBar(
                 title = { Text(if (topicId == null) "Nouveau sujet" else "Modifier le sujet") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(onClick = {
+                        if (viewModel.hasUnsavedChanges()) {
+                            showUnsavedChangesDialog = true
+                        } else {
+                            onNavigateBack()
+                        }
+                    }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Retour")
                     }
                 },
