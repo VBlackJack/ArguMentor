@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.argumentor.app.data.datastore.SettingsDataStore
 import com.argumentor.app.data.preferences.LanguagePreferences
 import com.argumentor.app.data.preferences.AppLanguage
+import com.argumentor.app.data.util.TutorialManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsDataStore: SettingsDataStore,
-    private val languagePreferences: LanguagePreferences
+    private val languagePreferences: LanguagePreferences,
+    private val tutorialManager: TutorialManager
 ) : ViewModel() {
 
     private val _isDarkTheme = MutableStateFlow(false)
@@ -38,6 +40,9 @@ class SettingsViewModel @Inject constructor(
     
     private val _languageSaveCompleted = MutableStateFlow(false)
     val languageSaveCompleted: StateFlow<Boolean> = _languageSaveCompleted.asStateFlow()
+
+    private val _tutorialEnabled = MutableStateFlow(true)
+    val tutorialEnabled: StateFlow<Boolean> = _tutorialEnabled.asStateFlow()
 
     init {
         loadSettings()
@@ -67,6 +72,11 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             languagePreferences.languageFlow.collect { lang ->
                 _language.value = lang
+            }
+        }
+        viewModelScope.launch {
+            settingsDataStore.tutorialEnabled.collect { enabled ->
+                _tutorialEnabled.value = enabled
             }
         }
     }
@@ -123,6 +133,15 @@ class SettingsViewModel @Inject constructor(
     
     fun cancelLanguageChange() {
         _pendingLanguage.value = null
+    }
+
+    fun toggleTutorialEnabled() {
+        viewModelScope.launch {
+            val newValue = !_tutorialEnabled.value
+            _tutorialEnabled.value = newValue
+            settingsDataStore.setTutorialEnabled(newValue)
+            tutorialManager.handleTutorialToggle(newValue)
+        }
     }
 
     enum class FontSize(val scale: Float) {

@@ -162,6 +162,10 @@
     <string name="onboarding_page4_title">Practice in Debate Mode</string>
     <string name="onboarding_page4_description">Debate mode displays your claims as flip cards. Perfect for reviewing and memorizing your arguments!</string>
 
+    <!-- Language Selection -->
+    <string name="language_selection_title">Choose your language</string>
+    <string name="language_selection_description">Select the application language. You can change it at any time in the settings.</string>
+
     <!-- About -->
     <string name="about_author">Author</string>
     <string name="about_author_name">Julien Bombled</string>
@@ -222,6 +226,9 @@
     <string name="settings_language_description">Changes the interface and voice input language</string>
     <string name="settings_content">Content</string>
     <string name="settings_default_posture">Default posture</string>
+    <string name="settings_tutorial">Tutorial</string>
+    <string name="settings_tutorial_enabled">Enable tutorial</string>
+    <string name="settings_tutorial_enabled_description">Shows a sample topic at launch. The topic will be updated when changing language.</string>
     <string name="settings_about">About</string>
     <string name="settings_app_author">App author</string>
     <string name="settings_version">Version</string>
@@ -338,4 +345,35 @@
     <string name="fallacy_division_example">The team is rich, so each player must be rich</string>
     <string name="fallacy_genetic_fallacy_example">This theory comes from Nazis, therefore it\'s false</string>
     <string name="fallacy_bandwagon_example">Everyone uses this product, you should too</string>
+
+    <!-- Demo Topic Data -->
+    <string name="demo_topic_title">Should we learn to code?</string>
+    <string name="demo_topic_summary">A debate about the importance of learning programming in modern education</string>
+    <string-array name="demo_topic_tags">
+        <item>education</item>
+        <item>technology</item>
+        <item>skills</item>
+    </string-array>
+
+    <!-- Demo Claims -->
+    <string name="demo_claim_1">Learning to code develops logical thinking and problem-solving skills</string>
+    <string name="demo_claim_2">Programming is an increasingly in-demand skill in the job market</string>
+    <string name="demo_claim_3">Not everyone needs to program, other skills should be prioritized</string>
+    <string name="demo_claim_4">Learning to code can be frustrating and demotivating for some people</string>
+
+    <!-- Demo Rebuttals -->
+    <string name="demo_rebuttal_1">Even without becoming a programmer, computational thinking helps in many fields</string>
+    <string name="demo_rebuttal_2">With the right teaching methods, learning can be fun and motivating</string>
+
+    <!-- Demo Evidence -->
+    <string name="demo_source_title">Digital Education Report</string>
+    <string name="demo_source_citation">Learning programming improves problem-solving skills by 35%</string>
+    <string name="demo_source_url">https://example.com/digital-education</string>
+    <string name="demo_evidence_1">Several studies show that learning to code strengthens logical thinking</string>
+    <string name="demo_evidence_2">IT job postings have increased by 40% in the last 5 years</string>
+
+    <!-- Demo Questions -->
+    <string name="demo_question_1">What is the best age to start learning programming?</string>
+    <string name="demo_question_2">Can logical thinking be developed through means other than programming?</string>
+    <string name="demo_question_3">Is this job market trend sustainable in the long term?</string>
 </resources>

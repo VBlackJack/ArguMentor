@@ -15,6 +15,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.argumentor.app.data.preferences.LanguagePreferences
+import com.argumentor.app.data.util.TutorialManager
 import com.argumentor.app.ui.navigation.ArguMentorNavigation
 import com.argumentor.app.ui.theme.ArguMentorTheme
 import com.argumentor.app.util.LocaleHelper
@@ -26,9 +27,12 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
-    
+
     @Inject
     lateinit var languagePreferences: LanguagePreferences
+
+    @Inject
+    lateinit var tutorialManager: TutorialManager
 
     override fun attachBaseContext(newBase: Context) {
         // Read language from a simple preferences file
@@ -48,6 +52,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Check for language changes and update demo topic if needed
+        tutorialManager.checkAndHandleLanguageChange()
 
         // Enable modern edge-to-edge (content draws behind system bars)
         WindowCompat.setDecorFitsSystemWindows(window, false)

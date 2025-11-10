@@ -1,6 +1,9 @@
 package com.argumentor.app.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,6 +14,7 @@ import com.argumentor.app.ui.screens.debate.DebateModeScreen
 import com.argumentor.app.ui.screens.evidence.EvidenceCreateEditScreen
 import com.argumentor.app.ui.screens.home.HomeScreen
 import com.argumentor.app.ui.screens.importexport.ImportExportScreen
+import com.argumentor.app.ui.screens.onboarding.LanguageSelectionScreen
 import com.argumentor.app.ui.screens.onboarding.OnboardingScreen
 import com.argumentor.app.ui.screens.permissions.PermissionsScreen
 import com.argumentor.app.ui.screens.question.QuestionCreateEditScreen
@@ -26,13 +30,34 @@ import com.argumentor.app.ui.screens.fallacy.FallacyDetailScreen
  * Main navigation component for ArguMentor app.
  */
 @Composable
-fun ArguMentorNavigation() {
+fun ArguMentorNavigation(
+    viewModel: NavigationViewModel = hiltViewModel()
+) {
     val navController = rememberNavController()
+    val firstLaunchCompleted by viewModel.firstLaunchCompleted.collectAsState()
+    val onboardingCompleted by viewModel.onboardingCompleted.collectAsState()
+
+    // Determine start destination based on state
+    val startDestination = when {
+        !firstLaunchCompleted -> Screen.LanguageSelection.route
+        !onboardingCompleted -> Screen.Permissions.route
+        else -> Screen.Home.route
+    }
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Permissions.route  // Start directly at permissions
+        startDestination = startDestination
     ) {
+        // Language Selection Screen (first launch only)
+        composable(Screen.LanguageSelection.route) {
+            LanguageSelectionScreen(
+                onComplete = {
+                    navController.navigate(Screen.Permissions.route) {
+                        popUpTo(Screen.LanguageSelection.route) { inclusive = true }
+                    }
+                }
+            )
+        }
         // Permissions Screen
         composable(Screen.Permissions.route) {
             PermissionsScreen(

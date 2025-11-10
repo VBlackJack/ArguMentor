@@ -4,6 +4,7 @@ package com.argumentor.app.ui.navigation
  * Sealed class representing all navigation destinations in the app.
  */
 sealed class Screen(val route: String) {
+    object LanguageSelection : Screen("language_selection")
     object EthicsWarning : Screen("ethics_warning")
     object Permissions : Screen("permissions")
     object Onboarding : Screen("onboarding")

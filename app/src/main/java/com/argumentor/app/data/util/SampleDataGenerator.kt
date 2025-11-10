@@ -1,42 +1,83 @@
 package com.argumentor.app.data.util
 
+import android.content.Context
+import com.argumentor.app.R
+import com.argumentor.app.data.datastore.SettingsDataStore
 import com.argumentor.app.data.model.*
 import com.argumentor.app.data.repository.*
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class SampleDataGenerator @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val topicRepository: TopicRepository,
     private val claimRepository: ClaimRepository,
     private val rebuttalRepository: RebuttalRepository,
     private val evidenceRepository: EvidenceRepository,
     private val questionRepository: QuestionRepository,
-    private val sourceRepository: SourceRepository
+    private val sourceRepository: SourceRepository,
+    private val settingsDataStore: SettingsDataStore
 ) {
 
     suspend fun generateSampleData() {
-        // Check if sample data already exists
-        val existingTopics = topicRepository.getAllTopics().first()
-        if (existingTopics.isNotEmpty()) {
-            // Sample data already exists, don't duplicate
+        // Check if tutorial is enabled
+        val tutorialEnabled = settingsDataStore.tutorialEnabled.first()
+        if (!tutorialEnabled) {
             return
         }
 
+        // Check if demo topic already exists
+        val demoTopicId = settingsDataStore.demoSubjectId.first()
+        if (demoTopicId != null) {
+            // Demo topic already exists, don't duplicate
+            return
+        }
+
+        // Generate the demo topic
+        createDemoTopic()
+    }
+
+    suspend fun replaceDemoTopic() {
+        // Check if tutorial is enabled
+        val tutorialEnabled = settingsDataStore.tutorialEnabled.first()
+        if (!tutorialEnabled) {
+            return
+        }
+
+        // Delete existing demo topic if it exists
+        val existingDemoTopicId = settingsDataStore.demoSubjectId.first()
+        if (existingDemoTopicId != null) {
+            topicRepository.deleteTopic(existingDemoTopicId)
+            settingsDataStore.setDemoSubjectId(null)
+        }
+
+        // Create new demo topic in current language
+        createDemoTopic()
+    }
+
+    private suspend fun createDemoTopic() {
+        // Get localized strings
+        val tags = context.resources.getStringArray(R.array.demo_topic_tags).toList()
+
         // Create topic
         val topic = Topic(
-            title = "Faut-il apprendre à coder ?",
-            summary = "Un débat sur l'importance de l'apprentissage de la programmation dans l'éducation moderne",
+            title = context.getString(R.string.demo_topic_title),
+            summary = context.getString(R.string.demo_topic_summary),
             posture = Topic.Posture.NEUTRAL_CRITIQUE,
-            tags = listOf("éducation", "technologie", "compétences")
+            tags = tags
         )
         topicRepository.insertTopic(topic)
+
+        // Store the demo topic ID
+        settingsDataStore.setDemoSubjectId(topic.id)
 
         // Create PRO claims
         val claim1 = Claim(
             topics = listOf(topic.id),
-            text = "Apprendre à coder développe la pensée logique et la résolution de problèmes",
+            text = context.getString(R.string.demo_claim_1),
             stance = Claim.Stance.PRO,
             strength = Claim.Strength.HIGH
         )
@@ -44,7 +85,7 @@ class SampleDataGenerator @Inject constructor(
 
         val claim2 = Claim(
             topics = listOf(topic.id),
-            text = "La programmation est une compétence de plus en plus demandée sur le marché du travail",
+            text = context.getString(R.string.demo_claim_2),
             stance = Claim.Stance.PRO,
             strength = Claim.Strength.MEDIUM
         )
@@ -53,7 +94,7 @@ class SampleDataGenerator @Inject constructor(
         // Create CON claims
         val claim3 = Claim(
             topics = listOf(topic.id),
-            text = "Tout le monde n'a pas besoin de programmer, il faut prioriser d'autres compétences",
+            text = context.getString(R.string.demo_claim_3),
             stance = Claim.Stance.CON,
             strength = Claim.Strength.MEDIUM
         )
@@ -61,7 +102,7 @@ class SampleDataGenerator @Inject constructor(
 
         val claim4 = Claim(
             topics = listOf(topic.id),
-            text = "L'apprentissage du code peut être frustrant et démotivant pour certains",
+            text = context.getString(R.string.demo_claim_4),
             stance = Claim.Stance.CON,
             strength = Claim.Strength.LOW
         )
@@ -70,29 +111,29 @@ class SampleDataGenerator @Inject constructor(
         // Add rebuttals (counter-arguments)
         val rebuttal1 = Rebuttal(
             claimId = claim3.id,
-            text = "Même sans devenir programmeur, la pensée computationnelle aide dans de nombreux domaines",
+            text = context.getString(R.string.demo_rebuttal_1),
             fallacyTag = null
         )
         rebuttalRepository.insertRebuttal(rebuttal1)
 
         val rebuttal2 = Rebuttal(
             claimId = claim4.id,
-            text = "Avec les bonnes méthodes pédagogiques, l'apprentissage peut être ludique et motivant",
+            text = context.getString(R.string.demo_rebuttal_2),
             fallacyTag = null
         )
         rebuttalRepository.insertRebuttal(rebuttal2)
 
         // Add evidence
         val source1 = Source(
-            title = "Rapport sur l'éducation numérique",
-            citation = "L'apprentissage de la programmation améliore les compétences en résolution de problèmes de 35%",
-            url = "https://example.com/education-numerique"
+            title = context.getString(R.string.demo_source_title),
+            citation = context.getString(R.string.demo_source_citation),
+            url = context.getString(R.string.demo_source_url)
         )
         sourceRepository.insertSource(source1)
 
         val evidence1 = Evidence(
             claimId = claim1.id,
-            content = "Plusieurs études montrent que l'apprentissage du code renforce la pensée logique",
+            content = context.getString(R.string.demo_evidence_1),
             type = Evidence.EvidenceType.STUDY,
             sourceId = source1.id
         )
@@ -100,7 +141,7 @@ class SampleDataGenerator @Inject constructor(
 
         val evidence2 = Evidence(
             claimId = claim2.id,
-            content = "Les offres d'emploi en informatique ont augmenté de 40% ces 5 dernières années",
+            content = context.getString(R.string.demo_evidence_2),
             type = Evidence.EvidenceType.STAT,
             sourceId = null
         )
@@ -109,21 +150,21 @@ class SampleDataGenerator @Inject constructor(
         // Add questions
         val question1 = Question(
             targetId = topic.id,
-            text = "Quel est le meilleur âge pour commencer à apprendre la programmation ?",
+            text = context.getString(R.string.demo_question_1),
             kind = Question.QuestionKind.CLARIFYING
         )
         questionRepository.insertQuestion(question1)
 
         val question2 = Question(
             targetId = claim1.id,
-            text = "Peut-on développer la pensée logique par d'autres moyens que la programmation ?",
+            text = context.getString(R.string.demo_question_2),
             kind = Question.QuestionKind.SOCRATIC
         )
         questionRepository.insertQuestion(question2)
 
         val question3 = Question(
             targetId = claim2.id,
-            text = "Cette tendance du marché du travail est-elle durable à long terme ?",
+            text = context.getString(R.string.demo_question_3),
             kind = Question.QuestionKind.CHALLENGE
         )
         questionRepository.insertQuestion(question3)
