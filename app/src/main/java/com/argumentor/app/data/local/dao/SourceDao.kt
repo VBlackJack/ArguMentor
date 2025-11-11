@@ -6,10 +6,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SourceDao {
-    @Query("SELECT * FROM sources ORDER BY createdAt DESC")
+    @Query("SELECT * FROM sources ORDER BY updatedAt DESC")
     fun getAllSources(): Flow<List<Source>>
 
-    @Query("SELECT * FROM sources ORDER BY createdAt DESC")
+    @Query("SELECT * FROM sources ORDER BY updatedAt DESC")
     suspend fun getAllSourcesSync(): List<Source>
 
     @Query("SELECT * FROM sources WHERE id = :sourceId")
@@ -40,15 +40,29 @@ interface SourceDao {
      * Full-text search on sources using FTS4 index.
      * Searches in title and citation fields with relevance ranking.
      * @param query Search query (supports FTS4 operators like OR, AND, *)
-     * @return Flow of matching sources ordered by title
+     * @return Flow of matching sources ordered by updated date
      */
     @Query("""
         SELECT sources.* FROM sources
         JOIN sources_fts ON sources.rowid = sources_fts.rowid
         WHERE sources_fts MATCH :query
-        ORDER BY sources.title
+        ORDER BY sources.updatedAt DESC
     """)
     fun searchSourcesFts(query: String): Flow<List<Source>>
+
+    /**
+     * Fallback search using LIKE (for when FTS query contains invalid operators).
+     * Searches in title and citation fields.
+     * @param query Search query string
+     * @return Flow of matching sources ordered by updated date
+     */
+    @Query("""
+        SELECT * FROM sources
+        WHERE title LIKE '%' || :query || '%'
+           OR citation LIKE '%' || :query || '%'
+        ORDER BY updatedAt DESC
+    """)
+    fun searchSourcesLike(query: String): Flow<List<Source>>
 
     @Query("SELECT COUNT(*) FROM sources")
     suspend fun getSourceCount(): Int

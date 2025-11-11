@@ -27,6 +27,14 @@ class SourceRepository @Inject constructor(
     suspend fun deleteSource(source: Source) =
         sourceDao.deleteSource(source)
 
-    fun searchSources(query: String): Flow<List<Source>> =
-        sourceDao.searchSources(query)
+    /**
+     * Search sources using FTS with automatic fallback to LIKE search if FTS fails.
+     */
+    fun searchSources(query: String): Flow<List<Source>> {
+        return searchWithFtsFallback(
+            query = query,
+            ftsSearch = { sourceDao.searchSourcesFts(it) },
+            likeSearch = { sourceDao.searchSourcesLike(it) }
+        )
+    }
 }

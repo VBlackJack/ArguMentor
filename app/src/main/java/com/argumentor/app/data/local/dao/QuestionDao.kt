@@ -6,16 +6,16 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface QuestionDao {
-    @Query("SELECT * FROM questions ORDER BY createdAt DESC")
+    @Query("SELECT * FROM questions ORDER BY updatedAt DESC")
     fun getAllQuestions(): Flow<List<Question>>
 
-    @Query("SELECT * FROM questions ORDER BY createdAt DESC")
+    @Query("SELECT * FROM questions ORDER BY updatedAt DESC")
     suspend fun getAllQuestionsSync(): List<Question>
 
-    @Query("SELECT * FROM questions WHERE targetId = :targetId ORDER BY createdAt DESC")
+    @Query("SELECT * FROM questions WHERE targetId = :targetId ORDER BY updatedAt DESC")
     fun getQuestionsByTargetId(targetId: String): Flow<List<Question>>
 
-    @Query("SELECT * FROM questions WHERE targetId = :topicId ORDER BY createdAt DESC")
+    @Query("SELECT * FROM questions WHERE targetId = :topicId ORDER BY updatedAt DESC")
     suspend fun getQuestionsForTopic(topicId: String): List<Question>
 
     @Query("SELECT * FROM questions WHERE id = :questionId")
@@ -44,7 +44,7 @@ interface QuestionDao {
         SELECT questions.* FROM questions
         JOIN questions_fts ON questions.rowid = questions_fts.rowid
         WHERE questions_fts MATCH :query
-        ORDER BY createdAt DESC
+        ORDER BY updatedAt DESC
     """)
     fun searchQuestionsFts(query: String): Flow<List<Question>>
 
@@ -52,7 +52,7 @@ interface QuestionDao {
     @Query("""
         SELECT * FROM questions
         WHERE text LIKE '%' || :query || '%'
-        ORDER BY createdAt DESC
+        ORDER BY updatedAt DESC
     """)
     fun searchQuestionsLike(query: String): Flow<List<Question>>
 

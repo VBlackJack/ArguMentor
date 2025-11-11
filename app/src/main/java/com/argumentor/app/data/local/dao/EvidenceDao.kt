@@ -6,26 +6,26 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface EvidenceDao {
-    @Query("SELECT * FROM evidences ORDER BY createdAt DESC")
+    @Query("SELECT * FROM evidences ORDER BY updatedAt DESC")
     fun getAllEvidences(): Flow<List<Evidence>>
 
-    @Query("SELECT * FROM evidences ORDER BY createdAt DESC")
+    @Query("SELECT * FROM evidences ORDER BY updatedAt DESC")
     suspend fun getAllEvidencesSync(): List<Evidence>
 
-    @Query("SELECT * FROM evidences WHERE claimId = :claimId ORDER BY createdAt DESC")
+    @Query("SELECT * FROM evidences WHERE claimId = :claimId ORDER BY updatedAt DESC")
     fun getEvidencesByClaimId(claimId: String): Flow<List<Evidence>>
 
-    @Query("SELECT * FROM evidences WHERE claimId = :claimId ORDER BY createdAt DESC")
+    @Query("SELECT * FROM evidences WHERE claimId = :claimId ORDER BY updatedAt DESC")
     suspend fun getEvidencesByClaimIdSync(claimId: String): List<Evidence>
 
     // Note: Evidence is linked to claims, not rebuttals
-    // @Query("SELECT * FROM evidences WHERE rebuttalId = :rebuttalId ORDER BY createdAt DESC")
+    // @Query("SELECT * FROM evidences WHERE rebuttalId = :rebuttalId ORDER BY updatedAt DESC")
     // suspend fun getEvidenceForRebuttal(rebuttalId: String): List<Evidence>
 
     @Query("SELECT * FROM evidences WHERE id = :evidenceId")
     suspend fun getEvidenceById(evidenceId: String): Evidence?
 
-    @Query("SELECT * FROM evidences WHERE sourceId = :sourceId ORDER BY createdAt DESC")
+    @Query("SELECT * FROM evidences WHERE sourceId = :sourceId ORDER BY updatedAt DESC")
     fun getEvidencesBySourceId(sourceId: String): Flow<List<Evidence>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
