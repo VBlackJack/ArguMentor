@@ -50,13 +50,14 @@ interface SourceDao {
     /**
      * Fallback search using LIKE (for when FTS query contains invalid operators).
      * Searches in title and citation fields.
+     * SECURITY FIX (SEC-004): Added ESCAPE '\' clause to prevent wildcard injection
      * @param query Search query string
      * @return Flow of matching sources ordered by updated date
      */
     @Query("""
         SELECT * FROM sources
-        WHERE title LIKE '%' || :query || '%'
-           OR citation LIKE '%' || :query || '%'
+        WHERE title LIKE '%' || :query || '%' ESCAPE '\'
+           OR citation LIKE '%' || :query || '%' ESCAPE '\'
         ORDER BY updatedAt DESC
     """)
     fun searchSourcesLike(query: String): Flow<List<Source>>

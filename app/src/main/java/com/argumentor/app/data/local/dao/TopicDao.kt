@@ -50,13 +50,14 @@ interface TopicDao {
     /**
      * Fallback search using LIKE (for when FTS query contains invalid operators).
      * Searches in title and summary fields.
-     * @param query Search query string
+     * SECURITY FIX (SEC-004): Added ESCAPE '\' clause to prevent wildcard injection.
+     * @param query Search query string (wildcards are escaped by SearchUtils)
      * @return Flow of matching topics ordered by updated date
      */
     @Query("""
         SELECT * FROM topics
-        WHERE title LIKE '%' || :query || '%'
-           OR summary LIKE '%' || :query || '%'
+        WHERE title LIKE '%' || :query || '%' ESCAPE '\'
+           OR summary LIKE '%' || :query || '%' ESCAPE '\'
         ORDER BY updatedAt DESC
     """)
     fun searchTopicsLike(query: String): Flow<List<Topic>>

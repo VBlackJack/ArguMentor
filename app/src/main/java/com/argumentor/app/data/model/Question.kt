@@ -1,5 +1,6 @@
 package com.argumentor.app.data.model
 
+import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -24,7 +25,11 @@ import java.util.UUID
  * Alternative considered: Creating separate tables (TopicQuestion, ClaimQuestion)
  * with proper FKs, but this would significantly complicate queries and the domain model.
  * Current approach provides better flexibility for question management.
+ *
+ * QUALITY-001: @Immutable annotation helps Compose skip recomposition when data hasn't changed.
+ * This data class is immutable (all properties are val) and contains only immutable types.
  */
+@Immutable
 @Entity(
     tableName = "questions",
     indices = [Index("targetId")]

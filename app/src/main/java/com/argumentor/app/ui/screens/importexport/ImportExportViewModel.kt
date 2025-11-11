@@ -22,6 +22,20 @@ sealed class ImportExportState {
     object Loading : ImportExportState()
     data class Success(val message: String) : ImportExportState()
     data class Error(val message: String) : ImportExportState()
+
+    /**
+     * Import preview state showing items that need user review.
+     *
+     * PERFORMANCE NOTE: The ImportResult may contain a large list of items for review
+     * (itemsForReview). For imports with hundreds of near-duplicate items, the UI
+     * should implement pagination or virtual scrolling to prevent performance issues.
+     *
+     * Recommendations for UI layer:
+     * - Use LazyColumn with paging for displaying itemsForReview
+     * - Consider limiting initial display to first 50-100 items
+     * - Implement "Load More" button or infinite scroll for remaining items
+     * - Add search/filter functionality to help users find specific review items
+     */
     data class ImportPreview(val result: ImportResult) : ImportExportState()
 }
 
@@ -36,6 +50,14 @@ class ImportExportViewModel @Inject constructor(
 
     private val _similarityThreshold = MutableStateFlow(0.90)
     val similarityThreshold: StateFlow<Double> = _similarityThreshold.asStateFlow()
+
+    companion object {
+        /**
+         * Default page size for displaying review items in the UI.
+         * Used to prevent performance issues when rendering large lists of near-duplicates.
+         */
+        const val DEFAULT_REVIEW_PAGE_SIZE = 50
+    }
 
     fun setSimilarityThreshold(threshold: Double) {
         _similarityThreshold.value = threshold

@@ -65,9 +65,10 @@ interface ClaimDao {
     fun searchClaimsFts(query: String): Flow<List<Claim>>
 
     // Fallback search using LIKE (for when FTS query contains invalid operators)
+    // SECURITY FIX (SEC-004): Added ESCAPE '\' clause to prevent wildcard injection
     @Query("""
         SELECT * FROM claims
-        WHERE text LIKE '%' || :query || '%'
+        WHERE text LIKE '%' || :query || '%' ESCAPE '\'
         ORDER BY updatedAt DESC
     """)
     fun searchClaimsLike(query: String): Flow<List<Claim>>

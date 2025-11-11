@@ -36,19 +36,35 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Optimize for performance in release builds
+            isDebuggable = false
         }
         debug {
             isMinifyEnabled = false
+            isDebuggable = true
+            // Speed up debug builds
+            applicationIdSuffix = ".debug"
         }
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // Enable core library desugaring if needed for older Android versions
+        isCoreLibraryDesugaringEnabled = false
     }
 
     kotlinOptions {
         jvmTarget = "17"
+        // Enable explicit API mode for better library design (optional - strict mode)
+        // freeCompilerArgs += "-Xexplicit-api=warning"
+
+        // Optimization: Use IR backend (default in Kotlin 1.5+)
+        freeCompilerArgs += listOf(
+            "-opt-in=kotlin.RequiresOptIn",
+            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
+        )
     }
 
     buildFeatures {
@@ -65,6 +81,18 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    // TODO: Add Baseline Profile for improved Compose startup performance
+    // Baseline Profiles are ART-friendly precompiled code that can improve app startup time
+    // by up to 30% and reduce jank during initial frames.
+    //
+    // Implementation steps:
+    // 1. Add androidx.benchmark library for profiling
+    // 2. Create baseline-prof.txt with critical startup paths
+    // 3. Include Compose navigation routes and frequently-used screens
+    //
+    // Priority: Medium - Not critical but provides measurable UX improvements
+    // See: https://developer.android.com/topic/performance/baselineprofiles
 }
 
 dependencies {

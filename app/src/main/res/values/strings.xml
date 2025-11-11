@@ -305,6 +305,7 @@
     <string name="fallacy_division_name">Sophisme de Division</string>
     <string name="fallacy_genetic_fallacy_name">Sophisme Génétique</string>
     <string name="fallacy_bandwagon_name">Effet de Mode</string>
+    <string name="fallacy_appeal_to_fear_name">Appel à la Peur</string>
 
     <!-- Fallacies - Descriptions -->
     <string name="fallacy_ad_hominem_description">Attaquer la personne plutôt que son argument</string>
@@ -336,6 +337,7 @@
     <string name="fallacy_division_description">Affirmer que ce qui est vrai du tout est vrai de chaque partie</string>
     <string name="fallacy_genetic_fallacy_description">Juger quelque chose uniquement par son origine</string>
     <string name="fallacy_bandwagon_description">Affirmer qu\'une chose est correcte parce que tout le monde le fait</string>
+    <string name="fallacy_appeal_to_fear_description">Utiliser la peur ou les menaces plutôt que des preuves</string>
 
     <!-- Fallacies - Examples -->
     <string name="fallacy_ad_hominem_example">Tu ne peux pas avoir raison, tu es trop jeune</string>
@@ -367,6 +369,7 @@
     <string name="fallacy_division_example">L\'équipe est riche, donc chaque joueur doit être riche</string>
     <string name="fallacy_genetic_fallacy_example">Cette théorie vient de Nazi, donc elle est fausse</string>
     <string name="fallacy_bandwagon_example">Tout le monde utilise ce produit, tu devrais aussi</string>
+    <string name="fallacy_appeal_to_fear_example">Si tu n\'appuies pas cette loi, les criminels seront libres</string>
 
     <!-- Demo Topic Data -->
     <string name="demo_topic_title">Faut-il apprendre à coder ?</string>

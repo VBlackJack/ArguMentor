@@ -30,7 +30,7 @@ class SampleDataGenerator @Inject constructor(
         }
 
         // Check if demo topic already exists
-        val demoTopicId = settingsDataStore.demoSubjectId.first()
+        val demoTopicId = settingsDataStore.demoTopicId.first()
         if (demoTopicId != null) {
             // Demo topic already exists, don't duplicate
             return
@@ -48,10 +48,10 @@ class SampleDataGenerator @Inject constructor(
         }
 
         // Delete existing demo topic if it exists
-        val existingDemoTopicId = settingsDataStore.demoSubjectId.first()
+        val existingDemoTopicId = settingsDataStore.demoTopicId.first()
         if (existingDemoTopicId != null) {
             deleteDemoTopicCompletely(existingDemoTopicId)
-            settingsDataStore.setDemoSubjectId(null)
+            settingsDataStore.setDemoTopicId(null)
         }
 
         // Create new demo topic in current language
@@ -72,7 +72,7 @@ class SampleDataGenerator @Inject constructor(
         topicRepository.insertTopic(topic)
 
         // Store the demo topic ID
-        settingsDataStore.setDemoSubjectId(topic.id)
+        settingsDataStore.setDemoTopicId(topic.id)
 
         // Create PRO claims
         val claim1 = Claim(

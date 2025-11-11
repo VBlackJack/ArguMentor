@@ -3,6 +3,10 @@ package com.argumentor.app.data.local
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.argumentor.app.data.model.getCurrentIsoTimestamp
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 /**
  * Database migrations for ArguMentor.
@@ -21,20 +25,24 @@ object DatabaseMigrations {
      */
     val MIGRATION_1_2 = object : Migration(1, 2) {
         override fun migrate(db: SupportSQLiteDatabase) {
-            val currentTimestamp = getCurrentIsoTimestamp()
+            // SECURITY FIX: Use a safe constant default value for timestamps
+            // The actual timestamps will be set by assignSequentialTimestamps() using parameterized queries
+            val safeDefaultTimestamp = "2000-01-01T00:00:00Z"
 
             // Add timestamps to tags table
-            db.execSQL("ALTER TABLE tags ADD COLUMN createdAt TEXT NOT NULL DEFAULT '$currentTimestamp'")
-            db.execSQL("ALTER TABLE tags ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$currentTimestamp'")
+            db.execSQL("ALTER TABLE tags ADD COLUMN createdAt TEXT NOT NULL DEFAULT '$safeDefaultTimestamp'")
+            db.execSQL("ALTER TABLE tags ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$safeDefaultTimestamp'")
 
             // Add updatedAt to evidences table
-            db.execSQL("ALTER TABLE evidences ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$currentTimestamp'")
+            db.execSQL("ALTER TABLE evidences ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$safeDefaultTimestamp'")
 
             // Add updatedAt to sources table
-            db.execSQL("ALTER TABLE sources ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$currentTimestamp'")
+            db.execSQL("ALTER TABLE sources ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$safeDefaultTimestamp'")
 
             // Add updatedAt to questions table
-            db.execSQL("ALTER TABLE questions ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$currentTimestamp'")
+            db.execSQL("ALTER TABLE questions ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$safeDefaultTimestamp'")
+
+            assignSequentialTimestamps(db)
 
             // Update Topic.Posture enum values for backward compatibility
             // Old: neutral_critique, sceptique, comparatif_academique
@@ -44,6 +52,54 @@ object DatabaseMigrations {
             db.execSQL("UPDATE topics SET posture = 'skeptical' WHERE posture = 'sceptique'")
             db.execSQL("UPDATE topics SET posture = 'academic_comparative' WHERE posture = 'comparatif_academique'")
         }
+    }
+
+    private fun assignSequentialTimestamps(db: SupportSQLiteDatabase) {
+        val baseTime = System.currentTimeMillis()
+        var offset = 0L
+        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
+
+        fun nextTimestamp(): String {
+            val timestamp = formatter.format(Date(baseTime + offset))
+            offset += 1
+            return timestamp
+        }
+
+        fun updateTable(
+            table: String,
+            idColumn: String = "id",
+            hasCreatedColumn: Boolean
+        ) {
+            db.query("SELECT $idColumn FROM $table ORDER BY rowid").use { cursor ->
+                while (cursor.moveToNext()) {
+                    val id = cursor.getString(0)
+                    val bindings = mutableListOf<Any>()
+                    val assignments = mutableListOf<String>()
+
+                    if (hasCreatedColumn) {
+                        assignments += "createdAt = ?"
+                        bindings += nextTimestamp()
+                    }
+
+                    assignments += "updatedAt = ?"
+                    bindings += nextTimestamp()
+
+                    bindings += id
+
+                    db.execSQL(
+                        "UPDATE $table SET ${assignments.joinToString(", ")} WHERE $idColumn = ?",
+                        bindings.toTypedArray()
+                    )
+                }
+            }
+        }
+
+        updateTable(table = "tags", hasCreatedColumn = true)
+        updateTable(table = "evidences", hasCreatedColumn = false)
+        updateTable(table = "sources", hasCreatedColumn = false)
+        updateTable(table = "questions", hasCreatedColumn = false)
     }
 
     /**
@@ -189,6 +245,28 @@ object DatabaseMigrations {
     }
 
     /**
+     * Migration from version 8 to 9.
+     *
+     * Changes:
+     * - Added TagFts table for full-text search on tags
+     */
+    val MIGRATION_8_9 = object : Migration(8, 9) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Create FTS4 virtual table for tags
+            db.execSQL("""
+                CREATE VIRTUAL TABLE IF NOT EXISTS `tags_fts`
+                USING fts4(content=`tags`, label)
+            """)
+
+            // Populate FTS table with existing data
+            db.execSQL("""
+                INSERT INTO tags_fts(docid, label)
+                SELECT rowid, label FROM tags
+            """)
+        }
+    }
+
+    /**
      * All migrations in order.
      */
     val ALL_MIGRATIONS = arrayOf(
@@ -198,6 +276,7 @@ object DatabaseMigrations {
         MIGRATION_4_5,
         MIGRATION_5_6,
         MIGRATION_6_7,
-        MIGRATION_7_8
+        MIGRATION_7_8,
+        MIGRATION_8_9
     )
 }

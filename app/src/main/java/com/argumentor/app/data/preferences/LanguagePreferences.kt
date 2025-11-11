@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.util.Locale
 import javax.inject.Inject
@@ -80,11 +81,8 @@ class LanguagePreferences @Inject constructor(
      * Returns FRENCH as default if not set
      */
     suspend fun getCurrentLanguage(): AppLanguage {
-        var result = AppLanguage.FRENCH
-        context.dataStore.data.collect { preferences ->
-            val code = preferences[LANGUAGE_KEY] ?: AppLanguage.FRENCH.code
-            result = AppLanguage.fromCode(code)
-        }
-        return result
+        val preferences = context.dataStore.data.first()
+        val code = preferences[LANGUAGE_KEY] ?: AppLanguage.FRENCH.code
+        return AppLanguage.fromCode(code)
     }
 }

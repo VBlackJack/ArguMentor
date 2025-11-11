@@ -29,6 +29,7 @@
       "stance": "pro",
       "strength": "med",
       "topics": ["topic_001"],
+      "fallacyIds": ["appeal_to_authority"],
       "createdAt": "2025-11-10T10:30:00Z",
       "updatedAt": "2025-11-10T10:30:00Z",
       "claimFingerprint": "d24aedf8033ec528"
@@ -39,6 +40,7 @@
       "stance": "con",
       "strength": "high",
       "topics": ["topic_001"],
+      "fallacyIds": ["appeal_to_ignorance"],
       "createdAt": "2025-11-10T10:45:00Z",
       "updatedAt": "2025-11-10T10:45:00Z",
       "claimFingerprint": "a86ebf0262110db2"
@@ -49,6 +51,7 @@
       "stance": "pro",
       "strength": "high",
       "topics": ["topic_002"],
+      "fallacyIds": ["hasty_generalization"],
       "createdAt": "2025-11-10T11:00:00Z",
       "updatedAt": "2025-11-10T11:00:00Z",
       "claimFingerprint": "df37272d76bc5123"
@@ -59,7 +62,7 @@
       "id": "rebuttal_001",
       "claimId": "claim_001",
       "text": "Cette interprétation ignore le fait que la doctrine a été formalisée au Concile de Nicée en 325, bien après la rédaction des textes bibliques",
-      "fallacyTag": "Anachronisme",
+      "fallacyIds": ["appeal_to_tradition"],
       "createdAt": "2025-11-10T11:15:00Z",
       "updatedAt": "2025-11-10T11:15:00Z"
     },
@@ -67,7 +70,7 @@
       "id": "rebuttal_002",
       "claimId": "claim_002",
       "text": "L'absence du terme exact n'implique pas l'absence du concept. Le mot 'Bible' lui-même n'apparaît pas dans la Bible",
-      "fallacyTag": "Argument du silence",
+      "fallacyIds": ["appeal_to_ignorance"],
       "createdAt": "2025-11-10T11:20:00Z",
       "updatedAt": "2025-11-10T11:20:00Z"
     }

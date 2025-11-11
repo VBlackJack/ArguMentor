@@ -18,9 +18,13 @@ interface EvidenceDao {
     @Query("SELECT * FROM evidences WHERE claimId = :claimId ORDER BY updatedAt DESC")
     suspend fun getEvidencesByClaimIdSync(claimId: String): List<Evidence>
 
-    // Note: Evidence is linked to claims, not rebuttals
-    // @Query("SELECT * FROM evidences WHERE rebuttalId = :rebuttalId ORDER BY updatedAt DESC")
-    // suspend fun getEvidenceForRebuttal(rebuttalId: String): List<Evidence>
+    /**
+     * Note: Evidence entities are linked to claims, not to rebuttals.
+     * This design decision was made because:
+     * - Evidence supports claims with factual backing
+     * - Rebuttals counter claims, but evidence provides the foundation
+     * - Simplifies the data model and avoids deep nesting
+     */
 
     @Query("SELECT * FROM evidences WHERE id = :evidenceId")
     suspend fun getEvidenceById(evidenceId: String): Evidence?
@@ -66,12 +70,13 @@ interface EvidenceDao {
     /**
      * Fallback search using LIKE (for when FTS query contains invalid operators).
      * Searches in content field.
+     * SECURITY FIX (SEC-004): Added ESCAPE '\' clause to prevent wildcard injection
      * @param query Search query string
      * @return Flow of matching evidences ordered by updated date
      */
     @Query("""
         SELECT * FROM evidences
-        WHERE content LIKE '%' || :query || '%'
+        WHERE content LIKE '%' || :query || '%' ESCAPE '\'
         ORDER BY updatedAt DESC
     """)
     fun searchEvidencesLike(query: String): Flow<List<Evidence>>

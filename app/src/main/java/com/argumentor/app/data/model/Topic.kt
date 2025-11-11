@@ -1,5 +1,6 @@
 package com.argumentor.app.data.model
 
+import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
@@ -33,7 +34,11 @@ import java.util.UUID
  * - Tags are rarely deleted in this app
  * - Most queries are "get topics" → "show their tags" (read-heavy)
  * - Tag filtering happens at the ViewModel level which is performant enough
+ *
+ * QUALITY-001: @Immutable annotation helps Compose skip recomposition when data hasn't changed.
+ * This data class is immutable (all properties are val) and contains only immutable types.
  */
+@Immutable
 @Entity(tableName = "topics")
 @TypeConverters(Converters::class)
 data class Topic(

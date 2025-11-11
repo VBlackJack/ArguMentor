@@ -69,7 +69,13 @@ object ValidationUtils {
     }
 
     /**
-     * Validates a URL format.
+     * Validates a URL format with security checks.
+     *
+     * SECURITY FIX (SEC-005): Enhanced URL validation to prevent XSS and other attacks:
+     * - Only allows HTTP and HTTPS protocols
+     * - Validates port numbers are in valid range (1-65535)
+     * - Blocks dangerous protocols (javascript:, data:, file:, vbscript:)
+     * - Properly validates domain structure
      *
      * @param url URL string to validate
      * @return ValidationResult indicating if valid or containing error message
@@ -79,16 +85,51 @@ object ValidationUtils {
             return ValidationResult.Valid // URLs are often optional
         }
 
-        val urlPattern = Regex(
-            "^(https?://)?" +
-                    "([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}" +
-                    "(:\\d+)?" +
-                    "(/.*)?$"
-        )
+        val trimmedUrl = url.trim()
 
-        return if (urlPattern.matches(url)) {
-            ValidationResult.Valid
+        // Check for dangerous protocols first
+        val lowercaseUrl = trimmedUrl.lowercase()
+        val dangerousProtocols = listOf("javascript:", "data:", "file:", "vbscript:", "about:", "blob:")
+        if (dangerousProtocols.any { lowercaseUrl.startsWith(it) }) {
+            return ValidationResult.Invalid("Unsupported or dangerous URL protocol")
+        }
+
+        // Ensure HTTP/HTTPS protocol is present or can be assumed
+        val urlWithProtocol = if (!trimmedUrl.startsWith("http://") && !trimmedUrl.startsWith("https://")) {
+            "https://$trimmedUrl"
         } else {
+            trimmedUrl
+        }
+
+        // Validate URL structure with proper constraints
+        return try {
+            val url = java.net.URL(urlWithProtocol)
+
+            // Validate protocol is HTTP or HTTPS only
+            if (url.protocol != "http" && url.protocol != "https") {
+                return ValidationResult.Invalid("Only HTTP and HTTPS protocols are allowed")
+            }
+
+            // Validate port is in valid range (if specified)
+            val port = url.port
+            if (port != -1 && (port < 1 || port > 65535)) {
+                return ValidationResult.Invalid("Invalid port number (must be 1-65535)")
+            }
+
+            // Validate host is not empty and has reasonable format
+            if (url.host.isBlank() || url.host.length > 253) {
+                return ValidationResult.Invalid("Invalid domain name")
+            }
+
+            // Additional checks for suspicious patterns
+            if (url.host.contains("..") || url.host.startsWith(".") || url.host.endsWith(".")) {
+                return ValidationResult.Invalid("Invalid domain format")
+            }
+
+            ValidationResult.Valid
+        } catch (e: java.net.MalformedURLException) {
+            ValidationResult.Invalid("Invalid URL format: ${e.message ?: "malformed URL"}")
+        } catch (e: Exception) {
             ValidationResult.Invalid("Invalid URL format")
         }
     }
