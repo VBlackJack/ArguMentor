@@ -32,3 +32,14 @@ data class RebuttalFts(
 data class QuestionFts(
     val text: String
 )
+
+/**
+ * Full-Text Search (FTS) entity for Sources.
+ * Enables fast text search across source title and citation.
+ */
+@Fts4(contentEntity = com.argumentor.app.data.model.Source::class)
+@Entity(tableName = "sources_fts")
+data class SourceFts(
+    val title: String,
+    val citation: String?
+)

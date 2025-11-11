@@ -11,6 +11,7 @@ import com.argumentor.app.data.model.*
  * Version 1 - Initial schema with FTS support.
  * Version 2 - Added timestamps to Tag, Evidence, Source, Question; renamed Topic.Posture enum values
  * Version 3 - Added index on claimFingerprint for faster duplicate detection
+ * Version 4 - Added SourceFts for full-text search on sources
  */
 @Database(
     entities = [
@@ -23,9 +24,10 @@ import com.argumentor.app.data.model.*
         Tag::class,
         ClaimFts::class,
         RebuttalFts::class,
-        QuestionFts::class
+        QuestionFts::class,
+        SourceFts::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = true
 )
 @TypeConverters(Converters::class)

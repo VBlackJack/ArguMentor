@@ -413,17 +413,113 @@ Si un élément avec le même `id` existe déjà :
 - Pour **Topics, Claims, Rebuttals, Sources** : mise à jour si `updatedAt` de l'import est plus récent
 - Pour **Tags, Evidences, Questions** : ignoré (considéré comme doublon)
 
+**⚠️ Important sur les timestamps** :
+- Les champs `createdAt` et `updatedAt` sont **obligatoires** pour Topics
+- Si absents, l'import échouera avec un message d'erreur clair
+- Cette validation garantit que les timestamps originaux sont préservés
+- Lors d'une mise à jour, seul `updatedAt` est comparé (le plus récent gagne)
+
 ### 2. Doublons par empreinte (fingerprint)
 
-Pour les **Claims**, une empreinte textuelle (`claimFingerprint`) est générée automatiquement si absente. Si deux claims ont la même empreinte, le second est considéré comme doublon.
+Pour les **Claims**, **Rebuttals** et **Sources**, une empreinte textuelle est utilisée pour détecter les doublons :
+
+#### Comment fonctionne le fingerprint ?
+
+Le fingerprint est un **hash SHA-256** du texte normalisé. Le processus :
+
+1. **Normalisation du texte** :
+   - Conversion en minuscules
+   - Suppression des accents (é → e, ô → o)
+   - Suppression de toute ponctuation
+   - Remplacement des espaces multiples par un seul espace
+   - Suppression des espaces en début/fin
+
+2. **Génération du hash** :
+   - Hash SHA-256 du texte normalisé
+   - Troncature aux 16 premiers caractères hexadécimaux
+   - Résultat : chaîne de 16 caractères (ex: `"d24aedf8033ec528"`)
+
+#### Exemples de fingerprints
+
+| Texte original | Texte normalisé | Fingerprint |
+|----------------|-----------------|-------------|
+| `"La Bible enseigne explicitement la doctrine de la Trinité"` | `"la bible enseigne explicitement la doctrine de la trinite"` | `"d24aedf8033ec528"` |
+| `"Le terme 'Trinité' n'apparaît jamais dans la Bible"` | `"le terme trinite napparait jamais dans la bible"` | `"a86ebf0262110db2"` |
+
+#### Génération manuelle
+
+Si vous créez un fichier JSON manuellement, vous pouvez :
+
+**Option 1 : Laisser vide** (recommandé)
+```json
+"claimFingerprint": null
+```
+ArguMentor génèrera automatiquement le fingerprint lors de l'import.
+
+**Option 2 : Générer vous-même**
+
+En Python :
+```python
+import hashlib
+import unicodedata
+import string
+
+def generate_fingerprint(text):
+    # Normalisation NFD
+    normalized = unicodedata.normalize('NFD', text)
+    without_accents = ''.join(c for c in normalized if not unicodedata.combining(c))
+    lowercase = without_accents.lower()
+
+    # Suppression ponctuation
+    translator = str.maketrans('', '', string.punctuation + '«»''""…–—')
+    no_punctuation = lowercase.translate(translator)
+
+    # Collapse whitespace
+    normalized_text = ' '.join(no_punctuation.split())
+
+    # SHA-256 hash
+    hash_bytes = hashlib.sha256(normalized_text.encode('utf-8')).hexdigest()
+    return hash_bytes[:16]
+
+print(generate_fingerprint("La Bible enseigne la Trinité"))
+# "d24aedf8033ec528"
+```
+
+**⚠️ Attention** : Les fingerprints dans `example_data.json` DOIVENT être des vrais hashes SHA-256, pas des chaînes lisibles comme `"bible_enseigne_doctrine_trinite"`. Sinon, la détection de doublons échouera.
 
 ### 3. Quasi-doublons (similarité)
 
-Lors de l'import, vous pouvez définir un **seuil de similarité** (par défaut 90%). ArguMentor compare :
-- Les **Claims** ayant au moins un Topic en commun
-- Les **Rebuttals** liées à la même Claim
+ArguMentor utilise l'**algorithme de distance de Levenshtein** pour détecter les textes similaires.
 
-Si la similarité textuelle dépasse le seuil, l'élément est marqué comme quasi-doublon et placé en révision.
+#### Fonctionnement de la détection de similarité
+
+1. **Normalisation** : Les textes sont normalisés (comme pour les fingerprints)
+2. **Calcul de distance** : Distance d'édition (nombre de caractères à modifier)
+3. **Ratio de similarité** : `1.0 - (distance / longueur_max)`
+4. **Seuil** : Par défaut 0.90 (90% de similarité)
+
+#### Scope de la comparaison
+
+- **Claims** : Comparées seulement si elles partagent au moins un Topic en commun
+- **Rebuttals** : Comparées seulement si elles réfutent la même Claim
+- **Sources** : Pas de détection de similarité (uniquement par fingerprint)
+
+#### Limites de performance
+
+- Textes > 5000 caractères : Non comparés (retourne similarité = 0.0)
+- Optimisation : Complexité O(min(m,n)) en espace
+
+#### Exemple
+
+```
+Texte A: "Les chats sont indépendants"
+Texte B: "Les chats sont très indépendants"
+Distance: 5 caractères
+Similarité: ~0.85 (85%)
+Résultat: Considérés différents (< 90%)
+```
+
+Si le seuil était abaissé à 0.80 (80%), ils seraient détectés comme quasi-doublons.
 
 ---
 
@@ -457,6 +553,202 @@ from datetime import datetime
 datetime.utcnow().isoformat() + 'Z'
 # "2025-01-15T10:30:00.123456Z"
 ```
+
+---
+
+## Edge Cases et Comportements Spéciaux
+
+Cette section documente les comportements lors de situations particulières à l'import.
+
+### 1. Références manquantes
+
+#### Evidence avec sourceId inexistant
+
+Si une Evidence référence un `sourceId` qui n'existe pas :
+```json
+{
+  "id": "evidence_001",
+  "claimId": "claim_001",
+  "sourceId": "source_999",  // ❌ N'existe pas
+  "content": "...",
+  "type": "study",
+  "quality": "high"
+}
+```
+
+**Comportement** :
+- L'import échoue avec le message : `"Evidence 'evidence_001': Referenced source 'source_999' not found. Import the source first or remove the sourceId."`
+- L'Evidence n'est PAS importée
+- Les autres entités valides sont importées normalement
+
+**Solution** :
+- Importer la Source d'abord
+- Ou retirer le champ `sourceId` (le laisser vide/null)
+
+#### Rebuttal avec claimId inexistant
+
+```json
+{
+  "id": "rebuttal_001",
+  "claimId": "claim_999",  // ❌ N'existe pas
+  "text": "..."
+}
+```
+
+**Comportement** :
+- Erreur : `"Rebuttal 'rebuttal_001': Referenced claim 'claim_999' not found. Import the claim first or verify the claimId."`
+- Le Rebuttal n'est PAS importé
+
+#### Question avec targetId inexistant
+
+```json
+{
+  "id": "question_001",
+  "targetId": "topic_999",  // ❌ N'existe pas
+  "text": "..."
+}
+```
+
+**Comportement** :
+- Erreur : `"Question 'question_001': Referenced target 'topic_999' not found. The targetId must reference an existing Topic or Claim. Import the target first or verify the targetId."`
+- La Question n'est PAS importée
+
+### 2. Validation des valeurs
+
+#### reliabilityScore hors limites
+
+```json
+{
+  "id": "source_001",
+  "title": "...",
+  "reliabilityScore": 150  // ❌ Doit être entre 0.0 et 1.0
+}
+```
+
+**Comportement** :
+- Erreur : `"Source 'source_001': reliabilityScore must be between 0.0 and 1.0, got 150"`
+- La Source n'est PAS importée
+- Valeurs invalides : nombres négatifs, > 1.0, NaN, Infinity
+
+**Valeurs acceptables** : `0.0`, `0.5`, `0.85`, `1.0`, ou `null`
+
+#### Timestamps manquants
+
+Pour les Topics, `createdAt` et `updatedAt` sont **obligatoires** :
+
+```json
+{
+  "id": "topic_001",
+  "title": "...",
+  "summary": "...",
+  "posture": "neutral_critical",
+  "createdAt": null,  // ❌ Obligatoire
+  "updatedAt": null   // ❌ Obligatoire
+}
+```
+
+**Comportement** :
+- Erreur : `"Topic 'topic_001': createdAt is required for data integrity"`
+- Le Topic n'est PAS importé
+
+**Solution** : Toujours fournir des timestamps valides ISO 8601.
+
+### 3. Comportement lors des mises à jour
+
+#### Mise à jour basée sur timestamp
+
+Quand un élément existe déjà (même `id`), la mise à jour dépend de `updatedAt` :
+
+**Scénario 1 : Import plus récent**
+```
+DB existante:   { id: "claim_001", updatedAt: "2025-01-10T10:00:00Z" }
+Import:         { id: "claim_001", updatedAt: "2025-01-15T10:00:00Z" }
+Résultat: ✅ Mise à jour (import plus récent)
+```
+
+**Scénario 2 : Import plus ancien**
+```
+DB existante:   { id: "claim_001", updatedAt: "2025-01-15T10:00:00Z" }
+Import:         { id: "claim_001", updatedAt: "2025-01-10T10:00:00Z" }
+Résultat: ⏭️ Ignoré (DB plus récente)
+```
+
+**⚠️ Important** :
+- La comparaison utilise `java.time.Instant` pour gérer correctement les fuseaux horaires
+- Si le parsing échoue, fallback sur comparaison lexicographique de chaînes
+- `createdAt` n'est JAMAIS modifié lors d'une mise à jour
+
+### 4. Gestion des erreurs I/O
+
+#### Permissions de fichier
+
+Si l'application n'a pas les permissions d'écriture :
+
+**Erreur** : `"Permission denied: /path/to/file.json. Check app permissions."`
+
+**Solutions** :
+- Utiliser Storage Access Framework (SAF) pour sélectionner un emplacement autorisé
+- Vérifier les permissions dans Paramètres > Apps > ArguMentor > Permissions
+
+#### Espace disque insuffisant
+
+Si le disque est plein lors de l'export :
+
+**Erreur** : `"I/O error during export: No space left on device. Check available storage space."`
+
+**Solution** : Libérer de l'espace ou choisir un autre emplacement
+
+#### Fichier corrompu
+
+Si le JSON est mal formaté :
+
+**Erreur** : `"com.google.gson.JsonSyntaxException: Expected ... but was ..."`
+
+**Solutions** :
+- Valider le JSON avec jsonlint.com
+- Vérifier les virgules, guillemets et accolades
+- S'assurer que le fichier est en UTF-8
+
+### 5. Cascading Deletes (Suppressions en cascade)
+
+⚠️ **ArguMentor ne fait PAS de suppression en cascade automatique lors des imports**.
+
+Cependant, lors de la suppression manuelle dans l'app :
+
+#### Suppression d'un Topic
+
+Quand vous supprimez un Topic :
+- Les **Claims** associées ne sont PAS supprimées
+- Les Claims perdent seulement la référence à ce Topic dans leur liste `topics`
+- Si une Claim n'a plus aucun Topic, elle devient orpheline (mais reste dans la DB)
+
+#### Suppression d'une Claim
+
+Quand vous supprimez une Claim :
+- Les **Rebuttals** associées sont supprimées
+- Les **Evidences** associées sont supprimées
+- Les **Questions** ciblant cette Claim sont supprimées
+- Les **Sources** référencées ne sont PAS supprimées
+
+#### Suppression d'une Source
+
+Quand vous supprimez une Source :
+- Les **Evidences** qui y font référence perdent leur `sourceId`
+- Les Evidences ne sont PAS supprimées
+
+### 6. Ordre d'import recommandé
+
+Pour éviter les erreurs de références, importez dans cet ordre :
+
+1. **Tags** (indépendants)
+2. **Sources** (indépendantes)
+3. **Topics** (peuvent référencer Tags)
+4. **Claims** (doivent référencer Topics)
+5. **Rebuttals** (doivent référencer Claims)
+6. **Evidences** (doivent référencer Claims, peuvent référencer Sources)
+7. **Questions** (doivent référencer Topics ou Claims)
+
+**Note** : ArguMentor importe automatiquement dans cet ordre, même si votre JSON les liste différemment.
 
 ---
 

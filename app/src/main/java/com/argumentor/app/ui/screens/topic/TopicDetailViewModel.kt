@@ -44,23 +44,28 @@ class TopicDetailViewModel @Inject constructor(
     fun loadTopic(topicId: String) {
         _topicId.value = topicId
 
+        // Load topic, claims and sources in a single synchronized flow to avoid race conditions
         viewModelScope.launch {
-            topicRepository.getTopicById(topicId).collect { topic ->
+            combine(
+                topicRepository.getTopicById(topicId),
+                claimRepository.getAllClaims(),
+                sourceRepository.getAllSources()
+            ) { topic, allClaims, allSources ->
+                Triple(
+                    topic,
+                    allClaims.filter { claim -> claim.topics.contains(topicId) },
+                    allSources
+                )
+            }.collect { (topic, claims, sources) ->
+                // Update all state atomically to prevent partial UI updates
                 _topic.value = topic
+                _claims.value = claims
+                _sources.value = sources
             }
         }
 
+        // Load questions (depends on claims, so must be separate)
         viewModelScope.launch {
-            // Load claims associated with this topic
-            claimRepository.getAllClaims().collect { allClaims ->
-                _claims.value = allClaims.filter { claim ->
-                    claim.topics.contains(topicId)
-                }
-            }
-        }
-
-        viewModelScope.launch {
-            // Combine questions for the topic and questions for all claims in the topic
             combine(
                 questionRepository.getQuestionsByTargetId(topicId),
                 _claims
@@ -85,13 +90,6 @@ class TopicDetailViewModel @Inject constructor(
                 }
             }.collect { allQuestions ->
                 _questions.value = allQuestions
-            }
-        }
-
-        viewModelScope.launch {
-            // Load all sources
-            sourceRepository.getAllSources().collect { allSources ->
-                _sources.value = allSources
             }
         }
     }
