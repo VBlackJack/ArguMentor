@@ -52,9 +52,10 @@ interface RebuttalDao {
     fun searchRebuttalsFts(query: String): Flow<List<Rebuttal>>
 
     // Fallback search using LIKE (for when FTS query contains invalid operators)
+    // SECURITY FIX (SEC-004): Added ESCAPE '\' clause to prevent wildcard injection
     @Query("""
         SELECT * FROM rebuttals
-        WHERE text LIKE '%' || :query || '%'
+        WHERE text LIKE '%' || :query || '%' ESCAPE '\'
         ORDER BY updatedAt DESC
     """)
     fun searchRebuttalsLike(query: String): Flow<List<Rebuttal>>

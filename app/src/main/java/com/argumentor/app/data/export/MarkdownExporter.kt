@@ -10,7 +10,6 @@ import com.argumentor.app.data.model.Rebuttal
 import com.argumentor.app.data.model.Source
 import com.argumentor.app.data.model.Topic
 import java.io.OutputStream
-import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -258,19 +257,28 @@ class MarkdownExporter @Inject constructor(
         }
     }
 
+    /**
+     * BUG-004 FIX: Use java.time.Instant for proper ISO 8601 parsing
+     * SimpleDateFormat doesn't handle 'Z' timezone properly in ISO 8601 format
+     * This fix properly parses timestamps like "2024-01-01T12:00:00Z"
+     */
     private fun formatDate(isoDate: String): String {
         return try {
-            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-            val outputFormat = SimpleDateFormat("dd/MM/yyyy à HH:mm", Locale.FRENCH)
-            val date = inputFormat.parse(isoDate)
-            outputFormat.format(date ?: Date())
+            val instant = java.time.Instant.parse(isoDate)
+            val zonedDateTime = instant.atZone(java.time.ZoneId.systemDefault())
+            val formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm", Locale.FRENCH)
+            zonedDateTime.format(formatter)
         } catch (e: Exception) {
+            // Fallback to original string if parsing fails
             isoDate
         }
     }
 
+    /**
+     * BUG-004 FIX: Use java.time.Instant for proper ISO 8601 timestamp generation
+     * This ensures timestamps are in proper ISO 8601 format with UTC timezone
+     */
     private fun getCurrentIsoTimestamp(): String {
-        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-        return format.format(Date())
+        return java.time.Instant.now().toString()
     }
 }

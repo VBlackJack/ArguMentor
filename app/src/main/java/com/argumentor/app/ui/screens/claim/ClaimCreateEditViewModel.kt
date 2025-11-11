@@ -159,8 +159,18 @@ class ClaimCreateEditViewModel @Inject constructor(
             runCatching {
                 val claimId = _claimId.value
                 if (_isEditMode.value && claimId != null) {
-                    // Update existing claim
+                    // BUG-005 FIX: Add proper null check to prevent creating new claim
+                    // if the original claim was deleted between loading and saving
                     val existingClaim = claimRepository.getClaimByIdSync(claimId)
+
+                    // If claim was deleted, throw an error instead of creating a new one
+                    if (existingClaim == null) {
+                        throw IllegalStateException(
+                            "Cannot update claim: Claim with ID $claimId no longer exists. " +
+                            "It may have been deleted by another process."
+                        )
+                    }
+
                     val claim = Claim(
                         id = claimId,
                         text = _text.value,
@@ -168,7 +178,7 @@ class ClaimCreateEditViewModel @Inject constructor(
                         strength = _strength.value,
                         topics = _selectedTopics.value,
                         fallacyIds = _selectedFallacies.value,
-                        createdAt = existingClaim?.createdAt ?: getCurrentIsoTimestamp(),
+                        createdAt = existingClaim.createdAt,
                         updatedAt = getCurrentIsoTimestamp()
                     )
                     claimRepository.updateClaim(claim)

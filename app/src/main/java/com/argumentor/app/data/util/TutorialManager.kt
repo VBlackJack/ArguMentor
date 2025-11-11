@@ -53,18 +53,18 @@ class TutorialManager @Inject constructor(
         scope.launch {
             if (!enabled) {
                 // Tutorial disabled - remove demo topic and all related data
-                val demoTopicId = settingsDataStore.demoSubjectId.first()
+                val demoTopicId = settingsDataStore.demoTopicId.first()
                 if (demoTopicId != null) {
                     deleteDemoTopicCompletely(demoTopicId)
-                    settingsDataStore.setDemoSubjectId(null)
+                    settingsDataStore.setDemoTopicId(null)
                 }
             } else {
                 // Tutorial enabled - always regenerate demo topic
                 // First, delete existing demo topic if any
-                val existingDemoTopicId = settingsDataStore.demoSubjectId.first()
+                val existingDemoTopicId = settingsDataStore.demoTopicId.first()
                 if (existingDemoTopicId != null) {
                     deleteDemoTopicCompletely(existingDemoTopicId)
-                    settingsDataStore.setDemoSubjectId(null)
+                    settingsDataStore.setDemoTopicId(null)
                 }
 
                 // Then generate new demo topic

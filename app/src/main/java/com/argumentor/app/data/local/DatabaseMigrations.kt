@@ -25,20 +25,22 @@ object DatabaseMigrations {
      */
     val MIGRATION_1_2 = object : Migration(1, 2) {
         override fun migrate(db: SupportSQLiteDatabase) {
-            val currentTimestamp = getCurrentIsoTimestamp()
+            // SECURITY FIX: Use a safe constant default value for timestamps
+            // The actual timestamps will be set by assignSequentialTimestamps() using parameterized queries
+            val safeDefaultTimestamp = "2000-01-01T00:00:00Z"
 
             // Add timestamps to tags table
-            db.execSQL("ALTER TABLE tags ADD COLUMN createdAt TEXT NOT NULL DEFAULT '$currentTimestamp'")
-            db.execSQL("ALTER TABLE tags ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$currentTimestamp'")
+            db.execSQL("ALTER TABLE tags ADD COLUMN createdAt TEXT NOT NULL DEFAULT '$safeDefaultTimestamp'")
+            db.execSQL("ALTER TABLE tags ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$safeDefaultTimestamp'")
 
             // Add updatedAt to evidences table
-            db.execSQL("ALTER TABLE evidences ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$currentTimestamp'")
+            db.execSQL("ALTER TABLE evidences ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$safeDefaultTimestamp'")
 
             // Add updatedAt to sources table
-            db.execSQL("ALTER TABLE sources ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$currentTimestamp'")
+            db.execSQL("ALTER TABLE sources ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$safeDefaultTimestamp'")
 
             // Add updatedAt to questions table
-            db.execSQL("ALTER TABLE questions ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$currentTimestamp'")
+            db.execSQL("ALTER TABLE questions ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$safeDefaultTimestamp'")
 
             assignSequentialTimestamps(db)
 

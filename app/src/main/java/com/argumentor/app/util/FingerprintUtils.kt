@@ -15,6 +15,19 @@ import java.text.Normalizer
 object FingerprintUtils {
 
     /**
+     * Maximum text length for similarity comparison (in characters).
+     * Prevents DoS attacks with very long strings that would cause O(m*n) memory/time complexity.
+     */
+    private const val MAX_TEXT_LENGTH = 5000
+
+    /**
+     * Fingerprint hash length (in hex characters).
+     * Uses first 16 characters of SHA-256 hex digest (64 bits) for compactness
+     * while maintaining low collision probability for typical dataset sizes.
+     */
+    private const val FINGERPRINT_HASH_LENGTH = 16
+
+    /**
      * Normalize text for fingerprinting:
      * - Convert to lowercase
      * - Remove Unicode accents (NFD decomposition + strip)
@@ -41,14 +54,14 @@ object FingerprintUtils {
 
     /**
      * Generate SHA-256 hash of normalized text.
-     * Returns first 16 characters of hex digest for compactness.
+     * Returns first FINGERPRINT_HASH_LENGTH characters of hex digest for compactness.
      */
     fun generateTextFingerprint(text: String): String {
         val normalized = normalizeText(text)
         val digest = MessageDigest.getInstance("SHA-256")
         val hashBytes = digest.digest(normalized.toByteArray(Charsets.UTF_8))
         val hexString = hashBytes.joinToString("") { "%02x".format(it) }
-        return hexString.take(16) // First 16 characters (64 bits)
+        return hexString.take(FINGERPRINT_HASH_LENGTH)
     }
 
     /**
@@ -113,16 +126,15 @@ object FingerprintUtils {
      * Time complexity: O(m × n)
      * Space complexity: O(min(m, n)) instead of O(m × n)
      *
-     * @param s1 First string (max 5000 chars)
-     * @param s2 Second string (max 5000 chars)
+     * @param s1 First string (max MAX_TEXT_LENGTH chars)
+     * @param s2 Second string (max MAX_TEXT_LENGTH chars)
      * @return Edit distance between strings
      * @throws IllegalArgumentException if strings exceed max length
      */
     fun levenshteinDistance(s1: String, s2: String): Int {
         // Prevent DoS attacks with very long strings
-        val MAX_LENGTH = 5000
-        require(s1.length <= MAX_LENGTH && s2.length <= MAX_LENGTH) {
-            "Text too long for similarity comparison (max: $MAX_LENGTH characters)"
+        require(s1.length <= MAX_TEXT_LENGTH && s2.length <= MAX_TEXT_LENGTH) {
+            "Text too long for similarity comparison (max: $MAX_TEXT_LENGTH characters)"
         }
 
         // Early exit for identical strings
