@@ -7,7 +7,10 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 
@@ -30,7 +33,14 @@ fun Context.hasPermission(permission: AppPermission): Boolean {
 }
 
 /**
- * Composable to create a permission launcher
+ * Composable to create a permission launcher that properly tracks which permission was requested.
+ *
+ * This implementation fixes the race condition issue where the launcher callback wouldn't know
+ * which permission was requested. We use a MutableState to track the current permission being
+ * requested, ensuring the callback always knows which permission result it's handling.
+ *
+ * @param onPermissionResult Callback with the permission and whether it was granted
+ * @return A function to launch the permission request for a given AppPermission
  */
 @Composable
 fun rememberPermissionLauncher(
@@ -38,21 +48,28 @@ fun rememberPermissionLauncher(
 ): (AppPermission) -> Unit {
     val context = LocalContext.current
 
+    // Track which permission is currently being requested to avoid race conditions
+    var currentPermission by remember { mutableStateOf<AppPermission?>(null) }
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        // We need to track which permission was requested
-        // This will be handled by the returned lambda
+        // Safely handle the result with the tracked permission
+        currentPermission?.let { permission ->
+            onPermissionResult(permission, isGranted)
+            currentPermission = null  // Reset after handling
+        }
     }
 
-    return remember(launcher) {
+    return remember(launcher, context) {
         { permission: AppPermission ->
             if (context.hasPermission(permission)) {
+                // Permission already granted, call callback immediately
                 onPermissionResult(permission, true)
             } else {
+                // Track the permission before launching to avoid race condition
+                currentPermission = permission
                 launcher.launch(permission.manifestPermission)
-                // Note: The result will be handled in the launcher callback
-                // For a more robust implementation, we'd need a wrapper
             }
         }
     }

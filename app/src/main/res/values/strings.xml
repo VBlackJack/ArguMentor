@@ -438,4 +438,17 @@
     <string name="error_save_evidence">Échec de la sauvegarde de la preuve : %1$s</string>
     <string name="error_save_question">Échec de la sauvegarde de la question : %1$s</string>
     <string name="error_save_source">Échec de la sauvegarde de la source : %1$s</string>
+
+    <!-- Speech Recognition Errors -->
+    <string name="error_speech_recognition_not_available">La reconnaissance vocale n\'est pas disponible sur cet appareil</string>
+    <string name="error_speech_audio">Erreur audio lors de la reconnaissance vocale</string>
+    <string name="error_speech_client">Erreur client de reconnaissance vocale</string>
+    <string name="error_speech_permissions">Permissions microphone manquantes</string>
+    <string name="error_speech_network">Erreur réseau lors de la reconnaissance vocale</string>
+    <string name="error_speech_network_timeout">Délai d\'attente réseau dépassé</string>
+    <string name="error_speech_no_match">Aucune parole détectée</string>
+    <string name="error_speech_recognizer_busy">Le service de reconnaissance est occupé</string>
+    <string name="error_speech_server">Erreur serveur de reconnaissance vocale</string>
+    <string name="error_speech_timeout">Délai d\'attente de la reconnaissance vocale dépassé</string>
+    <string name="error_speech_unknown">Erreur inconnue lors de la reconnaissance vocale</string>
 </resources>

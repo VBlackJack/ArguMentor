@@ -13,6 +13,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.argumentor.app.R
@@ -21,6 +22,9 @@ import java.util.Locale
 /**
  * OutlinedTextField with voice input capability.
  * Adds a microphone icon button that launches speech recognition.
+ *
+ * PERFORMANCE: Uses rememberUpdatedState to stabilize callbacks and prevent unnecessary recompositions.
+ * BUGFIX: Properly handles locales with or without country codes to prevent empty language codes.
  */
 @Composable
 fun VoiceInputTextField(
@@ -35,6 +39,10 @@ fun VoiceInputTextField(
     isError: Boolean = false,
     supportingText: @Composable (() -> Unit)? = null
 ) {
+    // Stabilize the callback to prevent recompositions when the lambda changes
+    val currentOnValueChange = rememberUpdatedState(onValueChange)
+    val currentValue = rememberUpdatedState(value)
+
     val voiceLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -43,12 +51,12 @@ fun VoiceInputTextField(
             if (!matches.isNullOrEmpty()) {
                 val spokenText = matches[0]
                 // Append to existing text if not empty, otherwise replace
-                val newText = if (value.isNotEmpty()) {
-                    "$value $spokenText"
+                val newText = if (currentValue.value.isNotEmpty()) {
+                    "${currentValue.value} $spokenText"
                 } else {
                     spokenText
                 }
-                onValueChange(newText)
+                currentOnValueChange.value(newText)
             }
         }
     }
@@ -56,11 +64,19 @@ fun VoiceInputTextField(
     val promptText = when (locale.language) {
         "fr" -> "Parlez maintenant..."
         "en" -> "Speak now..."
+        "es" -> "Habla ahora..."
+        "de" -> "Jetzt sprechen..."
+        "it" -> "Parla ora..."
         else -> "Speak now..."
     }
-    
-    // Format: "fr-FR" or "en-US"
-    val languageCode = "${locale.language}-${locale.country}"
+
+    // BUGFIX: Properly format language code - handle empty country
+    // Format: "fr-FR" or "en-US", or just "fr" if no country
+    val languageCode = if (locale.country.isNotEmpty()) {
+        "${locale.language}-${locale.country}"
+    } else {
+        locale.language
+    }
 
     OutlinedTextField(
         value = value,
