@@ -145,13 +145,13 @@ L'éditeur valide automatiquement :
 - ✅ Les **Questions** doivent référencer un **Topic** ou **Claim** existant
 
 ### Validations d'Enums
-Les valeurs suivantes sont validées :
-- **Posture** : `neutre`, `neutre_critique`, `sceptique`, `opposant`, `comparatif_academique`
+Les valeurs suivantes sont validées par l'éditeur (avec prise en charge des alias rétrocompatibles) :
+- **Posture** : `neutral_critical`, `skeptical`, `academic_comparative` *(alias pris en charge : `neutral_critique`, `neutre_critique`, `sceptique`, `comparatif_academique`)*
 - **Stance** : `pro`, `con`, `neutral`
-- **Strength** : `weak`, `medium`, `high`
-- **Evidence Type** : `citation`, `statistic`, `study`, `expert`, `example`, `anecdote`
-- **Quality** : `low`, `medium`, `high`
-- **Question Kind** : `clarification`, `challenge`, `followup`, `evidence`
+- **Strength** : `low`, `med`, `high` *(alias pris en charge : `medium` → `med`)*
+- **Evidence Type** : `study`, `stat`, `quote`, `example`
+- **Quality** : `low`, `medium`, `high` *(alias pris en charge : `med` ↔︎ `medium`)*
+- **Question Kind** : `socratic`, `clarifying`, `challenge`, `evidence`
 
 ## 📋 Structure des Entités
 
@@ -176,6 +176,7 @@ Les valeurs suivantes sont validées :
   "stance": "pro",
   "strength": "high",
   "topics": ["topic_001"],
+  "fallacyIds": ["ad_hominem"],
   "createdAt": "2025-01-15T10:00:00Z",
   "updatedAt": "2025-01-15T10:00:00Z",
   "claimFingerprint": "auto_generated"
@@ -188,7 +189,7 @@ Les valeurs suivantes sont validées :
   "id": "rebuttal_001",
   "claimId": "claim_001",
   "text": "Texte de la réfutation",
-  "fallacyTag": "Anachronisme",
+  "fallacyIds": ["straw_man"],
   "createdAt": "2025-01-15T10:00:00Z",
   "updatedAt": "2025-01-15T10:00:00Z"
 }
@@ -199,11 +200,12 @@ Les valeurs suivantes sont validées :
 {
   "id": "evidence_001",
   "claimId": "claim_001",
-  "type": "citation",
+  "type": "quote",
   "content": "Contenu de la preuve",
   "sourceId": "source_001",
   "quality": "high",
-  "createdAt": "2025-01-15T10:00:00Z"
+  "createdAt": "2025-01-15T10:00:00Z",
+  "updatedAt": "2025-01-15T10:00:00Z"
 }
 ```
 
@@ -213,8 +215,9 @@ Les valeurs suivantes sont validées :
   "id": "question_001",
   "targetId": "topic_001",
   "text": "Texte de la question",
-  "kind": "clarification",
-  "createdAt": "2025-01-15T10:00:00Z"
+  "kind": "clarifying",
+  "createdAt": "2025-01-15T10:00:00Z",
+  "updatedAt": "2025-01-15T10:00:00Z"
 }
 ```
 
@@ -229,7 +232,8 @@ Les valeurs suivantes sont validées :
   "date": "2025",
   "reliabilityScore": 0.95,
   "notes": "Notes supplémentaires",
-  "createdAt": "2025-01-15T10:00:00Z"
+  "createdAt": "2025-01-15T10:00:00Z",
+  "updatedAt": "2025-01-15T10:00:00Z"
 }
 ```
 
@@ -238,7 +242,9 @@ Les valeurs suivantes sont validées :
 {
   "id": "tag_001",
   "label": "Théologie",
-  "color": "#4CAF50"
+  "color": "#4CAF50",
+  "createdAt": "2025-01-15T10:00:00Z",
+  "updatedAt": "2025-01-15T10:00:00Z"
 }
 ```
 
