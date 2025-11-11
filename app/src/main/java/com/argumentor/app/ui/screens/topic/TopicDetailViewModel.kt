@@ -10,6 +10,7 @@ import com.argumentor.app.data.repository.*
 import com.argumentor.app.util.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.OutputStream
@@ -46,17 +47,29 @@ class TopicDetailViewModel @Inject constructor(
     val selectedTab: StateFlow<Int> = _selectedTab.asStateFlow()
 
     /**
+     * Track the current loading job to allow cancellation when loading a new topic.
+     * BUGFIX: Prevents memory leaks and race conditions when rapidly switching topics.
+     */
+    private var loadJob: Job? = null
+
+    /**
      * Loads topic data with all related entities.
      *
      * BUG FIX (BUG-002): Race condition fixed by loading all data in a single
      * coordinated flow. All entities are loaded synchronously to ensure proper
      * data dependencies and prevent partial state updates.
+     *
+     * BUG FIX (BUG-012): Added job cancellation to prevent overlapping loads
+     * when switching between topics rapidly.
      */
     fun loadTopic(topicId: String) {
+        // Cancel any previous loading operation
+        loadJob?.cancel()
+
         _topicId.value = topicId
 
         // RACE CONDITION FIX: Load all data in a single coordinated flow
-        viewModelScope.launch {
+        loadJob = viewModelScope.launch {
             combine(
                 topicRepository.getTopicById(topicId),
                 claimRepository.getAllClaims(),

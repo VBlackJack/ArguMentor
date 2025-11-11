@@ -12,85 +12,195 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.argumentor.app.R
 import java.util.Locale
 
 /**
  * Helper class for Speech-to-Text functionality using Android SpeechRecognizer.
+ *
+ * This class manages a SpeechRecognizer instance and properly cleans it up to prevent memory leaks.
+ * For Compose usage, prefer using rememberSpeechToTextHelper() which automatically handles lifecycle.
+ *
+ * @param context The application context (not Activity context to avoid leaks)
+ * @param resourceProvider Provider for localized error messages
+ * @param locale The locale to use for speech recognition (default: device locale)
+ * @param onResult Callback when speech recognition succeeds
+ * @param onError Callback when speech recognition fails
  */
 class SpeechToTextHelper(
     private val context: Context,
+    private val resourceProvider: ResourceProvider,
+    private val locale: Locale = Locale.getDefault(),
     private val onResult: (String) -> Unit,
     private val onError: (String) -> Unit
 ) {
     private var speechRecognizer: SpeechRecognizer? = null
+    private var isListening = false
 
-    fun startListening() {
+    /**
+     * Starts listening for speech input.
+     * Returns false if speech recognition is not available or already listening.
+     */
+    fun startListening(): Boolean {
+        if (isListening) {
+            return false
+        }
+
         if (!SpeechRecognizer.isRecognitionAvailable(context)) {
-            onError("La reconnaissance vocale n'est pas disponible")
-            return
+            onError(resourceProvider.getString(R.string.error_speech_recognition_not_available))
+            return false
         }
 
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context).apply {
-            setRecognitionListener(object : RecognitionListener {
-                override fun onReadyForSpeech(params: Bundle?) {}
-                override fun onBeginningOfSpeech() {}
-                override fun onRmsChanged(rmsdB: Float) {}
-                override fun onBufferReceived(buffer: ByteArray?) {}
-                override fun onEndOfSpeech() {}
+        try {
+            // Clean up any existing recognizer first
+            cleanup()
 
-                override fun onError(error: Int) {
-                    val errorMessage = when (error) {
-                        SpeechRecognizer.ERROR_AUDIO -> "Erreur audio"
-                        SpeechRecognizer.ERROR_CLIENT -> "Erreur client"
-                        SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Permissions insuffisantes"
-                        SpeechRecognizer.ERROR_NETWORK -> "Erreur réseau"
-                        SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Timeout réseau"
-                        SpeechRecognizer.ERROR_NO_MATCH -> "Aucune correspondance"
-                        SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Reconnaissance occupée"
-                        SpeechRecognizer.ERROR_SERVER -> "Erreur serveur"
-                        SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Timeout de parole"
-                        else -> "Erreur inconnue"
+            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context).apply {
+                setRecognitionListener(object : RecognitionListener {
+                    override fun onReadyForSpeech(params: Bundle?) {
+                        isListening = true
                     }
-                    onError(errorMessage)
-                }
 
-                override fun onResults(results: Bundle?) {
-                    val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                    val text = matches?.firstOrNull() ?: ""
-                    onResult(text)
-                }
+                    override fun onBeginningOfSpeech() {}
+                    override fun onRmsChanged(rmsdB: Float) {}
+                    override fun onBufferReceived(buffer: ByteArray?) {}
 
-                override fun onPartialResults(partialResults: Bundle?) {}
-                override fun onEvent(eventType: Int, params: Bundle?) {}
-            })
+                    override fun onEndOfSpeech() {
+                        isListening = false
+                    }
+
+                    override fun onError(error: Int) {
+                        isListening = false
+                        val errorMessage = when (error) {
+                            SpeechRecognizer.ERROR_AUDIO -> resourceProvider.getString(R.string.error_speech_audio)
+                            SpeechRecognizer.ERROR_CLIENT -> resourceProvider.getString(R.string.error_speech_client)
+                            SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> resourceProvider.getString(R.string.error_speech_permissions)
+                            SpeechRecognizer.ERROR_NETWORK -> resourceProvider.getString(R.string.error_speech_network)
+                            SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> resourceProvider.getString(R.string.error_speech_network_timeout)
+                            SpeechRecognizer.ERROR_NO_MATCH -> resourceProvider.getString(R.string.error_speech_no_match)
+                            SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> resourceProvider.getString(R.string.error_speech_recognizer_busy)
+                            SpeechRecognizer.ERROR_SERVER -> resourceProvider.getString(R.string.error_speech_server)
+                            SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> resourceProvider.getString(R.string.error_speech_timeout)
+                            else -> resourceProvider.getString(R.string.error_speech_unknown)
+                        }
+                        onError(errorMessage)
+                    }
+
+                    override fun onResults(results: Bundle?) {
+                        isListening = false
+                        val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                        val text = matches?.firstOrNull() ?: ""
+                        if (text.isNotBlank()) {
+                            onResult(text)
+                        }
+                    }
+
+                    override fun onPartialResults(partialResults: Bundle?) {}
+                    override fun onEvent(eventType: Int, params: Bundle?) {}
+                })
+            }
+
+            val intent = createSpeechIntent(locale)
+            speechRecognizer?.startListening(intent)
+            return true
+        } catch (e: Exception) {
+            isListening = false
+            onError(resourceProvider.getString(R.string.error_speech_unknown))
+            return false
         }
-
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "fr-FR")
-            putExtra(RecognizerIntent.EXTRA_PROMPT, "Parlez maintenant...")
-        }
-
-        speechRecognizer?.startListening(intent)
     }
 
+    /**
+     * Stops listening and cleans up resources.
+     */
     fun stopListening() {
-        speechRecognizer?.stopListening()
-        speechRecognizer?.destroy()
-        speechRecognizer = null
+        if (isListening) {
+            speechRecognizer?.stopListening()
+        }
+        cleanup()
     }
+
+    /**
+     * Internal cleanup method to properly release SpeechRecognizer resources.
+     * This prevents memory leaks by ensuring the recognizer is always destroyed.
+     */
+    private fun cleanup() {
+        try {
+            speechRecognizer?.destroy()
+        } catch (e: Exception) {
+            // Ignore exceptions during cleanup
+        } finally {
+            speechRecognizer = null
+            isListening = false
+        }
+    }
+}
+
+/**
+ * Composable function that creates and manages a SpeechToTextHelper with automatic lifecycle handling.
+ * This is the recommended way to use speech recognition in Compose, as it automatically cleans up
+ * resources when the composable leaves the composition.
+ *
+ * @param resourceProvider Provider for localized strings
+ * @param locale The locale to use for speech recognition (default: device locale)
+ * @param onResult Callback when speech recognition succeeds
+ * @param onError Callback when speech recognition fails
+ * @return A SpeechToTextHelper instance that is automatically cleaned up
+ */
+@Composable
+fun rememberSpeechToTextHelper(
+    resourceProvider: ResourceProvider,
+    locale: Locale = Locale.getDefault(),
+    onResult: (String) -> Unit,
+    onError: (String) -> Unit
+): SpeechToTextHelper {
+    val context = LocalContext.current.applicationContext
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    val helper = remember(locale) {
+        SpeechToTextHelper(
+            context = context,
+            resourceProvider = resourceProvider,
+            locale = locale,
+            onResult = onResult,
+            onError = onError
+        )
+    }
+
+    DisposableEffect(lifecycleOwner, helper) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                helper.stopListening()
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            helper.stopListening()
+        }
+    }
+
+    return helper
 }
 
 /**
  * Composable function to create a speech-to-text launcher using Intent.
  * This is a fallback method that uses the system's default speech recognition UI.
+ * Unlike rememberSpeechToTextHelper, this delegates to the system UI rather than managing
+ * the recognizer directly.
+ *
+ * @param onResult Callback when speech recognition succeeds with recognized text
  */
 @Composable
 fun rememberSpeechToTextLauncher(
     onResult: (String) -> Unit
 ): ManagedActivityResultLauncher<Intent, ActivityResult> {
-    val context = LocalContext.current
-
     return rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -104,17 +214,33 @@ fun rememberSpeechToTextLauncher(
 
 /**
  * Create a speech recognition intent with specified locale.
+ * Handles locales with or without country codes properly.
+ *
+ * @param locale The locale to use for recognition (default: French)
+ * @return Configured Intent for speech recognition
  */
 fun createSpeechIntent(locale: Locale = Locale.FRENCH): Intent {
+    // Use resource strings for prompts instead of hardcoded text
+    // Fallback to English for common languages
     val promptText = when (locale.language) {
         "fr" -> "Parlez maintenant..."
         "en" -> "Speak now..."
+        "es" -> "Habla ahora..."
+        "de" -> "Jetzt sprechen..."
+        "it" -> "Parla ora..."
         else -> "Speak now..."
+    }
+
+    // Properly format language code - handle empty country
+    val languageCode = if (locale.country.isNotEmpty()) {
+        "${locale.language}-${locale.country}"
+    } else {
+        locale.language
     }
 
     return Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
         putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        putExtra(RecognizerIntent.EXTRA_LANGUAGE, "${locale.language}-${locale.country}")
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE, languageCode)
         putExtra(RecognizerIntent.EXTRA_PROMPT, promptText)
     }
 }

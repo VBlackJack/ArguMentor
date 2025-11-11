@@ -438,4 +438,17 @@
     <string name="error_save_evidence">Failed to save evidence: %1$s</string>
     <string name="error_save_question">Failed to save question: %1$s</string>
     <string name="error_save_source">Failed to save source: %1$s</string>
+
+    <!-- Speech Recognition Errors -->
+    <string name="error_speech_recognition_not_available">Speech recognition is not available on this device</string>
+    <string name="error_speech_audio">Audio error during speech recognition</string>
+    <string name="error_speech_client">Speech recognition client error</string>
+    <string name="error_speech_permissions">Microphone permission missing</string>
+    <string name="error_speech_network">Network error during speech recognition</string>
+    <string name="error_speech_network_timeout">Network timeout</string>
+    <string name="error_speech_no_match">No speech detected</string>
+    <string name="error_speech_recognizer_busy">Speech recognizer is busy</string>
+    <string name="error_speech_server">Speech recognition server error</string>
+    <string name="error_speech_timeout">Speech recognition timeout</string>
+    <string name="error_speech_unknown">Unknown error during speech recognition</string>
 </resources>

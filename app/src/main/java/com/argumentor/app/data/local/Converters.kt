@@ -6,10 +6,15 @@ import com.argumentor.app.data.model.Evidence
 import com.argumentor.app.data.model.Question
 import com.argumentor.app.data.model.Topic
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import timber.log.Timber
 
 /**
  * Room type converters for complex data types.
+ *
+ * ROBUSTNESS: All converters include error handling to prevent crashes from corrupted database data.
+ * Failed conversions log errors and return safe defaults instead of throwing exceptions.
  */
 class Converters {
     private val gson = Gson()
@@ -20,10 +25,27 @@ class Converters {
         return gson.toJson(value)
     }
 
+    /**
+     * Converts JSON string to List<String> with error handling.
+     * Returns empty list if JSON is invalid or null.
+     * BUGFIX: Prevents crashes from corrupted database data.
+     */
     @TypeConverter
     fun toStringList(value: String): List<String> {
-        val listType = object : TypeToken<List<String>>() {}.type
-        return gson.fromJson(value, listType)
+        if (value.isBlank()) {
+            return emptyList()
+        }
+
+        return try {
+            val listType = object : TypeToken<List<String>>() {}.type
+            gson.fromJson(value, listType) ?: emptyList()
+        } catch (e: JsonSyntaxException) {
+            Timber.e(e, "Invalid JSON for string list: $value")
+            emptyList()
+        } catch (e: Exception) {
+            Timber.e(e, "Unexpected error parsing string list: $value")
+            emptyList()
+        }
     }
 
     // Topic.Posture converters

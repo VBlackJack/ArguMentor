@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -27,6 +28,14 @@ class HomeViewModel @Inject constructor(
     private val topicRepository: TopicRepository,
     private val resourceProvider: ResourceProvider
 ) : ViewModel() {
+
+    companion object {
+        /**
+         * Debounce delay for search queries in milliseconds.
+         * Prevents excessive filtering while user is still typing.
+         */
+        private const val SEARCH_DEBOUNCE_MS = 300L
+    }
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -58,8 +67,8 @@ class HomeViewModel @Inject constructor(
      */
     @OptIn(FlowPreview::class)
     val uiState: StateFlow<UiState<List<Topic>>> = combine(
-        topicRepository.getAllTopics(),
-        _searchQuery.debounce(300),
+        topicRepository.getAllTopics().distinctUntilChanged(),  // PERFORMANCE: Avoid reprocessing identical lists
+        _searchQuery.debounce(SEARCH_DEBOUNCE_MS),
         _selectedTag
     ) { topics, query, tag ->
         var filteredTopics = topics

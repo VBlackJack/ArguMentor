@@ -11,6 +11,8 @@ import java.text.Normalizer
 /**
  * Utilities for generating fingerprints for duplicate detection.
  * Uses SHA-256 hashing of normalized text.
+ *
+ * PERFORMANCE: Pre-compiled regex patterns are cached to avoid recompilation overhead.
  */
 object FingerprintUtils {
 
@@ -28,28 +30,39 @@ object FingerprintUtils {
     private const val FINGERPRINT_HASH_LENGTH = 16
 
     /**
+     * Pre-compiled regex patterns for text normalization.
+     * PERFORMANCE: These are compiled once and reused, avoiding regex compilation overhead
+     * on every call to normalizeText().
+     */
+    private val DIACRITICS_PATTERN = "\\p{M}".toRegex()
+    private val PUNCTUATION_PATTERN = "\\p{P}".toRegex()
+    private val WHITESPACE_PATTERN = "\\s+".toRegex()
+
+    /**
      * Normalize text for fingerprinting:
      * - Convert to lowercase
      * - Remove Unicode accents (NFD decomposition + strip)
      * - Remove all punctuation
      * - Collapse whitespace to single spaces
      * - Trim leading/trailing whitespace
+     *
+     * PERFORMANCE: Uses pre-compiled regex patterns to avoid compilation overhead.
      */
     fun normalizeText(text: String): String {
         // NFD decomposition to separate base characters from accents
         val normalized = Normalizer.normalize(text, Normalizer.Form.NFD)
 
-        // Remove diacritical marks (accents)
-        val withoutAccents = normalized.replace("\\p{M}".toRegex(), "")
+        // Remove diacritical marks (accents) - using cached pattern
+        val withoutAccents = normalized.replace(DIACRITICS_PATTERN, "")
 
         // Convert to lowercase
         val lowercase = withoutAccents.lowercase()
 
-        // Remove all punctuation
-        val noPunctuation = lowercase.replace("\\p{P}".toRegex(), "")
+        // Remove all punctuation - using cached pattern
+        val noPunctuation = lowercase.replace(PUNCTUATION_PATTERN, "")
 
-        // Collapse multiple whitespace to single space and trim
-        return noPunctuation.replace("\\s+".toRegex(), " ").trim()
+        // Collapse multiple whitespace to single space and trim - using cached pattern
+        return noPunctuation.replace(WHITESPACE_PATTERN, " ").trim()
     }
 
     /**

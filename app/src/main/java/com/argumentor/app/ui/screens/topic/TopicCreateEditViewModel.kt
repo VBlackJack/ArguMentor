@@ -60,16 +60,20 @@ class TopicCreateEditViewModel @Inject constructor(
 
     init {
         // Load default posture from settings
+        // BUGFIX: Use take(1) to collect only the initial value and avoid infinite collection
+        // in the init block which can cause memory leaks and unnecessary recomputations
         viewModelScope.launch {
-            settingsDataStore.defaultPosture.collect { postureString ->
-                val posture = Topic.Posture.fromString(postureString)
-                _defaultPosture.value = posture
-                // Update current posture and initial posture if we're not in edit mode
-                if (!_isEditMode.value) {
-                    _posture.value = posture
-                    _initialPosture.value = posture
+            settingsDataStore.defaultPosture
+                .take(1)  // Only take the first emission
+                .collect { postureString ->
+                    val posture = Topic.Posture.fromString(postureString)
+                    _defaultPosture.value = posture
+                    // Update current posture and initial posture if we're not in edit mode
+                    if (!_isEditMode.value) {
+                        _posture.value = posture
+                        _initialPosture.value = posture
+                    }
                 }
-            }
         }
     }
 
