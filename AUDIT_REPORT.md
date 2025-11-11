@@ -54,17 +54,22 @@ L'application ArguMentor a intégré l'essentiel des recommandations de sécurit
 - **Constat** : migrations `MIGRATION_6_7`, `MIGRATION_7_8`, `MIGRATION_8_9` créent les tables FTS (topics, evidences, tags) et pré-remplissent les données ; `ALL_MIGRATIONS` référence l'ensemble.
 - **Impact** : compatibilité ascendante, recherche plein texte unifiée.
 
-### 7. Ordres de tri uniformisés
+### 7. Migration historique timestamps raffinée
+- **Fichier** : `app/src/main/java/com/argumentor/app/data/local/DatabaseMigrations.kt`
+- **Constat** : la migration 1→2 attribue désormais des couples (`createdAt`, `updatedAt`) uniques et chronologiques à chaque enregistrement hérité.
+- **Impact** : meilleure traçabilité historique, différenciation fiable des mises à jour legacy.
+
+### 8. Ordres de tri uniformisés
 - **Fichiers** : DAO `EvidenceDao`, `QuestionDao`, `SourceDao`
 - **Constat** : requêtes principales et FTS ordonnées par `updatedAt DESC`.
 - **Impact** : expérience utilisateur cohérente sur les listes et la recherche.
 
-### 8. Observabilité fine dans les DAO
+### 9. Observabilité fine dans les DAO
 - **Fichiers** : `EvidenceDao`, `QuestionDao`, `RebuttalDao`
 - **Constat** : méthodes `observe*ById` exposées et réutilisées côté repository.
 - **Impact** : écrans Compose alimentés par Flow réactif sur chaque entité.
 
-### 9. Fallback FTS/LIKE mutualisé
+### 10. Fallback FTS/LIKE mutualisé
 - **Fichiers** : `RepositoryExtensions.kt` + repositories métiers
 - **Constat** : helper `searchWithFtsFallback` centralise la dégradation contrôlée, toutes les recherches l'utilisent.
 - **Impact** : résilience des recherches face aux requêtes FTS invalides.
@@ -73,13 +78,10 @@ L'application ArguMentor a intégré l'essentiel des recommandations de sécurit
 
 ## 🔎 POINTS DE VIGILANCE RESTANTS
 
-1. **Migration 1→2 : timestamps uniques souhaitables**
-   - Les colonnes `createdAt` / `updatedAt` sont initialisées avec une valeur identique lors de la migration. Pour refléter l'historique réel, générer des timestamps différenciés par enregistrement.
-
-2. **Export des schémas Room**
+1. **Export des schémas Room**
    - Re-générer les JSON d'`app/schemas` via `./gradlew :app:kspDebugKotlin` sur un poste équipé du SDK Android afin de conserver un historique complet des migrations.
 
 ---
 
 ### Conclusion
-Les failles critiques signalées par le précédent audit sont désormais corrigées dans la base de code. Le socle Android répond aux attentes de production (sécurité, performances, UX). Il reste conseillé de finaliser la migration historique des timestamps et de mettre à jour régulièrement les exports Room pour conserver une traçabilité complète.
+Les failles critiques signalées par le précédent audit sont désormais corrigées dans la base de code. Le socle Android répond aux attentes de production (sécurité, performances, UX). Il reste conseillé de régénérer régulièrement les exports Room pour conserver une traçabilité complète.

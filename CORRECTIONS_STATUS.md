@@ -7,7 +7,7 @@
 
 ## ✅ CORRECTIONS EFFECTUÉES
 
-### 🔴 Critiques (7/8 complétées)
+### 🔴 Critiques (8/8 complétées)
 
 1. ✅ **Type incohérent pour fallacy**
    - `Rebuttal.fallacyTag` → `fallacyIds: List<String>` (Migration 5→6 + refactoring complet)
@@ -35,13 +35,8 @@
 7. ✅ **Méthodes observe*ById disponibles**
    - Implémentées sur Evidence, Question, Rebuttal + intégration repository.
 
----
-
-## ⏳ CORRECTIONS CRITIQUES EN COURS
-
-1. **Timestamp unique migrations** *(priorité haute)*
-   - Améliorer la migration 1→2 pour générer des timestamps distincts par enregistrement lors de l'initialisation des colonnes `createdAt` / `updatedAt`.
-   - Impact : données historiques (pas de régression fonctionnelle immédiate).
+8. ✅ **Timestamps hérités différenciés**
+   - Migration 1→2 séquence désormais `createdAt` et `updatedAt` pour chaque enregistrement legacy (`DatabaseMigrations.MIGRATION_1_2`).
 
 ---
 
@@ -55,4 +50,4 @@
 
 ---
 
-**Statut général** : ✅ Corrections critiques appliquées (hors migration historique à raffiner). Suivi documentaire et exports Room à finaliser.
+**Statut général** : ✅ Corrections critiques appliquées. Reste à outiller l'export Room et l'automatisation documentaire.
