@@ -126,7 +126,7 @@ fun QuestionCreateEditScreen(
                                 style = MaterialTheme.typography.labelSmall
                             )
                             Text(
-                                selectedClaim!!.text,
+                                selectedClaim?.text ?: "",
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }

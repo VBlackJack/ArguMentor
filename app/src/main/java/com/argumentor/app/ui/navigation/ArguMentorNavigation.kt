@@ -255,7 +255,10 @@ fun ArguMentorNavigation(
             val topicId = backStackEntry.arguments?.getString("topicId") ?: return@composable
             DebateModeScreen(
                 topicId = topicId,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToFallacyDetail = { fallacyId ->
+                    navController.navigate(Screen.FallacyDetail.createRoute(fallacyId))
+                }
             )
         }
 
@@ -346,6 +349,12 @@ fun ArguMentorNavigation(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToDetail = { fallacyId ->
                     navController.navigate(Screen.FallacyDetail.createRoute(fallacyId))
+                },
+                onNavigateToCreate = {
+                    navController.navigate(Screen.FallacyCreate.route)
+                },
+                onNavigateToEdit = { fallacyId ->
+                    navController.navigate(Screen.FallacyEdit.createRoute(fallacyId))
                 }
             )
         }
@@ -357,6 +366,29 @@ fun ArguMentorNavigation(
         ) { backStackEntry ->
             val fallacyId = backStackEntry.arguments?.getString("fallacyId") ?: return@composable
             FallacyDetailScreen(
+                fallacyId = fallacyId,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToEdit = { editFallacyId ->
+                    navController.navigate(Screen.FallacyEdit.createRoute(editFallacyId))
+                }
+            )
+        }
+
+        // Fallacy create
+        composable(Screen.FallacyCreate.route) {
+            com.argumentor.app.ui.screens.fallacy.FallacyFormScreen(
+                fallacyId = null,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Fallacy edit
+        composable(
+            route = Screen.FallacyEdit.route,
+            arguments = listOf(navArgument("fallacyId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val fallacyId = backStackEntry.arguments?.getString("fallacyId") ?: return@composable
+            com.argumentor.app.ui.screens.fallacy.FallacyFormScreen(
                 fallacyId = fallacyId,
                 onNavigateBack = { navController.popBackStack() }
             )

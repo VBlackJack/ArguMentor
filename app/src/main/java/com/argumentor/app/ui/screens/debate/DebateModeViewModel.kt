@@ -58,16 +58,25 @@ class DebateModeViewModel @Inject constructor(
         private const val BONUS_STREAK_MULTIPLIER = 2
     }
 
+    /**
+     * Loads topic and all related debate cards.
+     * MEMORY-003 FIX: Combines flows to avoid race conditions and memory leaks.
+     */
     fun loadTopic(topicId: String) {
         viewModelScope.launch {
-            topicRepository.getTopicById(topicId).collect { topic ->
+            // MEMORY-003 FIX: Combine topic and claims flows to avoid race conditions
+            combine(
+                topicRepository.getTopicById(topicId),
+                claimRepository.getAllClaims()
+            ) { topic, allClaims ->
                 _topic.value = topic
+                Pair(topic, allClaims.filter { it.topics.contains(topicId) })
             }
-        }
-
-        viewModelScope.launch {
-            claimRepository.getAllClaims().collect { allClaims ->
-                val topicClaims = allClaims.filter { it.topics.contains(topicId) }
+            .collectLatest { (topic, topicClaims) ->
+                if (topic == null) {
+                    Timber.w("Topic not found: $topicId")
+                    return@collectLatest
+                }
 
                 // Load all data at once instead of N+1 queries (optimization)
                 Timber.d("Loading debate cards for ${topicClaims.size} claims")
@@ -88,7 +97,7 @@ class DebateModeViewModel @Inject constructor(
                 topicClaims.forEach { allFallacyIds.addAll(it.fallacyIds) }
                 allRebuttals.forEach { allFallacyIds.addAll(it.fallacyIds) }
 
-                // Load all fallacies at once for performance
+                // PERF-001 FIX: Load all fallacies at once using optimized bulk query
                 val allFallacies = fallacyRepository.getFallaciesByIds(allFallacyIds.toList())
                 val fallaciesMap = allFallacies.associateBy { it.id }
 

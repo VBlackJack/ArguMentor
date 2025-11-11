@@ -7,9 +7,7 @@ import com.argumentor.app.data.constants.FallacyCatalog
 import com.argumentor.app.data.model.Fallacy
 import com.argumentor.app.data.repository.FallacyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,29 +29,50 @@ class FallacyCatalogViewModel @Inject constructor(
     val fallacies: StateFlow<List<Fallacy>> = _fallacies.asStateFlow()
 
     init {
-        // Load fallacies from database
+        // MEMORY-001 FIX: Check and sync fallacies on init, then observe with lifecycle-aware collection
         viewModelScope.launch {
-            fallacyRepository.getAllFallacies().collect { fallaciesFromDb ->
-                // If database is empty, sync with localized strings
-                if (fallaciesFromDb.isEmpty()) {
-                    syncFallaciesFromResources()
-                } else {
+            // First check if database is empty and sync if needed (one-time operation)
+            val existingFallacies = fallacyRepository.getAllFallaciesSync()
+            if (existingFallacies.isEmpty()) {
+                syncFallaciesFromResources()
+            }
+        }
+
+        // MEMORY-001 FIX: Use stateIn with WhileSubscribed to avoid memory leaks
+        // The Flow will only collect while there are active subscribers (UI visible)
+        viewModelScope.launch {
+            fallacyRepository.getAllFallacies()
+                .map { fallaciesFromDb ->
                     // Update fallacies with localized content from strings.xml
-                    _fallacies.value = fallaciesFromDb.map { fallacy ->
-                        // Get localized name, description, and example from strings.xml
-                        val localizedFallacy = FallacyCatalog.getFallacyById(application, fallacy.id)
-                        if (localizedFallacy != null) {
-                            fallacy.copy(
-                                name = localizedFallacy.name,
-                                description = localizedFallacy.description,
-                                example = localizedFallacy.example
-                            )
-                        } else {
-                            fallacy
-                        }
+                    fallaciesFromDb.map { fallacy ->
+                        localizeFallacy(fallacy)
                     }
                 }
-            }
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+                    initialValue = emptyList()
+                )
+                .collect { localizedFallacies ->
+                    _fallacies.value = localizedFallacies
+                }
+        }
+    }
+
+    /**
+     * Helper function to localize a fallacy.
+     * SMELL-003 FIX: Extracted duplication into reusable function.
+     */
+    private fun localizeFallacy(fallacy: Fallacy): Fallacy {
+        val localizedFallacy = FallacyCatalog.getFallacyById(application, fallacy.id)
+        return if (localizedFallacy != null) {
+            fallacy.copy(
+                name = localizedFallacy.name,
+                description = localizedFallacy.description,
+                example = localizedFallacy.example
+            )
+        } else {
+            fallacy
         }
     }
 
@@ -79,21 +98,19 @@ class FallacyCatalogViewModel @Inject constructor(
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query
         viewModelScope.launch {
-            fallacyRepository.searchFallacies(query).collect { results ->
-                // Update with localized content
-                _fallacies.value = results.map { fallacy ->
-                    val localizedFallacy = FallacyCatalog.getFallacyById(application, fallacy.id)
-                    if (localizedFallacy != null) {
-                        fallacy.copy(
-                            name = localizedFallacy.name,
-                            description = localizedFallacy.description,
-                            example = localizedFallacy.example
-                        )
-                    } else {
-                        fallacy
-                    }
+            fallacyRepository.searchFallacies(query)
+                .map { results ->
+                    // SMELL-003 FIX: Use extracted localizeFallacy function
+                    results.map { fallacy -> localizeFallacy(fallacy) }
                 }
-            }
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+                    initialValue = emptyList()
+                )
+                .collect { localizedResults ->
+                    _fallacies.value = localizedResults
+                }
         }
     }
 

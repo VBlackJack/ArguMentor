@@ -29,7 +29,8 @@ fun FallacyCatalogScreen(
     viewModel: FallacyCatalogViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
-    onNavigateToCreate: () -> Unit = {}
+    onNavigateToCreate: () -> Unit = {},
+    onNavigateToEdit: (String) -> Unit = {}
 ) {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val fallacies by viewModel.fallacies.collectAsState()
@@ -121,7 +122,9 @@ fun FallacyCatalogScreen(
                     ) { fallacy ->
                         FallacyCard(
                             fallacy = fallacy,
-                            onClick = { onNavigateToDetail(fallacy.id) }
+                            onClick = { onNavigateToDetail(fallacy.id) },
+                            onEdit = { onNavigateToEdit(fallacy.id) },
+                            onDelete = { viewModel.deleteFallacy(fallacy) }
                         )
                     }
                 }
@@ -134,12 +137,37 @@ fun FallacyCatalogScreen(
 private fun FallacyCard(
     fallacy: Fallacy,
     onClick: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Supprimer le sophisme") },
+            text = { Text("Êtes-vous sûr de vouloir supprimer ce sophisme personnalisé ?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDelete()
+                        showDeleteDialog = false
+                    }
+                ) {
+                    Text("Supprimer")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Annuler")
+                }
+            }
+        )
+    }
+
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
@@ -147,14 +175,51 @@ private fun FallacyCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .clickable(onClick = onClick)
                 .padding(16.dp)
         ) {
-            // Fallacy name
-            Text(
-                text = fallacy.name,
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+            // Header with name and action buttons
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            ) {
+                // Fallacy name
+                Text(
+                    text = fallacy.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f)
+                )
+
+                // Action buttons (only for custom fallacies)
+                if (fallacy.isCustom) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        IconButton(
+                            onClick = onEdit,
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = "Modifier",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        IconButton(
+                            onClick = { showDeleteDialog = true },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Supprimer",
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -168,11 +233,30 @@ private fun FallacyCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // "Tap to learn more" hint
+            // Footer with custom badge and chevron
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
             ) {
+                // Custom fallacy badge
+                if (fallacy.isCustom) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = MaterialTheme.shapes.small
+                    ) {
+                        Text(
+                            text = "Personnalisé",
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                } else {
+                    Spacer(modifier = Modifier.width(1.dp))
+                }
+
+                // "Tap to learn more" hint
                 Icon(
                     Icons.Default.ChevronRight,
                     contentDescription = null,

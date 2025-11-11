@@ -111,4 +111,11 @@ interface FallacyDao {
      */
     @Query("SELECT EXISTS(SELECT 1 FROM fallacies WHERE id = :fallacyId LIMIT 1)")
     suspend fun fallacyExists(fallacyId: String): Boolean
+
+    /**
+     * Get multiple fallacies by their IDs in a single query.
+     * PERF-001 FIX: Prevents N+1 query pattern.
+     */
+    @Query("SELECT * FROM fallacies WHERE id IN (:fallacyIds)")
+    suspend fun getFallaciesByIds(fallacyIds: List<String>): List<Fallacy>
 }
