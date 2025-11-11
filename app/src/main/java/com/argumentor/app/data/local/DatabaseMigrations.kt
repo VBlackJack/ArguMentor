@@ -3,6 +3,7 @@ package com.argumentor.app.data.local
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.argumentor.app.data.model.getCurrentIsoTimestamp
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

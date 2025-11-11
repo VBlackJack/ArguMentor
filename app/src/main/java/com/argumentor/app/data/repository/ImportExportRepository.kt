@@ -1,5 +1,7 @@
 package com.argumentor.app.data.repository
 
+import android.content.Context
+import android.os.Environment
 import androidx.room.withTransaction
 import com.argumentor.app.data.dto.*
 import com.argumentor.app.data.local.ArguMentorDatabase
@@ -7,8 +9,10 @@ import com.argumentor.app.data.model.getCurrentIsoTimestamp
 import com.argumentor.app.util.FingerprintUtils
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
@@ -22,7 +26,8 @@ import javax.inject.Singleton
  */
 @Singleton
 class ImportExportRepository @Inject constructor(
-    private val database: ArguMentorDatabase
+    private val database: ArguMentorDatabase,
+    @ApplicationContext private val context: Context
 ) {
     private val gson: Gson = GsonBuilder()
         .setPrettyPrinting()
