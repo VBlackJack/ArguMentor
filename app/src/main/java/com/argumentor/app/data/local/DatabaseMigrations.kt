@@ -67,16 +67,25 @@ object DatabaseMigrations {
             return timestamp
         }
 
+        /**
+         * BUG-012: Added error handling for database migration queries.
+         * Ensures migration doesn't silently fail on corrupted databases.
+         */
         fun updateTable(
             table: String,
             idColumn: String = "id",
             hasCreatedColumn: Boolean
         ) {
-            db.query("SELECT $idColumn FROM $table ORDER BY rowid").use { cursor ->
-                while (cursor.moveToNext()) {
-                    val id = cursor.getString(0)
-                    val bindings = mutableListOf<Any>()
-                    val assignments = mutableListOf<String>()
+            try {
+                db.query("SELECT $idColumn FROM $table ORDER BY rowid").use { cursor ->
+                    if (cursor == null) {
+                        Timber.e("Failed to query table $table for migration")
+                        return
+                    }
+                    while (cursor.moveToNext()) {
+                        val id = cursor.getString(0)
+                        val bindings = mutableListOf<Any>()
+                        val assignments = mutableListOf<String>()
 
                     if (hasCreatedColumn) {
                         assignments += "createdAt = ?"
@@ -88,11 +97,15 @@ object DatabaseMigrations {
 
                     bindings += id
 
-                    db.execSQL(
-                        "UPDATE $table SET ${assignments.joinToString(", ")} WHERE $idColumn = ?",
-                        bindings.toTypedArray()
-                    )
+                        db.execSQL(
+                            "UPDATE $table SET ${assignments.joinToString(", ")} WHERE $idColumn = ?",
+                            bindings.toTypedArray()
+                        )
+                    }
                 }
+            } catch (e: Exception) {
+                Timber.e(e, "Error migrating table $table")
+                throw e  // Re-throw to fail the migration properly
             }
         }
 

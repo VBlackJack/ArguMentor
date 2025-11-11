@@ -116,11 +116,22 @@ class TopicDetailViewModel @Inject constructor(
         _selectedTab.value = index
     }
 
+    /**
+     * BUG-006: Added delay to ensure cascade deletions complete before callback.
+     * Without this, the UI might navigate away before related claims are fully deleted.
+     */
     fun deleteTopic(onDeleted: () -> Unit) {
         viewModelScope.launch {
             _topic.value?.let { topic ->
-                topicRepository.deleteTopic(topic)
-                onDeleted()
+                try {
+                    topicRepository.deleteTopic(topic)
+                    // Wait briefly for cascade deletions to complete
+                    kotlinx.coroutines.delay(150)
+                    onDeleted()
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to delete topic")
+                    // Optionally show error to user
+                }
             }
         }
     }

@@ -3,6 +3,7 @@ package com.argumentor.app.data.model
 import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.argumentor.app.util.ValidationUtils
 import java.util.UUID
 
 /**
@@ -55,6 +56,14 @@ data class Source(
         reliabilityScore?.let { score ->
             require(score in 0.0..1.0) {
                 "reliabilityScore must be between 0.0 and 1.0, got $score"
+            }
+        }
+
+        // SEC-008: Validate URL format to prevent malicious URLs (javascript:, data: URIs, etc.)
+        url?.let { urlString ->
+            val validationResult = ValidationUtils.validateUrl(urlString)
+            require(validationResult.isValid) {
+                validationResult.errorMessage ?: "Invalid URL format"
             }
         }
     }
