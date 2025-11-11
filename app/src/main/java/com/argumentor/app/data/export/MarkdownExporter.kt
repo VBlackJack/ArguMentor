@@ -3,6 +3,7 @@ package com.argumentor.app.data.export
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import com.argumentor.app.R
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.data.model.Evidence
 import com.argumentor.app.data.model.Question
@@ -14,6 +15,8 @@ import java.util.*
 
 /**
  * Exports topics and their arguments to Markdown format.
+ *
+ * INTERNATIONALIZATION: All labels now use string resources for proper multi-language support.
  */
 class MarkdownExporter @Inject constructor(
     @ApplicationContext private val context: Context
@@ -38,28 +41,28 @@ class MarkdownExporter @Inject constructor(
                 appendLine("# ${topic.title}")
                 appendLine()
 
-                // Metadata
-                appendLine("**Posture:** ${topic.posture.name.replace("_", " ")}")
+                // Metadata - BUGFIX: Use string resources instead of hardcoded French
+                appendLine("**${context.getString(R.string.export_posture_label)}** ${topic.posture.name.replace("_", " ")}")
                 appendLine()
-                appendLine("**Créé le:** ${formatDate(topic.createdAt)}")
-                appendLine("**Mis à jour le:** ${formatDate(topic.updatedAt)}")
+                appendLine("**${context.getString(R.string.export_created_label)}** ${formatDate(topic.createdAt)}")
+                appendLine("**${context.getString(R.string.export_updated_label)}** ${formatDate(topic.updatedAt)}")
                 appendLine()
 
-                // Tags
+                // Tags - BUGFIX: Use string resources
                 if (topic.tags.isNotEmpty()) {
-                    appendLine("**Tags:** ${topic.tags.joinToString(", ") { "`$it`" }}")
+                    appendLine("**${context.getString(R.string.export_tags_label)}** ${topic.tags.joinToString(", ") { "`$it`" }}")
                     appendLine()
                 }
 
-                // Summary
-                appendLine("## Résumé")
+                // Summary - BUGFIX: Use string resources
+                appendLine("## ${context.getString(R.string.export_summary_label)}")
                 appendLine()
                 appendLine(topic.summary)
                 appendLine()
 
-                // Claims
+                // Claims - BUGFIX: Use string resources
                 if (claims.isNotEmpty()) {
-                    appendLine("## Arguments")
+                    appendLine("## ${context.getString(R.string.export_arguments_label)}")
                     appendLine()
 
                     claims.sortedBy { it.stance }.forEach { claim ->
@@ -71,22 +74,22 @@ class MarkdownExporter @Inject constructor(
 
                         appendLine("### $stanceIcon ${claim.text.take(50)}...")
                         appendLine()
-                        appendLine("**Position:** ${claim.stance.name}")
-                        appendLine("**Force:** ${claim.strength.name}")
+                        appendLine("**${context.getString(R.string.export_position_label)}** ${claim.stance.name}")
+                        appendLine("**${context.getString(R.string.export_strength_label)}** ${claim.strength.name}")
                         appendLine()
                         appendLine(claim.text)
                         appendLine()
 
-                        // Evidence for this claim
+                        // Evidence for this claim - BUGFIX: Use string resources
                         evidence[claim.id]?.let { evidenceList ->
                             if (evidenceList.isNotEmpty()) {
-                                appendLine("**Preuves:**")
+                                appendLine("**${context.getString(R.string.export_evidence_label)}**")
                                 evidenceList.forEach { ev ->
                                     appendLine("- (${ev.type.name})")
                                     appendLine("  ${ev.content}")
                                     if (ev.sourceId != null && ev.sourceId.isNotEmpty()) {
                                         sources[ev.sourceId]?.let { source ->
-                                            appendLine("  *Source: ${source.title}*")
+                                            appendLine("  *${context.getString(R.string.export_source_label)} ${source.title}*")
                                         }
                                     }
                                 }
@@ -94,10 +97,10 @@ class MarkdownExporter @Inject constructor(
                             }
                         }
 
-                        // Rebuttals for this claim
+                        // Rebuttals for this claim - BUGFIX: Use string resources
                         rebuttals[claim.id]?.let { rebuttalList ->
                             if (rebuttalList.isNotEmpty()) {
-                                appendLine("**Contre-arguments:**")
+                                appendLine("**${context.getString(R.string.export_rebuttals_label)}**")
                                 appendLine()
                                 rebuttalList.forEach { rebuttal ->
                                     appendLine("#### ↳ ${rebuttal.text.take(50)}...")
@@ -121,9 +124,9 @@ class MarkdownExporter @Inject constructor(
                     }
                 }
 
-                // Questions
+                // Questions - BUGFIX: Use string resources
                 if (questions.isNotEmpty()) {
-                    appendLine("## Questions en suspens")
+                    appendLine("## ${context.getString(R.string.export_questions_label)}")
                     appendLine()
                     questions.forEach { question ->
                         appendLine("- ${question.text}")
@@ -131,25 +134,25 @@ class MarkdownExporter @Inject constructor(
                     appendLine()
                 }
 
-                // Sources
+                // Sources - BUGFIX: Use string resources
                 val allSources = sources.values.toList()
                 if (allSources.isNotEmpty()) {
-                    appendLine("## Sources")
+                    appendLine("## ${context.getString(R.string.export_sources_label)}")
                     appendLine()
                     allSources.forEach { source ->
                         appendLine("### ${source.title}")
                         appendLine()
                         source.citation?.let {
-                            appendLine("**Citation:** $it")
+                            appendLine("**${context.getString(R.string.export_citation_label)}** $it")
                         }
                         source.url?.let {
                             if (it.isNotEmpty()) {
-                                appendLine("**URL:** [$it]($it)")
+                                appendLine("**${context.getString(R.string.export_url_label)}** [$it]($it)")
                             }
                         }
                         source.date?.let {
                             if (it.isNotEmpty()) {
-                                appendLine("**Date:** $it")
+                                appendLine("**${context.getString(R.string.export_date_label)}** $it")
                             }
                         }
                         appendLine()
@@ -160,16 +163,16 @@ class MarkdownExporter @Inject constructor(
                             }
                         }
                         source.reliabilityScore?.let {
-                            appendLine("**Fiabilité:** ${(it * 100).toInt()}%")
+                            appendLine("**${context.getString(R.string.export_reliability_label)}** ${(it * 100).toInt()}%")
                         }
                         appendLine()
                     }
                 }
 
-                // Footer
+                // Footer - BUGFIX: Use string resources
                 appendLine("---")
                 appendLine()
-                appendLine("*Généré par ArguMentor le ${formatDate(getCurrentIsoTimestamp())}*")
+                appendLine("*${context.getString(R.string.export_generated_by, formatDate(getCurrentIsoTimestamp()))}*")
             }
 
             // BUG-007: Write to OutputStream (SAF-compatible)
@@ -195,9 +198,10 @@ class MarkdownExporter @Inject constructor(
     ): Result<Unit> {
         return try {
             val markdown = buildString {
-                appendLine("# Mes Topics ArguMentor")
+                // BUGFIX: Use string resources instead of hardcoded French
+                appendLine("# ${context.getString(R.string.export_multiple_topics_title)}")
                 appendLine()
-                appendLine("*Exporté le ${formatDate(getCurrentIsoTimestamp())}*")
+                appendLine("*${context.getString(R.string.export_exported_label, formatDate(getCurrentIsoTimestamp()))}*")
                 appendLine()
                 appendLine("---")
                 appendLine()
@@ -205,18 +209,18 @@ class MarkdownExporter @Inject constructor(
                 topics.forEach { topic ->
                     appendLine("## ${topic.title}")
                     appendLine()
-                    appendLine("**Posture:** ${topic.posture.name.replace("_", " ")}")
+                    appendLine("**${context.getString(R.string.export_posture_label)}** ${topic.posture.name.replace("_", " ")}")
                     appendLine()
                     appendLine(topic.summary)
                     appendLine()
 
                     claimsMap[topic.id]?.let { claims ->
-                        appendLine("**Arguments:** ${claims.size}")
+                        appendLine("**${context.getString(R.string.export_arguments_label)}** ${claims.size}")
                         claims.take(3).forEach { claim ->
                             appendLine("- [${claim.stance.name}] ${claim.text.take(50)}...")
                         }
                         if (claims.size > 3) {
-                            appendLine("- *... et ${claims.size - 3} autres*")
+                            appendLine("- *${context.getString(R.string.export_and_more, claims.size - 3)}*")
                         }
                     }
 
@@ -225,7 +229,7 @@ class MarkdownExporter @Inject constructor(
                     appendLine()
                 }
 
-                appendLine("*Généré par ArguMentor*")
+                appendLine("*${context.getString(R.string.export_generated_by)}*")
             }
 
             // Write to OutputStream (SAF-compatible)

@@ -1,10 +1,15 @@
 package com.argumentor.app.util
 
+import android.content.Context
+import com.argumentor.app.R
 import java.time.Instant
 
 /**
  * Validation utilities for input validation across the application.
  * Provides consistent validation rules for text fields, URLs, and other inputs.
+ *
+ * INTERNATIONALIZATION: All validation functions now require Context parameter to use
+ * string resources instead of hardcoded English error messages.
  */
 object ValidationUtils {
 
@@ -37,6 +42,9 @@ object ValidationUtils {
     /**
      * Validates text with minimum and maximum length constraints.
      *
+     * INTERNATIONALIZATION: Now uses string resources for error messages.
+     *
+     * @param context Context to access string resources
      * @param text Text to validate
      * @param fieldName Name of the field for error messages
      * @param minLength Minimum allowed length (default: MIN_TEXT_LENGTH)
@@ -44,15 +52,16 @@ object ValidationUtils {
      * @return ValidationResult indicating if valid or containing error message
      */
     fun validateText(
+        context: Context,
         text: String,
         fieldName: String,
         minLength: Int = MIN_TEXT_LENGTH,
         maxLength: Int = MAX_LONG_TEXT_LENGTH
     ): ValidationResult {
         return when {
-            text.isBlank() -> ValidationResult.Invalid("$fieldName cannot be empty")
-            text.trim().length < minLength -> ValidationResult.Invalid("$fieldName must be at least $minLength characters")
-            text.length > maxLength -> ValidationResult.Invalid("$fieldName cannot exceed $maxLength characters")
+            text.isBlank() -> ValidationResult.Invalid(context.getString(R.string.validation_field_empty, fieldName))
+            text.trim().length < minLength -> ValidationResult.Invalid(context.getString(R.string.validation_field_min_length, fieldName, minLength))
+            text.length > maxLength -> ValidationResult.Invalid(context.getString(R.string.validation_field_max_length, fieldName, maxLength))
             else -> ValidationResult.Valid
         }
     }
@@ -60,12 +69,13 @@ object ValidationUtils {
     /**
      * Validates a short text field (e.g., title, label).
      *
+     * @param context Context to access string resources
      * @param text Text to validate
      * @param fieldName Name of the field for error messages
      * @return ValidationResult indicating if valid or containing error message
      */
-    fun validateShortText(text: String, fieldName: String): ValidationResult {
-        return validateText(text, fieldName, MIN_TEXT_LENGTH, MAX_SHORT_TEXT_LENGTH)
+    fun validateShortText(context: Context, text: String, fieldName: String): ValidationResult {
+        return validateText(context, text, fieldName, MIN_TEXT_LENGTH, MAX_SHORT_TEXT_LENGTH)
     }
 
     /**
@@ -77,10 +87,13 @@ object ValidationUtils {
      * - Blocks dangerous protocols (javascript:, data:, file:, vbscript:)
      * - Properly validates domain structure
      *
+     * INTERNATIONALIZATION: Now uses string resources for error messages.
+     *
+     * @param context Context to access string resources
      * @param url URL string to validate
      * @return ValidationResult indicating if valid or containing error message
      */
-    fun validateUrl(url: String): ValidationResult {
+    fun validateUrl(context: Context, url: String): ValidationResult {
         if (url.isBlank()) {
             return ValidationResult.Valid // URLs are often optional
         }
@@ -91,7 +104,7 @@ object ValidationUtils {
         val lowercaseUrl = trimmedUrl.lowercase()
         val dangerousProtocols = listOf("javascript:", "data:", "file:", "vbscript:", "about:", "blob:")
         if (dangerousProtocols.any { lowercaseUrl.startsWith(it) }) {
-            return ValidationResult.Invalid("Unsupported or dangerous URL protocol")
+            return ValidationResult.Invalid(context.getString(R.string.validation_url_invalid_protocol))
         }
 
         // Ensure HTTP/HTTPS protocol is present or can be assumed
@@ -107,47 +120,49 @@ object ValidationUtils {
 
             // Validate protocol is HTTP or HTTPS only
             if (url.protocol != "http" && url.protocol != "https") {
-                return ValidationResult.Invalid("Only HTTP and HTTPS protocols are allowed")
+                return ValidationResult.Invalid(context.getString(R.string.validation_url_http_only))
             }
 
             // Validate port is in valid range (if specified)
             val port = url.port
             if (port != -1 && (port < 1 || port > 65535)) {
-                return ValidationResult.Invalid("Invalid port number (must be 1-65535)")
+                return ValidationResult.Invalid(context.getString(R.string.validation_url_invalid_port))
             }
 
             // Validate host is not empty and has reasonable format
             if (url.host.isBlank() || url.host.length > 253) {
-                return ValidationResult.Invalid("Invalid domain name")
+                return ValidationResult.Invalid(context.getString(R.string.validation_url_invalid_domain))
             }
 
             // Additional checks for suspicious patterns
             if (url.host.contains("..") || url.host.startsWith(".") || url.host.endsWith(".")) {
-                return ValidationResult.Invalid("Invalid domain format")
+                return ValidationResult.Invalid(context.getString(R.string.validation_url_invalid_domain))
             }
 
             ValidationResult.Valid
         } catch (e: java.net.MalformedURLException) {
-            ValidationResult.Invalid("Invalid URL format: ${e.message ?: "malformed URL"}")
+            ValidationResult.Invalid(context.getString(R.string.validation_url_invalid_format))
         } catch (e: Exception) {
-            ValidationResult.Invalid("Invalid URL format")
+            ValidationResult.Invalid(context.getString(R.string.validation_url_invalid_format))
         }
     }
 
     /**
      * Validates reliability score is within 0.0-1.0 range.
      *
+     * INTERNATIONALIZATION: Now uses string resources for error messages.
+     *
+     * @param context Context to access string resources
      * @param score Score to validate
      * @return ValidationResult indicating if valid or containing error message
      */
-    fun validateReliabilityScore(score: Double?): ValidationResult {
+    fun validateReliabilityScore(context: Context, score: Double?): ValidationResult {
         if (score == null) {
             return ValidationResult.Valid // Score is optional
         }
 
         return when {
-            score < 0.0 -> ValidationResult.Invalid("Reliability score cannot be negative")
-            score > 1.0 -> ValidationResult.Invalid("Reliability score cannot exceed 1.0")
+            score < 0.0 || score > 1.0 -> ValidationResult.Invalid(context.getString(R.string.validation_score_invalid))
             else -> ValidationResult.Valid
         }
     }
@@ -156,33 +171,39 @@ object ValidationUtils {
      * Validates an ISO 8601 timestamp format.
      * Accepts timestamps in the format: "2025-11-08T13:00:00Z"
      *
+     * INTERNATIONALIZATION: Now uses string resources for error messages.
+     *
+     * @param context Context to access string resources
      * @param timestamp Timestamp string to validate
-     * @param fieldName Name of the field for error messages (default: "Timestamp")
+     * @param fieldName Name of the field for error messages
      * @return ValidationResult indicating if valid or containing error message
      */
-    fun validateIsoTimestamp(timestamp: String, fieldName: String = "Timestamp"): ValidationResult {
+    fun validateIsoTimestamp(context: Context, timestamp: String, fieldName: String): ValidationResult {
         if (timestamp.isBlank()) {
-            return ValidationResult.Invalid("$fieldName cannot be empty")
+            return ValidationResult.Invalid(context.getString(R.string.validation_field_empty, fieldName))
         }
 
         return try {
             Instant.parse(timestamp)
             ValidationResult.Valid
         } catch (e: Exception) {
-            ValidationResult.Invalid("$fieldName must be in ISO 8601 format (e.g., 2025-11-08T13:00:00Z)")
+            ValidationResult.Invalid(context.getString(R.string.validation_url_invalid_format))
         }
     }
 
     /**
      * Validates that a list is not empty.
      *
+     * INTERNATIONALIZATION: Now uses string resources for error messages.
+     *
+     * @param context Context to access string resources
      * @param list List to validate
      * @param fieldName Name of the field for error messages
      * @return ValidationResult indicating if valid or containing error message
      */
-    fun <T> validateNotEmpty(list: List<T>, fieldName: String): ValidationResult {
+    fun <T> validateNotEmpty(context: Context, list: List<T>, fieldName: String): ValidationResult {
         return if (list.isEmpty()) {
-            ValidationResult.Invalid("$fieldName cannot be empty")
+            ValidationResult.Invalid(context.getString(R.string.validation_field_empty, fieldName))
         } else {
             ValidationResult.Valid
         }

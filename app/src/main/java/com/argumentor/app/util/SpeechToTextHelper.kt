@@ -104,7 +104,7 @@ class SpeechToTextHelper(
                 })
             }
 
-            val intent = createSpeechIntent(locale)
+            val intent = createSpeechIntent(context, locale)
             speechRecognizer?.startListening(intent)
             return true
         } catch (e: Exception) {
@@ -216,19 +216,21 @@ fun rememberSpeechToTextLauncher(
  * Create a speech recognition intent with specified locale.
  * Handles locales with or without country codes properly.
  *
+ * INTERNATIONALIZATION: Now uses string resources for prompts instead of hardcoded text.
+ *
+ * @param context Context to access string resources
  * @param locale The locale to use for recognition (default: French)
  * @return Configured Intent for speech recognition
  */
-fun createSpeechIntent(locale: Locale = Locale.FRENCH): Intent {
+fun createSpeechIntent(context: Context, locale: Locale = Locale.FRENCH): Intent {
     // Use resource strings for prompts instead of hardcoded text
-    // Fallback to English for common languages
     val promptText = when (locale.language) {
-        "fr" -> "Parlez maintenant..."
-        "en" -> "Speak now..."
-        "es" -> "Habla ahora..."
-        "de" -> "Jetzt sprechen..."
-        "it" -> "Parla ora..."
-        else -> "Speak now..."
+        "fr" -> context.getString(R.string.speech_prompt_fr)
+        "en" -> context.getString(R.string.speech_prompt_en)
+        "es" -> context.getString(R.string.speech_prompt_es)
+        "de" -> context.getString(R.string.speech_prompt_de)
+        "it" -> context.getString(R.string.speech_prompt_it)
+        else -> context.getString(R.string.speech_prompt_default)
     }
 
     // Properly format language code - handle empty country

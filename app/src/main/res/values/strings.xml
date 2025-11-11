@@ -505,7 +505,11 @@
     <string name="export_date_label">Date:</string>
     <string name="export_position_label">Position:</string>
     <string name="export_strength_label">Force:</string>
+    <string name="export_source_label">Source:</string>
     <string name="export_generated_by">Généré par ArguMentor le %1$s</string>
+    <string name="export_multiple_topics_title">Mes Topics ArguMentor</string>
+    <string name="export_exported_label">Exporté le %1$s</string>
+    <string name="export_and_more">... et %1$d autres</string>
 
     <!-- Field Names (for validation) -->
     <string name="field_title">Le titre</string>
