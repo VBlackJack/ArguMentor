@@ -435,10 +435,10 @@ private fun ClaimBack(card: DebateCard, modifier: Modifier = Modifier) {
                                 text = rebuttal.text,
                                 style = MaterialTheme.typography.bodyMedium
                             )
-                            if (rebuttal.fallacyTag != null) {
+                            if (rebuttal.fallacyIds.isNotEmpty()) {
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    text = stringResource(R.string.debate_fallacy, rebuttal.fallacyTag),
+                                    text = stringResource(R.string.debate_fallacy, rebuttal.fallacyIds.joinToString(", ")),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.error
                                 )

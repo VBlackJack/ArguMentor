@@ -95,12 +95,63 @@ object DatabaseMigrations {
     }
 
     /**
+     * Migration from version 5 to 6.
+     *
+     * Changes:
+     * - Renamed fallacyTag to fallacyIds in rebuttals table for consistency with claims
+     * - Converted from nullable String to JSON array of strings
+     */
+    val MIGRATION_5_6 = object : Migration(5, 6) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Rename fallacyTag column to fallacyIds and convert single value to array
+            // SQLite doesn't support renaming columns directly in older versions,
+            // so we need to recreate the table
+
+            // Step 1: Create new table with updated schema
+            db.execSQL("""
+                CREATE TABLE rebuttals_new (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    claimId TEXT NOT NULL,
+                    text TEXT NOT NULL,
+                    fallacyIds TEXT NOT NULL DEFAULT '[]',
+                    createdAt TEXT NOT NULL,
+                    updatedAt TEXT NOT NULL,
+                    FOREIGN KEY (claimId) REFERENCES claims(id) ON DELETE CASCADE
+                )
+            """)
+
+            // Step 2: Create index on claimId
+            db.execSQL("CREATE INDEX index_rebuttals_new_claimId ON rebuttals_new(claimId)")
+
+            // Step 3: Copy data from old table to new table
+            // Convert single fallacyTag to array format [fallacyTag] if not null, else []
+            db.execSQL("""
+                INSERT INTO rebuttals_new (id, claimId, text, fallacyIds, createdAt, updatedAt)
+                SELECT id, claimId, text,
+                    CASE
+                        WHEN fallacyTag IS NULL OR fallacyTag = '' THEN '[]'
+                        ELSE '["' || fallacyTag || '"]'
+                    END,
+                    createdAt, updatedAt
+                FROM rebuttals
+            """)
+
+            // Step 4: Drop old table
+            db.execSQL("DROP TABLE rebuttals")
+
+            // Step 5: Rename new table to original name
+            db.execSQL("ALTER TABLE rebuttals_new RENAME TO rebuttals")
+        }
+    }
+
+    /**
      * All migrations in order.
      */
     val ALL_MIGRATIONS = arrayOf(
         MIGRATION_1_2,
         MIGRATION_2_3,
         MIGRATION_3_4,
-        MIGRATION_4_5
+        MIGRATION_4_5,
+        MIGRATION_5_6
     )
 }

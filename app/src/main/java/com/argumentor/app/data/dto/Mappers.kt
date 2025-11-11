@@ -58,7 +58,7 @@ fun Rebuttal.toDto(): RebuttalDto = RebuttalDto(
     id = id,
     claimId = claimId,
     text = text,
-    fallacyTag = fallacyTag,
+    fallacyIds = fallacyIds,
     createdAt = createdAt,
     updatedAt = updatedAt
 )
@@ -67,7 +67,7 @@ fun RebuttalDto.toModel(): Rebuttal = Rebuttal(
     id = id,
     claimId = claimId,
     text = text,
-    fallacyTag = fallacyTag,
+    fallacyIds = fallacyIds,
     createdAt = createdAt,
     updatedAt = updatedAt
 )

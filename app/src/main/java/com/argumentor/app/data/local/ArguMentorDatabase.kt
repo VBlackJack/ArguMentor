@@ -13,6 +13,7 @@ import com.argumentor.app.data.model.*
  * Version 3 - Added index on claimFingerprint for faster duplicate detection
  * Version 4 - Added SourceFts for full-text search on sources
  * Version 5 - Added fallacyIds field to Claim for linking claims to identified fallacies
+ * Version 6 - Renamed fallacyTag to fallacyIds in Rebuttal for consistency with Claim
  */
 @Database(
     entities = [
@@ -28,7 +29,7 @@ import com.argumentor.app.data.model.*
         QuestionFts::class,
         SourceFts::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
