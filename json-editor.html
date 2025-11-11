@@ -845,6 +845,38 @@
         let currentEntity = null;
         let editingIndex = -1;
 
+        const FALLACY_IDS = [
+            'ad_hominem',
+            'straw_man',
+            'appeal_to_ignorance',
+            'post_hoc',
+            'false_dilemma',
+            'begging_question',
+            'slippery_slope',
+            'postdiction',
+            'cherry_picking',
+            'appeal_to_tradition',
+            'appeal_to_authority',
+            'appeal_to_popularity',
+            'circular_reasoning',
+            'tu_quoque',
+            'hasty_generalization',
+            'red_herring',
+            'no_true_scotsman',
+            'loaded_question',
+            'appeal_to_emotion',
+            'appeal_to_nature',
+            'false_equivalence',
+            'burden_of_proof',
+            'texas_sharpshooter',
+            'middle_ground',
+            'anecdotal',
+            'composition',
+            'division',
+            'genetic_fallacy',
+            'bandwagon'
+        ];
+
         // Entity Templates
         const entityTemplates = {
             topics: {
@@ -862,6 +894,7 @@
                 stance: 'neutral',
                 strength: 'med',
                 topics: [],
+                fallacyIds: [],
                 createdAt: '',
                 updatedAt: '',
                 claimFingerprint: ''
@@ -870,7 +903,7 @@
                 id: '',
                 claimId: '',
                 text: '',
-                fallacyTag: '',
+                fallacyIds: [],
                 createdAt: '',
                 updatedAt: ''
             },
@@ -881,14 +914,16 @@
                 content: '',
                 sourceId: '',
                 quality: 'med',
-                createdAt: ''
+                createdAt: '',
+                updatedAt: ''
             },
             questions: {
                 id: '',
                 targetId: '',
                 text: '',
                 kind: 'clarifying',
-                createdAt: ''
+                createdAt: '',
+                updatedAt: ''
             },
             sources: {
                 id: '',
@@ -899,12 +934,15 @@
                 date: '',
                 reliabilityScore: 0.5,
                 notes: '',
-                createdAt: ''
+                createdAt: '',
+                updatedAt: ''
             },
             tags: {
                 id: '',
                 label: '',
-                color: '#1976D2'
+                color: '#1976D2',
+                createdAt: '',
+                updatedAt: ''
             }
         };
 
@@ -935,13 +973,14 @@
                     { value: 'high', label: 'High (Forte)' }
                 ]},
                 { name: 'topics', label: 'Topics', type: 'tags', required: true, hint: 'IDs des topics (au moins un)' },
+                { name: 'fallacyIds', label: 'Sophismes', type: 'tags', hint: 'IDs des sophismes (ex: ad_hominem)' },
                 { name: 'claimFingerprint', label: 'Empreinte', type: 'text', hint: 'Généré automatiquement si vide' }
             ],
             rebuttals: [
                 { name: 'id', label: 'ID', type: 'text', required: true },
                 { name: 'claimId', label: 'Claim ID', type: 'text', required: true, hint: 'ID de l\'affirmation réfutée' },
                 { name: 'text', label: 'Texte', type: 'textarea', required: true },
-                { name: 'fallacyTag', label: 'Tag Sophisme', type: 'text', hint: 'Ex: Anachronisme, Homme de paille...' }
+                { name: 'fallacyIds', label: 'Sophismes', type: 'tags', hint: 'IDs des sophismes (séparés par des virgules)' }
             ],
             evidences: [
                 { name: 'id', label: 'ID', type: 'text', required: true },
@@ -1041,6 +1080,96 @@
             }
         }
 
+        function upgradeLegacySchema(data) {
+            if (!data || typeof data !== 'object') {
+                return data;
+            }
+
+            const normalized = JSON.parse(JSON.stringify(data));
+            const now = new Date().toISOString();
+
+            const ensureTimestamps = (item) => {
+                if ('createdAt' in item) {
+                    if (!item.createdAt) {
+                        item.createdAt = now;
+                    }
+                } else {
+                    item.createdAt = now;
+                }
+
+                if ('updatedAt' in item) {
+                    if (!item.updatedAt) {
+                        item.updatedAt = item.createdAt || now;
+                    }
+                } else {
+                    item.updatedAt = item.createdAt || now;
+                }
+            };
+
+            const normalizeFallacyArray = (value) => {
+                if (Array.isArray(value)) {
+                    return value
+                        .filter(v => typeof v === 'string')
+                        .map(v => v.trim())
+                        .filter(v => v.length > 0);
+                }
+
+                if (typeof value === 'string') {
+                    const trimmed = value.trim();
+                    return trimmed.length > 0 ? [trimmed] : [];
+                }
+
+                return [];
+            };
+
+            if (Array.isArray(normalized.claims)) {
+                normalized.claims = normalized.claims.map(claim => {
+                    const updated = { ...claim };
+                    ensureTimestamps(updated);
+                    const legacyTag = typeof updated.fallacyTag === 'string' ? updated.fallacyTag : '';
+                    const normalizedFallacies = normalizeFallacyArray(updated.fallacyIds);
+                    updated.fallacyIds = normalizedFallacies.length > 0
+                        ? normalizedFallacies
+                        : normalizeFallacyArray(legacyTag);
+                    delete updated.fallacyTag;
+                    return updated;
+                });
+            }
+
+            if (Array.isArray(normalized.rebuttals)) {
+                normalized.rebuttals = normalized.rebuttals.map(rebuttal => {
+                    const updated = { ...rebuttal };
+                    ensureTimestamps(updated);
+                    const legacyTag = typeof updated.fallacyTag === 'string' ? updated.fallacyTag : '';
+                    const normalizedFallacies = normalizeFallacyArray(updated.fallacyIds);
+                    updated.fallacyIds = normalizedFallacies.length > 0
+                        ? normalizedFallacies
+                        : normalizeFallacyArray(legacyTag);
+                    delete updated.fallacyTag;
+                    return updated;
+                });
+            }
+
+            const ensureCollectionTimestamps = (collection) => {
+                if (!Array.isArray(collection)) return collection;
+                return collection.map(item => {
+                    const updated = { ...item };
+                    ensureTimestamps(updated);
+                    return updated;
+                });
+            };
+
+            normalized.topics = ensureCollectionTimestamps(normalized.topics);
+            normalized.claims = ensureCollectionTimestamps(normalized.claims);
+            normalized.rebuttals = ensureCollectionTimestamps(normalized.rebuttals);
+            normalized.evidences = ensureCollectionTimestamps(normalized.evidences);
+            normalized.questions = ensureCollectionTimestamps(normalized.questions);
+            normalized.sources = ensureCollectionTimestamps(normalized.sources);
+            normalized.tags = ensureCollectionTimestamps(normalized.tags);
+
+            return normalized;
+        }
+
         function handleFile(file) {
             if (!file.name.endsWith('.json')) {
                 alert('❌ Veuillez sélectionner un fichier JSON (.json)');
@@ -1050,7 +1179,7 @@
             const reader = new FileReader();
             reader.onload = event => {
                 try {
-                    const imported = JSON.parse(event.target.result);
+                    const imported = upgradeLegacySchema(JSON.parse(event.target.result));
                     const validation = validateJSONStructure(imported);
 
                     if (validation.errors.length === 0 && validation.warnings.length === 0) {
@@ -1188,6 +1317,11 @@
 
             if (fieldName === 'tags') {
                 options = jsonData.tags.map(t => ({ id: t.id, label: `${t.id} - ${t.label}` }));
+            } else if (fieldName === 'fallacyIds') {
+                options = FALLACY_IDS.map(id => ({
+                    id,
+                    label: `${id} - ${id.replace(/_/g, ' ')}`
+                }));
             } else if (fieldName === 'claimId' || fieldName === 'targetId') {
                 // For claims and topics
                 jsonData.topics.forEach(t => {
@@ -1400,6 +1534,9 @@
             if (entity.posture) meta.push(`Posture: ${entity.posture}`);
             if (entity.kind) meta.push(`Type: ${entity.kind}`);
             if (entity.type) meta.push(`Type: ${entity.type}`);
+            if (Array.isArray(entity.fallacyIds) && entity.fallacyIds.length > 0) {
+                meta.push(`Sophismes: ${entity.fallacyIds.join(', ')}`);
+            }
 
             return `
                 <div class="entity-item">
@@ -1448,7 +1585,7 @@
             messagesDiv.innerHTML = '';
 
             try {
-                const parsed = JSON.parse(editor.value);
+                const parsed = upgradeLegacySchema(JSON.parse(editor.value));
                 const validation = validateJSONStructure(parsed);
 
                 if (validation.errors.length === 0 && validation.warnings.length === 0) {
@@ -1489,6 +1626,7 @@
         function validateJSONStructure(data) {
             const errors = [];
             const warnings = [];
+            const fallacySet = new Set(FALLACY_IDS);
 
             // Check required fields
             if (data.schemaVersion !== "1.0") {
@@ -1515,6 +1653,17 @@
                     if (!claim.topics || claim.topics.length === 0) {
                         errors.push(`Claim #${i + 1} (${claim.id}) doit avoir au moins un topic`);
                     }
+                    if (!Array.isArray(claim.fallacyIds)) {
+                        errors.push(`Claim #${i + 1} (${claim.id}) doit définir fallacyIds comme tableau (utiliser [] si aucun)`);
+                    } else {
+                        const unknownFallacies = claim.fallacyIds.filter(id => !fallacySet.has(id));
+                        if (unknownFallacies.length > 0) {
+                            warnings.push(`Claim #${i + 1} (${claim.id}) contient des sophismes inconnus: ${unknownFallacies.join(', ')}`);
+                        }
+                    }
+                    if ('fallacyTag' in claim) {
+                        warnings.push(`Claim #${i + 1} (${claim.id}) utilise l'ancien champ fallacyTag (converti automatiquement)`);
+                    }
                     // Check if topics exist
                     if (data.topics && claim.topics) {
                         const topicIds = data.topics.map(t => t.id);
@@ -1533,6 +1682,17 @@
                 data.rebuttals.forEach((rebuttal, i) => {
                     if (!claimIds.includes(rebuttal.claimId)) {
                         errors.push(`Rebuttal #${i + 1} (${rebuttal.id}) référence un claim inexistant: ${rebuttal.claimId}`);
+                    }
+                    if (!Array.isArray(rebuttal.fallacyIds)) {
+                        errors.push(`Rebuttal #${i + 1} (${rebuttal.id}) doit définir fallacyIds comme tableau (utiliser [] si aucun)`);
+                    } else {
+                        const unknownFallacies = rebuttal.fallacyIds.filter(id => !fallacySet.has(id));
+                        if (unknownFallacies.length > 0) {
+                            warnings.push(`Rebuttal #${i + 1} (${rebuttal.id}) contient des sophismes inconnus: ${unknownFallacies.join(', ')}`);
+                        }
+                    }
+                    if ('fallacyTag' in rebuttal) {
+                        warnings.push(`Rebuttal #${i + 1} (${rebuttal.id}) utilise l'ancien champ fallacyTag (converti automatiquement)`);
                     }
                 });
             }
@@ -1756,7 +1916,7 @@
                 const reader = new FileReader();
                 reader.onload = event => {
                     try {
-                        const imported = JSON.parse(event.target.result);
+                        const imported = upgradeLegacySchema(JSON.parse(event.target.result));
                         const validation = validateJSONStructure(imported);
 
                         if (validation.errors.length === 0 && validation.warnings.length === 0) {

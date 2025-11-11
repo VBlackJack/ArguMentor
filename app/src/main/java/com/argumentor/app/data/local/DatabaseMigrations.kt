@@ -189,6 +189,28 @@ object DatabaseMigrations {
     }
 
     /**
+     * Migration from version 8 to 9.
+     *
+     * Changes:
+     * - Added TagFts table for full-text search on tags
+     */
+    val MIGRATION_8_9 = object : Migration(8, 9) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Create FTS4 virtual table for tags
+            db.execSQL("""
+                CREATE VIRTUAL TABLE IF NOT EXISTS `tags_fts`
+                USING fts4(content=`tags`, label)
+            """)
+
+            // Populate FTS table with existing data
+            db.execSQL("""
+                INSERT INTO tags_fts(docid, label)
+                SELECT rowid, label FROM tags
+            """)
+        }
+    }
+
+    /**
      * All migrations in order.
      */
     val ALL_MIGRATIONS = arrayOf(
@@ -198,6 +220,7 @@ object DatabaseMigrations {
         MIGRATION_4_5,
         MIGRATION_5_6,
         MIGRATION_6_7,
-        MIGRATION_7_8
+        MIGRATION_7_8,
+        MIGRATION_8_9
     )
 }

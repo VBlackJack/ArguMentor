@@ -140,6 +140,7 @@ Une affirmation représente un argument ou une thèse liée à un ou plusieurs s
   "stance": "pro",
   "strength": "high",
   "topics": ["topic_001"],
+  "fallacyIds": ["ad_hominem"],
   "createdAt": "2025-01-15T10:00:00Z",
   "updatedAt": "2025-01-15T10:00:00Z",
   "claimFingerprint": "chats_animaux_independants_chiens"
@@ -155,9 +156,18 @@ Une affirmation représente un argument ou une thèse liée à un ou plusieurs s
 | `stance` | String | ✅ Oui | Position de l'affirmation (voir valeurs autorisées) |
 | `strength` | String | ✅ Oui | Force de l'argument (voir valeurs autorisées) |
 | `topics` | Array[String] | ✅ Oui | Liste d'IDs de sujets auxquels appartient cette affirmation |
+| `fallacyIds` | Array[String] | ❌ Non | Liste d'IDs de sophismes associés (voir catalogue ci-dessous) |
 | `createdAt` | String (ISO 8601) | ✅ Oui | Date de création |
 | `updatedAt` | String (ISO 8601) | ✅ Oui | Date de mise à jour |
 | `claimFingerprint` | String | ❌ Non | Empreinte pour détecter les doublons (générée automatiquement si absente) |
+
+#### Catalogue des sophismes disponibles
+
+Les champs `fallacyIds` (pour les claims comme pour les rebuttals) doivent utiliser les identifiants définis dans `FallacyCatalog`. Les IDs actuellement supportés sont :
+
+`ad_hominem`, `straw_man`, `appeal_to_ignorance`, `post_hoc`, `false_dilemma`, `begging_question`, `slippery_slope`, `postdiction`, `cherry_picking`, `appeal_to_tradition`, `appeal_to_authority`, `appeal_to_popularity`, `circular_reasoning`, `tu_quoque`, `hasty_generalization`, `red_herring`, `no_true_scotsman`, `loaded_question`, `appeal_to_emotion`, `appeal_to_nature`, `false_equivalence`, `burden_of_proof`, `texas_sharpshooter`, `middle_ground`, `anecdotal`, `composition`, `division`, `genetic_fallacy`, `bandwagon`.
+
+> ℹ️ Ces identifiants sont définis dans `app/src/main/java/com/argumentor/app/data/constants/FallacyCatalog.kt`. Utilisez-les tels quels (minuscules, séparés par des underscores).
 
 ### Valeurs autorisées pour `stance`
 
@@ -193,7 +203,7 @@ Une réfutation conteste ou critique une affirmation.
   "id": "rebuttal_001",
   "claimId": "claim_001",
   "text": "Les chats peuvent développer de l'anxiété de séparation comme les chiens",
-  "fallacyTag": null,
+  "fallacyIds": ["straw_man"],
   "createdAt": "2025-01-15T10:00:00Z",
   "updatedAt": "2025-01-15T10:00:00Z"
 }
@@ -206,7 +216,7 @@ Une réfutation conteste ou critique une affirmation.
 | `id` | String | ✅ Oui | Identifiant unique de la réfutation |
 | `claimId` | String | ✅ Oui | ID de l'affirmation réfutée |
 | `text` | String | ✅ Oui | Texte de la réfutation |
-| `fallacyTag` | String | ❌ Non | Tag identifiant un sophisme/erreur logique |
+| `fallacyIds` | Array[String] | ❌ Non | Liste d'IDs de sophismes associés (peut être vide `[]`) |
 | `createdAt` | String (ISO 8601) | ✅ Oui | Date de création |
 | `updatedAt` | String (ISO 8601) | ✅ Oui | Date de mise à jour |
 
