@@ -5,14 +5,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.R
+import com.argumentor.app.data.constants.FallacyCatalog
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.ui.components.VoiceInputTextField
 import com.argumentor.app.ui.components.rememberCurrentLocale
@@ -28,11 +32,16 @@ fun ClaimCreateEditScreen(
     val text by viewModel.text.collectAsState()
     val stance by viewModel.stance.collectAsState()
     val strength by viewModel.strength.collectAsState()
+    val selectedFallacies by viewModel.selectedFallacies.collectAsState()
     val isSaving by viewModel.isSaving.collectAsState()
     val currentLocale = rememberCurrentLocale()
+    val context = LocalContext.current
 
     // Dialog state for unsaved changes confirmation
     var showUnsavedChangesDialog by remember { mutableStateOf(false) }
+
+    // Dialog state for fallacy selection
+    var showFallacyDialog by remember { mutableStateOf(false) }
 
     // Track validation state - show errors after first save attempt
     var hasAttemptedSave by remember { mutableStateOf(false) }
@@ -180,9 +189,138 @@ fun ClaimCreateEditScreen(
                 }
             }
 
+            // Fallacies selector
+            Text(
+                stringResource(R.string.claim_fallacies),
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            if (selectedFallacies.isEmpty()) {
+                OutlinedButton(
+                    onClick = { showFallacyDialog = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.claim_add_fallacy))
+                }
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    selectedFallacies.forEach { fallacyId ->
+                        val fallacy = FallacyCatalog.getFallacyById(context, fallacyId)
+                        if (fallacy != null) {
+                            InputChip(
+                                selected = true,
+                                onClick = { },
+                                label = { Text(fallacy.name) },
+                                trailingIcon = {
+                                    IconButton(
+                                        onClick = { viewModel.removeFallacy(fallacyId) },
+                                        modifier = Modifier.size(20.dp)
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Close,
+                                            contentDescription = stringResource(R.string.remove),
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+
+                    OutlinedButton(
+                        onClick = { showFallacyDialog = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.claim_add_fallacy))
+                    }
+                }
+            }
+
             if (isSaving) {
                 CircularProgressIndicator(modifier = Modifier.padding(16.dp))
             }
         }
     }
+
+    // Fallacy selection dialog
+    if (showFallacyDialog) {
+        FallacySelectionDialog(
+            currentlySelected = selectedFallacies,
+            onFallacySelected = { fallacyId ->
+                viewModel.addFallacy(fallacyId)
+            },
+            onDismiss = { showFallacyDialog = false }
+        )
+    }
+}
+
+@Composable
+fun FallacySelectionDialog(
+    currentlySelected: List<String>,
+    onFallacySelected: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val allFallacies = remember { FallacyCatalog.getFallacies(context) }
+    val availableFallacies = remember(currentlySelected) {
+        allFallacies.filter { it.id !in currentlySelected }
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.claim_select_fallacy)) },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                if (availableFallacies.isEmpty()) {
+                    Text(
+                        stringResource(R.string.claim_no_more_fallacies),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    availableFallacies.forEach { fallacy ->
+                        Card(
+                            onClick = {
+                                onFallacySelected(fallacy.id)
+                                onDismiss()
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            ) {
+                                Text(
+                                    fallacy.name,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Spacer(Modifier.height(4.dp))
+                                Text(
+                                    fallacy.description,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.close))
+            }
+        }
+    )
 }

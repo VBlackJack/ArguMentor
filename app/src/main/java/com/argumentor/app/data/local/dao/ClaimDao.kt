@@ -18,6 +18,12 @@ interface ClaimDao {
     @Query("SELECT * FROM claims WHERE :topicId IN (SELECT value FROM json_each(topics))")
     suspend fun getClaimsForTopic(topicId: String): List<Claim>
 
+    @Query("SELECT * FROM claims WHERE :fallacyId IN (SELECT value FROM json_each(fallacyIds))")
+    suspend fun getClaimsForFallacy(fallacyId: String): List<Claim>
+
+    @Query("SELECT * FROM claims WHERE :fallacyId IN (SELECT value FROM json_each(fallacyIds))")
+    fun observeClaimsForFallacy(fallacyId: String): Flow<List<Claim>>
+
     @Query("SELECT * FROM claims WHERE id = :claimId")
     fun observeClaimById(claimId: String): Flow<Claim?>
 

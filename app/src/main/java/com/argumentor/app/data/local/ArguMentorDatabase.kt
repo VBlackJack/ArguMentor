@@ -12,6 +12,7 @@ import com.argumentor.app.data.model.*
  * Version 2 - Added timestamps to Tag, Evidence, Source, Question; renamed Topic.Posture enum values
  * Version 3 - Added index on claimFingerprint for faster duplicate detection
  * Version 4 - Added SourceFts for full-text search on sources
+ * Version 5 - Added fallacyIds field to Claim for linking claims to identified fallacies
  */
 @Database(
     entities = [
@@ -27,7 +28,7 @@ import com.argumentor.app.data.model.*
         QuestionFts::class,
         SourceFts::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
