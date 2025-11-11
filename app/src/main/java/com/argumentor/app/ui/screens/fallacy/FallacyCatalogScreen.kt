@@ -62,7 +62,7 @@ fun FallacyCatalogScreen(
             ) {
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = "Créer un nouveau sophisme"
+                    contentDescription = stringResource(R.string.accessibility_create_fallacy)
                 )
             }
         }
@@ -147,8 +147,8 @@ private fun FallacyCard(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Supprimer le sophisme") },
-            text = { Text("Êtes-vous sûr de vouloir supprimer ce sophisme personnalisé ?") },
+            title = { Text(stringResource(R.string.fallacy_delete_dialog_title)) },
+            text = { Text(stringResource(R.string.fallacy_delete_dialog_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -156,7 +156,7 @@ private fun FallacyCard(
                         showDeleteDialog = false
                     }
                 ) {
-                    Text("Supprimer")
+                    Text(stringResource(R.string.fallacy_delete_button))
                 }
             },
             dismissButton = {

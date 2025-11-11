@@ -76,12 +76,19 @@
 
     <!-- Question -->
     <string name="question_create">Ajouter une question</string>
+    <string name="question_new_title">Nouvelle question</string>
+    <string name="question_edit_title">Modifier la question</string>
     <string name="question_text_hint">Texte de la question</string>
     <string name="question_kind">Type de question</string>
     <string name="question_kind_socratic">Socratique</string>
     <string name="question_kind_clarifying">Clarification</string>
     <string name="question_kind_challenge">Contestation</string>
     <string name="question_kind_evidence">Demande de preuve</string>
+    <string name="question_target_title">Cible de la question</string>
+    <string name="question_target_topic">Sujet global</string>
+    <string name="question_target_claim">Affirmation spécifique</string>
+    <string name="question_select_claim">Sélectionner une affirmation</string>
+    <string name="question_linked_claim">Affirmation liée:</string>
 
     <!-- Source -->
     <string name="source_create">Ajouter une source</string>
@@ -110,6 +117,10 @@
     <string name="fallacy_search_hint">Rechercher un sophisme…</string>
     <string name="fallacy_empty_title">Aucun sophisme trouvé</string>
     <string name="fallacy_empty_description">Aucun sophisme ne correspond à votre recherche. Essayez un autre terme.</string>
+    <string name="accessibility_create_fallacy">Créer un nouveau sophisme</string>
+    <string name="fallacy_delete_dialog_title">Supprimer le sophisme</string>
+    <string name="fallacy_delete_dialog_message">Êtes-vous sûr de vouloir supprimer ce sophisme personnalisé ?</string>
+    <string name="fallacy_delete_button">Supprimer</string>
     <string name="fallacy_detail_title">Détail du Sophisme</string>
     <string name="fallacy_not_found">Sophisme introuvable</string>
     <string name="fallacy_description_title">Description</string>

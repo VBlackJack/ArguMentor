@@ -8,8 +8,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.argumentor.app.R
 import com.argumentor.app.data.model.Question
 import com.argumentor.app.ui.components.VoiceInputTextField
 import com.argumentor.app.ui.components.rememberCurrentLocale
@@ -37,10 +39,20 @@ fun QuestionCreateEditScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (questionId == null) "Nouvelle question" else "Modifier la question") },
+                title = {
+                    Text(
+                        if (questionId == null)
+                            stringResource(R.string.question_new_title)
+                        else
+                            stringResource(R.string.question_edit_title)
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Retour")
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = stringResource(R.string.accessibility_back)
+                        )
                     }
                 },
                 actions = {
@@ -48,7 +60,7 @@ fun QuestionCreateEditScreen(
                         onClick = { viewModel.saveQuestion(onNavigateBack) },
                         enabled = !isSaving && text.isNotBlank()
                     ) {
-                        Text("Enregistrer")
+                        Text(stringResource(R.string.save))
                     }
                 }
             )
@@ -66,7 +78,7 @@ fun QuestionCreateEditScreen(
             VoiceInputTextField(
                 value = text,
                 onValueChange = viewModel::onTextChange,
-                label = "Texte de la question",
+                label = stringResource(R.string.question_text_hint),
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
                 maxLines = 8,
@@ -75,7 +87,10 @@ fun QuestionCreateEditScreen(
 
             // Target selector (topic vs claim)
             if (availableClaims.isNotEmpty()) {
-                Text("Cible de la question", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    stringResource(R.string.question_target_title),
+                    style = MaterialTheme.typography.titleMedium
+                )
 
                 // Toggle between topic level and claim level
                 Row(
@@ -85,18 +100,21 @@ fun QuestionCreateEditScreen(
                     FilterChip(
                         selected = isTopicLevel,
                         onClick = { viewModel.onToggleLevel() },
-                        label = { Text("Sujet global") }
+                        label = { Text(stringResource(R.string.question_target_topic)) }
                     )
                     FilterChip(
                         selected = !isTopicLevel,
                         onClick = { viewModel.onToggleLevel() },
-                        label = { Text("Affirmation spécifique") }
+                        label = { Text(stringResource(R.string.question_target_claim)) }
                     )
                 }
 
                 // Claim selector (shown when not topic level)
                 if (!isTopicLevel) {
-                    Text("Sélectionner une affirmation", style = MaterialTheme.typography.labelMedium)
+                    Text(
+                        stringResource(R.string.question_select_claim),
+                        style = MaterialTheme.typography.labelMedium
+                    )
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         availableClaims.forEach { claim ->
                             FilterChip(
@@ -122,7 +140,7 @@ fun QuestionCreateEditScreen(
                     ) {
                         Column(modifier = Modifier.padding(12.dp)) {
                             Text(
-                                "Affirmation liée:",
+                                stringResource(R.string.question_linked_claim),
                                 style = MaterialTheme.typography.labelSmall
                             )
                             Text(
@@ -135,7 +153,10 @@ fun QuestionCreateEditScreen(
             }
 
             // Kind selector
-            Text("Type de question", style = MaterialTheme.typography.titleMedium)
+            Text(
+                stringResource(R.string.question_kind),
+                style = MaterialTheme.typography.titleMedium
+            )
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Question.QuestionKind.values().forEach { kindOption ->
                     FilterChip(
@@ -143,12 +164,14 @@ fun QuestionCreateEditScreen(
                         onClick = { viewModel.onKindChange(kindOption) },
                         label = {
                             Text(
-                                when (kindOption) {
-                                    Question.QuestionKind.SOCRATIC -> "Socratique"
-                                    Question.QuestionKind.CLARIFYING -> "Clarification"
-                                    Question.QuestionKind.CHALLENGE -> "Contestation"
-                                    Question.QuestionKind.EVIDENCE -> "Preuve"
-                                }
+                                stringResource(
+                                    when (kindOption) {
+                                        Question.QuestionKind.SOCRATIC -> R.string.question_kind_socratic
+                                        Question.QuestionKind.CLARIFYING -> R.string.question_kind_clarifying
+                                        Question.QuestionKind.CHALLENGE -> R.string.question_kind_challenge
+                                        Question.QuestionKind.EVIDENCE -> R.string.question_kind_evidence
+                                    }
+                                )
                             )
                         }
                     )

@@ -1,7 +1,9 @@
 package com.argumentor.app.data.util
 
 import android.content.Context
+import androidx.room.withTransaction
 import com.argumentor.app.data.datastore.SettingsDataStore
+import com.argumentor.app.data.local.ArguMentorDatabase
 import com.argumentor.app.data.preferences.AppLanguage
 import com.argumentor.app.data.preferences.LanguagePreferences
 import com.argumentor.app.data.repository.*
@@ -9,6 +11,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,6 +20,7 @@ import javax.inject.Singleton
 @Singleton
 class TutorialManager @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val database: ArguMentorDatabase,
     private val settingsDataStore: SettingsDataStore,
     private val languagePreferences: LanguagePreferences,
     private val sampleDataGenerator: SampleDataGenerator,
@@ -29,6 +33,11 @@ class TutorialManager @Inject constructor(
 
     companion object {
         private const val KEY_LAST_LANGUAGE = "last_language"
+        /**
+         * Delay to ensure cascade deletes complete before final topic deletion.
+         * This prevents potential race conditions in the database.
+         */
+        private const val CASCADE_DELETE_DELAY_MS = 150L
     }
 
     fun checkAndHandleLanguageChange() {
@@ -74,33 +83,39 @@ class TutorialManager @Inject constructor(
     }
 
     /**
-     * Delete demo topic and all its related entities
+     * Delete demo topic and all its related entities atomically.
+     * Uses a database transaction to ensure data consistency.
      */
     private suspend fun deleteDemoTopicCompletely(topicId: String) {
-        // Get all claims for this topic
-        val claims = claimRepository.getClaimsForTopic(topicId)
-        
-        // Delete each claim (this will cascade delete rebuttals and evidence)
-        // Or if claim belongs to multiple topics, just remove this topicId
-        claims.forEach { claim ->
-            if (claim.topics.size == 1 && claim.topics.contains(topicId)) {
-                // Claim only belongs to this topic, delete it completely
-                claimRepository.deleteClaim(claim)
-            } else if (claim.topics.contains(topicId)) {
-                // Claim belongs to multiple topics, just remove this topicId
-                val updatedClaim = claim.copy(topics = claim.topics - topicId)
-                claimRepository.updateClaim(updatedClaim)
+        database.withTransaction {
+            // Get all claims for this topic
+            val claims = claimRepository.getClaimsForTopic(topicId)
+
+            // Delete each claim (this will cascade delete rebuttals and evidence)
+            // Or if claim belongs to multiple topics, just remove this topicId
+            claims.forEach { claim ->
+                if (claim.topics.size == 1 && claim.topics.contains(topicId)) {
+                    // Claim only belongs to this topic, delete it completely
+                    claimRepository.deleteClaim(claim)
+                } else if (claim.topics.contains(topicId)) {
+                    // Claim belongs to multiple topics, just remove this topicId
+                    val updatedClaim = claim.copy(topics = claim.topics - topicId)
+                    claimRepository.updateClaim(updatedClaim)
+                }
             }
+
+            // Delete all questions for this topic
+            val questions = questionRepository.getQuestionsForTopic(topicId)
+            questions.forEach { question ->
+                questionRepository.deleteQuestion(question)
+            }
+
+            // Wait for cascade deletes to complete
+            delay(CASCADE_DELETE_DELAY_MS)
+
+            // Finally, delete the topic itself
+            topicRepository.deleteTopicById(topicId)
         }
-        
-        // Delete all questions for this topic
-        val questions = questionRepository.getQuestionsForTopic(topicId)
-        questions.forEach { question ->
-            questionRepository.deleteQuestion(question)
-        }
-        
-        // Finally, delete the topic itself
-        topicRepository.deleteTopicById(topicId)
     }
 
     private fun getLastLanguage(): AppLanguage? {

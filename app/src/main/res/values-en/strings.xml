@@ -76,12 +76,19 @@
 
     <!-- Question -->
     <string name="question_create">Add a question</string>
+    <string name="question_new_title">New question</string>
+    <string name="question_edit_title">Edit question</string>
     <string name="question_text_hint">Question text</string>
     <string name="question_kind">Question type</string>
     <string name="question_kind_socratic">Socratic</string>
     <string name="question_kind_clarifying">Clarifying</string>
     <string name="question_kind_challenge">Challenge</string>
     <string name="question_kind_evidence">Evidence request</string>
+    <string name="question_target_title">Question target</string>
+    <string name="question_target_topic">Global topic</string>
+    <string name="question_target_claim">Specific claim</string>
+    <string name="question_select_claim">Select a claim</string>
+    <string name="question_linked_claim">Linked claim:</string>
 
     <!-- Source -->
     <string name="source_create">Add a source</string>
@@ -110,6 +117,10 @@
     <string name="fallacy_search_hint">Search for a fallacy…</string>
     <string name="fallacy_empty_title">No fallacy found</string>
     <string name="fallacy_empty_description">No fallacy matches your search. Try another term.</string>
+    <string name="accessibility_create_fallacy">Create a new fallacy</string>
+    <string name="fallacy_delete_dialog_title">Delete fallacy</string>
+    <string name="fallacy_delete_dialog_message">Are you sure you want to delete this custom fallacy?</string>
+    <string name="fallacy_delete_button">Delete</string>
     <string name="fallacy_detail_title">Fallacy Detail</string>
     <string name="fallacy_not_found">Fallacy not found</string>
     <string name="fallacy_description_title">Description</string>
