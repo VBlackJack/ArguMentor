@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.argumentor.app.R
 import com.argumentor.app.data.model.Claim
+import com.argumentor.app.data.model.Fallacy
 import com.argumentor.app.data.model.getCurrentIsoTimestamp
 import com.argumentor.app.data.repository.ClaimRepository
+import com.argumentor.app.data.repository.FallacyRepository
 import com.argumentor.app.util.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
@@ -18,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ClaimCreateEditViewModel @Inject constructor(
     private val claimRepository: ClaimRepository,
+    private val fallacyRepository: FallacyRepository,
     private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
@@ -35,6 +38,9 @@ class ClaimCreateEditViewModel @Inject constructor(
 
     private val _selectedFallacies = MutableStateFlow<List<String>>(emptyList())
     val selectedFallacies: StateFlow<List<String>> = _selectedFallacies.asStateFlow()
+
+    private val _allFallacies = MutableStateFlow<List<Fallacy>>(emptyList())
+    val allFallacies: StateFlow<List<Fallacy>> = _allFallacies.asStateFlow()
 
     private val _isEditMode = MutableStateFlow(false)
     private val _claimId = MutableStateFlow<String?>(null)
@@ -54,6 +60,15 @@ class ClaimCreateEditViewModel @Inject constructor(
     private val _initialStrength = MutableStateFlow(Claim.Strength.MEDIUM)
     private val _initialTopics = MutableStateFlow<List<String>>(emptyList())
     private val _initialFallacies = MutableStateFlow<List<String>>(emptyList())
+
+    init {
+        // Load all fallacies from database for selection
+        viewModelScope.launch {
+            fallacyRepository.getAllFallacies().collect { fallacies ->
+                _allFallacies.value = fallacies
+            }
+        }
+    }
 
     fun clearError() {
         _errorMessage.value = null

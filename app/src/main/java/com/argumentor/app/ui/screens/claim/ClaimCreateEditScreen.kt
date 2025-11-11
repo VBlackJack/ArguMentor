@@ -16,7 +16,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.R
-import com.argumentor.app.data.constants.FallacyCatalog
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.ui.components.VoiceInputTextField
 import com.argumentor.app.ui.components.rememberCurrentLocale
@@ -33,6 +32,7 @@ fun ClaimCreateEditScreen(
     val stance by viewModel.stance.collectAsState()
     val strength by viewModel.strength.collectAsState()
     val selectedFallacies by viewModel.selectedFallacies.collectAsState()
+    val allFallacies by viewModel.allFallacies.collectAsState()
     val isSaving by viewModel.isSaving.collectAsState()
     val currentLocale = rememberCurrentLocale()
     val context = LocalContext.current
@@ -207,7 +207,7 @@ fun ClaimCreateEditScreen(
             } else {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     selectedFallacies.forEach { fallacyId ->
-                        val fallacy = FallacyCatalog.getFallacyById(context, fallacyId)
+                        val fallacy = allFallacies.find { it.id == fallacyId }
                         if (fallacy != null) {
                             InputChip(
                                 selected = true,
@@ -250,6 +250,7 @@ fun ClaimCreateEditScreen(
     // Fallacy selection dialog
     if (showFallacyDialog) {
         FallacySelectionDialog(
+            allFallacies = allFallacies,
             currentlySelected = selectedFallacies,
             onFallacySelected = { fallacyId ->
                 viewModel.addFallacy(fallacyId)
@@ -261,13 +262,12 @@ fun ClaimCreateEditScreen(
 
 @Composable
 fun FallacySelectionDialog(
+    allFallacies: List<com.argumentor.app.data.model.Fallacy>,
     currentlySelected: List<String>,
     onFallacySelected: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val context = LocalContext.current
-    val allFallacies = remember { FallacyCatalog.getFallacies(context) }
-    val availableFallacies = remember(currentlySelected) {
+    val availableFallacies = remember(allFallacies, currentlySelected) {
         allFallacies.filter { it.id !in currentlySelected }
     }
 
