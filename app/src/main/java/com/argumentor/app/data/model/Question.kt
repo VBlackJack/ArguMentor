@@ -14,6 +14,16 @@ import java.util.UUID
  * @property kind Question type: socratic or clarifying
  * @property createdAt Creation timestamp in ISO 8601 format
  * @property updatedAt Last update timestamp in ISO 8601 format
+ *
+ * Note on Foreign Keys:
+ * This entity intentionally does NOT define a Foreign Key on `targetId` because:
+ * 1. targetId is POLYMORPHIC - it can reference either a Topic OR a Claim
+ * 2. Room/SQLite does not support polymorphic Foreign Keys
+ * 3. Orphan questions are cleaned up manually via QuestionDao.deleteOrphanQuestions()
+ *
+ * Alternative considered: Creating separate tables (TopicQuestion, ClaimQuestion)
+ * with proper FKs, but this would significantly complicate queries and the domain model.
+ * Current approach provides better flexibility for question management.
  */
 @Entity(
     tableName = "questions",

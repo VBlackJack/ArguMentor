@@ -16,7 +16,7 @@ interface QuestionDao {
     fun getQuestionsByTargetId(targetId: String): Flow<List<Question>>
 
     @Query("SELECT * FROM questions WHERE targetId = :topicId ORDER BY updatedAt DESC")
-    suspend fun getQuestionsForTopic(topicId: String): List<Question>
+    suspend fun getQuestionsByTopicId(topicId: String): List<Question>
 
     @Query("SELECT * FROM questions WHERE id = :questionId")
     suspend fun getQuestionById(questionId: String): Question?

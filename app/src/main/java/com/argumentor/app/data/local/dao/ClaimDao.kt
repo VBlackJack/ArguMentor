@@ -16,13 +16,13 @@ interface ClaimDao {
     suspend fun getClaimById(claimId: String): Claim?
 
     @Query("SELECT * FROM claims WHERE :topicId IN (SELECT value FROM json_each(topics))")
-    suspend fun getClaimsForTopic(topicId: String): List<Claim>
+    suspend fun getClaimsByTopicId(topicId: String): List<Claim>
 
     @Query("SELECT * FROM claims WHERE :fallacyId IN (SELECT value FROM json_each(fallacyIds))")
-    suspend fun getClaimsForFallacy(fallacyId: String): List<Claim>
+    suspend fun getClaimsByFallacyId(fallacyId: String): List<Claim>
 
     @Query("SELECT * FROM claims WHERE :fallacyId IN (SELECT value FROM json_each(fallacyIds))")
-    fun observeClaimsForFallacy(fallacyId: String): Flow<List<Claim>>
+    fun observeClaimsByFallacyId(fallacyId: String): Flow<List<Claim>>
 
     @Query("SELECT * FROM claims WHERE id = :claimId")
     fun observeClaimById(claimId: String): Flow<Claim?>
@@ -42,6 +42,16 @@ interface ClaimDao {
     @Query("DELETE FROM claims WHERE id = :claimId")
     suspend fun deleteClaimById(claimId: String)
 
+    /**
+     * Delete all claims linked to a specific topic.
+     *
+     * Note: Uses json_each() because the topics field stores a JSON array of topic IDs.
+     * This is more performant than maintaining a separate junction table for the
+     * many-to-many Topic-Claim relationship, especially for read-heavy operations
+     * (which are the majority in this app).
+     *
+     * Trade-off: Query complexity vs schema simplicity and read performance.
+     */
     @Query("DELETE FROM claims WHERE :topicId IN (SELECT value FROM json_each(topics))")
     suspend fun deleteClaimsByTopicId(topicId: String)
 

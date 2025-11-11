@@ -2,7 +2,6 @@ package com.argumentor.app.data.repository
 
 import com.argumentor.app.data.local.dao.QuestionDao
 import com.argumentor.app.data.model.Question
-import com.argumentor.app.util.SearchUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
@@ -23,7 +22,7 @@ class QuestionRepository @Inject constructor(
         questionDao.observeQuestionById(questionId)
 
     suspend fun getQuestionsForTopic(topicId: String): List<Question> =
-        questionDao.getQuestionsForTopic(topicId)
+        questionDao.getQuestionsByTopicId(topicId)
 
     suspend fun insertQuestion(question: Question) =
         questionDao.insertQuestion(question)

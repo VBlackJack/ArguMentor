@@ -3,9 +3,12 @@ package com.argumentor.app.ui.screens.importexport
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.argumentor.app.R
 import com.argumentor.app.data.dto.ImportResult
 import com.argumentor.app.data.repository.ImportExportRepository
+import com.argumentor.app.util.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import timber.log.Timber
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +27,8 @@ sealed class ImportExportState {
 
 @HiltViewModel
 class ImportExportViewModel @Inject constructor(
-    private val importExportRepository: ImportExportRepository
+    private val importExportRepository: ImportExportRepository,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<ImportExportState>(ImportExportState.Idle)
@@ -43,11 +47,13 @@ class ImportExportViewModel @Inject constructor(
 
             importExportRepository.exportToJson(outputStream).fold(
                 onSuccess = {
-                    _state.value = ImportExportState.Success("Données exportées avec succès")
+                    Timber.d("Data export successful")
+                    _state.value = ImportExportState.Success(resourceProvider.getString(R.string.export_success))
                 },
                 onFailure = { error ->
+                    Timber.e(error, "Failed to export data")
                     _state.value = ImportExportState.Error(
-                        error.message ?: "Erreur lors de l'export"
+                        error.message ?: resourceProvider.getString(R.string.error_export)
                     )
                 }
             )
@@ -63,11 +69,13 @@ class ImportExportViewModel @Inject constructor(
                 _similarityThreshold.value
             ).fold(
                 onSuccess = { result ->
+                    Timber.d("Data import preview: ${result.created} created, ${result.updated} updated, ${result.duplicates} duplicates")
                     _state.value = ImportExportState.ImportPreview(result)
                 },
                 onFailure = { error ->
+                    Timber.e(error, "Failed to import data")
                     _state.value = ImportExportState.Error(
-                        error.message ?: "Erreur lors de l'import"
+                        error.message ?: resourceProvider.getString(R.string.error_import)
                     )
                 }
             )
@@ -86,11 +94,13 @@ class ImportExportViewModel @Inject constructor(
                 _similarityThreshold.value
             ).fold(
                 onSuccess = { result ->
+                    Timber.d("Data import from string preview: ${result.created} created, ${result.updated} updated, ${result.duplicates} duplicates")
                     _state.value = ImportExportState.ImportPreview(result)
                 },
                 onFailure = { error ->
+                    Timber.e(error, "Failed to import data from string")
                     _state.value = ImportExportState.Error(
-                        error.message ?: "Erreur lors de l'import"
+                        error.message ?: resourceProvider.getString(R.string.error_import)
                     )
                 }
             )
@@ -106,8 +116,9 @@ class ImportExportViewModel @Inject constructor(
         val currentState = _state.value
         if (currentState is ImportExportState.ImportPreview) {
             val result = currentState.result
+            Timber.d("Import confirmed: ${result.created} created, ${result.updated} updated")
             _state.value = ImportExportState.Success(
-                "Import réussi: ${result.created} créés, ${result.updated} mis à jour, ${result.duplicates} doublons"
+                resourceProvider.getString(R.string.import_success, result.created, result.updated)
             )
         }
     }

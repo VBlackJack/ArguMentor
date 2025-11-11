@@ -402,4 +402,21 @@
     <!-- Onboarding Tutorial Toggle -->
     <string name="onboarding_tutorial_toggle_title">Tutoriel intégré</string>
     <string name="onboarding_tutorial_toggle_description">Afficher un sujet de démonstration pour découvrir les fonctionnalités</string>
+
+    <!-- Error Messages -->
+    <string name="error_unknown">Une erreur inconnue s\'est produite</string>
+    <string name="error_export_pdf">Erreur lors de l\'export PDF</string>
+    <string name="error_export_markdown">Erreur lors de l\'export Markdown</string>
+    <string name="error_export">Erreur lors de l\'export</string>
+    <string name="error_import">Erreur lors de l\'import</string>
+    <string name="error_topic_title_empty">Le titre du sujet ne peut pas être vide</string>
+    <string name="error_claim_text_empty">Le texte de l\'affirmation ne peut pas être vide</string>
+    <string name="error_evidence_content_empty">Le contenu de la preuve ne peut pas être vide</string>
+    <string name="error_question_text_empty">Le texte de la question ne peut pas être vide</string>
+    <string name="error_source_title_empty">Le titre de la source ne peut pas être vide</string>
+    <string name="error_save_topic">Échec de la sauvegarde du sujet : %1$s</string>
+    <string name="error_save_claim">Échec de la sauvegarde de l\'affirmation : %1$s</string>
+    <string name="error_save_evidence">Échec de la sauvegarde de la preuve : %1$s</string>
+    <string name="error_save_question">Échec de la sauvegarde de la question : %1$s</string>
+    <string name="error_save_source">Échec de la sauvegarde de la source : %1$s</string>
 </resources>

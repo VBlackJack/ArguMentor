@@ -16,6 +16,7 @@ import com.argumentor.app.data.model.*
  * Version 6 - Renamed fallacyTag to fallacyIds in Rebuttal for consistency with Claim
  * Version 7 - Added TopicFts for full-text search on topics
  * Version 8 - Added EvidenceFts for full-text search on evidences
+ * Version 9 - Added TagFts for full-text search on tags
  */
 @Database(
     entities = [
@@ -31,9 +32,10 @@ import com.argumentor.app.data.model.*
         QuestionFts::class,
         SourceFts::class,
         TopicFts::class,
-        EvidenceFts::class
+        EvidenceFts::class,
+        TagFts::class
     ],
-    version = 8,
+    version = 9,
     exportSchema = true
 )
 @TypeConverters(Converters::class)

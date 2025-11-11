@@ -402,4 +402,21 @@
     <!-- Onboarding Tutorial Toggle -->
     <string name="onboarding_tutorial_toggle_title">Built-in tutorial</string>
     <string name="onboarding_tutorial_toggle_description">Show a demo topic to discover the app</string>
+
+    <!-- Error Messages -->
+    <string name="error_unknown">An unknown error occurred</string>
+    <string name="error_export_pdf">Error exporting PDF</string>
+    <string name="error_export_markdown">Error exporting Markdown</string>
+    <string name="error_export">Error during export</string>
+    <string name="error_import">Error during import</string>
+    <string name="error_topic_title_empty">Topic title cannot be empty</string>
+    <string name="error_claim_text_empty">Claim text cannot be empty</string>
+    <string name="error_evidence_content_empty">Evidence content cannot be empty</string>
+    <string name="error_question_text_empty">Question text cannot be empty</string>
+    <string name="error_source_title_empty">Source title cannot be empty</string>
+    <string name="error_save_topic">Failed to save topic: %1$s</string>
+    <string name="error_save_claim">Failed to save claim: %1$s</string>
+    <string name="error_save_evidence">Failed to save evidence: %1$s</string>
+    <string name="error_save_question">Failed to save question: %1$s</string>
+    <string name="error_save_source">Failed to save source: %1$s</string>
 </resources>

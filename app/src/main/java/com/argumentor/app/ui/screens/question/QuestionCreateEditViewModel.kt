@@ -2,24 +2,28 @@ package com.argumentor.app.ui.screens.question
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.argumentor.app.R
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.data.model.Question
 import com.argumentor.app.data.repository.ClaimRepository
 import com.argumentor.app.data.repository.QuestionRepository
 import com.argumentor.app.data.repository.TopicRepository
+import com.argumentor.app.util.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class QuestionCreateEditViewModel @Inject constructor(
     private val questionRepository: QuestionRepository,
     private val claimRepository: ClaimRepository,
-    private val topicRepository: TopicRepository
+    private val topicRepository: TopicRepository,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _text = MutableStateFlow("")
@@ -47,7 +51,21 @@ class QuestionCreateEditViewModel @Inject constructor(
     private val _isTopicLevel = MutableStateFlow(true)
     val isTopicLevel: StateFlow<Boolean> = _isTopicLevel.asStateFlow()
 
-    private var questionId: String? = null
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    private val _questionId = MutableStateFlow<String?>(null)
+    val questionId: StateFlow<String?> = _questionId.asStateFlow()
+
+    private val _initialText = MutableStateFlow("")
+    val initialText: StateFlow<String> = _initialText.asStateFlow()
+
+    private val _initialKind = MutableStateFlow(Question.QuestionKind.CLARIFYING)
+    val initialKind: StateFlow<Question.QuestionKind> = _initialKind.asStateFlow()
+
+    private val _initialTargetId = MutableStateFlow<String?>(null)
+    val initialTargetId: StateFlow<String?> = _initialTargetId.asStateFlow()
+
     private var targetId: String? = null
     private var initialTopicId: String? = null
 
@@ -56,44 +74,52 @@ class QuestionCreateEditViewModel @Inject constructor(
         this.initialTopicId = targetId
 
         viewModelScope.launch {
-            if (questionId != null) {
-                // Editing existing question
-                this@QuestionCreateEditViewModel.questionId = questionId
-                questionRepository.getQuestionById(questionId)?.let { question ->
-                    _text.value = question.text
-                    _kind.value = question.kind
+            _isLoading.value = true
+            try {
+                if (questionId != null) {
+                    // Editing existing question
+                    _questionId.value = questionId
+                    questionRepository.getQuestionById(questionId)?.let { question ->
+                        _text.value = question.text
+                        _kind.value = question.kind
+                        _initialText.value = question.text
+                        _initialKind.value = question.kind
+                        _initialTargetId.value = question.targetId
 
-                    // Check if question targets a claim or topic
-                    val claim = claimRepository.getClaimByIdSync(question.targetId)
+                        // Check if question targets a claim or topic
+                        val claim = claimRepository.getClaimByIdSync(question.targetId)
+                        if (claim != null) {
+                            // Question targets a claim
+                            _selectedClaim.value = claim
+                            _isTopicLevel.value = false
+                            // Find topic from claim to load other claims
+                            if (claim.topics.isNotEmpty()) {
+                                loadClaimsForTopic(claim.topics.first())
+                            }
+                        } else {
+                            // Question targets a topic
+                            _isTopicLevel.value = true
+                            loadClaimsForTopic(question.targetId)
+                        }
+                    }
+                } else if (targetId != null) {
+                    // Creating new question - check if targetId is claim or topic
+                    val claim = claimRepository.getClaimByIdSync(targetId)
                     if (claim != null) {
-                        // Question targets a claim
+                        // Creating question for a claim
                         _selectedClaim.value = claim
                         _isTopicLevel.value = false
-                        // Find topic from claim to load other claims
                         if (claim.topics.isNotEmpty()) {
                             loadClaimsForTopic(claim.topics.first())
                         }
                     } else {
-                        // Question targets a topic
+                        // Creating question for a topic
                         _isTopicLevel.value = true
-                        loadClaimsForTopic(question.targetId)
+                        loadClaimsForTopic(targetId)
                     }
                 }
-            } else if (targetId != null) {
-                // Creating new question - check if targetId is claim or topic
-                val claim = claimRepository.getClaimByIdSync(targetId)
-                if (claim != null) {
-                    // Creating question for a claim
-                    _selectedClaim.value = claim
-                    _isTopicLevel.value = false
-                    if (claim.topics.isNotEmpty()) {
-                        loadClaimsForTopic(claim.topics.first())
-                    }
-                } else {
-                    // Creating question for a topic
-                    _isTopicLevel.value = true
-                    loadClaimsForTopic(targetId)
-                }
+            } finally {
+                _isLoading.value = false
             }
         }
     }
@@ -129,7 +155,7 @@ class QuestionCreateEditViewModel @Inject constructor(
 
     fun saveQuestion(onSaved: () -> Unit) {
         if (_text.value.isBlank()) {
-            _errorMessage.value = "Question text cannot be empty"
+            _errorMessage.value = resourceProvider.getString(R.string.error_question_text_empty)
             return
         }
 
@@ -144,10 +170,11 @@ class QuestionCreateEditViewModel @Inject constructor(
 
         viewModelScope.launch {
             _isSaving.value = true
-            try {
-                val qId = questionId
+            val result = runCatching {
+                val qId = _questionId.value
                 val question = if (qId != null) {
                     // Update existing question
+                    Timber.d("Updating existing question: $qId")
                     questionRepository.getQuestionById(qId)?.copy(
                         targetId = finalTargetId,
                         text = _text.value,
@@ -156,6 +183,7 @@ class QuestionCreateEditViewModel @Inject constructor(
                     )
                 } else {
                     // Create new question
+                    Timber.d("Creating new question")
                     Question(
                         targetId = finalTargetId,
                         text = _text.value,
@@ -165,13 +193,31 @@ class QuestionCreateEditViewModel @Inject constructor(
 
                 question?.let {
                     questionRepository.insertQuestion(it)
-                    onSaved()
+                    if (qId != null) {
+                        Timber.d("Question updated successfully: $qId")
+                    } else {
+                        Timber.d("Question created successfully: ${it.id}")
+                    }
                 }
-            } catch (e: Exception) {
-                _errorMessage.value = "Failed to save question: ${e.message}"
-            } finally {
-                _isSaving.value = false
             }
+
+            result.onSuccess {
+                onSaved()
+            }.onFailure { e ->
+                Timber.e(e, "Failed to save question")
+                _errorMessage.value = resourceProvider.getString(
+                    R.string.error_save_question,
+                    e.message ?: resourceProvider.getString(R.string.error_unknown)
+                )
+            }
+
+            _isSaving.value = false
         }
+    }
+
+    fun hasUnsavedChanges(): Boolean {
+        return _text.value != _initialText.value ||
+                _kind.value != _initialKind.value ||
+                _initialTargetId.value != null  // Has unsaved changes if editing
     }
 }

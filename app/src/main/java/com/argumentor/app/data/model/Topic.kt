@@ -16,6 +16,23 @@ import java.util.UUID
  * @property tags List of tag IDs associated with this topic
  * @property createdAt Creation timestamp in ISO 8601 format
  * @property updatedAt Last update timestamp in ISO 8601 format
+ *
+ * Note on Tag Relationships:
+ * The `tags` property stores Tag IDs as a List<String> instead of using a junction table
+ * (Topic_Tag) with proper Foreign Keys. This design choice was made because:
+ * 1. SIMPLICITY: Easier to query and manage for the common use case (read topics with tags)
+ * 2. PERFORMANCE: Avoids JOIN queries on every topic fetch - tags are loaded directly
+ * 3. FLEXIBILITY: Easy to add/remove tags without separate table operations
+ *
+ * Trade-offs:
+ * - No automatic CASCADE delete when a tag is removed (orphaned IDs possible)
+ * - Manual cleanup needed if tags are deleted (currently not a common operation)
+ * - Cannot easily query "all topics for a tag" without filtering in code
+ *
+ * This is acceptable because:
+ * - Tags are rarely deleted in this app
+ * - Most queries are "get topics" → "show their tags" (read-heavy)
+ * - Tag filtering happens at the ViewModel level which is performant enough
  */
 @Entity(tableName = "topics")
 @TypeConverters(Converters::class)

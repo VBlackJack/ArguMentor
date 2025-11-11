@@ -7,6 +7,7 @@ import com.argumentor.app.data.repository.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 data class DebateCard(
@@ -66,20 +67,31 @@ class DebateModeViewModel @Inject constructor(
             claimRepository.getAllClaims().collect { allClaims ->
                 val topicClaims = allClaims.filter { it.topics.contains(topicId) }
 
-                // Load related data for each claim
-                val cards = topicClaims.map { claim ->
-                    val rebuttals = rebuttalRepository.getRebuttalsByClaimId(claim.id).first()
-                    val evidences = evidenceRepository.getEvidencesByClaimId(claim.id).first()
-                    val questions = questionRepository.getQuestionsByTargetId(claim.id).first()
+                // Load all data at once instead of N+1 queries (optimization)
+                Timber.d("Loading debate cards for ${topicClaims.size} claims")
 
+                val allRebuttals = rebuttalRepository.getAllRebuttals().first()
+                val allEvidences = evidenceRepository.getAllEvidences().first()
+                val allQuestions = questionRepository.getQuestionsByTargetId(topicId).first()
+
+                // Build maps for quick lookup
+                val rebuttalsMap = allRebuttals.groupBy { it.claimId }
+                val evidencesMap = allEvidences.groupBy { it.claimId }
+
+                // Questions can target claims, so filter by targetId
+                val questionsMap = allQuestions.groupBy { it.targetId }
+
+                // Build cards using pre-loaded data
+                val cards = topicClaims.map { claim ->
                     DebateCard(
                         claim = claim,
-                        rebuttals = rebuttals.take(MAX_REBUTTALS_PER_CARD),
-                        evidences = evidences.take(MAX_EVIDENCES_PER_CARD),
-                        questions = questions.take(MAX_QUESTIONS_PER_CARD)
+                        rebuttals = (rebuttalsMap[claim.id] ?: emptyList()).take(MAX_REBUTTALS_PER_CARD),
+                        evidences = (evidencesMap[claim.id] ?: emptyList()).take(MAX_EVIDENCES_PER_CARD),
+                        questions = (questionsMap[claim.id] ?: emptyList()).take(MAX_QUESTIONS_PER_CARD)
                     )
                 }
 
+                Timber.d("Loaded ${cards.size} debate cards successfully")
                 _debateCards.value = cards.shuffled() // Shuffle for practice
             }
         }

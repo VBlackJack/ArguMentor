@@ -16,12 +16,16 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.argumentor.app.R
+import com.argumentor.app.util.ResourceProvider
+import timber.log.Timber
 
 @HiltViewModel
 class SourceCreateEditViewModel @Inject constructor(
     private val sourceRepository: SourceRepository,
     private val evidenceRepository: EvidenceRepository,
-    private val claimRepository: ClaimRepository
+    private val claimRepository: ClaimRepository,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _title = MutableStateFlow("")
@@ -58,17 +62,35 @@ class SourceCreateEditViewModel @Inject constructor(
     private val _linkedClaims = MutableStateFlow<List<Claim>>(emptyList())
     val linkedClaims: StateFlow<List<Claim>> = _linkedClaims.asStateFlow()
 
-    private var sourceId: String? = null
-    private var isEditMode = false
+    private val _reliabilityScore = MutableStateFlow(0)
+    val reliabilityScore: StateFlow<Int> = _reliabilityScore.asStateFlow()
+
+    private val _sourceId = MutableStateFlow<String?>(null)
+    private val _isEditMode = MutableStateFlow(false)
+    val isEditMode: StateFlow<Boolean> = _isEditMode.asStateFlow()
+
+    private val _isSaving = MutableStateFlow(false)
+    val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
+
+    // Track initial values for hasUnsavedChanges()
+    private val _initialTitle = MutableStateFlow("")
+    private val _initialCitation = MutableStateFlow("")
+    private val _initialUrl = MutableStateFlow("")
+    private val _initialReliabilityScore = MutableStateFlow(0)
 
     fun loadSource(sourceId: String?) {
         if (sourceId == null) {
-            isEditMode = false
+            _isEditMode.value = false
+            // Reset to default values for new source
+            _initialTitle.value = ""
+            _initialCitation.value = ""
+            _initialUrl.value = ""
+            _initialReliabilityScore.value = 0
             return
         }
 
-        this.sourceId = sourceId
-        isEditMode = true
+        _sourceId.value = sourceId
+        _isEditMode.value = true
         _isLoading.value = true
 
         viewModelScope.launch {
@@ -80,6 +102,12 @@ class SourceCreateEditViewModel @Inject constructor(
                 _publisher.value = it.publisher ?: ""
                 _date.value = it.date ?: ""
                 _notes.value = it.notes ?: ""
+
+                // Track initial values for hasUnsavedChanges()
+                _initialTitle.value = it.title
+                _initialCitation.value = it.citation ?: ""
+                _initialUrl.value = it.url ?: ""
+                _initialReliabilityScore.value = 0
             }
             _isLoading.value = false
         }
@@ -125,16 +153,17 @@ class SourceCreateEditViewModel @Inject constructor(
 
     fun saveSource(onSaved: () -> Unit) {
         if (_title.value.isBlank()) {
-            _errorMessage.value = "Source title cannot be empty"
+            _errorMessage.value = resourceProvider.getString(R.string.error_source_title_empty)
             return
         }
 
         _errorMessage.value = null
+        _isSaving.value = true
 
         viewModelScope.launch {
-            try {
-                val srcId = sourceId
-                val source = if (isEditMode && srcId != null) {
+            runCatching {
+                val srcId = _sourceId.value
+                val source = if (_isEditMode.value && srcId != null) {
                     // Update existing source
                     val existingSource = sourceRepository.getSourceById(srcId).first()
                     existingSource?.copy(
@@ -159,16 +188,32 @@ class SourceCreateEditViewModel @Inject constructor(
                 }
 
                 source?.let {
-                    if (isEditMode) {
+                    if (_isEditMode.value) {
                         sourceRepository.updateSource(it)
+                        Timber.d("Source updated successfully: ${it.id}")
                     } else {
                         sourceRepository.insertSource(it)
+                        Timber.d("Source created successfully: ${it.id}")
                     }
                     onSaved()
                 }
-            } catch (e: Exception) {
-                _errorMessage.value = "Failed to save source: ${e.message}"
+            }.onSuccess {
+                // Success is already handled in the block above
+            }.onFailure { e ->
+                Timber.e(e, "Failed to save source")
+                _errorMessage.value = resourceProvider.getString(
+                    R.string.error_save_source,
+                    e.message ?: resourceProvider.getString(R.string.error_unknown)
+                )
             }
+            _isSaving.value = false
         }
+    }
+
+    fun hasUnsavedChanges(): Boolean {
+        return _title.value != _initialTitle.value ||
+                _citation.value != _initialCitation.value ||
+                _url.value != _initialUrl.value ||
+                _reliabilityScore.value != _initialReliabilityScore.value
     }
 }

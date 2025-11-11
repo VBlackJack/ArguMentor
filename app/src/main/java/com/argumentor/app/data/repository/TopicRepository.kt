@@ -37,17 +37,26 @@ class TopicRepository @Inject constructor(
      * - Claims linked to this topic
      * - Questions linked to this topic or its claims
      * - Rebuttals and Evidence (automatically deleted via foreign key cascade)
+     *
+     * Note: This uses MANUAL cascade deletion instead of database Foreign Keys because:
+     * 1. Topic-Claim relationship is Many-to-Many (stored as JSON array in claims.topics)
+     * 2. Question.targetId is polymorphic (can reference Topic OR Claim)
+     * 3. Room/SQLite cannot enforce FK CASCADE on these complex relationship patterns
+     *
+     * Alternative considered: Creating junction tables (Topic_Claim, Question_Target)
+     * with proper FKs, but this would significantly complicate the schema and queries.
+     * Current approach provides better query performance for the common use case.
      */
     suspend fun deleteTopicById(topicId: String) {
         // 1. Get all claims for this topic to find associated questions
-        val claims = claimDao.getClaimsForTopic(topicId)
+        val claims = claimDao.getClaimsByTopicId(topicId)
 
         // 2. Delete questions linked to each claim
         claims.forEach { claim ->
             questionDao.deleteQuestionsByTargetId(claim.id)
         }
 
-        // 3. Delete all claims for this topic
+        // 3. Delete all claims for this topic using json_each()
         //    (Rebuttals and Evidence will be deleted automatically via FK CASCADE)
         claimDao.deleteClaimsByTopicId(topicId)
 
