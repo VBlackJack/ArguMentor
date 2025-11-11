@@ -123,6 +123,7 @@ fun FallacyDetailScreen(
                 )
             }
         } else {
+            val currentFallacy = fallacy!!
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -150,7 +151,7 @@ fun FallacyDetailScreen(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = fallacy.name,
+                            text = currentFallacy.name,
                             style = MaterialTheme.typography.headlineMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
@@ -185,7 +186,7 @@ fun FallacyDetailScreen(
                         }
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            text = fallacy.description,
+                            text = currentFallacy.description,
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -220,7 +221,7 @@ fun FallacyDetailScreen(
                         }
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            text = "\"${fallacy.example}\"",
+                            text = "\"${currentFallacy.example}\"",
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                             ),

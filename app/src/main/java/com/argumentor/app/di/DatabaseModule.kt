@@ -64,4 +64,9 @@ object DatabaseModule {
     fun provideTagDao(database: ArguMentorDatabase): TagDao {
         return database.tagDao()
     }
+
+    @Provides
+    fun provideFallacyDao(database: ArguMentorDatabase): FallacyDao {
+        return database.fallacyDao()
+    }
 }

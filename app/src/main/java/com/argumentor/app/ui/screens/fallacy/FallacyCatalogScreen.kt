@@ -270,7 +270,6 @@ private fun FallacyCard(
                         modifier = Modifier.size(20.dp)
                     )
                 }
-            }
         }
     }
 }
