@@ -11,6 +11,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
+import java.time.Instant
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -61,11 +62,25 @@ class ImportExportRepository @Inject constructor(
      */
     suspend fun exportToFile(file: File): Result<Unit> {
         return try {
-            file.outputStream().use { outputStream ->
-                exportToJson(outputStream)
+            // Ensure parent directory exists
+            file.parentFile?.let { parent ->
+                if (!parent.exists() && !parent.mkdirs()) {
+                    return Result.failure(java.io.IOException("Cannot create directory: ${parent.absolutePath}"))
+                }
             }
+
+            file.outputStream().use { outputStream ->
+                exportToJson(outputStream).getOrThrow()
+            }
+            Result.success(Unit)
+        } catch (e: java.io.FileNotFoundException) {
+            Result.failure(Exception("Cannot write to file: ${file.absolutePath}. ${e.message}", e))
+        } catch (e: SecurityException) {
+            Result.failure(Exception("Permission denied: ${file.absolutePath}. Check app permissions.", e))
+        } catch (e: java.io.IOException) {
+            Result.failure(Exception("I/O error during export: ${e.message}. Check available storage space.", e))
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception("Export failed: ${e.message}", e))
         }
     }
 
@@ -177,7 +192,7 @@ class ImportExportRepository @Inject constructor(
                 val existing = database.sourceDao().getSourceById(source.id)
                 if (existing != null) {
                     // Update if incoming is newer
-                    if (source.updatedAt > existing.updatedAt) {
+                    if (isNewerTimestamp(source.updatedAt, existing.updatedAt)) {
                         database.sourceDao().updateSource(source)
                         updated++
                     } else {
@@ -232,7 +247,7 @@ class ImportExportRepository @Inject constructor(
                 if (existing != null) {
                     // Update if incoming is newer (or if incoming has no timestamp, skip update)
                     val incomingUpdatedAt = topicDto.updatedAt
-                    if (incomingUpdatedAt != null && incomingUpdatedAt > existing.updatedAt) {
+                    if (incomingUpdatedAt != null && isNewerTimestamp(incomingUpdatedAt, existing.updatedAt)) {
                         database.topicDao().updateTopic(topicDto.toModel())
                         updated++
                     } else {
@@ -262,7 +277,7 @@ class ImportExportRepository @Inject constructor(
                 val existing = database.claimDao().getClaimById(claim.id)
                 if (existing != null) {
                     // Update if incoming is newer
-                    if (claim.updatedAt > existing.updatedAt) {
+                    if (isNewerTimestamp(claim.updatedAt, existing.updatedAt)) {
                         database.claimDao().updateClaim(claim.copy(claimFingerprint = fingerprint))
                         updated++
                     } else {
@@ -276,7 +291,7 @@ class ImportExportRepository @Inject constructor(
                     } else {
                         // Check for near-duplicates using similarity
                         // Load all claims and filter by topics in memory (LIKE query not precise enough)
-                        val allClaims = database.claimDao().getAllClaimsForFiltering()
+                        val allClaims = database.claimDao().getAllClaimsSync()
                         val candidateClaims = if (claim.topics.isNotEmpty()) {
                             allClaims.filter { existingClaim ->
                                 claim.topics.any { topicId -> existingClaim.topics.contains(topicId) }
@@ -342,13 +357,13 @@ class ImportExportRepository @Inject constructor(
                 val referencedClaim = database.claimDao().getClaimById(rebuttal.claimId)
                 if (referencedClaim == null) {
                     errors++
-                    errorMessages.add("Rebuttal ${rebuttal.id}: Referenced claim ${rebuttal.claimId} not found")
+                    errorMessages.add("Rebuttal '${rebuttal.id}': Referenced claim '${rebuttal.claimId}' not found. Import the claim first or verify the claimId.")
                     return@forEach
                 }
 
                 val existing = database.rebuttalDao().getRebuttalById(rebuttal.id)
                 if (existing != null) {
-                    if (rebuttal.updatedAt > existing.updatedAt) {
+                    if (isNewerTimestamp(rebuttal.updatedAt, existing.updatedAt)) {
                         database.rebuttalDao().updateRebuttal(rebuttal)
                         updated++
                     } else {
@@ -407,7 +422,7 @@ class ImportExportRepository @Inject constructor(
                 val referencedClaim = database.claimDao().getClaimById(evidence.claimId)
                 if (referencedClaim == null) {
                     errors++
-                    errorMessages.add("Evidence ${evidence.id}: Referenced claim ${evidence.claimId} not found")
+                    errorMessages.add("Evidence '${evidence.id}': Referenced claim '${evidence.claimId}' not found. Import the claim first or verify the claimId.")
                     return@forEach
                 }
 
@@ -416,7 +431,7 @@ class ImportExportRepository @Inject constructor(
                     val referencedSource = database.sourceDao().getSourceById(evidence.sourceId)
                     if (referencedSource == null) {
                         errors++
-                        errorMessages.add("Evidence ${evidence.id}: Referenced source ${evidence.sourceId} not found")
+                        errorMessages.add("Evidence '${evidence.id}': Referenced source '${evidence.sourceId}' not found. Import the source first or remove the sourceId.")
                         return@forEach
                     }
                 }
@@ -444,7 +459,7 @@ class ImportExportRepository @Inject constructor(
                 val targetAsClaim = database.claimDao().getClaimById(question.targetId)
                 if (targetAsTopic == null && targetAsClaim == null) {
                     errors++
-                    errorMessages.add("Question ${question.id}: Referenced target ${question.targetId} not found (neither Topic nor Claim)")
+                    errorMessages.add("Question '${question.id}': Referenced target '${question.targetId}' not found. The targetId must reference an existing Topic or Claim. Import the target first or verify the targetId.")
                     return@forEach
                 }
 
@@ -476,6 +491,36 @@ class ImportExportRepository @Inject constructor(
             errorMessages = errorMessages,
             itemsForReview = itemsForReview
         )
+    }
+
+    // Utility functions for timestamp validation and comparison
+
+    /**
+     * Validates if a string is a valid ISO 8601 timestamp.
+     * @return true if valid, false otherwise
+     */
+    private fun isValidIsoTimestamp(timestamp: String): Boolean {
+        return try {
+            Instant.parse(timestamp)
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    /**
+     * Compares two ISO 8601 timestamps.
+     * @return true if first is newer than second, false otherwise
+     */
+    private fun isNewerTimestamp(first: String, second: String): Boolean {
+        return try {
+            val firstInstant = Instant.parse(first)
+            val secondInstant = Instant.parse(second)
+            firstInstant.isAfter(secondInstant)
+        } catch (e: Exception) {
+            // Fallback to string comparison if parsing fails
+            first.compareTo(second) > 0
+        }
     }
 
     // Helper functions to get all data

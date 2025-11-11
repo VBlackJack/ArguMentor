@@ -18,15 +18,19 @@ fun Topic.toDto(): TopicDto = TopicDto(
     updatedAt = updatedAt
 )
 
-fun TopicDto.toModel(): Topic = Topic(
-    id = id,
-    title = title,
-    summary = summary,
-    posture = Topic.Posture.fromString(posture),
-    tags = tags,
-    createdAt = createdAt ?: getCurrentIsoTimestamp(),
-    updatedAt = updatedAt ?: getCurrentIsoTimestamp()
-)
+fun TopicDto.toModel(): Topic {
+    require(!createdAt.isNullOrBlank()) { "Topic '${id}': createdAt is required for data integrity" }
+    require(!updatedAt.isNullOrBlank()) { "Topic '${id}': updatedAt is required for data integrity" }
+    return Topic(
+        id = id,
+        title = title,
+        summary = summary,
+        posture = Topic.Posture.fromString(posture),
+        tags = tags,
+        createdAt = createdAt,
+        updatedAt = updatedAt
+    )
+}
 
 // Claim mappers
 fun Claim.toDto(): ClaimDto = ClaimDto(
@@ -78,7 +82,8 @@ fun Evidence.toDto(): EvidenceDto = EvidenceDto(
     content = content,
     sourceId = sourceId,
     quality = quality.toString(),
-    createdAt = createdAt
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 fun EvidenceDto.toModel(): Evidence = Evidence(
@@ -88,7 +93,8 @@ fun EvidenceDto.toModel(): Evidence = Evidence(
     content = content,
     sourceId = sourceId,
     quality = Evidence.Quality.fromString(quality),
-    createdAt = createdAt
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 // Question mappers
@@ -97,7 +103,8 @@ fun Question.toDto(): QuestionDto = QuestionDto(
     targetId = targetId,
     text = text,
     kind = kind.toString(),
-    createdAt = createdAt
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 fun QuestionDto.toModel(): Question = Question(
@@ -105,7 +112,8 @@ fun QuestionDto.toModel(): Question = Question(
     targetId = targetId,
     text = text,
     kind = Question.QuestionKind.fromString(kind),
-    createdAt = createdAt
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 // Source mappers
@@ -118,30 +126,44 @@ fun Source.toDto(): SourceDto = SourceDto(
     date = date,
     reliabilityScore = reliabilityScore,
     notes = notes,
-    createdAt = createdAt
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
-fun SourceDto.toModel(): Source = Source(
-    id = id,
-    title = title,
-    citation = citation,
-    url = url,
-    publisher = publisher,
-    date = date,
-    reliabilityScore = reliabilityScore,
-    notes = notes,
-    createdAt = createdAt
-)
+fun SourceDto.toModel(): Source {
+    // Validate reliabilityScore if present
+    reliabilityScore?.let { score ->
+        require(score in 0.0..1.0) {
+            "Source '${id}': reliabilityScore must be between 0.0 and 1.0, got $score"
+        }
+    }
+    return Source(
+        id = id,
+        title = title,
+        citation = citation,
+        url = url,
+        publisher = publisher,
+        date = date,
+        reliabilityScore = reliabilityScore,
+        notes = notes,
+        createdAt = createdAt,
+        updatedAt = updatedAt
+    )
+}
 
 // Tag mappers
 fun Tag.toDto(): TagDto = TagDto(
     id = id,
     label = label,
-    color = color
+    color = color,
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 fun TagDto.toModel(): Tag = Tag(
     id = id,
     label = label,
-    color = color
+    color = color,
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )

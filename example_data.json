@@ -7,7 +7,7 @@
       "id": "topic_001",
       "title": "La Trinité dans le christianisme",
       "summary": "Débat sur la doctrine chrétienne de la Trinité - Dieu en trois personnes",
-      "posture": "neutre_critique",
+      "posture": "neutral_critical",
       "tags": ["tag_001", "tag_002"],
       "createdAt": "2025-11-10T10:00:00Z",
       "updatedAt": "2025-11-10T10:00:00Z"
@@ -31,7 +31,7 @@
       "topics": ["topic_001"],
       "createdAt": "2025-11-10T10:30:00Z",
       "updatedAt": "2025-11-10T10:30:00Z",
-      "claimFingerprint": "bible_enseigne_doctrine_trinite"
+      "claimFingerprint": "d24aedf8033ec528"
     },
     {
       "id": "claim_002",
@@ -41,7 +41,7 @@
       "topics": ["topic_001"],
       "createdAt": "2025-11-10T10:45:00Z",
       "updatedAt": "2025-11-10T10:45:00Z",
-      "claimFingerprint": "terme_trinite_absent_bible"
+      "claimFingerprint": "a86ebf0262110db2"
     },
     {
       "id": "claim_003",
@@ -51,7 +51,7 @@
       "topics": ["topic_002"],
       "createdAt": "2025-11-10T11:00:00Z",
       "updatedAt": "2025-11-10T11:00:00Z",
-      "claimFingerprint": "ia_reproduit_biais_humains"
+      "claimFingerprint": "df37272d76bc5123"
     }
   ],
   "rebuttals": [
@@ -80,7 +80,8 @@
       "content": "Matthieu 28:19 - 'Allez, faites de toutes les nations des disciples, les baptisant au nom du Père, du Fils et du Saint-Esprit'",
       "sourceId": "source_001",
       "quality": "high",
-      "createdAt": "2025-11-10T11:30:00Z"
+      "createdAt": "2025-11-10T11:30:00Z",
+      "updatedAt": "2025-11-10T11:30:00Z"
     },
     {
       "id": "evidence_002",
@@ -89,7 +90,8 @@
       "content": "Jean 1:1 - 'Au commencement était la Parole, et la Parole était avec Dieu, et la Parole était Dieu'",
       "sourceId": "source_001",
       "quality": "high",
-      "createdAt": "2025-11-10T11:35:00Z"
+      "createdAt": "2025-11-10T11:35:00Z",
+      "updatedAt": "2025-11-10T11:35:00Z"
     },
     {
       "id": "evidence_003",
@@ -98,7 +100,8 @@
       "content": "Une étude de 2023 montre que 78% des modèles d'IA testés reproduisent des biais de genre présents dans leurs données d'entraînement",
       "sourceId": "source_002",
       "quality": "high",
-      "createdAt": "2025-11-10T11:40:00Z"
+      "createdAt": "2025-11-10T11:40:00Z",
+      "updatedAt": "2025-11-10T11:40:00Z"
     }
   ],
   "questions": [
@@ -107,14 +110,16 @@
       "targetId": "topic_001",
       "text": "Quels sont les passages bibliques qui soutiennent ou contredisent la Trinité ?",
       "kind": "clarifying",
-      "createdAt": "2025-11-10T11:45:00Z"
+      "createdAt": "2025-11-10T11:45:00Z",
+      "updatedAt": "2025-11-10T11:45:00Z"
     },
     {
       "id": "question_002",
       "targetId": "claim_003",
       "text": "Quelles méthodes concrètes peuvent être utilisées pour réduire les biais dans les modèles d'IA ?",
       "kind": "socratic",
-      "createdAt": "2025-11-10T11:50:00Z"
+      "createdAt": "2025-11-10T11:50:00Z",
+      "updatedAt": "2025-11-10T11:50:00Z"
     }
   ],
   "sources": [
@@ -127,7 +132,8 @@
       "date": "1910",
       "reliabilityScore": 0.95,
       "notes": "Traduction française classique et largement utilisée",
-      "createdAt": "2025-11-10T12:00:00Z"
+      "createdAt": "2025-11-10T12:00:00Z",
+      "updatedAt": "2025-11-10T12:00:00Z"
     },
     {
       "id": "source_002",
@@ -138,24 +144,31 @@
       "date": "2023",
       "reliabilityScore": 0.9,
       "notes": "Étude peer-reviewed sur les biais dans les modèles de langage",
-      "createdAt": "2025-11-10T12:05:00Z"
+      "createdAt": "2025-11-10T12:05:00Z",
+      "updatedAt": "2025-11-10T12:05:00Z"
     }
   ],
   "tags": [
     {
       "id": "tag_001",
       "label": "Théologie",
-      "color": "#4CAF50"
+      "color": "#4CAF50",
+      "createdAt": "2025-11-10T09:00:00Z",
+      "updatedAt": "2025-11-10T09:00:00Z"
     },
     {
       "id": "tag_002",
       "label": "Christianisme",
-      "color": "#2196F3"
+      "color": "#2196F3",
+      "createdAt": "2025-11-10T09:05:00Z",
+      "updatedAt": "2025-11-10T09:05:00Z"
     },
     {
       "id": "tag_003",
       "label": "Technologie",
-      "color": "#FF9800"
+      "color": "#FF9800",
+      "createdAt": "2025-11-10T09:10:00Z",
+      "updatedAt": "2025-11-10T09:10:00Z"
     }
   ]
 }

@@ -36,6 +36,20 @@ interface SourceDao {
     @Query("SELECT * FROM sources WHERE title LIKE '%' || :query || '%'")
     fun searchSources(query: String): Flow<List<Source>>
 
+    /**
+     * Full-text search on sources using FTS4 index.
+     * Searches in title and citation fields with relevance ranking.
+     * @param query Search query (supports FTS4 operators like OR, AND, *)
+     * @return Flow of matching sources ordered by title
+     */
+    @Query("""
+        SELECT sources.* FROM sources
+        JOIN sources_fts ON sources.rowid = sources_fts.rowid
+        WHERE sources_fts MATCH :query
+        ORDER BY sources.title
+    """)
+    fun searchSourcesFts(query: String): Flow<List<Source>>
+
     @Query("SELECT COUNT(*) FROM sources")
     suspend fun getSourceCount(): Int
 }

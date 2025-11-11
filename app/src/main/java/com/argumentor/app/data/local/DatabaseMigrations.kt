@@ -47,9 +47,46 @@ object DatabaseMigrations {
     }
 
     /**
+     * Migration from version 2 to 3.
+     *
+     * Changes:
+     * - Added index on claimFingerprint column in claims table for faster duplicate detection
+     */
+    val MIGRATION_2_3 = object : Migration(2, 3) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Create index on claimFingerprint for faster duplicate detection lookups
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_claims_claimFingerprint` ON `claims` (`claimFingerprint`)")
+        }
+    }
+
+    /**
+     * Migration from version 3 to 4.
+     *
+     * Changes:
+     * - Added SourceFts table for full-text search on sources (title and citation)
+     */
+    val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Create FTS4 virtual table for sources
+            db.execSQL("""
+                CREATE VIRTUAL TABLE IF NOT EXISTS `sources_fts`
+                USING fts4(content=`sources`, title, citation)
+            """)
+
+            // Populate FTS table with existing data
+            db.execSQL("""
+                INSERT INTO sources_fts(docid, title, citation)
+                SELECT rowid, title, citation FROM sources
+            """)
+        }
+    }
+
+    /**
      * All migrations in order.
      */
     val ALL_MIGRATIONS = arrayOf(
-        MIGRATION_1_2
+        MIGRATION_1_2,
+        MIGRATION_2_3,
+        MIGRATION_3_4
     )
 }

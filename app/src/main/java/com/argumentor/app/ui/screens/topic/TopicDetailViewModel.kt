@@ -44,47 +44,52 @@ class TopicDetailViewModel @Inject constructor(
     fun loadTopic(topicId: String) {
         _topicId.value = topicId
 
+        // Load topic, claims and sources in a single synchronized flow to avoid race conditions
         viewModelScope.launch {
-            topicRepository.getTopicById(topicId).collect { topic ->
+            combine(
+                topicRepository.getTopicById(topicId),
+                claimRepository.getAllClaims(),
+                sourceRepository.getAllSources()
+            ) { topic, allClaims, allSources ->
+                Triple(
+                    topic,
+                    allClaims.filter { claim -> claim.topics.contains(topicId) },
+                    allSources
+                )
+            }.collect { (topic, claims, sources) ->
+                // Update all state atomically to prevent partial UI updates
                 _topic.value = topic
+                _claims.value = claims
+                _sources.value = sources
             }
         }
 
+        // Load questions (depends on claims, so must be separate)
         viewModelScope.launch {
-            // Load claims associated with this topic
-            claimRepository.getAllClaims().collect { allClaims ->
-                _claims.value = allClaims.filter { claim ->
-                    claim.topics.contains(topicId)
-                }
-            }
-        }
-
-        viewModelScope.launch {
-            // Combine questions for the topic and questions for all claims in the topic
             combine(
                 questionRepository.getQuestionsByTargetId(topicId),
                 _claims
             ) { topicQuestions, claims ->
-                val claimIds = claims.map { it.id }
-                val allQuestions = mutableListOf<Question>()
-                allQuestions.addAll(topicQuestions)
-
-                // Add questions from all claims
-                claimIds.forEach { claimId ->
-                    val claimQuestions = questionRepository.getQuestionsByTargetId(claimId).first()
-                    allQuestions.addAll(claimQuestions)
+                topicQuestions to claims.map { it.id }
+            }.flatMapLatest { (topicQuestions, claimIds) ->
+                // Create a flow for each claim's questions and combine them
+                if (claimIds.isEmpty()) {
+                    flowOf(topicQuestions)
+                } else {
+                    val claimQuestionsFlows = claimIds.map { claimId ->
+                        questionRepository.getQuestionsByTargetId(claimId)
+                    }
+                    combine(claimQuestionsFlows) { claimQuestionsArrays ->
+                        val allQuestions = mutableListOf<Question>()
+                        allQuestions.addAll(topicQuestions)
+                        claimQuestionsArrays.forEach { claimQuestions ->
+                            allQuestions.addAll(claimQuestions)
+                        }
+                        allQuestions.distinctBy { it.id }
+                    }
                 }
-
-                allQuestions.distinctBy { it.id }
             }.collect { allQuestions ->
                 _questions.value = allQuestions
-            }
-        }
-
-        viewModelScope.launch {
-            // Load all sources
-            sourceRepository.getAllSources().collect { allSources ->
-                _sources.value = allSources
             }
         }
     }
@@ -175,9 +180,10 @@ class TopicDetailViewModel @Inject constructor(
                 val topic = _topic.value ?: error("Topic not found")
                 val claims = _claims.value
 
-                // Build rebuttals map
+                // Load all rebuttals at once instead of N+1 queries
+                val allRebuttals = rebuttalRepository.getAllRebuttals().first()
                 val rebuttalsMap = claims.associate { claim ->
-                    claim.id to rebuttalRepository.getRebuttalsByClaimId(claim.id).first()
+                    claim.id to allRebuttals.filter { it.claimId == claim.id }
                 }
 
                 // Export to PDF
@@ -204,24 +210,26 @@ class TopicDetailViewModel @Inject constructor(
                 val claims = _claims.value
                 val questions = _questions.value
 
+                // Load all data at once instead of N+1 queries
+                val allRebuttals = rebuttalRepository.getAllRebuttals().first()
+                val allEvidences = evidenceRepository.getAllEvidences().first()
+                val allSources = sourceRepository.getAllSources().first()
+
                 // Build rebuttals map
                 val rebuttalsMap = claims.associate { claim ->
-                    claim.id to rebuttalRepository.getRebuttalsByClaimId(claim.id).first()
+                    claim.id to allRebuttals.filter { it.claimId == claim.id }
                 }
 
                 // Build evidences map (for claims only)
-                val evidencesMap = mutableMapOf<String, List<Evidence>>()
-                claims.forEach { claim ->
-                    evidencesMap[claim.id] = evidenceRepository.getEvidencesByClaimId(claim.id).first()
+                val evidencesMap = claims.associate { claim ->
+                    claim.id to allEvidences.filter { it.claimId == claim.id }
                 }
                 // Note: Evidence is linked to claims, not rebuttals (as per EvidenceDao comment)
 
                 // Build sources map
-                val allEvidences = evidencesMap.values.flatten()
-                val sourceIds = allEvidences.mapNotNull { it.sourceId }.filter { it.isNotEmpty() }.distinct()
-                val sourcesMap = sourceIds.mapNotNull { sourceId ->
-                    sourceRepository.getSourceById(sourceId).first()?.let { sourceId to it }
-                }.toMap()
+                val relevantEvidences = evidencesMap.values.flatten()
+                val sourceIds = relevantEvidences.mapNotNull { it.sourceId }.filter { it.isNotEmpty() }.distinct()
+                val sourcesMap = allSources.filter { it.id in sourceIds }.associateBy { it.id }
 
                 // Export to Markdown
                 markdownExporter.exportTopicToMarkdown(
