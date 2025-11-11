@@ -17,6 +17,7 @@ import com.argumentor.app.data.model.*
  * Version 7 - Added TopicFts for full-text search on topics
  * Version 8 - Added EvidenceFts for full-text search on evidences
  * Version 9 - Added TagFts for full-text search on tags
+ * Version 10 - Added Fallacy entity for CRUD operations on logical fallacies
  */
 @Database(
     entities = [
@@ -27,6 +28,7 @@ import com.argumentor.app.data.model.*
         Question::class,
         Source::class,
         Tag::class,
+        Fallacy::class,
         ClaimFts::class,
         RebuttalFts::class,
         QuestionFts::class,
@@ -35,7 +37,7 @@ import com.argumentor.app.data.model.*
         EvidenceFts::class,
         TagFts::class
     ],
-    version = 9,
+    version = 10,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -47,6 +49,7 @@ abstract class ArguMentorDatabase : RoomDatabase() {
     abstract fun questionDao(): QuestionDao
     abstract fun sourceDao(): SourceDao
     abstract fun tagDao(): TagDao
+    abstract fun fallacyDao(): FallacyDao
 
     companion object {
         const val DATABASE_NAME = "argumentor_db"

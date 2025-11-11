@@ -33,6 +33,7 @@ import kotlin.math.abs
 fun DebateModeScreen(
     topicId: String,
     onNavigateBack: () -> Unit,
+    onNavigateToFallacyDetail: (String) -> Unit = {},
     viewModel: DebateModeViewModel = hiltViewModel()
 ) {
     val topic by viewModel.topic.collectAsState()
@@ -233,6 +234,7 @@ fun DebateModeScreen(
                             viewModel.previousCard()
                         }
                     },
+                    onFallacyClick = onNavigateToFallacyDetail,
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
@@ -296,6 +298,7 @@ private fun FlipCard(
     onFlip: () -> Unit,
     onSwipeLeft: () -> Unit,
     onSwipeRight: () -> Unit,
+    onFallacyClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val rotation by animateFloatAsState(
@@ -344,17 +347,26 @@ private fun FlipCard(
         ) {
             if (rotation <= 90f) {
                 // Front side: Claim
-                ClaimFront(card = card)
+                ClaimFront(card = card, onFallacyClick = onFallacyClick)
             } else {
                 // Back side: Rebuttals + Sources + Question
-                ClaimBack(card = card, modifier = Modifier.graphicsLayer { rotationY = 180f })
+                ClaimBack(
+                    card = card,
+                    onFallacyClick = onFallacyClick,
+                    modifier = Modifier.graphicsLayer { rotationY = 180f }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun ClaimFront(card: DebateCard) {
+private fun ClaimFront(
+    card: DebateCard,
+    onFallacyClick: (String) -> Unit
+) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center
@@ -402,12 +414,53 @@ private fun ClaimFront(card: DebateCard) {
                         color = MaterialTheme.colorScheme.onErrorContainer,
                         fontWeight = FontWeight.Bold
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = card.claim.fallacyIds.joinToString(", "),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.error
-                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Display each fallacy with its name and description
+                    card.claim.fallacyIds.forEach { fallacyId ->
+                        val fallacy = card.fallacies[fallacyId]
+                        val localizedFallacy = com.argumentor.app.data.constants.FallacyCatalog.getFallacyById(context, fallacyId)
+
+                        OutlinedCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .clickable { onFallacyClick(fallacyId) },
+                            colors = CardDefaults.outlinedCardColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
+                            )
+                        ) {
+                            Column(modifier = Modifier.padding(8.dp)) {
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = localizedFallacy?.name ?: fallacy?.name ?: fallacyId,
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = MaterialTheme.colorScheme.error,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Icon(
+                                        Icons.Default.ChevronRight,
+                                        contentDescription = "Voir détails",
+                                        tint = MaterialTheme.colorScheme.error,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                                if (localizedFallacy != null || fallacy != null) {
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = (localizedFallacy?.description ?: fallacy?.description ?: "")
+                                            .take(80) + if ((localizedFallacy?.description ?: fallacy?.description ?: "").length > 80) "..." else "",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onErrorContainer,
+                                        maxLines = 2
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -415,7 +468,12 @@ private fun ClaimFront(card: DebateCard) {
 }
 
 @Composable
-private fun ClaimBack(card: DebateCard, modifier: Modifier = Modifier) {
+private fun ClaimBack(
+    card: DebateCard,
+    onFallacyClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     val hasContent = card.rebuttals.isNotEmpty() || card.evidences.isNotEmpty() || card.questions.isNotEmpty()
 
     Column(
@@ -463,10 +521,46 @@ private fun ClaimBack(card: DebateCard, modifier: Modifier = Modifier) {
                             if (rebuttal.fallacyIds.isNotEmpty()) {
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    text = stringResource(R.string.debate_fallacy, rebuttal.fallacyIds.joinToString(", ")),
+                                    text = "Sophismes identifiés:",
                                     style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.error
                                 )
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                // Display each fallacy with its name
+                                rebuttal.fallacyIds.forEach { fallacyId ->
+                                    val fallacy = card.fallacies[fallacyId]
+                                    val localizedFallacy = com.argumentor.app.data.constants.FallacyCatalog.getFallacyById(context, fallacyId)
+
+                                    Surface(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 2.dp)
+                                            .clickable { onFallacyClick(fallacyId) },
+                                        color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f),
+                                        shape = MaterialTheme.shapes.small
+                                    ) {
+                                        Row(
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                                            modifier = Modifier.padding(8.dp)
+                                        ) {
+                                            Text(
+                                                text = localizedFallacy?.name ?: fallacy?.name ?: fallacyId,
+                                                style = MaterialTheme.typography.labelMedium,
+                                                color = MaterialTheme.colorScheme.error,
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                            Icon(
+                                                Icons.Default.ChevronRight,
+                                                contentDescription = "Voir détails",
+                                                tint = MaterialTheme.colorScheme.error,
+                                                modifier = Modifier.size(14.dp)
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

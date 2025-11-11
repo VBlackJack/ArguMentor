@@ -31,6 +31,17 @@
     <init>(...);
 }
 
+# Keep Fallacy entity - Added for CRUD operations
+-keep class com.argumentor.app.data.model.Fallacy {
+    <fields>;
+    <init>(...);
+}
+
+# Keep FallacyDao - Added for database operations
+-keep interface com.argumentor.app.data.local.dao.FallacyDao {
+    public abstract <methods>;
+}
+
 # Keep DTO classes - Only keep fields and constructors needed for serialization
 -keep class com.argumentor.app.data.dto.** {
     <fields>;
@@ -98,3 +109,25 @@
 # Preserve line numbers for debugging stack traces
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
+
+# Jetpack Compose - Keep @Composable functions and runtime classes
+-keep class androidx.compose.runtime.** { *; }
+-keep @androidx.compose.runtime.Composable class * { *; }
+-keepclassmembers class * {
+    @androidx.compose.runtime.Composable *;
+}
+
+# R8 optimizations - Safe optimizations for Compose and Coroutines
+-assumenosideeffects class kotlin.jvm.internal.Intrinsics {
+    public static void check*(...);
+    public static void throw*(...);
+}
+
+# Keep FallacyCatalog for localized resources
+-keep class com.argumentor.app.data.constants.FallacyCatalog {
+    public <methods>;
+}
+-keep class com.argumentor.app.data.constants.FallacyCatalog$Fallacy {
+    <fields>;
+    <init>(...);
+}
