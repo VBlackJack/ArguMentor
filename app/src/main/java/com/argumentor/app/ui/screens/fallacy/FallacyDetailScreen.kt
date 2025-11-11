@@ -13,22 +13,62 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.R
 import com.argumentor.app.data.constants.FallacyCatalog
 
 /**
  * Screen displaying detailed information about a specific logical fallacy.
  * Shows name, description, and example to help users learn and identify fallacies.
+ * Now supports editing and deleting custom fallacies.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FallacyDetailScreen(
     fallacyId: String,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToEdit: (String) -> Unit = {},
+    viewModel: FallacyDetailViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
-    val fallacy = remember(fallacyId, context) {
-        FallacyCatalog.getFallacyById(context, fallacyId)
+    val fallacy by viewModel.fallacy.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(fallacyId) {
+        viewModel.loadFallacy(fallacyId)
+    }
+
+    // Show error snackbar if any
+    error?.let { errorMessage ->
+        LaunchedEffect(errorMessage) {
+            // You can show a snackbar here if needed
+            viewModel.clearError()
+        }
+    }
+
+    // Delete confirmation dialog
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Supprimer ce sophisme ?") },
+            text = { Text("Cette action est irréversible. Voulez-vous vraiment supprimer ce sophisme personnalisé ?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteFallacy(onSuccess = onNavigateBack)
+                        showDeleteDialog = false
+                    }
+                ) {
+                    Text("Supprimer", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Annuler")
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -46,6 +86,24 @@ fun FallacyDetailScreen(
                             Icons.Default.ArrowBack,
                             contentDescription = stringResource(R.string.accessibility_back)
                         )
+                    }
+                },
+                actions = {
+                    // Only show edit/delete for custom fallacies
+                    if (fallacy?.isCustom == true) {
+                        IconButton(onClick = { onNavigateToEdit(fallacyId) }) {
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = "Modifier"
+                            )
+                        }
+                        IconButton(onClick = { showDeleteDialog = true }) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Supprimer",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
                 }
             )

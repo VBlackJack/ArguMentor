@@ -281,6 +281,88 @@ object DatabaseMigrations {
     }
 
     /**
+     * Migration from version 9 to 10.
+     *
+     * Changes:
+     * - Added Fallacy table for CRUD operations on logical fallacies
+     * - Pre-loads the 30 default fallacies from FallacyCatalog
+     */
+    val MIGRATION_9_10 = object : Migration(9, 10) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Create fallacies table
+            db.execSQL("""
+                CREATE TABLE IF NOT EXISTS `fallacies` (
+                    `id` TEXT PRIMARY KEY NOT NULL,
+                    `name` TEXT NOT NULL,
+                    `description` TEXT NOT NULL,
+                    `example` TEXT NOT NULL,
+                    `category` TEXT NOT NULL DEFAULT '',
+                    `isCustom` INTEGER NOT NULL DEFAULT 0,
+                    `createdAt` TEXT NOT NULL,
+                    `updatedAt` TEXT NOT NULL
+                )
+            """)
+
+            // Pre-load default fallacies
+            // Using hardcoded IDs and English names for database consistency
+            // The UI will fetch localized names from strings.xml via FallacyCatalog when needed
+            val currentTime = getCurrentIsoTimestamp()
+
+            val defaultFallacies = listOf(
+                "ad_hominem" to "Ad Hominem",
+                "straw_man" to "Straw Man",
+                "appeal_to_ignorance" to "Appeal to Ignorance",
+                "post_hoc" to "Post Hoc",
+                "false_dilemma" to "False Dilemma",
+                "begging_question" to "Begging the Question",
+                "slippery_slope" to "Slippery Slope",
+                "postdiction" to "Postdiction",
+                "cherry_picking" to "Cherry Picking",
+                "appeal_to_tradition" to "Appeal to Tradition",
+                "appeal_to_authority" to "Appeal to Authority",
+                "appeal_to_popularity" to "Appeal to Popularity",
+                "circular_reasoning" to "Circular Reasoning",
+                "tu_quoque" to "Tu Quoque",
+                "hasty_generalization" to "Hasty Generalization",
+                "red_herring" to "Red Herring",
+                "no_true_scotsman" to "No True Scotsman",
+                "loaded_question" to "Loaded Question",
+                "appeal_to_emotion" to "Appeal to Emotion",
+                "appeal_to_nature" to "Appeal to Nature",
+                "false_equivalence" to "False Equivalence",
+                "burden_of_proof" to "Burden of Proof",
+                "texas_sharpshooter" to "Texas Sharpshooter",
+                "middle_ground" to "Middle Ground",
+                "anecdotal" to "Anecdotal",
+                "composition" to "Composition",
+                "division" to "Division",
+                "genetic_fallacy" to "Genetic Fallacy",
+                "bandwagon" to "Bandwagon",
+                "appeal_to_fear" to "Appeal to Fear"
+            )
+
+            // Insert default fallacies with placeholder descriptions
+            // The actual localized content will be fetched from strings.xml in the app
+            defaultFallacies.forEach { (id, name) ->
+                db.execSQL("""
+                    INSERT INTO fallacies (id, name, description, example, category, isCustom, createdAt, updatedAt)
+                    VALUES (?, ?, ?, ?, ?, 0, ?, ?)
+                """, arrayOf(
+                    id,
+                    name,
+                    "See string resource: fallacy_${id}_description",
+                    "See string resource: fallacy_${id}_example",
+                    "",
+                    currentTime,
+                    currentTime
+                ))
+            }
+
+            Timber.d("Migration 9→10: Created fallacies table and inserted ${defaultFallacies.size} default fallacies")
+        }
+    }
+
+    /**
      * All migrations in order.
      */
     val ALL_MIGRATIONS = arrayOf(
@@ -291,6 +373,7 @@ object DatabaseMigrations {
         MIGRATION_5_6,
         MIGRATION_6_7,
         MIGRATION_7_8,
-        MIGRATION_8_9
+        MIGRATION_8_9,
+        MIGRATION_9_10
     )
 }

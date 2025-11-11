@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.R
 import com.argumentor.app.data.constants.FallacyCatalog
+import com.argumentor.app.data.model.Fallacy
 import com.argumentor.app.ui.components.EngagingEmptyState
 
 /**
@@ -27,7 +28,8 @@ import com.argumentor.app.ui.components.EngagingEmptyState
 fun FallacyCatalogScreen(
     viewModel: FallacyCatalogViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
-    onNavigateToDetail: (String) -> Unit
+    onNavigateToDetail: (String) -> Unit,
+    onNavigateToCreate: () -> Unit = {}
 ) {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val fallacies by viewModel.fallacies.collectAsState()
@@ -50,6 +52,17 @@ fun FallacyCatalogScreen(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onNavigateToCreate,
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "Créer un nouveau sophisme"
+                )
+            }
         }
     ) { paddingValues ->
         Column(
@@ -119,7 +132,7 @@ fun FallacyCatalogScreen(
 
 @Composable
 private fun FallacyCard(
-    fallacy: FallacyCatalog.Fallacy,
+    fallacy: Fallacy,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {

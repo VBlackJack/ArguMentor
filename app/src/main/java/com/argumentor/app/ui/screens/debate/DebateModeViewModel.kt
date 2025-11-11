@@ -14,7 +14,8 @@ data class DebateCard(
     val claim: Claim,
     val rebuttals: List<Rebuttal>,
     val evidences: List<Evidence>,
-    val questions: List<Question>
+    val questions: List<Question>,
+    val fallacies: Map<String, com.argumentor.app.data.model.Fallacy> = emptyMap()
 )
 
 @HiltViewModel
@@ -23,7 +24,8 @@ class DebateModeViewModel @Inject constructor(
     private val claimRepository: ClaimRepository,
     private val rebuttalRepository: RebuttalRepository,
     private val evidenceRepository: EvidenceRepository,
-    private val questionRepository: QuestionRepository
+    private val questionRepository: QuestionRepository,
+    private val fallacyRepository: com.argumentor.app.data.repository.FallacyRepository
 ) : ViewModel() {
 
     private val _topic = MutableStateFlow<Topic?>(null)
@@ -81,13 +83,23 @@ class DebateModeViewModel @Inject constructor(
                 // Questions can target claims, so filter by targetId
                 val questionsMap = allQuestions.groupBy { it.targetId }
 
+                // Collect all unique fallacy IDs from claims and rebuttals
+                val allFallacyIds = mutableSetOf<String>()
+                topicClaims.forEach { allFallacyIds.addAll(it.fallacyIds) }
+                allRebuttals.forEach { allFallacyIds.addAll(it.fallacyIds) }
+
+                // Load all fallacies at once for performance
+                val allFallacies = fallacyRepository.getFallaciesByIds(allFallacyIds.toList())
+                val fallaciesMap = allFallacies.associateBy { it.id }
+
                 // Build cards using pre-loaded data
                 val cards = topicClaims.map { claim ->
                     DebateCard(
                         claim = claim,
                         rebuttals = (rebuttalsMap[claim.id] ?: emptyList()).take(MAX_REBUTTALS_PER_CARD),
                         evidences = (evidencesMap[claim.id] ?: emptyList()).take(MAX_EVIDENCES_PER_CARD),
-                        questions = (questionsMap[claim.id] ?: emptyList()).take(MAX_QUESTIONS_PER_CARD)
+                        questions = (questionsMap[claim.id] ?: emptyList()).take(MAX_QUESTIONS_PER_CARD),
+                        fallacies = fallaciesMap
                     )
                 }
 
