@@ -17,9 +17,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.argumentor.app.BuildConfig
 import com.argumentor.app.R
 import com.argumentor.app.data.preferences.AppLanguage
-import kotlin.system.exitProcess
+
+/**
+ * Delay before restarting the app after language change to ensure preferences are saved.
+ */
+private const val LANGUAGE_CHANGE_RESTART_DELAY_MS = 500L
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -214,7 +219,7 @@ fun SettingsScreen(
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
                 SettingsItem(title = stringResource(R.string.settings_version)) {
-                    Text("1.2.0", style = MaterialTheme.typography.bodyMedium)
+                    Text(BuildConfig.VERSION_NAME, style = MaterialTheme.typography.bodyMedium)
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
@@ -245,14 +250,10 @@ fun SettingsScreen(
                     TextButton(
                         onClick = {
                             viewModel.applyLanguageChange {
-                                // Wait a bit for save to complete, then restart
+                                // Wait for save to complete, then restart gracefully
                                 android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                                    (context as? Activity)?.let { activity ->
-                                        activity.finish()
-                                        activity.startActivity(activity.intent)
-                                        kotlin.system.exitProcess(0)
-                                    }
-                                }, 500) // 500ms delay to ensure save completes
+                                    (context as? Activity)?.recreate()
+                                }, LANGUAGE_CHANGE_RESTART_DELAY_MS)
                             }
                         }
                     ) {

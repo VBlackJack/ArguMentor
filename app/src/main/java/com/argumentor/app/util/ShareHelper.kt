@@ -3,6 +3,7 @@ package com.argumentor.app.util
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider
+import timber.log.Timber
 import java.io.File
 
 /**
@@ -35,7 +36,7 @@ object ShareHelper {
 
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e, "Failed to share file: ${file.name}")
             false
         }
     }
@@ -57,7 +58,7 @@ object ShareHelper {
 
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e, "Failed to share text")
             false
         }
     }
@@ -94,7 +95,7 @@ object ShareHelper {
 
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e, "Failed to share via email")
             false
         }
     }
