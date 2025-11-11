@@ -125,11 +125,12 @@ class ClaimCreateEditViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                if (_isEditMode.value && _claimId.value != null) {
+                val claimId = _claimId.value
+                if (_isEditMode.value && claimId != null) {
                     // Update existing claim
-                    val existingClaim = claimRepository.getClaimByIdSync(_claimId.value!!)
+                    val existingClaim = claimRepository.getClaimByIdSync(claimId)
                     val claim = Claim(
-                        id = _claimId.value!!,
+                        id = claimId,
                         text = _text.value,
                         stance = _stance.value,
                         strength = _strength.value,

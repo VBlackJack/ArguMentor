@@ -145,11 +145,12 @@ class TopicCreateEditViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                if (_isEditMode.value && _topicId.value != null) {
+                val topicId = _topicId.value
+                if (_isEditMode.value && topicId != null) {
                     // Update existing topic
-                    val existingTopic = topicRepository.getTopicByIdSync(_topicId.value!!)
+                    val existingTopic = topicRepository.getTopicByIdSync(topicId)
                     val topic = Topic(
-                        id = _topicId.value!!,
+                        id = topicId,
                         title = _title.value,
                         summary = _summary.value,
                         posture = _posture.value,

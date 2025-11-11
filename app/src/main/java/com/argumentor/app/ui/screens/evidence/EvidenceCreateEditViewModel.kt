@@ -122,7 +122,7 @@ class EvidenceCreateEditViewModel @Inject constructor(
 
                 val evidence = if (isEditMode && evidenceId != null) {
                     // Update existing evidence
-                    evidenceRepository.getEvidenceById(evidenceId!!)?.copy(
+                    evidenceRepository.getEvidenceById(evidenceId)?.copy(
                         content = _content.value.trim(),
                         type = _type.value,
                         quality = _quality.value,
@@ -155,10 +155,11 @@ class EvidenceCreateEditViewModel @Inject constructor(
     }
 
     fun deleteEvidence(onDeleted: () -> Unit) {
-        if (!isEditMode || evidenceId == null) return
+        val evId = evidenceId
+        if (!isEditMode || evId == null) return
 
         viewModelScope.launch {
-            evidenceRepository.getEvidenceById(evidenceId!!)?.let { evidence ->
+            evidenceRepository.getEvidenceById(evId)?.let { evidence ->
                 evidenceRepository.deleteEvidence(evidence)
                 onDeleted()
             }

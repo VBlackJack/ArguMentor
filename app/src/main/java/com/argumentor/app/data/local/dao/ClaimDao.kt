@@ -15,7 +15,7 @@ interface ClaimDao {
     @Query("SELECT * FROM claims WHERE id = :claimId")
     suspend fun getClaimById(claimId: String): Claim?
 
-    @Query("SELECT * FROM claims WHERE topics LIKE '%' || :topicId || '%'")
+    @Query("SELECT * FROM claims WHERE :topicId IN (SELECT value FROM json_each(topics))")
     suspend fun getClaimsForTopic(topicId: String): List<Claim>
 
     @Query("SELECT * FROM claims WHERE id = :claimId")

@@ -62,11 +62,25 @@ class ImportExportRepository @Inject constructor(
      */
     suspend fun exportToFile(file: File): Result<Unit> {
         return try {
-            file.outputStream().use { outputStream ->
-                exportToJson(outputStream)
+            // Ensure parent directory exists
+            file.parentFile?.let { parent ->
+                if (!parent.exists() && !parent.mkdirs()) {
+                    return Result.failure(java.io.IOException("Cannot create directory: ${parent.absolutePath}"))
+                }
             }
+
+            file.outputStream().use { outputStream ->
+                exportToJson(outputStream).getOrThrow()
+            }
+            Result.success(Unit)
+        } catch (e: java.io.FileNotFoundException) {
+            Result.failure(Exception("Cannot write to file: ${file.absolutePath}. ${e.message}", e))
+        } catch (e: SecurityException) {
+            Result.failure(Exception("Permission denied: ${file.absolutePath}. Check app permissions.", e))
+        } catch (e: java.io.IOException) {
+            Result.failure(Exception("I/O error during export: ${e.message}. Check available storage space.", e))
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception("Export failed: ${e.message}", e))
         }
     }
 

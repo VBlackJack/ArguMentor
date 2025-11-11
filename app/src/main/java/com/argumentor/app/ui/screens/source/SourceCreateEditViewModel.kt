@@ -85,16 +85,16 @@ class SourceCreateEditViewModel @Inject constructor(
 
         // Load linked evidences and claims
         viewModelScope.launch {
-            evidenceRepository.getEvidencesBySourceId(sourceId).collect { evidences ->
+            combine(
+                evidenceRepository.getEvidencesBySourceId(sourceId),
+                claimRepository.getAllClaims()
+            ) { evidences, allClaims ->
                 _linkedEvidences.value = evidences
 
-                // Load claims for these evidences
-                val claimIds = evidences.map { it.claimId }.distinct()
-                val claims = claimIds.mapNotNull { claimId ->
-                    claimRepository.getClaimById(claimId).first()
-                }
-                _linkedClaims.value = claims
-            }
+                // Filter claims by evidence claim IDs instead of N+1 queries
+                val claimIds = evidences.map { it.claimId }.distinct().toSet()
+                _linkedClaims.value = allClaims.filter { it.id in claimIds }
+            }.collect()
         }
     }
 
@@ -134,7 +134,7 @@ class SourceCreateEditViewModel @Inject constructor(
             try {
                 val source = if (isEditMode && sourceId != null) {
                     // Update existing source
-                    val existingSource = sourceRepository.getSourceById(sourceId!!).first()
+                    val existingSource = sourceRepository.getSourceById(sourceId).first()
                     existingSource?.copy(
                         title = _title.value.trim(),
                         citation = _citation.value.trim().takeIf { it.isNotEmpty() },

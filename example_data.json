@@ -31,7 +31,7 @@
       "topics": ["topic_001"],
       "createdAt": "2025-11-10T10:30:00Z",
       "updatedAt": "2025-11-10T10:30:00Z",
-      "claimFingerprint": "bible_enseigne_doctrine_trinite"
+      "claimFingerprint": "d24aedf8033ec528"
     },
     {
       "id": "claim_002",
@@ -41,7 +41,7 @@
       "topics": ["topic_001"],
       "createdAt": "2025-11-10T10:45:00Z",
       "updatedAt": "2025-11-10T10:45:00Z",
-      "claimFingerprint": "terme_trinite_absent_bible"
+      "claimFingerprint": "a86ebf0262110db2"
     },
     {
       "id": "claim_003",
@@ -51,7 +51,7 @@
       "topics": ["topic_002"],
       "createdAt": "2025-11-10T11:00:00Z",
       "updatedAt": "2025-11-10T11:00:00Z",
-      "claimFingerprint": "ia_reproduit_biais_humains"
+      "claimFingerprint": "df37272d76bc5123"
     }
   ],
   "rebuttals": [

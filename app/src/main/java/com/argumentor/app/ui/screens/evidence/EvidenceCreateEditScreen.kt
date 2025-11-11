@@ -230,17 +230,19 @@ fun EvidenceCreateEditScreen(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = selectedSource!!.title,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                if (!selectedSource!!.citation.isNullOrEmpty()) {
+                                selectedSource?.let { source ->
                                     Text(
-                                        text = selectedSource!!.citation!!,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                                        text = source.title,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Bold
                                     )
+                                    source.citation?.takeIf { it.isNotEmpty() }?.let { citation ->
+                                        Text(
+                                            text = citation,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                                        )
+                                    }
                                 }
                             }
                             IconButton(onClick = { viewModel.onSourceSelected(null) }) {
