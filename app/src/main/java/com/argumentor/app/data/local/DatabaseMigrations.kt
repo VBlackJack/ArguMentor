@@ -3,6 +3,10 @@ package com.argumentor.app.data.local
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.argumentor.app.data.model.getCurrentIsoTimestamp
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 /**
  * Database migrations for ArguMentor.
@@ -36,6 +40,8 @@ object DatabaseMigrations {
             // Add updatedAt to questions table
             db.execSQL("ALTER TABLE questions ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '$currentTimestamp'")
 
+            assignSequentialTimestamps(db)
+
             // Update Topic.Posture enum values for backward compatibility
             // Old: neutral_critique, sceptique, comparatif_academique
             // New: neutral_critical, skeptical, academic_comparative
@@ -44,6 +50,54 @@ object DatabaseMigrations {
             db.execSQL("UPDATE topics SET posture = 'skeptical' WHERE posture = 'sceptique'")
             db.execSQL("UPDATE topics SET posture = 'academic_comparative' WHERE posture = 'comparatif_academique'")
         }
+    }
+
+    private fun assignSequentialTimestamps(db: SupportSQLiteDatabase) {
+        val baseTime = System.currentTimeMillis()
+        var offset = 0L
+        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
+
+        fun nextTimestamp(): String {
+            val timestamp = formatter.format(Date(baseTime + offset))
+            offset += 1
+            return timestamp
+        }
+
+        fun updateTable(
+            table: String,
+            idColumn: String = "id",
+            hasCreatedColumn: Boolean
+        ) {
+            db.query("SELECT $idColumn FROM $table ORDER BY rowid").use { cursor ->
+                while (cursor.moveToNext()) {
+                    val id = cursor.getString(0)
+                    val bindings = mutableListOf<Any>()
+                    val assignments = mutableListOf<String>()
+
+                    if (hasCreatedColumn) {
+                        assignments += "createdAt = ?"
+                        bindings += nextTimestamp()
+                    }
+
+                    assignments += "updatedAt = ?"
+                    bindings += nextTimestamp()
+
+                    bindings += id
+
+                    db.execSQL(
+                        "UPDATE $table SET ${assignments.joinToString(", ")} WHERE $idColumn = ?",
+                        bindings.toTypedArray()
+                    )
+                }
+            }
+        }
+
+        updateTable(table = "tags", hasCreatedColumn = true)
+        updateTable(table = "evidences", hasCreatedColumn = false)
+        updateTable(table = "sources", hasCreatedColumn = false)
+        updateTable(table = "questions", hasCreatedColumn = false)
     }
 
     /**
