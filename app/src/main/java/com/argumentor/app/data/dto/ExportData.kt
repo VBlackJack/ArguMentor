@@ -54,10 +54,10 @@ data class TopicDto(
     val tags: List<String> = emptyList(),
 
     @SerializedName("createdAt")
-    val createdAt: String? = null,
+    val createdAt: String,
 
     @SerializedName("updatedAt")
-    val updatedAt: String? = null
+    val updatedAt: String
 )
 
 data class ClaimDto(

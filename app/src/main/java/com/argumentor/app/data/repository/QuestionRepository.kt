@@ -41,4 +41,12 @@ class QuestionRepository @Inject constructor(
             likeSearch = { questionDao.searchQuestionsLike(it) }
         )
     }
+
+    /**
+     * Deletes orphan questions where targetId doesn't reference any existing Topic or Claim.
+     * This helps maintain referential integrity in the database.
+     *
+     * @return The number of orphan questions deleted
+     */
+    suspend fun deleteOrphanQuestions(): Int = questionDao.deleteOrphanQuestions()
 }

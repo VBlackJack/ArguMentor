@@ -14,9 +14,13 @@ import java.util.UUID
  * @property type Evidence type: study, stat, quote, example
  * @property content The evidence content
  * @property sourceId Optional reference to a Source entity
- * @property quality Quality rating: low, med, high
+ * @property quality Quality rating: low, medium, high
  * @property createdAt Creation timestamp in ISO 8601 format
  * @property updatedAt Last update timestamp in ISO 8601 format
+ *
+ * Note: When this evidence is deleted, the parent claim (if exists) remains unchanged.
+ * When the parent claim is deleted, this evidence is automatically deleted (CASCADE).
+ * When the referenced source is deleted, sourceId is set to NULL (SET NULL).
  */
 @Entity(
     tableName = "evidences",
@@ -84,7 +88,7 @@ data class Evidence(
         override fun toString(): String {
             return when (this) {
                 LOW -> "low"
-                MEDIUM -> "med"
+                MEDIUM -> "medium"
                 HIGH -> "high"
             }
         }

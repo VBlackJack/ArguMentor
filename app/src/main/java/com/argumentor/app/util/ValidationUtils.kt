@@ -1,5 +1,7 @@
 package com.argumentor.app.util
 
+import java.time.Instant
+
 /**
  * Validation utilities for input validation across the application.
  * Provides consistent validation rules for text fields, URLs, and other inputs.
@@ -106,6 +108,27 @@ object ValidationUtils {
             score < 0.0 -> ValidationResult.Invalid("Reliability score cannot be negative")
             score > 1.0 -> ValidationResult.Invalid("Reliability score cannot exceed 1.0")
             else -> ValidationResult.Valid
+        }
+    }
+
+    /**
+     * Validates an ISO 8601 timestamp format.
+     * Accepts timestamps in the format: "2025-11-08T13:00:00Z"
+     *
+     * @param timestamp Timestamp string to validate
+     * @param fieldName Name of the field for error messages (default: "Timestamp")
+     * @return ValidationResult indicating if valid or containing error message
+     */
+    fun validateIsoTimestamp(timestamp: String, fieldName: String = "Timestamp"): ValidationResult {
+        if (timestamp.isBlank()) {
+            return ValidationResult.Invalid("$fieldName cannot be empty")
+        }
+
+        return try {
+            Instant.parse(timestamp)
+            ValidationResult.Valid
+        } catch (e: Exception) {
+            ValidationResult.Invalid("$fieldName must be in ISO 8601 format (e.g., 2025-11-08T13:00:00Z)")
         }
     }
 
