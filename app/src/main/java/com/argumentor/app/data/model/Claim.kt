@@ -1,6 +1,7 @@
 package com.argumentor.app.data.model
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.argumentor.app.data.local.Converters
@@ -18,7 +19,10 @@ import java.util.UUID
  * @property updatedAt Last update timestamp in ISO 8601 format
  * @property claimFingerprint SHA-256 hash of normalized text for duplicate detection
  */
-@Entity(tableName = "claims")
+@Entity(
+    tableName = "claims",
+    indices = [Index(value = ["claimFingerprint"])]
+)
 @TypeConverters(Converters::class)
 data class Claim(
     @PrimaryKey

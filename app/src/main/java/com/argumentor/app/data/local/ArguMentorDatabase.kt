@@ -10,6 +10,7 @@ import com.argumentor.app.data.model.*
  * ArguMentor Room Database.
  * Version 1 - Initial schema with FTS support.
  * Version 2 - Added timestamps to Tag, Evidence, Source, Question; renamed Topic.Posture enum values
+ * Version 3 - Added index on claimFingerprint for faster duplicate detection
  */
 @Database(
     entities = [
@@ -24,7 +25,7 @@ import com.argumentor.app.data.model.*
         RebuttalFts::class,
         QuestionFts::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 @TypeConverters(Converters::class)

@@ -47,9 +47,23 @@ object DatabaseMigrations {
     }
 
     /**
+     * Migration from version 2 to 3.
+     *
+     * Changes:
+     * - Added index on claimFingerprint column in claims table for faster duplicate detection
+     */
+    val MIGRATION_2_3 = object : Migration(2, 3) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Create index on claimFingerprint for faster duplicate detection lookups
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_claims_claimFingerprint` ON `claims` (`claimFingerprint`)")
+        }
+    }
+
+    /**
      * All migrations in order.
      */
     val ALL_MIGRATIONS = arrayOf(
-        MIGRATION_1_2
+        MIGRATION_1_2,
+        MIGRATION_2_3
     )
 }
