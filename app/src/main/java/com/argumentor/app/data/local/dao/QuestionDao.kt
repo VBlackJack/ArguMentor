@@ -73,4 +73,11 @@ interface QuestionDao {
         AND targetId NOT IN (SELECT id FROM claims)
     """)
     suspend fun deleteOrphanQuestions(): Int
+
+    /**
+     * Get questions for multiple targets in a single query.
+     * PERF-004 FIX: Prevents N+1 query pattern.
+     */
+    @Query("SELECT * FROM questions WHERE targetId IN (:targetIds) ORDER BY updatedAt DESC")
+    fun getQuestionsByTargetIds(targetIds: List<String>): Flow<List<Question>>
 }

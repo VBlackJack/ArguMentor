@@ -83,4 +83,11 @@ interface EvidenceDao {
 
     @Query("SELECT COUNT(*) FROM evidences")
     suspend fun getEvidenceCount(): Int
+
+    /**
+     * Get evidences for multiple claims in a single query.
+     * PERF-003 FIX: Prevents N+1 query pattern.
+     */
+    @Query("SELECT * FROM evidences WHERE claimId IN (:claimIds) ORDER BY updatedAt DESC")
+    suspend fun getEvidencesByClaimIds(claimIds: List<String>): List<Evidence>
 }

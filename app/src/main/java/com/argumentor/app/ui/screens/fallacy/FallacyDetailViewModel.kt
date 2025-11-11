@@ -7,9 +7,7 @@ import com.argumentor.app.data.constants.FallacyCatalog
 import com.argumentor.app.data.model.Fallacy
 import com.argumentor.app.data.repository.FallacyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,6 +32,7 @@ class FallacyDetailViewModel @Inject constructor(
 
     /**
      * Loads a fallacy by its ID.
+     * MEMORY-002 FIX: Uses stateIn with WhileSubscribed to avoid memory leaks.
      */
     fun loadFallacy(fallacyId: String) {
         viewModelScope.launch {
@@ -41,28 +40,48 @@ class FallacyDetailViewModel @Inject constructor(
             _error.value = null
 
             try {
-                fallacyRepository.getFallacyById(fallacyId).collect { fallacyFromDb ->
-                    if (fallacyFromDb != null) {
-                        // Update with localized content from strings.xml
-                        val localizedFallacy = FallacyCatalog.getFallacyById(application, fallacyFromDb.id)
-                        _fallacy.value = if (localizedFallacy != null) {
-                            fallacyFromDb.copy(
-                                name = localizedFallacy.name,
-                                description = localizedFallacy.description,
-                                example = localizedFallacy.example
-                            )
+                fallacyRepository.getFallacyById(fallacyId)
+                    .map { fallacyFromDb ->
+                        if (fallacyFromDb != null) {
+                            // Update with localized content from strings.xml
+                            localizeFallacy(fallacyFromDb)
                         } else {
-                            fallacyFromDb
+                            null
                         }
-                    } else {
-                        _error.value = "Fallacy not found"
                     }
-                    _isLoading.value = false
-                }
+                    .stateIn(
+                        scope = viewModelScope,
+                        started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+                        initialValue = null
+                    )
+                    .collect { localizedFallacy ->
+                        if (localizedFallacy != null) {
+                            _fallacy.value = localizedFallacy
+                        } else {
+                            _error.value = "Fallacy not found"
+                        }
+                        _isLoading.value = false
+                    }
             } catch (e: Exception) {
                 _error.value = e.message ?: "Unknown error"
                 _isLoading.value = false
             }
+        }
+    }
+
+    /**
+     * Helper function to localize a fallacy.
+     */
+    private fun localizeFallacy(fallacy: Fallacy): Fallacy {
+        val localizedFallacy = FallacyCatalog.getFallacyById(application, fallacy.id)
+        return if (localizedFallacy != null) {
+            fallacy.copy(
+                name = localizedFallacy.name,
+                description = localizedFallacy.description,
+                example = localizedFallacy.example
+            )
+        } else {
+            fallacy
         }
     }
 

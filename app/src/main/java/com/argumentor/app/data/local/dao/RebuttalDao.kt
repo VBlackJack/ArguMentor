@@ -62,4 +62,11 @@ interface RebuttalDao {
 
     @Query("SELECT COUNT(*) FROM rebuttals")
     suspend fun getRebuttalCount(): Int
+
+    /**
+     * Get rebuttals for multiple claims in a single query.
+     * PERF-003 FIX: Prevents N+1 query pattern.
+     */
+    @Query("SELECT * FROM rebuttals WHERE claimId IN (:claimIds) ORDER BY updatedAt DESC")
+    suspend fun getRebuttalsByClaimIds(claimIds: List<String>): List<Rebuttal>
 }

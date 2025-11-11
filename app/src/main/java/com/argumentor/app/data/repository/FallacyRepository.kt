@@ -41,12 +41,17 @@ class FallacyRepository @Inject constructor(
     suspend fun getFallacyByIdSync(fallacyId: String): Fallacy? = fallacyDao.getFallacyById(fallacyId)
 
     /**
-     * Retrieves multiple fallacies by their IDs.
+     * Retrieves multiple fallacies by their IDs in a single query.
+     * PERF-001 FIX: Uses bulk query instead of N+1 pattern.
      * @param fallacyIds List of fallacy identifiers
      * @return List of fallacies (may contain fewer items if some IDs don't exist)
      */
     suspend fun getFallaciesByIds(fallacyIds: List<String>): List<Fallacy> {
-        return fallacyIds.mapNotNull { fallacyDao.getFallacyById(it) }
+        return if (fallacyIds.isEmpty()) {
+            emptyList()
+        } else {
+            fallacyDao.getFallaciesByIds(fallacyIds)
+        }
     }
 
     /**
