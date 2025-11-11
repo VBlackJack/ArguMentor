@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -39,6 +40,7 @@ fun EvidenceCreateEditScreen(
     val availableSources by viewModel.availableSources.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val currentLocale = rememberCurrentLocale()
+    val context = LocalContext.current
 
     val isEditMode = evidenceId != null
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -139,7 +141,7 @@ fun EvidenceCreateEditScreen(
                             imeAction = ImeAction.Default
                         ),
                         trailingIcon = {
-                            IconButton(onClick = { speechLauncher.launch(createSpeechIntent(currentLocale)) }) {
+                            IconButton(onClick = { speechLauncher.launch(createSpeechIntent(context, currentLocale)) }) {
                                 Icon(
                                     imageVector = Icons.Default.Mic,
                                     contentDescription = "Dictée vocale",

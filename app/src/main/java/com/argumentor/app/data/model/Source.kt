@@ -3,7 +3,6 @@ package com.argumentor.app.data.model
 import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.argumentor.app.util.ValidationUtils
 import java.util.UUID
 
 /**
@@ -59,12 +58,9 @@ data class Source(
             }
         }
 
-        // SEC-008: Validate URL format to prevent malicious URLs (javascript:, data: URIs, etc.)
-        url?.let { urlString ->
-            val validationResult = ValidationUtils.validateUrl(urlString)
-            require(validationResult.isValid) {
-                validationResult.errorMessage ?: "Invalid URL format"
-            }
-        }
+        // SEC-008: URL validation moved to ViewModel layer
+        // Entity init blocks should not depend on Android Context (required by ValidationUtils.validateUrl())
+        // SourceCreateEditViewModel validates URL using ValidationUtils.validateUrl(context, url)
+        // before creating/updating Source entities, ensuring security while maintaining clean architecture
     }
 }
