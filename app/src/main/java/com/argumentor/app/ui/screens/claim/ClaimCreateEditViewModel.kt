@@ -147,8 +147,15 @@ class ClaimCreateEditViewModel @Inject constructor(
     }
 
     fun saveClaim(onSaved: () -> Unit) {
+        // VAL-001: Validate claim text is not blank
         if (_text.value.isBlank()) {
             _errorMessage.value = resourceProvider.getString(R.string.error_claim_text_empty)
+            return
+        }
+
+        // VAL-001: Validate claim text length doesn't exceed maximum
+        if (_text.value.length > com.argumentor.app.util.ValidationUtils.MAX_LONG_TEXT_LENGTH) {
+            _errorMessage.value = resourceProvider.getString(R.string.error_text_too_long)
             return
         }
 

@@ -124,24 +124,9 @@ object SearchUtils {
     }
 
     /**
-     * Sanitize a query for FTS by escaping special characters.
-     * This wraps the query in quotes and escapes internal quotes.
+     * SEC-007: Removed unused sanitizeFtsQuery function that had incomplete escaping.
+     * All FTS queries should use isSafeFtsQuery validation instead.
      */
-    fun sanitizeFtsQuery(query: String): String {
-        // If the query is already quoted or contains operators, return as-is
-        if (query.startsWith('"') && query.endsWith('"')) {
-            return query
-        }
-
-        // If query contains FTS operators (AND, OR, NOT), return as-is
-        val upperQuery = query.uppercase()
-        if (FTS_OPERATORS.any { upperQuery.contains(" $it ") }) {
-            return query
-        }
-
-        // Escape internal quotes and wrap in quotes for phrase search
-        return "\"${query.replace("\"", "\"\"")}\""
-    }
 
     /**
      * Escape SQL LIKE wildcards in user input to prevent wildcard injection.

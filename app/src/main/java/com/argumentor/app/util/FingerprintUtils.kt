@@ -137,6 +137,12 @@ object FingerprintUtils {
             "Text too long for similarity comparison (max: $MAX_TEXT_LENGTH characters)"
         }
 
+        // BUG-009: Prevent integer overflow in array allocation
+        // Check that the product of lengths doesn't exceed Int.MAX_VALUE
+        require(s1.length.toLong() * s2.length.toLong() <= Int.MAX_VALUE) {
+            "Text product too large for similarity comparison"
+        }
+
         // Early exit for identical strings
         if (s1 == s2) return 0
         if (s1.isEmpty()) return s2.length

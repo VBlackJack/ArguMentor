@@ -85,7 +85,9 @@ class PdfExporter @Inject constructor(
             // Render arguments section
             renderArgumentsSection(context, claims, rebuttals)
 
-            // Finish last page and write to output
+            // BUG-008: Finish last page and write to output
+            // Note: We don't close the stream here as it's passed by the caller
+            // who is responsible for its lifecycle management
             document.finishPage(context.page)
             document.writeTo(outputStream)
             document.close()
@@ -93,12 +95,6 @@ class PdfExporter @Inject constructor(
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
-        } finally {
-            try {
-                outputStream.close()
-            } catch (e: Exception) {
-                // Ignore close errors
-            }
         }
     }
 

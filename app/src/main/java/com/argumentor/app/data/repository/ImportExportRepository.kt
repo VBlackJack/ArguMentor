@@ -65,9 +65,23 @@ class ImportExportRepository @Inject constructor(
 
     /**
      * Export all data to JSON file.
+     * SEC-006: Added path validation to prevent directory traversal attacks.
      */
     suspend fun exportToFile(file: File): Result<Unit> {
         return try {
+            // SEC-006: Validate file path to prevent directory traversal
+            val canonicalPath = file.canonicalPath
+            val allowedDirs = listOf(
+                context.getExternalFilesDir(null)?.canonicalPath,
+                context.filesDir.canonicalPath,
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).canonicalPath,
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).canonicalPath
+            ).filterNotNull()
+
+            if (!allowedDirs.any { canonicalPath.startsWith(it) }) {
+                return Result.failure(SecurityException("Invalid export path: file must be in allowed directories"))
+            }
+
             // Ensure parent directory exists
             file.parentFile?.let { parent ->
                 if (!parent.exists() && !parent.mkdirs()) {
@@ -457,26 +471,27 @@ class ImportExportRepository @Inject constructor(
         // Import Evidences with similarity checking
         // BUG-003 FIX: Load evidences only for the specific claim being processed
         // This prevents loading ALL evidences into memory at once
+
+        // PERF-001: Load all source IDs once to avoid N+1 query problem
+        val existingSourceIds = database.sourceDao().getAllSourcesSync().map { it.id }.toSet()
+        val existingClaimIds = database.claimDao().getAllClaimsSync().map { it.id }.toSet()
+
         importData.evidences.forEach { evidenceDto ->
             try {
                 val evidence = evidenceDto.toModel()
 
                 // Validate foreign key: claimId must exist
-                val referencedClaim = database.claimDao().getClaimById(evidence.claimId)
-                if (referencedClaim == null) {
+                if (evidence.claimId !in existingClaimIds) {
                     errors++
                     errorMessages.add("Evidence '${evidence.id}': Referenced claim '${evidence.claimId}' not found. Import the claim first or verify the claimId.")
                     return@forEach
                 }
 
-                // Validate foreign key: sourceId must exist if provided
-                if (evidence.sourceId != null) {
-                    val referencedSource = database.sourceDao().getSourceById(evidence.sourceId)
-                    if (referencedSource == null) {
-                        errors++
-                        errorMessages.add("Evidence '${evidence.id}': Referenced source '${evidence.sourceId}' not found. Import the source first or remove the sourceId.")
-                        return@forEach
-                    }
+                // PERF-001: Validate foreign key using in-memory set instead of separate queries
+                if (evidence.sourceId != null && evidence.sourceId !in existingSourceIds) {
+                    errors++
+                    errorMessages.add("Evidence '${evidence.id}': Referenced source '${evidence.sourceId}' not found. Import the source first or remove the sourceId.")
+                    return@forEach
                 }
 
                 val existing = database.evidenceDao().getEvidenceById(evidence.id)
@@ -593,6 +608,11 @@ class ImportExportRepository @Inject constructor(
     }
 
     /**
+     * BUG-014: Fixed timestamp comparison fallback.
+     * Previously used string comparison which could give incorrect results
+     * (e.g., "2024-12-01" > "2024-2-01" lexicographically but not chronologically).
+     * Now returns false (don't update) on parse error to be safe.
+     *
      * Compares two ISO 8601 timestamps.
      * @return true if first is newer than second, false otherwise
      */
@@ -602,8 +622,8 @@ class ImportExportRepository @Inject constructor(
             val secondInstant = Instant.parse(second)
             firstInstant.isAfter(secondInstant)
         } catch (e: Exception) {
-            // Fallback to string comparison if parsing fails
-            first.compareTo(second) > 0
+            Timber.w(e, "Invalid timestamp comparison: '$first' vs '$second'")
+            false  // Don't update on parse error - safer default
         }
     }
 
