@@ -10,6 +10,9 @@ import javax.inject.Singleton
 class EvidenceRepository @Inject constructor(
     private val evidenceDao: EvidenceDao
 ) {
+    fun getAllEvidences(): Flow<List<Evidence>> =
+        evidenceDao.getAllEvidence()
+
     fun getEvidencesByClaimId(claimId: String): Flow<List<Evidence>> =
         evidenceDao.getEvidencesByClaimId(claimId)
 

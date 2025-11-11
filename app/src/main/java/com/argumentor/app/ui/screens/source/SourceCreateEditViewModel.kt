@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -94,7 +95,7 @@ class SourceCreateEditViewModel @Inject constructor(
                 // Filter claims by evidence claim IDs instead of N+1 queries
                 val claimIds = evidences.map { it.claimId }.distinct().toSet()
                 _linkedClaims.value = allClaims.filter { it.id in claimIds }
-            }.collect()
+            }.collect { }
         }
     }
 
@@ -132,9 +133,10 @@ class SourceCreateEditViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val source = if (isEditMode && sourceId != null) {
+                val srcId = sourceId
+                val source = if (isEditMode && srcId != null) {
                     // Update existing source
-                    val existingSource = sourceRepository.getSourceById(sourceId).first()
+                    val existingSource = sourceRepository.getSourceById(srcId).first()
                     existingSource?.copy(
                         title = _title.value.trim(),
                         citation = _citation.value.trim().takeIf { it.isNotEmpty() },

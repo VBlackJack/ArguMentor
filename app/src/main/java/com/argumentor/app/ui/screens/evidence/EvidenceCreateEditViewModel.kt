@@ -120,9 +120,10 @@ class EvidenceCreateEditViewModel @Inject constructor(
                     if (sourceExists) sourceId else null
                 }
 
-                val evidence = if (isEditMode && evidenceId != null) {
+                val evId = evidenceId
+                val evidence = if (isEditMode && evId != null) {
                     // Update existing evidence
-                    evidenceRepository.getEvidenceById(evidenceId)?.copy(
+                    evidenceRepository.getEvidenceById(evId)?.copy(
                         content = _content.value.trim(),
                         type = _type.value,
                         quality = _quality.value,

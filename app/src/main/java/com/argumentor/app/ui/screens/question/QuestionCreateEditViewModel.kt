@@ -145,9 +145,10 @@ class QuestionCreateEditViewModel @Inject constructor(
         viewModelScope.launch {
             _isSaving.value = true
             try {
-                val question = if (questionId != null) {
+                val qId = questionId
+                val question = if (qId != null) {
                     // Update existing question
-                    questionRepository.getQuestionById(questionId)?.copy(
+                    questionRepository.getQuestionById(qId)?.copy(
                         targetId = finalTargetId,
                         text = _text.value,
                         kind = _kind.value,

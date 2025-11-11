@@ -13,6 +13,9 @@ import javax.inject.Singleton
 class RebuttalRepository @Inject constructor(
     private val rebuttalDao: RebuttalDao
 ) {
+    fun getAllRebuttals(): Flow<List<Rebuttal>> =
+        rebuttalDao.getAllRebuttals()
+
     fun getRebuttalsByClaimId(claimId: String): Flow<List<Rebuttal>> =
         rebuttalDao.getRebuttalsByClaimId(claimId)
 
