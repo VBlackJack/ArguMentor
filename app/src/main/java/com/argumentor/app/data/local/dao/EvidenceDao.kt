@@ -43,6 +43,33 @@ interface EvidenceDao {
     @Query("DELETE FROM evidences WHERE id = :evidenceId")
     suspend fun deleteEvidenceById(evidenceId: String)
 
+    /**
+     * Full-text search on evidences using FTS4 index.
+     * Searches in content field.
+     * @param query Search query (supports FTS4 operators like OR, AND, *)
+     * @return Flow of matching evidences ordered by updated date
+     */
+    @Query("""
+        SELECT evidences.* FROM evidences
+        JOIN evidences_fts ON evidences.rowid = evidences_fts.rowid
+        WHERE evidences_fts MATCH :query
+        ORDER BY updatedAt DESC
+    """)
+    fun searchEvidencesFts(query: String): Flow<List<Evidence>>
+
+    /**
+     * Fallback search using LIKE (for when FTS query contains invalid operators).
+     * Searches in content field.
+     * @param query Search query string
+     * @return Flow of matching evidences ordered by updated date
+     */
+    @Query("""
+        SELECT * FROM evidences
+        WHERE content LIKE '%' || :query || '%'
+        ORDER BY updatedAt DESC
+    """)
+    fun searchEvidencesLike(query: String): Flow<List<Evidence>>
+
     @Query("SELECT COUNT(*) FROM evidences")
     suspend fun getEvidenceCount(): Int
 }

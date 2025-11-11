@@ -33,8 +33,33 @@ interface TopicDao {
     @Query("DELETE FROM topics WHERE id = :topicId")
     suspend fun deleteTopicById(topicId: String)
 
-    @Query("SELECT * FROM topics WHERE title LIKE '%' || :query || '%' OR summary LIKE '%' || :query || '%'")
-    fun searchTopics(query: String): Flow<List<Topic>>
+    /**
+     * Full-text search on topics using FTS4 index.
+     * Searches in title and summary fields.
+     * @param query Search query (supports FTS4 operators like OR, AND, *)
+     * @return Flow of matching topics ordered by updated date
+     */
+    @Query("""
+        SELECT topics.* FROM topics
+        JOIN topics_fts ON topics.rowid = topics_fts.rowid
+        WHERE topics_fts MATCH :query
+        ORDER BY updatedAt DESC
+    """)
+    fun searchTopicsFts(query: String): Flow<List<Topic>>
+
+    /**
+     * Fallback search using LIKE (for when FTS query contains invalid operators).
+     * Searches in title and summary fields.
+     * @param query Search query string
+     * @return Flow of matching topics ordered by updated date
+     */
+    @Query("""
+        SELECT * FROM topics
+        WHERE title LIKE '%' || :query || '%'
+           OR summary LIKE '%' || :query || '%'
+        ORDER BY updatedAt DESC
+    """)
+    fun searchTopicsLike(query: String): Flow<List<Topic>>
 
     @Query("SELECT COUNT(*) FROM topics")
     suspend fun getTopicCount(): Int

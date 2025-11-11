@@ -145,6 +145,50 @@ object DatabaseMigrations {
     }
 
     /**
+     * Migration from version 6 to 7.
+     *
+     * Changes:
+     * - Added TopicFts table for full-text search on topics
+     */
+    val MIGRATION_6_7 = object : Migration(6, 7) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Create FTS4 virtual table for topics
+            db.execSQL("""
+                CREATE VIRTUAL TABLE IF NOT EXISTS `topics_fts`
+                USING fts4(content=`topics`, title, summary)
+            """)
+
+            // Populate FTS table with existing data
+            db.execSQL("""
+                INSERT INTO topics_fts(docid, title, summary)
+                SELECT rowid, title, summary FROM topics
+            """)
+        }
+    }
+
+    /**
+     * Migration from version 7 to 8.
+     *
+     * Changes:
+     * - Added EvidenceFts table for full-text search on evidences
+     */
+    val MIGRATION_7_8 = object : Migration(7, 8) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Create FTS4 virtual table for evidences
+            db.execSQL("""
+                CREATE VIRTUAL TABLE IF NOT EXISTS `evidences_fts`
+                USING fts4(content=`evidences`, content)
+            """)
+
+            // Populate FTS table with existing data
+            db.execSQL("""
+                INSERT INTO evidences_fts(docid, content)
+                SELECT rowid, content FROM evidences
+            """)
+        }
+    }
+
+    /**
      * All migrations in order.
      */
     val ALL_MIGRATIONS = arrayOf(
@@ -152,6 +196,8 @@ object DatabaseMigrations {
         MIGRATION_2_3,
         MIGRATION_3_4,
         MIGRATION_4_5,
-        MIGRATION_5_6
+        MIGRATION_5_6,
+        MIGRATION_6_7,
+        MIGRATION_7_8
     )
 }
