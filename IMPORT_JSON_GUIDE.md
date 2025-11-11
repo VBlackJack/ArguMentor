@@ -92,7 +92,7 @@ Un sujet représente un thème de débat.
   "id": "topic_001",
   "title": "Les chats comme animaux de compagnie",
   "summary": "Analyse des avantages et inconvénients des chats comme animaux domestiques",
-  "posture": "neutre_critique",
+  "posture": "neutral_critical",
   "tags": ["tag_animaux", "tag_comportement"],
   "createdAt": "2025-01-15T10:00:00Z",
   "updatedAt": "2025-01-15T10:00:00Z"
@@ -113,15 +113,17 @@ Un sujet représente un thème de débat.
 
 ### Valeurs autorisées pour `posture`
 
-| Valeur | Description |
-|--------|-------------|
-| `"neutre"` | Position neutre |
-| `"neutre_critique"` | Neutre mais avec analyse critique |
-| `"sceptique"` | Position sceptique |
-| `"opposant"` | Opposition au sujet |
-| `"comparatif_academique"` | Analyse comparative académique |
+| Valeur | Alias supportés | Description |
+|--------|-----------------|-------------|
+| `"neutral_critical"` | `"neutre_critique"`, `"neutre_critical"` | Neutre mais avec analyse critique (recommandé) |
+| `"skeptical"` | `"sceptique"` | Position sceptique |
+| `"academic_comparative"` | `"comparatif_academique"` | Analyse comparative académique |
 
-**⚠️ Important** : Les valeurs sont insensibles à la casse. `"Neutre"`, `"NEUTRE"` ou `"neutre"` sont tous valides.
+**⚠️ Important** :
+- Les valeurs canoniques (en anglais) sont recommandées pour la compatibilité maximale
+- Les alias français sont supportés pour rétrocompatibilité
+- Les valeurs sont insensibles à la casse
+- Si la valeur n'est pas reconnue, `"neutral_critical"` sera utilisé par défaut
 
 ---
 
@@ -167,13 +169,16 @@ Une affirmation représente un argument ou une thèse liée à un ou plusieurs s
 
 ### Valeurs autorisées pour `strength`
 
-| Valeur | Description |
-|--------|-------------|
-| `"weak"` | Argument faible |
-| `"med"` ou `"medium"` | Argument de force moyenne |
-| `"high"` ou `"strong"` | Argument fort |
+| Valeur | Alias supportés | Description |
+|--------|-----------------|-------------|
+| `"low"` | - | Argument faible |
+| `"med"` | `"medium"` | Argument de force moyenne (recommandé: `"med"`) |
+| `"high"` | - | Argument fort |
 
-**⚠️ Important** : Les valeurs sont insensibles à la casse.
+**⚠️ Important** :
+- La valeur canonique pour moyenne est `"med"` (pas `"medium"`)
+- Les valeurs sont insensibles à la casse
+- Si la valeur n'est pas reconnue, `"med"` sera utilisé par défaut
 
 ---
 
@@ -221,7 +226,8 @@ Une preuve soutient une affirmation avec des données factuelles.
   "content": "Étude comportementale 2023 : Les chats peuvent passer 12-16h seuls sans stress, contrairement aux chiens",
   "sourceId": "source_001",
   "quality": "high",
-  "createdAt": "2025-01-15T10:00:00Z"
+  "createdAt": "2025-01-15T10:00:00Z",
+  "updatedAt": "2025-01-15T10:00:00Z"
 }
 ```
 
@@ -236,25 +242,28 @@ Une preuve soutient une affirmation avec des données factuelles.
 | `sourceId` | String | ❌ Non | ID de la source associée |
 | `quality` | String | ✅ Oui | Qualité de la preuve (voir valeurs autorisées) |
 | `createdAt` | String (ISO 8601) | ✅ Oui | Date de création |
+| `updatedAt` | String (ISO 8601) | ✅ Oui | Date de mise à jour |
 
 ### Valeurs autorisées pour `type`
 
 | Valeur | Description |
 |--------|-------------|
-| `"citation"` | Citation textuelle |
-| `"statistic"` | Donnée statistique |
-| `"study"` | Étude/recherche |
-| `"expert"` | Témoignage d'expert |
+| `"study"` | Étude/recherche scientifique |
+| `"stat"` | Donnée statistique |
+| `"quote"` | Citation textuelle |
 | `"example"` | Exemple concret |
-| `"anecdote"` | Anecdote |
+
+**⚠️ Important** : Si la valeur n'est pas reconnue, `"example"` sera utilisé par défaut.
 
 ### Valeurs autorisées pour `quality`
 
-| Valeur | Description |
-|--------|-------------|
-| `"low"` | Qualité faible |
-| `"medium"` | Qualité moyenne |
-| `"high"` | Qualité élevée |
+| Valeur | Alias supportés | Description |
+|--------|-----------------|-------------|
+| `"low"` | - | Qualité faible |
+| `"med"` | `"medium"` | Qualité moyenne (recommandé: `"med"`) |
+| `"high"` | - | Qualité élevée |
+
+**⚠️ Important** : La valeur canonique pour moyenne est `"med"` (pas `"medium"`).
 
 ---
 
@@ -269,8 +278,9 @@ Les questions servent à clarifier ou approfondir un sujet ou une affirmation.
   "id": "question_001",
   "targetId": "topic_001",
   "text": "Quels facteurs influencent le niveau d'indépendance des chats ?",
-  "kind": "clarification",
-  "createdAt": "2025-01-15T10:00:00Z"
+  "kind": "clarifying",
+  "createdAt": "2025-01-15T10:00:00Z",
+  "updatedAt": "2025-01-15T10:00:00Z"
 }
 ```
 
@@ -283,15 +293,18 @@ Les questions servent à clarifier ou approfondir un sujet ou une affirmation.
 | `text` | String | ✅ Oui | Texte de la question |
 | `kind` | String | ✅ Oui | Type de question (voir valeurs autorisées) |
 | `createdAt` | String (ISO 8601) | ✅ Oui | Date de création |
+| `updatedAt` | String (ISO 8601) | ✅ Oui | Date de mise à jour |
 
 ### Valeurs autorisées pour `kind`
 
 | Valeur | Description |
 |--------|-------------|
-| `"clarification"` | Question de clarification |
+| `"socratic"` | Question socratique (méthode d'interrogation) |
+| `"clarifying"` | Question de clarification |
 | `"challenge"` | Question de contestation |
-| `"followup"` | Question de suivi |
 | `"evidence"` | Question sur les preuves |
+
+**⚠️ Important** : Si la valeur n'est pas reconnue, `"clarifying"` sera utilisé par défaut.
 
 ---
 
@@ -311,7 +324,8 @@ Les sources documentent l'origine des preuves et citations.
   "date": "2023",
   "reliabilityScore": 0.85,
   "notes": "Étude comportementale sur 500 chats domestiques",
-  "createdAt": "2025-01-15T10:00:00Z"
+  "createdAt": "2025-01-15T10:00:00Z",
+  "updatedAt": "2025-01-15T10:00:00Z"
 }
 ```
 
@@ -328,6 +342,7 @@ Les sources documentent l'origine des preuves et citations.
 | `reliabilityScore` | Number (0.0-1.0) | ❌ Non | Score de fiabilité (0 = non fiable, 1 = très fiable) |
 | `notes` | String | ❌ Non | Notes supplémentaires |
 | `createdAt` | String (ISO 8601) | ✅ Oui | Date de création |
+| `updatedAt` | String (ISO 8601) | ✅ Oui | Date de mise à jour |
 
 ---
 
@@ -341,7 +356,9 @@ Les tags permettent de catégoriser les sujets.
 {
   "id": "tag_animaux",
   "label": "Animaux",
-  "color": "#4CAF50"
+  "color": "#4CAF50",
+  "createdAt": "2025-01-15T10:00:00Z",
+  "updatedAt": "2025-01-15T10:00:00Z"
 }
 ```
 
@@ -352,6 +369,8 @@ Les tags permettent de catégoriser les sujets.
 | `id` | String | ✅ Oui | Identifiant unique du tag |
 | `label` | String | ✅ Oui | Libellé du tag (affiché dans l'interface) |
 | `color` | String | ❌ Non | Couleur au format hexadécimal (#RRGGBB) |
+| `createdAt` | String (ISO 8601) | ✅ Oui | Date de création |
+| `updatedAt` | String (ISO 8601) | ✅ Oui | Date de mise à jour |
 
 ---
 
@@ -391,10 +410,8 @@ ArguMentor utilise plusieurs mécanismes pour éviter les doublons lors de l'imp
 ### 1. Doublons exacts (par ID)
 
 Si un élément avec le même `id` existe déjà :
-- Pour **Topics** : mise à jour si `updatedAt` de l'import est plus récent
-- Pour **Claims** : mise à jour si `updatedAt` de l'import est plus récent
-- Pour **Rebuttals** : mise à jour si `updatedAt` de l'import est plus récent
-- Pour **Tags, Sources, Evidences, Questions** : ignoré (considéré comme doublon)
+- Pour **Topics, Claims, Rebuttals, Sources** : mise à jour si `updatedAt` de l'import est plus récent
+- Pour **Tags, Evidences, Questions** : ignoré (considéré comme doublon)
 
 ### 2. Doublons par empreinte (fingerprint)
 
@@ -457,8 +474,10 @@ Voici un exemple minimal mais complet :
       "id": "topic_001",
       "title": "Les chats comme animaux de compagnie",
       "summary": "Analyse des avantages et inconvénients des chats comme animaux domestiques",
-      "posture": "neutre_critique",
-      "tags": []
+      "posture": "neutral_critical",
+      "tags": [],
+      "createdAt": "2025-01-15T09:00:00Z",
+      "updatedAt": "2025-01-15T09:00:00Z"
     }
   ],
   "claims": [
@@ -466,7 +485,7 @@ Voici un exemple minimal mais complet :
       "id": "claim_001",
       "text": "Les chats sont des animaux de compagnie plus indépendants que les chiens",
       "stance": "pro",
-      "strength": "medium",
+      "strength": "med",
       "topics": ["topic_001"],
       "createdAt": "2025-01-15T10:00:00Z",
       "updatedAt": "2025-01-15T10:00:00Z"
@@ -477,8 +496,8 @@ Voici un exemple minimal mais complet :
       "id": "rebuttal_001",
       "claimId": "claim_001",
       "text": "Les chats peuvent développer de l'anxiété de séparation comme les chiens",
-      "createdAt": "2025-01-15T10:00:00Z",
-      "updatedAt": "2025-01-15T10:00:00Z"
+      "createdAt": "2025-01-15T10:30:00Z",
+      "updatedAt": "2025-01-15T10:30:00Z"
     }
   ],
   "evidences": [
@@ -488,7 +507,8 @@ Voici un exemple minimal mais complet :
       "type": "study",
       "content": "Étude comportementale 2023 : Les chats peuvent passer 12-16h seuls sans stress",
       "quality": "high",
-      "createdAt": "2025-01-15T10:00:00Z"
+      "createdAt": "2025-01-15T11:00:00Z",
+      "updatedAt": "2025-01-15T11:00:00Z"
     }
   ],
   "questions": [],

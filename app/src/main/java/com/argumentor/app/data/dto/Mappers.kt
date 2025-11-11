@@ -78,7 +78,8 @@ fun Evidence.toDto(): EvidenceDto = EvidenceDto(
     content = content,
     sourceId = sourceId,
     quality = quality.toString(),
-    createdAt = createdAt
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 fun EvidenceDto.toModel(): Evidence = Evidence(
@@ -88,7 +89,8 @@ fun EvidenceDto.toModel(): Evidence = Evidence(
     content = content,
     sourceId = sourceId,
     quality = Evidence.Quality.fromString(quality),
-    createdAt = createdAt
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 // Question mappers
@@ -97,7 +99,8 @@ fun Question.toDto(): QuestionDto = QuestionDto(
     targetId = targetId,
     text = text,
     kind = kind.toString(),
-    createdAt = createdAt
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 fun QuestionDto.toModel(): Question = Question(
@@ -105,7 +108,8 @@ fun QuestionDto.toModel(): Question = Question(
     targetId = targetId,
     text = text,
     kind = Question.QuestionKind.fromString(kind),
-    createdAt = createdAt
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 // Source mappers
@@ -118,7 +122,8 @@ fun Source.toDto(): SourceDto = SourceDto(
     date = date,
     reliabilityScore = reliabilityScore,
     notes = notes,
-    createdAt = createdAt
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 fun SourceDto.toModel(): Source = Source(
@@ -130,18 +135,23 @@ fun SourceDto.toModel(): Source = Source(
     date = date,
     reliabilityScore = reliabilityScore,
     notes = notes,
-    createdAt = createdAt
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 // Tag mappers
 fun Tag.toDto(): TagDto = TagDto(
     id = id,
     label = label,
-    color = color
+    color = color,
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 fun TagDto.toModel(): Tag = Tag(
     id = id,
     label = label,
-    color = color
+    color = color,
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )

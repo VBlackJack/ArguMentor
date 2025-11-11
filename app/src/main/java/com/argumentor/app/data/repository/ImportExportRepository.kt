@@ -276,7 +276,7 @@ class ImportExportRepository @Inject constructor(
                     } else {
                         // Check for near-duplicates using similarity
                         // Load all claims and filter by topics in memory (LIKE query not precise enough)
-                        val allClaims = database.claimDao().getAllClaimsForFiltering()
+                        val allClaims = database.claimDao().getAllClaimsSync()
                         val candidateClaims = if (claim.topics.isNotEmpty()) {
                             allClaims.filter { existingClaim ->
                                 claim.topics.any { topicId -> existingClaim.topics.contains(topicId) }

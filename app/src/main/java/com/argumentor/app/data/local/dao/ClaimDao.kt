@@ -18,9 +18,6 @@ interface ClaimDao {
     @Query("SELECT * FROM claims WHERE topics LIKE '%' || :topicId || '%'")
     suspend fun getClaimsForTopic(topicId: String): List<Claim>
 
-    @Query("SELECT * FROM claims ORDER BY updatedAt DESC")
-    suspend fun getAllClaimsForFiltering(): List<Claim>
-
     @Query("SELECT * FROM claims WHERE id = :claimId")
     fun observeClaimById(claimId: String): Flow<Claim?>
 

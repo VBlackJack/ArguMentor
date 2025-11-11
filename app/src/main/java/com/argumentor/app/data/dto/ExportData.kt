@@ -126,7 +126,10 @@ data class EvidenceDto(
     val quality: String,
 
     @SerializedName("createdAt")
-    val createdAt: String
+    val createdAt: String,
+
+    @SerializedName("updatedAt")
+    val updatedAt: String
 )
 
 data class QuestionDto(
@@ -143,7 +146,10 @@ data class QuestionDto(
     val kind: String,
 
     @SerializedName("createdAt")
-    val createdAt: String
+    val createdAt: String,
+
+    @SerializedName("updatedAt")
+    val updatedAt: String
 )
 
 data class SourceDto(
@@ -172,7 +178,10 @@ data class SourceDto(
     val notes: String? = null,
 
     @SerializedName("createdAt")
-    val createdAt: String
+    val createdAt: String,
+
+    @SerializedName("updatedAt")
+    val updatedAt: String
 )
 
 data class TagDto(
@@ -183,5 +192,11 @@ data class TagDto(
     val label: String,
 
     @SerializedName("color")
-    val color: String? = null
+    val color: String? = null,
+
+    @SerializedName("createdAt")
+    val createdAt: String,
+
+    @SerializedName("updatedAt")
+    val updatedAt: String
 )
