@@ -76,6 +76,9 @@ data class ClaimDto(
     @SerializedName("topics")
     val topics: List<String>,
 
+    @SerializedName("fallacyIds")
+    val fallacyIds: List<String> = emptyList(),
+
     @SerializedName("createdAt")
     val createdAt: String,
 

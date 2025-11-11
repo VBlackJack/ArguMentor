@@ -82,11 +82,25 @@ object DatabaseMigrations {
     }
 
     /**
+     * Migration from version 4 to 5.
+     *
+     * Changes:
+     * - Added fallacyIds column to claims table for linking claims to identified fallacies
+     */
+    val MIGRATION_4_5 = object : Migration(4, 5) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Add fallacyIds column to claims table (stored as JSON array, similar to topics)
+            db.execSQL("ALTER TABLE claims ADD COLUMN fallacyIds TEXT NOT NULL DEFAULT '[]'")
+        }
+    }
+
+    /**
      * All migrations in order.
      */
     val ALL_MIGRATIONS = arrayOf(
         MIGRATION_1_2,
         MIGRATION_2_3,
-        MIGRATION_3_4
+        MIGRATION_3_4,
+        MIGRATION_4_5
     )
 }

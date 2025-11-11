@@ -49,6 +49,20 @@ class ClaimRepository @Inject constructor(
     suspend fun getClaimsForTopic(topicId: String): List<Claim> = claimDao.getClaimsForTopic(topicId)
 
     /**
+     * Retrieves all claims associated with a specific fallacy.
+     * @param fallacyId The fallacy identifier
+     * @return List of claims containing the fallacy
+     */
+    suspend fun getClaimsForFallacy(fallacyId: String): List<Claim> = claimDao.getClaimsForFallacy(fallacyId)
+
+    /**
+     * Observes all claims associated with a specific fallacy.
+     * @param fallacyId The fallacy identifier
+     * @return Flow emitting list of claims containing the fallacy, updated automatically when data changes
+     */
+    fun observeClaimsForFallacy(fallacyId: String): Flow<List<Claim>> = claimDao.observeClaimsForFallacy(fallacyId)
+
+    /**
      * Inserts a new claim into the database.
      * Automatically generates and adds fingerprint for duplicate detection.
      * @param claim The claim to insert

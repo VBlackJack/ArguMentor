@@ -29,6 +29,9 @@ class ClaimCreateEditViewModel @Inject constructor(
     private val _selectedTopics = MutableStateFlow<List<String>>(emptyList())
     val selectedTopics: StateFlow<List<String>> = _selectedTopics.asStateFlow()
 
+    private val _selectedFallacies = MutableStateFlow<List<String>>(emptyList())
+    val selectedFallacies: StateFlow<List<String>> = _selectedFallacies.asStateFlow()
+
     private val _isEditMode = MutableStateFlow(false)
     private val _claimId = MutableStateFlow<String?>(null)
 
@@ -43,6 +46,7 @@ class ClaimCreateEditViewModel @Inject constructor(
     private val _initialStance = MutableStateFlow(Claim.Stance.NEUTRAL)
     private val _initialStrength = MutableStateFlow(Claim.Strength.MEDIUM)
     private val _initialTopics = MutableStateFlow<List<String>>(emptyList())
+    private val _initialFallacies = MutableStateFlow<List<String>>(emptyList())
 
     fun clearError() {
         _errorMessage.value = null
@@ -60,6 +64,7 @@ class ClaimCreateEditViewModel @Inject constructor(
             _initialText.value = ""
             _initialStance.value = Claim.Stance.NEUTRAL
             _initialStrength.value = Claim.Strength.MEDIUM
+            _initialFallacies.value = emptyList()
             if (topicId == null) {
                 _initialTopics.value = emptyList()
             }
@@ -75,12 +80,14 @@ class ClaimCreateEditViewModel @Inject constructor(
                 _stance.value = claim.stance
                 _strength.value = claim.strength
                 _selectedTopics.value = claim.topics
+                _selectedFallacies.value = claim.fallacyIds
 
                 // Store initial values
                 _initialText.value = claim.text
                 _initialStance.value = claim.stance
                 _initialStrength.value = claim.strength
                 _initialTopics.value = claim.topics
+                _initialFallacies.value = claim.fallacyIds
             }
         }
     }
@@ -89,7 +96,8 @@ class ClaimCreateEditViewModel @Inject constructor(
         return _text.value != _initialText.value ||
                _stance.value != _initialStance.value ||
                _strength.value != _initialStrength.value ||
-               _selectedTopics.value != _initialTopics.value
+               _selectedTopics.value != _initialTopics.value ||
+               _selectedFallacies.value != _initialFallacies.value
     }
 
     fun onTextChange(newText: String) {
@@ -114,6 +122,16 @@ class ClaimCreateEditViewModel @Inject constructor(
         _selectedTopics.value = _selectedTopics.value.filter { it != topicId }
     }
 
+    fun addFallacy(fallacyId: String) {
+        if (!_selectedFallacies.value.contains(fallacyId)) {
+            _selectedFallacies.value = _selectedFallacies.value + fallacyId
+        }
+    }
+
+    fun removeFallacy(fallacyId: String) {
+        _selectedFallacies.value = _selectedFallacies.value.filter { it != fallacyId }
+    }
+
     fun saveClaim(onSaved: () -> Unit) {
         if (_text.value.isBlank()) {
             _errorMessage.value = "Claim text cannot be empty"
@@ -135,6 +153,7 @@ class ClaimCreateEditViewModel @Inject constructor(
                         stance = _stance.value,
                         strength = _strength.value,
                         topics = _selectedTopics.value,
+                        fallacyIds = _selectedFallacies.value,
                         createdAt = existingClaim?.createdAt ?: getCurrentIsoTimestamp(),
                         updatedAt = getCurrentIsoTimestamp()
                     )
@@ -145,7 +164,8 @@ class ClaimCreateEditViewModel @Inject constructor(
                         text = _text.value,
                         stance = _stance.value,
                         strength = _strength.value,
-                        topics = _selectedTopics.value
+                        topics = _selectedTopics.value,
+                        fallacyIds = _selectedFallacies.value
                     )
                     claimRepository.insertClaim(claim)
                 }

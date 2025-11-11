@@ -48,6 +48,10 @@
     <string name="claim_text_label">Claim text</string>
     <string name="claim_stance">Stance</string>
     <string name="claim_strength">Strength</string>
+    <string name="claim_fallacies">Identified fallacies</string>
+    <string name="claim_add_fallacy">Add a fallacy</string>
+    <string name="claim_select_fallacy">Select a fallacy</string>
+    <string name="claim_no_more_fallacies">All available fallacies have been added</string>
     <string name="claim_error_text_required">Claim text is required</string>
 
     <!-- Stance -->
@@ -185,6 +189,7 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
+    <string name="remove">Remove</string>
     <string name="edit">Edit</string>
     <string name="close">Close</string>
     <string name="search">Search</string>

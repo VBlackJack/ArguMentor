@@ -48,6 +48,10 @@
     <string name="claim_text_label">Texte de l\'affirmation</string>
     <string name="claim_stance">Position</string>
     <string name="claim_strength">Force</string>
+    <string name="claim_fallacies">Sophismes identifiés</string>
+    <string name="claim_add_fallacy">Ajouter un sophisme</string>
+    <string name="claim_select_fallacy">Sélectionner un sophisme</string>
+    <string name="claim_no_more_fallacies">Tous les sophismes disponibles ont été ajoutés</string>
     <string name="claim_error_text_required">Le texte de l\'affirmation est obligatoire</string>
 
     <!-- Stance -->
@@ -185,6 +189,7 @@
     <string name="save">Enregistrer</string>
     <string name="cancel">Annuler</string>
     <string name="delete">Supprimer</string>
+    <string name="remove">Retirer</string>
     <string name="edit">Modifier</string>
     <string name="close">Fermer</string>
     <string name="search">Rechercher</string>

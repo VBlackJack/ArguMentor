@@ -15,6 +15,7 @@ import java.util.UUID
  * @property stance Position: pro, con, or neutral
  * @property strength Evidence strength: low, medium, high
  * @property topics List of topic IDs this claim belongs to (many-to-many)
+ * @property fallacyIds List of fallacy IDs identified in this claim
  * @property createdAt Creation timestamp in ISO 8601 format
  * @property updatedAt Last update timestamp in ISO 8601 format
  * @property claimFingerprint SHA-256 hash of normalized text for duplicate detection
@@ -31,6 +32,7 @@ data class Claim(
     val stance: Stance = Stance.NEUTRAL,
     val strength: Strength = Strength.MEDIUM,
     val topics: List<String> = emptyList(),
+    val fallacyIds: List<String> = emptyList(),
     val createdAt: String = getCurrentIsoTimestamp(),
     val updatedAt: String = getCurrentIsoTimestamp(),
     val claimFingerprint: String = ""
