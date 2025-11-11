@@ -1,5 +1,7 @@
 package com.argumentor.app.data.repository
 
+import androidx.room.withTransaction
+import com.argumentor.app.data.local.ArguMentorDatabase
 import com.argumentor.app.data.local.dao.ClaimDao
 import com.argumentor.app.data.local.dao.QuestionDao
 import com.argumentor.app.data.local.dao.TopicDao
@@ -10,6 +12,7 @@ import javax.inject.Singleton
 
 @Singleton
 class TopicRepository @Inject constructor(
+    private val database: ArguMentorDatabase,
     private val topicDao: TopicDao,
     private val claimDao: ClaimDao,
     private val questionDao: QuestionDao
@@ -50,26 +53,33 @@ class TopicRepository @Inject constructor(
      * SECURITY NOTE: The topicId parameter is safely handled through Room's parameterized
      * queries. ClaimDao.getClaimsByTopicId() uses `:topicId` placeholder which Room
      * automatically sanitizes, preventing SQL injection. No direct string concatenation occurs.
+     *
+     * TRANSACTION: All deletions are wrapped in a database transaction to ensure atomicity.
+     * If any step fails, all changes are rolled back to maintain data integrity.
      */
     suspend fun deleteTopicById(topicId: String) {
-        // 1. Get all claims for this topic to find associated questions
-        //    SAFE: Uses Room parameterized query - no SQL injection risk
-        val claims = claimDao.getClaimsByTopicId(topicId)
+        // BUGFIX: Wrap all deletions in a transaction to ensure data integrity
+        // If any deletion fails, the entire operation is rolled back
+        database.withTransaction {
+            // 1. Get all claims for this topic to find associated questions
+            //    SAFE: Uses Room parameterized query - no SQL injection risk
+            val claims = claimDao.getClaimsByTopicId(topicId)
 
-        // 2. Delete questions linked to each claim
-        claims.forEach { claim ->
-            questionDao.deleteQuestionsByTargetId(claim.id)
+            // 2. Delete questions linked to each claim
+            claims.forEach { claim ->
+                questionDao.deleteQuestionsByTargetId(claim.id)
+            }
+
+            // 3. Delete all claims for this topic using json_each()
+            //    (Rebuttals and Evidence will be deleted automatically via FK CASCADE)
+            claimDao.deleteClaimsByTopicId(topicId)
+
+            // 4. Delete questions linked to the topic itself
+            questionDao.deleteQuestionsByTargetId(topicId)
+
+            // 5. Finally, delete the topic
+            topicDao.deleteTopicById(topicId)
         }
-
-        // 3. Delete all claims for this topic using json_each()
-        //    (Rebuttals and Evidence will be deleted automatically via FK CASCADE)
-        claimDao.deleteClaimsByTopicId(topicId)
-
-        // 4. Delete questions linked to the topic itself
-        questionDao.deleteQuestionsByTargetId(topicId)
-
-        // 5. Finally, delete the topic
-        topicDao.deleteTopicById(topicId)
     }
 
     /**

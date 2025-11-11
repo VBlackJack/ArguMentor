@@ -164,21 +164,26 @@ class SettingsDataStore @Inject constructor(
     suspend fun setOnboardingCompleted(completed: Boolean) {
         try {
             // Write to SharedPreferences first (fast, synchronous)
-            context.getSharedPreferences("settings_cache", Context.MODE_PRIVATE)
+            // BUGFIX: Check commit() return value to detect write failures
+            val sharedPrefsSuccess = context.getSharedPreferences("settings_cache", Context.MODE_PRIVATE)
                 .edit()
                 .putBoolean("onboarding_completed", completed)
                 .commit()  // Use commit() for synchronous write
+
+            if (!sharedPrefsSuccess) {
+                throw IllegalStateException("SharedPreferences commit failed for onboarding_completed")
+            }
 
             // Then write to DataStore (source of truth)
             context.dataStore.edit { preferences ->
                 preferences[PreferencesKeys.ONBOARDING_COMPLETED] = completed
             }
         } catch (e: Exception) {
-            // Rollback SharedPreferences on DataStore failure
+            // Rollback SharedPreferences on failure
             context.getSharedPreferences("settings_cache", Context.MODE_PRIVATE)
                 .edit()
                 .putBoolean("onboarding_completed", !completed)
-                .commit()
+                .commit()  // Best effort rollback, ignore result
             throw e
         }
     }
@@ -197,10 +202,15 @@ class SettingsDataStore @Inject constructor(
     suspend fun setFirstLaunchCompleted(completed: Boolean) {
         try {
             // Write to SharedPreferences first (fast, synchronous)
-            context.getSharedPreferences("settings_cache", Context.MODE_PRIVATE)
+            // BUGFIX: Check commit() return value to detect write failures
+            val sharedPrefsSuccess = context.getSharedPreferences("settings_cache", Context.MODE_PRIVATE)
                 .edit()
                 .putBoolean("first_launch_completed", completed)
                 .commit()  // Use commit() for synchronous write
+
+            if (!sharedPrefsSuccess) {
+                throw IllegalStateException("SharedPreferences commit failed for first_launch_completed")
+            }
 
             // Then write to DataStore (source of truth)
             context.dataStore.edit { preferences ->

@@ -33,11 +33,6 @@ class TutorialManager @Inject constructor(
 
     companion object {
         private const val KEY_LAST_LANGUAGE = "last_language"
-        /**
-         * Delay to ensure cascade deletes complete before final topic deletion.
-         * This prevents potential race conditions in the database.
-         */
-        private const val CASCADE_DELETE_DELAY_MS = 150L
     }
 
     fun checkAndHandleLanguageChange() {
@@ -85,6 +80,11 @@ class TutorialManager @Inject constructor(
     /**
      * Delete demo topic and all its related entities atomically.
      * Uses a database transaction to ensure data consistency.
+     *
+     * BUGFIX: Removed delay() from inside transaction to prevent potential deadlocks.
+     * Room's foreign key cascades and the transaction mechanism handle deletions atomically,
+     * so no delay is needed. The database transaction ensures all operations complete
+     * successfully or are rolled back together.
      */
     private suspend fun deleteDemoTopicCompletely(topicId: String) {
         database.withTransaction {
@@ -110,10 +110,9 @@ class TutorialManager @Inject constructor(
                 questionRepository.deleteQuestion(question)
             }
 
-            // Wait for cascade deletes to complete
-            delay(CASCADE_DELETE_DELAY_MS)
-
             // Finally, delete the topic itself
+            // The transaction ensures all previous operations complete successfully
+            // before this executes, or everything is rolled back on failure
             topicRepository.deleteTopicById(topicId)
         }
     }
