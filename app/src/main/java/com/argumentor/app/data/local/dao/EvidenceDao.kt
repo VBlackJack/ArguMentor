@@ -7,10 +7,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface EvidenceDao {
     @Query("SELECT * FROM evidences ORDER BY createdAt DESC")
-    fun getAllEvidence(): Flow<List<Evidence>>
+    fun getAllEvidences(): Flow<List<Evidence>>
 
     @Query("SELECT * FROM evidences ORDER BY createdAt DESC")
-    suspend fun getAllEvidenceSync(): List<Evidence>
+    suspend fun getAllEvidencesSync(): List<Evidence>
 
     @Query("SELECT * FROM evidences WHERE claimId = :claimId ORDER BY createdAt DESC")
     fun getEvidencesByClaimId(claimId: String): Flow<List<Evidence>>

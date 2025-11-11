@@ -63,7 +63,7 @@ class StatisticsRepository @Inject constructor(
         return topicDao.getAllTopics().flatMapLatest { topics ->
             claimDao.getAllClaims().flatMapLatest { claims ->
                 rebuttalDao.getAllRebuttals().flatMapLatest { rebuttals ->
-                    evidenceDao.getAllEvidence().flatMapLatest { evidence ->
+                    evidenceDao.getAllEvidences().flatMapLatest { evidence ->
                         questionDao.getAllQuestions().flatMapLatest { questions ->
                             sourceDao.getAllSources().map { sources ->
 
@@ -174,7 +174,7 @@ class StatisticsRepository @Inject constructor(
         val topics = topicDao.getAllTopicsSync().size
         val claims = claimDao.getAllClaimsSync().size
         val rebuttals = rebuttalDao.getAllRebuttalsSync().size
-        val evidence = evidenceDao.getAllEvidenceSync().size
+        val evidence = evidenceDao.getAllEvidencesSync().size
         val questions = questionDao.getAllQuestionsSync().size
         val sources = sourceDao.getAllSourcesSync().size
 

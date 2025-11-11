@@ -11,7 +11,7 @@ class EvidenceRepository @Inject constructor(
     private val evidenceDao: EvidenceDao
 ) {
     fun getAllEvidences(): Flow<List<Evidence>> =
-        evidenceDao.getAllEvidence()
+        evidenceDao.getAllEvidences()
 
     fun getEvidencesByClaimId(claimId: String): Flow<List<Evidence>> =
         evidenceDao.getEvidencesByClaimId(claimId)
