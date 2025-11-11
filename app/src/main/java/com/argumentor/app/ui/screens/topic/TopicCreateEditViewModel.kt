@@ -40,6 +40,9 @@ class TopicCreateEditViewModel @Inject constructor(
     private val _isEditMode = MutableStateFlow(false)
     private val _topicId = MutableStateFlow<String?>(null)
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
     private val _isSaving = MutableStateFlow(false)
     val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
 
@@ -92,19 +95,29 @@ class TopicCreateEditViewModel @Inject constructor(
 
         _isEditMode.value = true
         _topicId.value = topicId
+        _isLoading.value = true
 
         viewModelScope.launch {
-            topicRepository.getTopicByIdSync(topicId)?.let { topic ->
-                _title.value = topic.title
-                _summary.value = topic.summary
-                _posture.value = topic.posture
-                _tags.value = topic.tags
+            try {
+                topicRepository.getTopicByIdSync(topicId)?.let { topic ->
+                    _title.value = topic.title
+                    _summary.value = topic.summary
+                    _posture.value = topic.posture
+                    _tags.value = topic.tags
 
-                // Store initial values
-                _initialTitle.value = topic.title
-                _initialSummary.value = topic.summary
-                _initialPosture.value = topic.posture
-                _initialTags.value = topic.tags
+                    // Store initial values
+                    _initialTitle.value = topic.title
+                    _initialSummary.value = topic.summary
+                    _initialPosture.value = topic.posture
+                    _initialTags.value = topic.tags
+
+                    Timber.d("Topic loaded successfully: $topicId")
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to load topic")
+                _errorMessage.value = resourceProvider.getString(R.string.error_unknown)
+            } finally {
+                _isLoading.value = false
             }
         }
     }

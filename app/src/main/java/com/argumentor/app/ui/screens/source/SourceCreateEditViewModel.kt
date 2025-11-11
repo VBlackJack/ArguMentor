@@ -62,17 +62,35 @@ class SourceCreateEditViewModel @Inject constructor(
     private val _linkedClaims = MutableStateFlow<List<Claim>>(emptyList())
     val linkedClaims: StateFlow<List<Claim>> = _linkedClaims.asStateFlow()
 
-    private var sourceId: String? = null
-    private var isEditMode = false
+    private val _reliabilityScore = MutableStateFlow(0)
+    val reliabilityScore: StateFlow<Int> = _reliabilityScore.asStateFlow()
+
+    private val _sourceId = MutableStateFlow<String?>(null)
+    private val _isEditMode = MutableStateFlow(false)
+    val isEditMode: StateFlow<Boolean> = _isEditMode.asStateFlow()
+
+    private val _isSaving = MutableStateFlow(false)
+    val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
+
+    // Track initial values for hasUnsavedChanges()
+    private val _initialTitle = MutableStateFlow("")
+    private val _initialCitation = MutableStateFlow("")
+    private val _initialUrl = MutableStateFlow("")
+    private val _initialReliabilityScore = MutableStateFlow(0)
 
     fun loadSource(sourceId: String?) {
         if (sourceId == null) {
-            isEditMode = false
+            _isEditMode.value = false
+            // Reset to default values for new source
+            _initialTitle.value = ""
+            _initialCitation.value = ""
+            _initialUrl.value = ""
+            _initialReliabilityScore.value = 0
             return
         }
 
-        this.sourceId = sourceId
-        isEditMode = true
+        _sourceId.value = sourceId
+        _isEditMode.value = true
         _isLoading.value = true
 
         viewModelScope.launch {
@@ -84,6 +102,12 @@ class SourceCreateEditViewModel @Inject constructor(
                 _publisher.value = it.publisher ?: ""
                 _date.value = it.date ?: ""
                 _notes.value = it.notes ?: ""
+
+                // Track initial values for hasUnsavedChanges()
+                _initialTitle.value = it.title
+                _initialCitation.value = it.citation ?: ""
+                _initialUrl.value = it.url ?: ""
+                _initialReliabilityScore.value = 0
             }
             _isLoading.value = false
         }
@@ -134,11 +158,12 @@ class SourceCreateEditViewModel @Inject constructor(
         }
 
         _errorMessage.value = null
+        _isSaving.value = true
 
         viewModelScope.launch {
             runCatching {
-                val srcId = sourceId
-                val source = if (isEditMode && srcId != null) {
+                val srcId = _sourceId.value
+                val source = if (_isEditMode.value && srcId != null) {
                     // Update existing source
                     val existingSource = sourceRepository.getSourceById(srcId).first()
                     existingSource?.copy(
@@ -163,7 +188,7 @@ class SourceCreateEditViewModel @Inject constructor(
                 }
 
                 source?.let {
-                    if (isEditMode) {
+                    if (_isEditMode.value) {
                         sourceRepository.updateSource(it)
                         Timber.d("Source updated successfully: ${it.id}")
                     } else {
@@ -181,6 +206,14 @@ class SourceCreateEditViewModel @Inject constructor(
                     e.message ?: resourceProvider.getString(R.string.error_unknown)
                 )
             }
+            _isSaving.value = false
         }
+    }
+
+    fun hasUnsavedChanges(): Boolean {
+        return _title.value != _initialTitle.value ||
+                _citation.value != _initialCitation.value ||
+                _url.value != _initialUrl.value ||
+                _reliabilityScore.value != _initialReliabilityScore.value
     }
 }

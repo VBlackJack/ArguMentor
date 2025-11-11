@@ -51,7 +51,21 @@ class QuestionCreateEditViewModel @Inject constructor(
     private val _isTopicLevel = MutableStateFlow(true)
     val isTopicLevel: StateFlow<Boolean> = _isTopicLevel.asStateFlow()
 
-    private var questionId: String? = null
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    private val _questionId = MutableStateFlow<String?>(null)
+    val questionId: StateFlow<String?> = _questionId.asStateFlow()
+
+    private val _initialText = MutableStateFlow("")
+    val initialText: StateFlow<String> = _initialText.asStateFlow()
+
+    private val _initialKind = MutableStateFlow(Question.QuestionKind.CLARIFYING)
+    val initialKind: StateFlow<Question.QuestionKind> = _initialKind.asStateFlow()
+
+    private val _initialTargetId = MutableStateFlow<String?>(null)
+    val initialTargetId: StateFlow<String?> = _initialTargetId.asStateFlow()
+
     private var targetId: String? = null
     private var initialTopicId: String? = null
 
@@ -60,44 +74,52 @@ class QuestionCreateEditViewModel @Inject constructor(
         this.initialTopicId = targetId
 
         viewModelScope.launch {
-            if (questionId != null) {
-                // Editing existing question
-                this@QuestionCreateEditViewModel.questionId = questionId
-                questionRepository.getQuestionById(questionId)?.let { question ->
-                    _text.value = question.text
-                    _kind.value = question.kind
+            _isLoading.value = true
+            try {
+                if (questionId != null) {
+                    // Editing existing question
+                    _questionId.value = questionId
+                    questionRepository.getQuestionById(questionId)?.let { question ->
+                        _text.value = question.text
+                        _kind.value = question.kind
+                        _initialText.value = question.text
+                        _initialKind.value = question.kind
+                        _initialTargetId.value = question.targetId
 
-                    // Check if question targets a claim or topic
-                    val claim = claimRepository.getClaimByIdSync(question.targetId)
+                        // Check if question targets a claim or topic
+                        val claim = claimRepository.getClaimByIdSync(question.targetId)
+                        if (claim != null) {
+                            // Question targets a claim
+                            _selectedClaim.value = claim
+                            _isTopicLevel.value = false
+                            // Find topic from claim to load other claims
+                            if (claim.topics.isNotEmpty()) {
+                                loadClaimsForTopic(claim.topics.first())
+                            }
+                        } else {
+                            // Question targets a topic
+                            _isTopicLevel.value = true
+                            loadClaimsForTopic(question.targetId)
+                        }
+                    }
+                } else if (targetId != null) {
+                    // Creating new question - check if targetId is claim or topic
+                    val claim = claimRepository.getClaimByIdSync(targetId)
                     if (claim != null) {
-                        // Question targets a claim
+                        // Creating question for a claim
                         _selectedClaim.value = claim
                         _isTopicLevel.value = false
-                        // Find topic from claim to load other claims
                         if (claim.topics.isNotEmpty()) {
                             loadClaimsForTopic(claim.topics.first())
                         }
                     } else {
-                        // Question targets a topic
+                        // Creating question for a topic
                         _isTopicLevel.value = true
-                        loadClaimsForTopic(question.targetId)
+                        loadClaimsForTopic(targetId)
                     }
                 }
-            } else if (targetId != null) {
-                // Creating new question - check if targetId is claim or topic
-                val claim = claimRepository.getClaimByIdSync(targetId)
-                if (claim != null) {
-                    // Creating question for a claim
-                    _selectedClaim.value = claim
-                    _isTopicLevel.value = false
-                    if (claim.topics.isNotEmpty()) {
-                        loadClaimsForTopic(claim.topics.first())
-                    }
-                } else {
-                    // Creating question for a topic
-                    _isTopicLevel.value = true
-                    loadClaimsForTopic(targetId)
-                }
+            } finally {
+                _isLoading.value = false
             }
         }
     }
@@ -149,7 +171,7 @@ class QuestionCreateEditViewModel @Inject constructor(
         viewModelScope.launch {
             _isSaving.value = true
             val result = runCatching {
-                val qId = questionId
+                val qId = _questionId.value
                 val question = if (qId != null) {
                     // Update existing question
                     Timber.d("Updating existing question: $qId")
@@ -191,5 +213,11 @@ class QuestionCreateEditViewModel @Inject constructor(
 
             _isSaving.value = false
         }
+    }
+
+    fun hasUnsavedChanges(): Boolean {
+        return _text.value != _initialText.value ||
+                _kind.value != _initialKind.value ||
+                _initialTargetId.value != null  // Has unsaved changes if editing
     }
 }

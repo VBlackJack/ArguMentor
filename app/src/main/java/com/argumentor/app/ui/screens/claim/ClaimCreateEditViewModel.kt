@@ -42,6 +42,9 @@ class ClaimCreateEditViewModel @Inject constructor(
     private val _isSaving = MutableStateFlow(false)
     val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
@@ -78,20 +81,27 @@ class ClaimCreateEditViewModel @Inject constructor(
         _isEditMode.value = true
         _claimId.value = claimId
 
+        _isLoading.value = true
         viewModelScope.launch {
-            claimRepository.getClaimByIdSync(claimId)?.let { claim ->
-                _text.value = claim.text
-                _stance.value = claim.stance
-                _strength.value = claim.strength
-                _selectedTopics.value = claim.topics
-                _selectedFallacies.value = claim.fallacyIds
+            try {
+                claimRepository.getClaimByIdSync(claimId)?.let { claim ->
+                    _text.value = claim.text
+                    _stance.value = claim.stance
+                    _strength.value = claim.strength
+                    _selectedTopics.value = claim.topics
+                    _selectedFallacies.value = claim.fallacyIds
 
-                // Store initial values
-                _initialText.value = claim.text
-                _initialStance.value = claim.stance
-                _initialStrength.value = claim.strength
-                _initialTopics.value = claim.topics
-                _initialFallacies.value = claim.fallacyIds
+                    // Store initial values
+                    _initialText.value = claim.text
+                    _initialStance.value = claim.stance
+                    _initialStrength.value = claim.strength
+                    _initialTopics.value = claim.topics
+                    _initialFallacies.value = claim.fallacyIds
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to load claim: $claimId")
+            } finally {
+                _isLoading.value = false
             }
         }
     }
