@@ -144,10 +144,10 @@ class StatisticsRepository @Inject constructor(
 
             val claims = claimDao.getClaimsForTopic(topicId)
             val rebuttals = claims.flatMap { claim ->
-                rebuttalDao.getRebuttalsForClaim(claim.id)
+                rebuttalDao.getRebuttalsByClaimIdSync(claim.id)
             }
             val evidence = claims.flatMap { claim ->
-                evidenceDao.getEvidenceForClaim(claim.id)
+                evidenceDao.getEvidencesByClaimIdSync(claim.id)
             }
             // Note: Evidence is linked to claims, not rebuttals in current schema
             val questions = questionDao.getQuestionsForTopic(topicId)

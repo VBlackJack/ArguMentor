@@ -16,7 +16,7 @@ interface EvidenceDao {
     fun getEvidencesByClaimId(claimId: String): Flow<List<Evidence>>
 
     @Query("SELECT * FROM evidences WHERE claimId = :claimId ORDER BY createdAt DESC")
-    suspend fun getEvidenceForClaim(claimId: String): List<Evidence>
+    suspend fun getEvidencesByClaimIdSync(claimId: String): List<Evidence>
 
     // Note: Evidence is linked to claims, not rebuttals
     // @Query("SELECT * FROM evidences WHERE rebuttalId = :rebuttalId ORDER BY createdAt DESC")
