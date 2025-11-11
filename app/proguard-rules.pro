@@ -20,37 +20,80 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
-# Keep Room entities
--keep class com.argumentor.app.data.model.** { *; }
--keep class com.argumentor.app.data.dto.** { *; }
+# Keep Room entities - Room requires all fields and constructors
+# More specific than { *; } - only keeps what's needed for Room
+-keep @androidx.room.Entity class * {
+    <fields>;
+    <init>(...);
+}
+-keep class com.argumentor.app.data.model.** {
+    <fields>;
+    <init>(...);
+}
 
-# Keep Gson models
+# Keep DTO classes - Only keep fields and constructors needed for serialization
+-keep class com.argumentor.app.data.dto.** {
+    <fields>;
+    <init>(...);
+}
+
+# Keep Gson models - Only essential parts for reflection
 -keepattributes Signature
 -keepattributes *Annotation*
 -dontwarn sun.misc.**
--keep class com.google.gson.** { *; }
--keep class * implements com.google.gson.TypeAdapter
--keep class * implements com.google.gson.TypeAdapterFactory
--keep class * implements com.google.gson.JsonSerializer
--keep class * implements com.google.gson.JsonDeserializer
 
-# Keep DTO classes for JSON serialization
--keep class com.argumentor.app.data.dto.ExportData { *; }
--keep class com.argumentor.app.data.dto.ImportResult { *; }
+# Keep Gson public API
+-keep class com.google.gson.Gson {
+    <init>(...);
+    public <methods>;
+}
+-keep class com.google.gson.GsonBuilder {
+    <init>(...);
+    public <methods>;
+}
 
-# Keep Hilt generated components
--keep class dagger.hilt.** { *; }
--keep class javax.inject.** { *; }
+# Keep Gson type adapters
+-keep class * implements com.google.gson.TypeAdapter {
+    <init>(...);
+    public <methods>;
+}
+-keep class * implements com.google.gson.TypeAdapterFactory {
+    <init>(...);
+    public <methods>;
+}
+-keep class * implements com.google.gson.JsonSerializer {
+    <init>(...);
+    public <methods>;
+}
+-keep class * implements com.google.gson.JsonDeserializer {
+    <init>(...);
+    public <methods>;
+}
 
-# Keep Room DAOs
--keep interface com.argumentor.app.data.local.dao.** { *; }
+# Keep Hilt - Only essential injection points
+-keepclassmembers,allowobfuscation class * {
+    @javax.inject.Inject <init>(...);
+    @javax.inject.Inject <fields>;
+}
+-keep class dagger.hilt.android.** {
+    public <methods>;
+}
+-keep class javax.inject.** {
+    public <methods>;
+}
 
-# Kotlin coroutines
--keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
--keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+# Keep Room DAOs - Interfaces need all methods for Room runtime
+-keep interface com.argumentor.app.data.local.dao.** {
+    public abstract <methods>;
+}
+
+# Kotlin coroutines - Essential classes for coroutine runtime
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler
 -keepclassmembers class kotlinx.coroutines.** {
     volatile <fields>;
 }
+-dontwarn kotlinx.coroutines.flow.**
 
 # Preserve line numbers for debugging stack traces
 -keepattributes SourceFile,LineNumberTable

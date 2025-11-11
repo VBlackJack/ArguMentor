@@ -1,5 +1,6 @@
 package com.argumentor.app.data.model
 
+import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -32,7 +33,11 @@ import java.util.UUID
  * When this evidence is deleted, the parent claim (if exists) remains unchanged.
  * When the parent claim is deleted, this evidence is automatically deleted (CASCADE).
  * When the referenced source is deleted, sourceId is set to NULL (SET NULL).
+ *
+ * QUALITY-001: @Immutable annotation helps Compose skip recomposition when data hasn't changed.
+ * This data class is immutable (all properties are val) and contains only immutable types.
  */
+@Immutable
 @Entity(
     tableName = "evidences",
     foreignKeys = [

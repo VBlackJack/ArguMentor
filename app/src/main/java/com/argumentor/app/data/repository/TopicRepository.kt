@@ -46,9 +46,14 @@ class TopicRepository @Inject constructor(
      * Alternative considered: Creating junction tables (Topic_Claim, Question_Target)
      * with proper FKs, but this would significantly complicate the schema and queries.
      * Current approach provides better query performance for the common use case.
+     *
+     * SECURITY NOTE: The topicId parameter is safely handled through Room's parameterized
+     * queries. ClaimDao.getClaimsByTopicId() uses `:topicId` placeholder which Room
+     * automatically sanitizes, preventing SQL injection. No direct string concatenation occurs.
      */
     suspend fun deleteTopicById(topicId: String) {
         // 1. Get all claims for this topic to find associated questions
+        //    SAFE: Uses Room parameterized query - no SQL injection risk
         val claims = claimDao.getClaimsByTopicId(topicId)
 
         // 2. Delete questions linked to each claim

@@ -52,9 +52,10 @@ interface QuestionDao {
     fun searchQuestionsFts(query: String): Flow<List<Question>>
 
     // Fallback search using LIKE (for when FTS query contains invalid operators)
+    // SECURITY FIX (SEC-004): Added ESCAPE '\' clause to prevent wildcard injection
     @Query("""
         SELECT * FROM questions
-        WHERE text LIKE '%' || :query || '%'
+        WHERE text LIKE '%' || :query || '%' ESCAPE '\'
         ORDER BY updatedAt DESC
     """)
     fun searchQuestionsLike(query: String): Flow<List<Question>>

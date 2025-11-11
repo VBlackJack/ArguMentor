@@ -1,5 +1,6 @@
 package com.argumentor.app.data.model
 
+import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.UUID
@@ -31,7 +32,11 @@ import java.util.UUID
  * - Only invariants that must NEVER be violated belong in entity init blocks
  *
  * This keeps entities lightweight while ensuring critical invariants are enforced.
+ *
+ * QUALITY-001: @Immutable annotation helps Compose skip recomposition when data hasn't changed.
+ * This data class is immutable (all properties are val) and contains only immutable types.
  */
+@Immutable
 @Entity(tableName = "sources")
 data class Source(
     @PrimaryKey

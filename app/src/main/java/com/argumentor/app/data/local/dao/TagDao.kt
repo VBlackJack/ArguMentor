@@ -53,12 +53,13 @@ interface TagDao {
     /**
      * Fallback search using LIKE (for when FTS query contains invalid operators).
      * Searches in label field.
+     * SECURITY FIX (SEC-004): Added ESCAPE '\' clause to prevent wildcard injection
      * @param query Search query string
      * @return Flow of matching tags ordered by label
      */
     @Query("""
         SELECT * FROM tags
-        WHERE label LIKE '%' || :query || '%'
+        WHERE label LIKE '%' || :query || '%' ESCAPE '\'
         ORDER BY label ASC
     """)
     fun searchTagsLike(query: String): Flow<List<Tag>>

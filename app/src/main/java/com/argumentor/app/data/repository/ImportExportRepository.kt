@@ -1,5 +1,6 @@
 package com.argumentor.app.data.repository
 
+import androidx.room.withTransaction
 import com.argumentor.app.data.dto.*
 import com.argumentor.app.data.local.ArguMentorDatabase
 import com.argumentor.app.data.model.getCurrentIsoTimestamp
@@ -26,6 +27,11 @@ class ImportExportRepository @Inject constructor(
     private val gson: Gson = GsonBuilder()
         .setPrettyPrinting()
         .create()
+
+    companion object {
+        // SECURITY: Maximum import file size to prevent DoS attacks (50MB)
+        private const val MAX_IMPORT_FILE_SIZE_BYTES = 50 * 1024 * 1024L
+    }
 
     /**
      * Export all data to JSON format (schema v1.0).
@@ -93,7 +99,26 @@ class ImportExportRepository @Inject constructor(
         similarityThreshold: Double = 0.90
     ): Result<ImportResult> = withContext(Dispatchers.IO) {
         try {
+            // SECURITY FIX (SEC-002): Validate file size to prevent DoS attacks
+            val availableBytes = inputStream.available().toLong()
+            if (availableBytes > MAX_IMPORT_FILE_SIZE_BYTES) {
+                return@withContext Result.failure(
+                    IllegalArgumentException(
+                        "Import file too large: ${availableBytes / 1024 / 1024}MB " +
+                        "(maximum: ${MAX_IMPORT_FILE_SIZE_BYTES / 1024 / 1024}MB)"
+                    )
+                )
+            }
+
             val json = inputStream.bufferedReader().use { it.readText() }
+
+            // Additional size check after reading
+            if (json.length > MAX_IMPORT_FILE_SIZE_BYTES) {
+                return@withContext Result.failure(
+                    IllegalArgumentException("Import data exceeds maximum size limit")
+                )
+            }
+
             val importData = gson.fromJson(json, ExportData::class.java)
 
             // Validate schema version
@@ -118,6 +143,16 @@ class ImportExportRepository @Inject constructor(
         similarityThreshold: Double = 0.90
     ): Result<ImportResult> {
         return try {
+            // SECURITY FIX (SEC-002): Check file size before reading
+            if (file.length() > MAX_IMPORT_FILE_SIZE_BYTES) {
+                return Result.failure(
+                    IllegalArgumentException(
+                        "Import file too large: ${file.length() / 1024 / 1024}MB " +
+                        "(maximum: ${MAX_IMPORT_FILE_SIZE_BYTES / 1024 / 1024}MB)"
+                    )
+                )
+            }
+
             file.inputStream().use { inputStream ->
                 importFromJson(inputStream, similarityThreshold)
             }
@@ -128,6 +163,10 @@ class ImportExportRepository @Inject constructor(
 
     /**
      * Processes import with comprehensive anti-duplicate logic.
+     *
+     * SECURITY FIX (SEC-003): All database operations are wrapped in a transaction
+     * to ensure atomicity. If any error occurs, all changes are rolled back,
+     * preventing partial imports that could leave the database in an inconsistent state.
      *
      * Import order (respects foreign key dependencies):
      * 1. Tags (no dependencies)
@@ -151,7 +190,7 @@ class ImportExportRepository @Inject constructor(
     private suspend fun processImport(
         importData: ExportData,
         similarityThreshold: Double
-    ): ImportResult {
+    ): ImportResult = database.withTransaction {
         var created = 0
         var updated = 0
         var duplicates = 0
@@ -264,7 +303,9 @@ class ImportExportRepository @Inject constructor(
         }
 
         // Import Claims with fingerprint and similarity checking
-        // Use optimized batch approach to prevent OOM
+        // BUG-003 FIX: Load all existing claims ONCE (outside the loop) to prevent OOM
+        // This is more efficient than loading inside the loop for each claim
+        val allExistingClaims = database.claimDao().getAllClaimsSync()
         val BATCH_LIMIT = 100
 
         importData.claims.forEach { claimDto ->
@@ -289,11 +330,10 @@ class ImportExportRepository @Inject constructor(
                     if (duplicateByFingerprint != null) {
                         duplicates++
                     } else {
-                        // Check for near-duplicates using similarity
-                        // Load all claims and filter by topics in memory (LIKE query not precise enough)
-                        val allClaims = database.claimDao().getAllClaimsSync()
+                        // BUG-003 FIX: Filter claims in-memory instead of loading repeatedly
+                        // Only compare against claims that share topics with the incoming claim
                         val candidateClaims = if (claim.topics.isNotEmpty()) {
-                            allClaims.filter { existingClaim ->
+                            allExistingClaims.filter { existingClaim ->
                                 claim.topics.any { topicId -> existingClaim.topics.contains(topicId) }
                             }.take(BATCH_LIMIT)
                         } else {
@@ -347,8 +387,8 @@ class ImportExportRepository @Inject constructor(
         }
 
         // Import Rebuttals with similarity checking
-        val allExistingRebuttals = database.rebuttalDao().getAllRebuttalsSync()
-
+        // BUG-003 FIX: Load rebuttals only for the specific claim being processed
+        // This prevents loading ALL rebuttals into memory at once
         importData.rebuttals.forEach { rebuttalDto ->
             try {
                 val rebuttal = rebuttalDto.toModel()
@@ -370,8 +410,9 @@ class ImportExportRepository @Inject constructor(
                         duplicates++
                     }
                 } else {
-                    // Check for near-duplicates among rebuttals for the same claim
-                    val candidateRebuttals = allExistingRebuttals.filter { it.claimId == rebuttal.claimId }
+                    // BUG-003 FIX: Only load rebuttals for THIS specific claim (not all rebuttals)
+                    // This is much more memory-efficient than loading all rebuttals upfront
+                    val candidateRebuttals = database.rebuttalDao().getRebuttalsByClaimIdSync(rebuttal.claimId)
 
                     var isNearDuplicate = false
                     var similarTo: String? = null
@@ -414,8 +455,8 @@ class ImportExportRepository @Inject constructor(
         }
 
         // Import Evidences with similarity checking
-        val allExistingEvidences = database.evidenceDao().getAllEvidencesSync()
-
+        // BUG-003 FIX: Load evidences only for the specific claim being processed
+        // This prevents loading ALL evidences into memory at once
         importData.evidences.forEach { evidenceDto ->
             try {
                 val evidence = evidenceDto.toModel()
@@ -448,8 +489,9 @@ class ImportExportRepository @Inject constructor(
                         duplicates++
                     }
                 } else {
-                    // Check for near-duplicates among evidences for the same claim
-                    val candidateEvidences = allExistingEvidences.filter { it.claimId == evidence.claimId }
+                    // BUG-003 FIX: Only load evidences for THIS specific claim (not all evidences)
+                    // This is much more memory-efficient than loading all evidences upfront
+                    val candidateEvidences = database.evidenceDao().getEvidencesByClaimIdSync(evidence.claimId)
 
                     var isNearDuplicate = false
                     var similarTo: String? = null
@@ -522,7 +564,7 @@ class ImportExportRepository @Inject constructor(
                 importData.rebuttals.size + importData.evidences.size +
                 importData.questions.size + importData.sources.size + importData.tags.size
 
-        return ImportResult(
+        ImportResult(
             success = errors == 0,
             totalItems = totalItems,
             created = created,

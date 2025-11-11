@@ -1,5 +1,6 @@
 package com.argumentor.app.data.model
 
+import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.UUID
@@ -12,7 +13,11 @@ import java.util.UUID
  * @property color Optional color code for UI display
  * @property createdAt ISO 8601 timestamp of creation
  * @property updatedAt ISO 8601 timestamp of last update
+ *
+ * QUALITY-001: @Immutable annotation helps Compose skip recomposition when data hasn't changed.
+ * This data class is immutable (all properties are val) and contains only immutable types.
  */
+@Immutable
 @Entity(tableName = "tags")
 data class Tag(
     @PrimaryKey

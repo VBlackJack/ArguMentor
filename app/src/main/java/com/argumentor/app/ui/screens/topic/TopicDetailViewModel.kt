@@ -45,58 +45,72 @@ class TopicDetailViewModel @Inject constructor(
     private val _selectedTab = MutableStateFlow(0)
     val selectedTab: StateFlow<Int> = _selectedTab.asStateFlow()
 
+    /**
+     * Loads topic data with all related entities.
+     *
+     * BUG FIX (BUG-002): Race condition fixed by loading all data in a single
+     * coordinated flow. All entities are loaded synchronously to ensure proper
+     * data dependencies and prevent partial state updates.
+     */
     fun loadTopic(topicId: String) {
         _topicId.value = topicId
 
-        // Load topic, claims and sources in a single synchronized flow to avoid race conditions
+        // RACE CONDITION FIX: Load all data in a single coordinated flow
         viewModelScope.launch {
             combine(
                 topicRepository.getTopicById(topicId),
                 claimRepository.getAllClaims(),
-                sourceRepository.getAllSources()
-            ) { topic, allClaims, allSources ->
-                Triple(
-                    topic,
-                    allClaims.filter { claim -> claim.topics.contains(topicId) },
-                    allSources
-                )
-            }.collect { (topic, claims, sources) ->
-                // Update all state atomically to prevent partial UI updates
-                _topic.value = topic
-                _claims.value = claims
-                _sources.value = sources
-            }
-        }
+                sourceRepository.getAllSources(),
+                questionRepository.getQuestionsByTargetId(topicId)
+            ) { topic, allClaims, allSources, topicQuestions ->
+                // Filter claims for this topic
+                val filteredClaims = allClaims.filter { claim -> claim.topics.contains(topicId) }
 
-        // Load questions (depends on claims, so must be separate)
-        viewModelScope.launch {
-            combine(
-                questionRepository.getQuestionsByTargetId(topicId),
-                _claims
-            ) { topicQuestions, claims ->
-                topicQuestions to claims.map { it.id }
-            }.flatMapLatest { (topicQuestions, claimIds) ->
-                // Create a flow for each claim's questions and combine them
-                if (claimIds.isEmpty()) {
-                    flowOf(topicQuestions)
+                // Return all data together
+                TopicData(
+                    topic = topic,
+                    claims = filteredClaims,
+                    sources = allSources,
+                    topicQuestions = topicQuestions,
+                    claimIds = filteredClaims.map { it.id }
+                )
+            }.flatMapLatest { data ->
+                // Load questions for all claims
+                if (data.claimIds.isEmpty()) {
+                    flowOf(data to data.topicQuestions)
                 } else {
-                    val claimQuestionsFlows = claimIds.map { claimId ->
+                    val claimQuestionsFlows = data.claimIds.map { claimId ->
                         questionRepository.getQuestionsByTargetId(claimId)
                     }
                     combine(claimQuestionsFlows) { claimQuestionsArrays ->
                         val allQuestions = mutableListOf<Question>()
-                        allQuestions.addAll(topicQuestions)
+                        allQuestions.addAll(data.topicQuestions)
                         claimQuestionsArrays.forEach { claimQuestions ->
                             allQuestions.addAll(claimQuestions)
                         }
-                        allQuestions.distinctBy { it.id }
+                        data to allQuestions.distinctBy { it.id }
                     }
                 }
-            }.collect { allQuestions ->
+            }.collect { (data, allQuestions) ->
+                // Update all state atomically at once to prevent inconsistent UI state
+                _topic.value = data.topic
+                _claims.value = data.claims
+                _sources.value = data.sources
                 _questions.value = allQuestions
             }
         }
     }
+
+    /**
+     * Internal data class to hold coordinated topic data during loading.
+     */
+    private data class TopicData(
+        val topic: Topic?,
+        val claims: List<Claim>,
+        val sources: List<Source>,
+        val topicQuestions: List<Question>,
+        val claimIds: List<String>
+    )
 
     fun onTabSelected(index: Int) {
         _selectedTab.value = index

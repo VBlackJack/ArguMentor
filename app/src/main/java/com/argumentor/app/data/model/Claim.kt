@@ -1,5 +1,6 @@
 package com.argumentor.app.data.model
 
+import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -19,7 +20,11 @@ import java.util.UUID
  * @property createdAt Creation timestamp in ISO 8601 format
  * @property updatedAt Last update timestamp in ISO 8601 format
  * @property claimFingerprint SHA-256 hash of normalized text for duplicate detection
+ *
+ * QUALITY-001: @Immutable annotation helps Compose skip recomposition when data hasn't changed.
+ * This data class is immutable (all properties are val) and contains only immutable types.
  */
+@Immutable
 @Entity(
     tableName = "claims",
     indices = [Index(value = ["claimFingerprint"])]

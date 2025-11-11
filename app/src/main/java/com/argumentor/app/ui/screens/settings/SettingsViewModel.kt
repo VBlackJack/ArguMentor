@@ -8,11 +8,20 @@ import com.argumentor.app.data.preferences.AppLanguage
 import com.argumentor.app.data.util.TutorialManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for app settings.
+ *
+ * MEMORY LEAK FIX: Uses stateIn() with WhileSubscribed to automatically stop
+ * flow collection when there are no active observers, preventing memory leaks.
+ */
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsDataStore: SettingsDataStore,
@@ -20,141 +29,122 @@ class SettingsViewModel @Inject constructor(
     private val tutorialManager: TutorialManager
 ) : ViewModel() {
 
-    private val _isDarkTheme = MutableStateFlow(false)
-    val isDarkTheme: StateFlow<Boolean> = _isDarkTheme.asStateFlow()
+    // Convert DataStore flows to StateFlows with automatic lifecycle management
+    val isDarkTheme: StateFlow<Boolean> = settingsDataStore.isDarkTheme
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
 
-    private val _isImmersiveMode = MutableStateFlow(false)
-    val isImmersiveMode: StateFlow<Boolean> = _isImmersiveMode.asStateFlow()
+    val isImmersiveMode: StateFlow<Boolean> = settingsDataStore.isImmersiveMode
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
 
-    private val _fontSize = MutableStateFlow(FontSize.MEDIUM)
-    val fontSize: StateFlow<FontSize> = _fontSize.asStateFlow()
+    val fontSize: StateFlow<FontSize> = settingsDataStore.fontSize
+        .map { FontSize.valueOf(it) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = FontSize.MEDIUM
+        )
 
-    private val _showEthicsWarning = MutableStateFlow(true)
-    val showEthicsWarning: StateFlow<Boolean> = _showEthicsWarning.asStateFlow()
+    val showEthicsWarning: StateFlow<Boolean> = settingsDataStore.showEthicsWarning
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = true
+        )
 
-    private val _defaultPosture = MutableStateFlow("neutral_critique")
-    val defaultPosture: StateFlow<String> = _defaultPosture.asStateFlow()
+    val defaultPosture: StateFlow<String> = settingsDataStore.defaultPosture
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = "neutral_critique"
+        )
 
-    private val _language = MutableStateFlow(AppLanguage.FRENCH)
-    val language: StateFlow<AppLanguage> = _language.asStateFlow()
-    
+    val language: StateFlow<AppLanguage> = languagePreferences.languageFlow
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = AppLanguage.FRENCH
+        )
+
+    val tutorialEnabled: StateFlow<Boolean> = settingsDataStore.tutorialEnabled
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = true
+        )
+
     private val _pendingLanguage = MutableStateFlow<AppLanguage?>(null)
     val pendingLanguage: StateFlow<AppLanguage?> = _pendingLanguage.asStateFlow()
-    
+
     private val _languageSaveCompleted = MutableStateFlow(false)
     val languageSaveCompleted: StateFlow<Boolean> = _languageSaveCompleted.asStateFlow()
 
-    private val _tutorialEnabled = MutableStateFlow(true)
-    val tutorialEnabled: StateFlow<Boolean> = _tutorialEnabled.asStateFlow()
-
-    init {
-        loadSettings()
-    }
-
-    private fun loadSettings() {
-        viewModelScope.launch {
-            settingsDataStore.isDarkTheme.collect { isDark ->
-                _isDarkTheme.value = isDark
-            }
-        }
-        viewModelScope.launch {
-            settingsDataStore.isImmersiveMode.collect { enabled ->
-                _isImmersiveMode.value = enabled
-            }
-        }
-        viewModelScope.launch {
-            settingsDataStore.fontSize.collect { size ->
-                _fontSize.value = FontSize.valueOf(size)
-            }
-        }
-        viewModelScope.launch {
-            settingsDataStore.showEthicsWarning.collect { show ->
-                _showEthicsWarning.value = show
-            }
-        }
-        viewModelScope.launch {
-            settingsDataStore.defaultPosture.collect { posture ->
-                _defaultPosture.value = posture
-            }
-        }
-        viewModelScope.launch {
-            languagePreferences.languageFlow.collect { lang ->
-                _language.value = lang
-            }
-        }
-        viewModelScope.launch {
-            settingsDataStore.tutorialEnabled.collect { enabled ->
-                _tutorialEnabled.value = enabled
-            }
-        }
-    }
-
     fun toggleDarkTheme() {
         viewModelScope.launch {
-            val newValue = !_isDarkTheme.value
-            _isDarkTheme.value = newValue
+            val newValue = !isDarkTheme.value
             settingsDataStore.setDarkTheme(newValue)
         }
     }
 
     fun toggleImmersiveMode() {
         viewModelScope.launch {
-            val newValue = !_isImmersiveMode.value
-            _isImmersiveMode.value = newValue
+            val newValue = !isImmersiveMode.value
             settingsDataStore.setImmersiveMode(newValue)
         }
     }
 
     fun setFontSize(size: FontSize) {
         viewModelScope.launch {
-            _fontSize.value = size
             settingsDataStore.setFontSize(size.name)
         }
     }
 
     fun toggleEthicsWarning() {
         viewModelScope.launch {
-            val newValue = !_showEthicsWarning.value
-            _showEthicsWarning.value = newValue
+            val newValue = !showEthicsWarning.value
             settingsDataStore.setShowEthicsWarning(newValue)
         }
     }
 
     fun setDefaultPosture(posture: String) {
         viewModelScope.launch {
-            _defaultPosture.value = posture
             settingsDataStore.setDefaultPosture(posture)
         }
     }
 
-    fun selectLanguage(language: AppLanguage) {
-        if (language != _language.value) {
-            _pendingLanguage.value = language
+    fun selectLanguage(newLanguage: AppLanguage) {
+        if (newLanguage != language.value) {
+            _pendingLanguage.value = newLanguage
         } else {
             _pendingLanguage.value = null
         }
     }
-    
+
     fun applyLanguageChange(onComplete: () -> Unit) {
         viewModelScope.launch {
             _pendingLanguage.value?.let { newLang ->
                 languagePreferences.setLanguage(newLang)
-                _language.value = newLang
                 _pendingLanguage.value = null
                 // Notify completion
                 onComplete()
             }
         }
     }
-    
+
     fun cancelLanguageChange() {
         _pendingLanguage.value = null
     }
 
     fun toggleTutorialEnabled() {
         viewModelScope.launch {
-            val newValue = !_tutorialEnabled.value
-            _tutorialEnabled.value = newValue
+            val newValue = !tutorialEnabled.value
             settingsDataStore.setTutorialEnabled(newValue)
             tutorialManager.handleTutorialToggle(newValue)
         }
