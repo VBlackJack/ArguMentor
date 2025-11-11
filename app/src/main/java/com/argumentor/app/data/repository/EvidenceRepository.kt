@@ -34,6 +34,9 @@ class EvidenceRepository @Inject constructor(
     suspend fun deleteEvidence(evidence: Evidence) =
         evidenceDao.deleteEvidence(evidence)
 
+    suspend fun deleteEvidencesByClaimId(claimId: String) =
+        evidenceDao.deleteEvidencesByClaimId(claimId)
+
     /**
      * Search evidences using FTS with automatic fallback to LIKE search if FTS fails.
      */

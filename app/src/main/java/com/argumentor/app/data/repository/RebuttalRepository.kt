@@ -34,6 +34,9 @@ class RebuttalRepository @Inject constructor(
     suspend fun deleteRebuttal(rebuttal: Rebuttal) =
         rebuttalDao.deleteRebuttal(rebuttal)
 
+    suspend fun deleteRebuttalsByClaimId(claimId: String) =
+        rebuttalDao.deleteRebuttalsByClaimId(claimId)
+
     /**
      * Search rebuttals using FTS with automatic fallback to LIKE search if FTS fails.
      */

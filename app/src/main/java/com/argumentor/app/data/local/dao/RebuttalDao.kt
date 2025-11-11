@@ -39,6 +39,9 @@ interface RebuttalDao {
     @Query("DELETE FROM rebuttals WHERE id = :rebuttalId")
     suspend fun deleteRebuttalById(rebuttalId: String)
 
+    @Query("DELETE FROM rebuttals WHERE claimId = :claimId")
+    suspend fun deleteRebuttalsByClaimId(claimId: String)
+
     // Full-text search
     @Query("""
         SELECT rebuttals.* FROM rebuttals

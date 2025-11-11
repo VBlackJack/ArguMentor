@@ -46,6 +46,9 @@ interface EvidenceDao {
     @Query("DELETE FROM evidences WHERE id = :evidenceId")
     suspend fun deleteEvidenceById(evidenceId: String)
 
+    @Query("DELETE FROM evidences WHERE claimId = :claimId")
+    suspend fun deleteEvidencesByClaimId(claimId: String)
+
     /**
      * Full-text search on evidences using FTS4 index.
      * Searches in content field.
