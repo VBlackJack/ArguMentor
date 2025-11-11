@@ -16,12 +16,16 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.argumentor.app.R
+import com.argumentor.app.util.ResourceProvider
+import timber.log.Timber
 
 @HiltViewModel
 class SourceCreateEditViewModel @Inject constructor(
     private val sourceRepository: SourceRepository,
     private val evidenceRepository: EvidenceRepository,
-    private val claimRepository: ClaimRepository
+    private val claimRepository: ClaimRepository,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _title = MutableStateFlow("")
@@ -125,14 +129,14 @@ class SourceCreateEditViewModel @Inject constructor(
 
     fun saveSource(onSaved: () -> Unit) {
         if (_title.value.isBlank()) {
-            _errorMessage.value = "Source title cannot be empty"
+            _errorMessage.value = resourceProvider.getString(R.string.error_source_title_empty)
             return
         }
 
         _errorMessage.value = null
 
         viewModelScope.launch {
-            try {
+            runCatching {
                 val srcId = sourceId
                 val source = if (isEditMode && srcId != null) {
                     // Update existing source
@@ -161,13 +165,21 @@ class SourceCreateEditViewModel @Inject constructor(
                 source?.let {
                     if (isEditMode) {
                         sourceRepository.updateSource(it)
+                        Timber.d("Source updated successfully: ${it.id}")
                     } else {
                         sourceRepository.insertSource(it)
+                        Timber.d("Source created successfully: ${it.id}")
                     }
                     onSaved()
                 }
-            } catch (e: Exception) {
-                _errorMessage.value = "Failed to save source: ${e.message}"
+            }.onSuccess {
+                // Success is already handled in the block above
+            }.onFailure { e ->
+                Timber.e(e, "Failed to save source")
+                _errorMessage.value = resourceProvider.getString(
+                    R.string.error_save_source,
+                    e.message ?: resourceProvider.getString(R.string.error_unknown)
+                )
             }
         }
     }

@@ -15,6 +15,9 @@ interface TagDao {
     @Query("SELECT * FROM tags WHERE id = :tagId")
     suspend fun getTagById(tagId: String): Tag?
 
+    @Query("SELECT * FROM tags WHERE id = :tagId")
+    fun observeTagById(tagId: String): Flow<Tag?>
+
     @Query("SELECT * FROM tags WHERE label = :label")
     suspend fun getTagByLabel(label: String): Tag?
 

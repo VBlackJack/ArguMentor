@@ -2,12 +2,15 @@ package com.argumentor.app.ui.screens.topic
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.argumentor.app.R
 import com.argumentor.app.data.datastore.SettingsDataStore
 import com.argumentor.app.data.model.Topic
 import com.argumentor.app.data.model.getCurrentIsoTimestamp
 import com.argumentor.app.data.repository.TagRepository
 import com.argumentor.app.data.repository.TopicRepository
+import com.argumentor.app.util.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import timber.log.Timber
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +21,8 @@ import javax.inject.Inject
 class TopicCreateEditViewModel @Inject constructor(
     private val topicRepository: TopicRepository,
     private val tagRepository: TagRepository,
-    private val settingsDataStore: SettingsDataStore
+    private val settingsDataStore: SettingsDataStore,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _title = MutableStateFlow("")
@@ -136,7 +140,7 @@ class TopicCreateEditViewModel @Inject constructor(
 
     fun saveTopic(onSaved: () -> Unit) {
         if (_title.value.isBlank()) {
-            _errorMessage.value = "Topic title cannot be empty"
+            _errorMessage.value = resourceProvider.getString(R.string.error_topic_title_empty)
             return
         }
 
@@ -144,7 +148,7 @@ class TopicCreateEditViewModel @Inject constructor(
         _errorMessage.value = null
 
         viewModelScope.launch {
-            try {
+            runCatching {
                 val topicId = _topicId.value
                 if (_isEditMode.value && topicId != null) {
                     // Update existing topic
@@ -159,6 +163,7 @@ class TopicCreateEditViewModel @Inject constructor(
                         updatedAt = getCurrentIsoTimestamp()
                     )
                     topicRepository.updateTopic(topic)
+                    Timber.d("Topic updated successfully: $topicId")
                 } else {
                     // Create new topic
                     val topic = Topic(
@@ -168,13 +173,18 @@ class TopicCreateEditViewModel @Inject constructor(
                         tags = _tags.value
                     )
                     topicRepository.insertTopic(topic)
+                    Timber.d("Topic created successfully: ${topic.id}")
                 }
+            }.onSuccess {
                 onSaved()
-            } catch (e: Exception) {
-                _errorMessage.value = "Failed to save topic: ${e.message}"
-            } finally {
-                _isSaving.value = false
+            }.onFailure { e ->
+                Timber.e(e, "Failed to save topic")
+                _errorMessage.value = resourceProvider.getString(
+                    R.string.error_save_topic,
+                    e.message ?: resourceProvider.getString(R.string.error_unknown)
+                )
             }
+            _isSaving.value = false
         }
     }
 }

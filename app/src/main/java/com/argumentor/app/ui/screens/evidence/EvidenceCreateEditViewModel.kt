@@ -2,22 +2,26 @@ package com.argumentor.app.ui.screens.evidence
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.argumentor.app.R
 import com.argumentor.app.data.model.Evidence
 import com.argumentor.app.data.model.Source
 import com.argumentor.app.data.repository.EvidenceRepository
 import com.argumentor.app.data.repository.SourceRepository
+import com.argumentor.app.util.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class EvidenceCreateEditViewModel @Inject constructor(
     private val evidenceRepository: EvidenceRepository,
-    private val sourceRepository: SourceRepository
+    private val sourceRepository: SourceRepository,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _content = MutableStateFlow("")
@@ -106,14 +110,14 @@ class EvidenceCreateEditViewModel @Inject constructor(
 
     fun saveEvidence(onSaved: () -> Unit) {
         if (_content.value.isBlank()) {
-            _errorMessage.value = "Evidence content cannot be empty"
+            _errorMessage.value = resourceProvider.getString(R.string.error_evidence_content_empty)
             return
         }
 
         _errorMessage.value = null
 
         viewModelScope.launch {
-            try {
+            runCatching {
                 // Validate that selected source still exists if one is selected
                 val validatedSourceId = _selectedSource.value?.id?.let { sourceId ->
                     val sourceExists = sourceRepository.getSourceById(sourceId).first() != null
@@ -144,13 +148,19 @@ class EvidenceCreateEditViewModel @Inject constructor(
                 evidence?.let {
                     if (isEditMode) {
                         evidenceRepository.updateEvidence(it)
+                        Timber.d("Evidence updated successfully: ${it.id}")
                     } else {
                         evidenceRepository.insertEvidence(it)
+                        Timber.d("Evidence created successfully")
                     }
                     onSaved()
                 }
-            } catch (e: Exception) {
-                _errorMessage.value = "Failed to save evidence: ${e.message}"
+            }.onFailure { e ->
+                Timber.e(e, "Failed to save evidence")
+                _errorMessage.value = resourceProvider.getString(
+                    R.string.error_save_evidence,
+                    e.message ?: resourceProvider.getString(R.string.error_unknown)
+                )
             }
         }
     }

@@ -14,6 +14,8 @@ class TagRepository @Inject constructor(
 
     suspend fun getTagById(tagId: String): Tag? = tagDao.getTagById(tagId)
 
+    fun observeTagById(tagId: String): Flow<Tag?> = tagDao.observeTagById(tagId)
+
     suspend fun getTagByLabel(label: String): Tag? = tagDao.getTagByLabel(label)
 
     suspend fun insertTag(tag: Tag) = tagDao.insertTag(tag)

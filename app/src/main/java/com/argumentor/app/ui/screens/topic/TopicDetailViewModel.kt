@@ -2,11 +2,14 @@ package com.argumentor.app.ui.screens.topic
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.argumentor.app.R
 import com.argumentor.app.data.export.MarkdownExporter
 import com.argumentor.app.data.export.PdfExporter
 import com.argumentor.app.data.model.*
 import com.argumentor.app.data.repository.*
+import com.argumentor.app.util.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import timber.log.Timber
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.OutputStream
@@ -21,7 +24,8 @@ class TopicDetailViewModel @Inject constructor(
     private val questionRepository: QuestionRepository,
     private val sourceRepository: SourceRepository,
     private val pdfExporter: PdfExporter,
-    private val markdownExporter: MarkdownExporter
+    private val markdownExporter: MarkdownExporter,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _topicId = MutableStateFlow<String?>(null)
@@ -188,10 +192,12 @@ class TopicDetailViewModel @Inject constructor(
 
                 // Export to PDF
                 pdfExporter.exportTopicToPdf(topic, claims, rebuttalsMap, outputStream).getOrThrow()
+                Timber.d("PDF export successful for topic: $topicId")
             }.onSuccess {
                 onResult(true, null)
             }.onFailure { error ->
-                onResult(false, error.message ?: "Erreur lors de l'export PDF")
+                Timber.e(error, "Failed to export topic to PDF")
+                onResult(false, error.message ?: resourceProvider.getString(R.string.error_export_pdf))
             }
         }
     }
@@ -235,10 +241,12 @@ class TopicDetailViewModel @Inject constructor(
                 markdownExporter.exportTopicToMarkdown(
                     topic, claims, rebuttalsMap, evidencesMap, questions, sourcesMap, outputStream
                 ).getOrThrow()
+                Timber.d("Markdown export successful for topic: $topicId")
             }.onSuccess {
                 onResult(true, null)
             }.onFailure { error ->
-                onResult(false, error.message ?: "Erreur lors de l'export Markdown")
+                Timber.e(error, "Failed to export topic to Markdown")
+                onResult(false, error.message ?: resourceProvider.getString(R.string.error_export_markdown))
             }
         }
     }

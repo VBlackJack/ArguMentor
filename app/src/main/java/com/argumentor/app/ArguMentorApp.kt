@@ -6,6 +6,7 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.argumentor.app.util.LocaleHelper
 import dagger.hilt.android.HiltAndroidApp
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -36,7 +37,12 @@ class ArguMentorApp : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        // Initialize components here if needed
+
+        // Initialize Timber for logging
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+            Timber.d("ArguMentor Application initialized in DEBUG mode")
+        }
     }
 
     override val workManagerConfiguration: Configuration

@@ -2,10 +2,13 @@ package com.argumentor.app.ui.screens.claim
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.argumentor.app.R
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.data.model.getCurrentIsoTimestamp
 import com.argumentor.app.data.repository.ClaimRepository
+import com.argumentor.app.util.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import timber.log.Timber
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ClaimCreateEditViewModel @Inject constructor(
-    private val claimRepository: ClaimRepository
+    private val claimRepository: ClaimRepository,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _text = MutableStateFlow("")
@@ -134,7 +138,7 @@ class ClaimCreateEditViewModel @Inject constructor(
 
     fun saveClaim(onSaved: () -> Unit) {
         if (_text.value.isBlank()) {
-            _errorMessage.value = "Claim text cannot be empty"
+            _errorMessage.value = resourceProvider.getString(R.string.error_claim_text_empty)
             return
         }
 
@@ -142,7 +146,7 @@ class ClaimCreateEditViewModel @Inject constructor(
         _errorMessage.value = null
 
         viewModelScope.launch {
-            try {
+            runCatching {
                 val claimId = _claimId.value
                 if (_isEditMode.value && claimId != null) {
                     // Update existing claim
@@ -158,6 +162,7 @@ class ClaimCreateEditViewModel @Inject constructor(
                         updatedAt = getCurrentIsoTimestamp()
                     )
                     claimRepository.updateClaim(claim)
+                    Timber.d("Claim updated successfully: $claimId")
                 } else {
                     // Create new claim
                     val claim = Claim(
@@ -168,13 +173,18 @@ class ClaimCreateEditViewModel @Inject constructor(
                         fallacyIds = _selectedFallacies.value
                     )
                     claimRepository.insertClaim(claim)
+                    Timber.d("Claim created successfully: ${claim.id}")
                 }
+            }.onSuccess {
                 onSaved()
-            } catch (e: Exception) {
-                _errorMessage.value = "Failed to save claim: ${e.message}"
-            } finally {
-                _isSaving.value = false
+            }.onFailure { e ->
+                Timber.e(e, "Failed to save claim")
+                _errorMessage.value = resourceProvider.getString(
+                    R.string.error_save_claim,
+                    e.message ?: resourceProvider.getString(R.string.error_unknown)
+                )
             }
+            _isSaving.value = false
         }
     }
 }

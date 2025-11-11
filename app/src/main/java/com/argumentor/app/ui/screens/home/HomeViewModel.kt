@@ -2,10 +2,13 @@ package com.argumentor.app.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.argumentor.app.R
 import com.argumentor.app.data.model.Topic
 import com.argumentor.app.data.repository.TopicRepository
 import com.argumentor.app.ui.common.UiState
+import com.argumentor.app.util.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import timber.log.Timber
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,7 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val topicRepository: TopicRepository
+    private val topicRepository: TopicRepository,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
@@ -67,8 +71,9 @@ class HomeViewModel @Inject constructor(
         }
     }
     .catch { e ->
+        Timber.e(e, "Error loading topics")
         emit(UiState.Error(
-            message = e.message ?: "Une erreur inconnue s'est produite",
+            message = e.message ?: resourceProvider.getString(R.string.error_unknown),
             exception = e
         ))
     }

@@ -2,24 +2,28 @@ package com.argumentor.app.ui.screens.question
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.argumentor.app.R
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.data.model.Question
 import com.argumentor.app.data.repository.ClaimRepository
 import com.argumentor.app.data.repository.QuestionRepository
 import com.argumentor.app.data.repository.TopicRepository
+import com.argumentor.app.util.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class QuestionCreateEditViewModel @Inject constructor(
     private val questionRepository: QuestionRepository,
     private val claimRepository: ClaimRepository,
-    private val topicRepository: TopicRepository
+    private val topicRepository: TopicRepository,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _text = MutableStateFlow("")
@@ -129,7 +133,7 @@ class QuestionCreateEditViewModel @Inject constructor(
 
     fun saveQuestion(onSaved: () -> Unit) {
         if (_text.value.isBlank()) {
-            _errorMessage.value = "Question text cannot be empty"
+            _errorMessage.value = resourceProvider.getString(R.string.error_question_text_empty)
             return
         }
 
@@ -144,10 +148,11 @@ class QuestionCreateEditViewModel @Inject constructor(
 
         viewModelScope.launch {
             _isSaving.value = true
-            try {
+            val result = runCatching {
                 val qId = questionId
                 val question = if (qId != null) {
                     // Update existing question
+                    Timber.d("Updating existing question: $qId")
                     questionRepository.getQuestionById(qId)?.copy(
                         targetId = finalTargetId,
                         text = _text.value,
@@ -156,6 +161,7 @@ class QuestionCreateEditViewModel @Inject constructor(
                     )
                 } else {
                     // Create new question
+                    Timber.d("Creating new question")
                     Question(
                         targetId = finalTargetId,
                         text = _text.value,
@@ -165,13 +171,25 @@ class QuestionCreateEditViewModel @Inject constructor(
 
                 question?.let {
                     questionRepository.insertQuestion(it)
-                    onSaved()
+                    if (qId != null) {
+                        Timber.d("Question updated successfully: $qId")
+                    } else {
+                        Timber.d("Question created successfully: ${it.id}")
+                    }
                 }
-            } catch (e: Exception) {
-                _errorMessage.value = "Failed to save question: ${e.message}"
-            } finally {
-                _isSaving.value = false
             }
+
+            result.onSuccess {
+                onSaved()
+            }.onFailure { e ->
+                Timber.e(e, "Failed to save question")
+                _errorMessage.value = resourceProvider.getString(
+                    R.string.error_save_question,
+                    e.message ?: resourceProvider.getString(R.string.error_unknown)
+                )
+            }
+
+            _isSaving.value = false
         }
     }
 }
