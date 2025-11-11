@@ -36,6 +36,11 @@ data class QuestionFts(
 /**
  * Full-Text Search (FTS) entity for Sources.
  * Enables fast text search across source title and citation.
+ *
+ * Note: Unlike other FTS entities, SourceFts indexes TWO fields (title AND citation)
+ * because both contain searchable content. When users search for sources, they often
+ * search for author names, publication titles (in title field) or specific quotes
+ * (in citation field). This design improves search relevance for sources.
  */
 @Fts4(contentEntity = com.argumentor.app.data.model.Source::class)
 @Entity(tableName = "sources_fts")
@@ -63,4 +68,14 @@ data class TopicFts(
 @Entity(tableName = "evidences_fts")
 data class EvidenceFts(
     val content: String
+)
+
+/**
+ * Full-Text Search (FTS) entity for Tags.
+ * Enables fast text search across tag labels.
+ */
+@Fts4(contentEntity = com.argumentor.app.data.model.Tag::class)
+@Entity(tableName = "tags_fts")
+data class TagFts(
+    val label: String
 )

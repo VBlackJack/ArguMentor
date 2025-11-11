@@ -33,9 +33,6 @@ interface SourceDao {
     @Query("DELETE FROM sources WHERE id = :sourceId")
     suspend fun deleteSourceById(sourceId: String)
 
-    @Query("SELECT * FROM sources WHERE title LIKE '%' || :query || '%'")
-    fun searchSources(query: String): Flow<List<Source>>
-
     /**
      * Full-text search on sources using FTS4 index.
      * Searches in title and citation fields with relevance ranking.

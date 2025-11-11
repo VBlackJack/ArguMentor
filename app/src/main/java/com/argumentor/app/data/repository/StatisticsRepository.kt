@@ -142,7 +142,7 @@ class StatisticsRepository @Inject constructor(
                 Exception("Topic not found")
             )
 
-            val claims = claimDao.getClaimsForTopic(topicId)
+            val claims = claimDao.getClaimsByTopicId(topicId)
             val rebuttals = claims.flatMap { claim ->
                 rebuttalDao.getRebuttalsByClaimIdSync(claim.id)
             }
@@ -150,7 +150,7 @@ class StatisticsRepository @Inject constructor(
                 evidenceDao.getEvidencesByClaimIdSync(claim.id)
             }
             // Note: Evidence is linked to claims, not rebuttals in current schema
-            val questions = questionDao.getQuestionsForTopic(topicId)
+            val questions = questionDao.getQuestionsByTopicId(topicId)
 
             val stats = TopicStats(
                 topicId = topic.id,

@@ -23,7 +23,7 @@ class QuestionRepository @Inject constructor(
         questionDao.observeQuestionById(questionId)
 
     suspend fun getQuestionsForTopic(topicId: String): List<Question> =
-        questionDao.getQuestionsForTopic(topicId)
+        questionDao.getQuestionsByTopicId(topicId)
 
     suspend fun insertQuestion(question: Question) =
         questionDao.insertQuestion(question)

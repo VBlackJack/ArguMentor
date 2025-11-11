@@ -29,4 +29,15 @@ class TagRepository @Inject constructor(
             insertTag(it)
         }
     }
+
+    /**
+     * Search tags using FTS with automatic fallback to LIKE search if FTS fails.
+     */
+    fun searchTags(query: String): Flow<List<Tag>> {
+        return searchWithFtsFallback(
+            query = query,
+            ftsSearch = { tagDao.searchTagsFts(it) },
+            likeSearch = { tagDao.searchTagsLike(it) }
+        )
+    }
 }

@@ -36,6 +36,33 @@ interface TagDao {
     @Query("DELETE FROM tags WHERE id = :tagId")
     suspend fun deleteTagById(tagId: String)
 
+    /**
+     * Full-text search on tags using FTS4 index.
+     * Searches in label field with relevance ranking.
+     * @param query Search query (supports FTS4 operators like OR, AND, *)
+     * @return Flow of matching tags ordered by label
+     */
+    @Query("""
+        SELECT tags.* FROM tags
+        JOIN tags_fts ON tags.rowid = tags_fts.rowid
+        WHERE tags_fts MATCH :query
+        ORDER BY tags.label ASC
+    """)
+    fun searchTagsFts(query: String): Flow<List<Tag>>
+
+    /**
+     * Fallback search using LIKE (for when FTS query contains invalid operators).
+     * Searches in label field.
+     * @param query Search query string
+     * @return Flow of matching tags ordered by label
+     */
+    @Query("""
+        SELECT * FROM tags
+        WHERE label LIKE '%' || :query || '%'
+        ORDER BY label ASC
+    """)
+    fun searchTagsLike(query: String): Flow<List<Tag>>
+
     @Query("SELECT COUNT(*) FROM tags")
     suspend fun getTagCount(): Int
 }
