@@ -15,9 +15,15 @@ import timber.log.Timber
  *
  * ROBUSTNESS: All converters include error handling to prevent crashes from corrupted database data.
  * Failed conversions log errors and return safe defaults instead of throwing exceptions.
+ *
+ * PERFORMANCE: Uses shared Gson instance to reduce memory overhead.
  */
 class Converters {
-    private val gson = Gson()
+    companion object {
+        // Shared Gson instance for all converter methods
+        // Gson is thread-safe and can be reused across all Converter instances
+        private val gson = Gson()
+    }
 
     // List<String> converters
     @TypeConverter

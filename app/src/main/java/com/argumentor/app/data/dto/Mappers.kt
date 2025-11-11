@@ -38,20 +38,44 @@ fun Claim.toDto(): ClaimDto = ClaimDto(
     fallacyIds = fallacyIds,
     createdAt = createdAt,
     updatedAt = updatedAt,
-    claimFingerprint = claimFingerprint.ifEmpty { FingerprintUtils.generateTextFingerprint(text) }
+    // BUGFIX: Use generateClaimFingerprint instead of generateTextFingerprint
+    // to ensure consistency with ClaimRepository's duplicate detection
+    claimFingerprint = claimFingerprint.ifEmpty {
+        FingerprintUtils.generateClaimFingerprint(
+            Claim(
+                id = id,
+                text = text,
+                stance = stance,
+                strength = strength,
+                topics = topics,
+                fallacyIds = fallacyIds,
+                createdAt = createdAt,
+                updatedAt = updatedAt,
+                claimFingerprint = ""
+            )
+        )
+    }
 )
 
-fun ClaimDto.toModel(): Claim = Claim(
-    id = id,
-    text = text,
-    stance = Claim.Stance.fromString(stance),
-    strength = Claim.Strength.fromString(strength),
-    topics = topics,
-    fallacyIds = fallacyIds,
-    createdAt = createdAt,
-    updatedAt = updatedAt,
-    claimFingerprint = claimFingerprint ?: FingerprintUtils.generateTextFingerprint(text)
-)
+fun ClaimDto.toModel(): Claim {
+    // BUGFIX: Use generateClaimFingerprint for consistency with toDto()
+    // This ensures import/export duplicate detection works correctly
+    val tempClaim = Claim(
+        id = id,
+        text = text,
+        stance = Claim.Stance.fromString(stance),
+        strength = Claim.Strength.fromString(strength),
+        topics = topics,
+        fallacyIds = fallacyIds,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        claimFingerprint = claimFingerprint ?: ""
+    )
+
+    return tempClaim.copy(
+        claimFingerprint = claimFingerprint ?: FingerprintUtils.generateClaimFingerprint(tempClaim)
+    )
+}
 
 // Rebuttal mappers
 fun Rebuttal.toDto(): RebuttalDto = RebuttalDto(

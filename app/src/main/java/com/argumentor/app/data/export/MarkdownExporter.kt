@@ -105,22 +105,13 @@ class MarkdownExporter @Inject constructor(
                                     appendLine(rebuttal.text)
                                     appendLine()
 
-                                    // Evidence for this rebuttal
-                                    evidence[rebuttal.id]?.let { rebuttalEvidence ->
-                                        if (rebuttalEvidence.isNotEmpty()) {
-                                            appendLine("**Preuves:**")
-                                            rebuttalEvidence.forEach { ev ->
-                                                appendLine("- (${ev.type.name})")
-                                                appendLine("  ${ev.content}")
-                                                if (ev.sourceId != null && ev.sourceId.isNotEmpty()) {
-                                                    sources[ev.sourceId]?.let { source ->
-                                                        appendLine("  *Source: ${source.title}*")
-                                                    }
-                                                }
-                                            }
-                                            appendLine()
-                                        }
-                                    }
+                                    // BUGFIX REMOVED: Evidence is linked to Claims, not Rebuttals
+                                    // The previous code tried to find evidence[rebuttal.id] which is incorrect
+                                    // because the evidence Map is keyed by claimId, not rebuttalId.
+                                    // According to the schema (EvidenceDao lines 22-27), Evidence entities
+                                    // have a claimId foreign key, not a rebuttalId.
+                                    // If rebuttals need their own evidence in the future, the schema
+                                    // would need to be updated first.
                                 }
                             }
                         }
