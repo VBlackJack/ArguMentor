@@ -25,6 +25,8 @@ object DatabaseModule {
             ArguMentorDatabase.DATABASE_NAME
         )
             .addMigrations(*DatabaseMigrations.ALL_MIGRATIONS)
+            // DEP-001: Enable Write-Ahead Logging for better concurrent read performance
+            .setJournalMode(androidx.room.RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
             .build()
     }
 

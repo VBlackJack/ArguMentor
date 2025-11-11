@@ -181,19 +181,15 @@ class MarkdownExporter @Inject constructor(
                 appendLine("*Généré par ArguMentor le ${formatDate(getCurrentIsoTimestamp())}*")
             }
 
-            // Write to OutputStream (SAF-compatible)
+            // BUG-007: Write to OutputStream (SAF-compatible)
+            // Note: We don't close the stream here as it's passed by the caller
+            // who is responsible for its lifecycle management
             outputStream.write(markdown.toByteArray(Charsets.UTF_8))
             outputStream.flush()
 
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
-        } finally {
-            try {
-                outputStream.close()
-            } catch (e: Exception) {
-                // Ignore close errors
-            }
         }
     }
 

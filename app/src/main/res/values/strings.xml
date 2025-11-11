@@ -414,6 +414,7 @@
     <string name="error_import">Erreur lors de l\'import</string>
     <string name="error_topic_title_empty">Le titre du sujet ne peut pas être vide</string>
     <string name="error_claim_text_empty">Le texte de l\'affirmation ne peut pas être vide</string>
+    <string name="error_text_too_long">Le texte est trop long (maximum 10000 caractères)</string>
     <string name="error_evidence_content_empty">Le contenu de la preuve ne peut pas être vide</string>
     <string name="error_question_text_empty">Le texte de la question ne peut pas être vide</string>
     <string name="error_source_title_empty">Le titre de la source ne peut pas être vide</string>
