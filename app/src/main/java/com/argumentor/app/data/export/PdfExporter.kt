@@ -5,6 +5,7 @@ import android.graphics.Paint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import android.graphics.pdf.PdfDocument
+import com.argumentor.app.R
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.data.model.Rebuttal
 import com.argumentor.app.data.model.Topic
@@ -133,6 +134,8 @@ class PdfExporter @Inject constructor(
 
     /**
      * Renders the topic header including title, summary, posture, and tags.
+     *
+     * INTERNATIONALIZATION: Uses string resources for labels instead of hardcoded English text.
      */
     private fun renderTopicHeader(context: PdfRenderContext, topic: Topic) {
         // Draw topic title
@@ -148,26 +151,32 @@ class PdfExporter @Inject constructor(
         }
         context.yPosition += LINE_HEIGHT
 
-        // Draw posture
-        context.canvas.drawText("Posture: ${topic.posture.name}", MARGIN.toFloat(), context.yPosition.toFloat(), context.bodyPaint)
+        // Draw posture - BUGFIX: Use string resource instead of hardcoded "Posture:"
+        val postureLabel = this.context.getString(R.string.export_posture_label)
+        context.canvas.drawText("$postureLabel ${topic.posture.name}", MARGIN.toFloat(), context.yPosition.toFloat(), context.bodyPaint)
         context.yPosition += LINE_HEIGHT * 2
 
-        // Draw tags if any
+        // Draw tags if any - BUGFIX: Use string resource instead of hardcoded "Tags:"
         if (topic.tags.isNotEmpty()) {
-            context.canvas.drawText("Tags: ${topic.tags.joinToString(", ")}", MARGIN.toFloat(), context.yPosition.toFloat(), context.bodyPaint)
+            val tagsLabel = this.context.getString(R.string.export_tags_label)
+            context.canvas.drawText("$tagsLabel ${topic.tags.joinToString(", ")}", MARGIN.toFloat(), context.yPosition.toFloat(), context.bodyPaint)
             context.yPosition += LINE_HEIGHT * 2
         }
     }
 
     /**
      * Renders the arguments section with all claims and their rebuttals.
+     *
+     * INTERNATIONALIZATION: Uses string resources for labels instead of hardcoded English text.
      */
     private fun renderArgumentsSection(
         context: PdfRenderContext,
         claims: List<Claim>,
         rebuttals: Map<String, List<Rebuttal>>
     ) {
-        context.canvas.drawText("Arguments", MARGIN.toFloat(), context.yPosition.toFloat(), context.headingPaint)
+        // BUGFIX: Use string resource instead of hardcoded "Arguments"
+        val argumentsLabel = this.context.getString(R.string.export_arguments_label)
+        context.canvas.drawText(argumentsLabel, MARGIN.toFloat(), context.yPosition.toFloat(), context.headingPaint)
         context.yPosition += LINE_HEIGHT * 2
 
         claims.forEach { claim ->

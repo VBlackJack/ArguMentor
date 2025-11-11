@@ -451,4 +451,72 @@
     <string name="error_speech_server">Erreur serveur de reconnaissance vocale</string>
     <string name="error_speech_timeout">Délai d\'attente de la reconnaissance vocale dépassé</string>
     <string name="error_speech_unknown">Erreur inconnue lors de la reconnaissance vocale</string>
+
+    <!-- Validation Error Messages -->
+    <string name="validation_field_empty">%1$s ne peut pas être vide</string>
+    <string name="validation_field_min_length">%1$s doit contenir au moins %2$d caractères</string>
+    <string name="validation_field_max_length">%1$s ne peut pas dépasser %2$d caractères</string>
+    <string name="validation_url_invalid_protocol">Protocole d\'URL non supporté ou dangereux</string>
+    <string name="validation_url_invalid_format">Format d\'URL invalide</string>
+    <string name="validation_url_invalid_domain">Format de domaine invalide</string>
+    <string name="validation_url_invalid_port">Numéro de port invalide (doit être entre 1 et 65535)</string>
+    <string name="validation_url_http_only">Seuls les protocoles HTTP et HTTPS sont autorisés</string>
+    <string name="validation_email_invalid">Adresse e-mail invalide</string>
+    <string name="validation_score_invalid">Le score doit être compris entre 0.0 et 1.0</string>
+
+    <!-- Share Messages -->
+    <string name="share_from_app">Partagé depuis ArguMentor</string>
+    <string name="share_via">Partager via…</string>
+    <string name="share_email_via">Envoyer par email…</string>
+    <string name="share_choose">Choisir une application</string>
+
+    <!-- Relative Time Formatting -->
+    <string name="time_just_now">À l\'instant</string>
+    <string name="time_minutes_ago_one">Il y a %d minute</string>
+    <string name="time_minutes_ago_other">Il y a %d minutes</string>
+    <string name="time_hours_ago_one">Il y a %d heure</string>
+    <string name="time_hours_ago_other">Il y a %d heures</string>
+    <string name="time_days_ago_one">Il y a %d jour</string>
+    <string name="time_days_ago_other">Il y a %d jours</string>
+    <string name="time_weeks_ago">Il y a plus d\'une semaine</string>
+
+    <!-- Speech Recognition Prompts -->
+    <string name="speech_prompt_french">Parlez maintenant…</string>
+    <string name="speech_prompt_english">Speak now…</string>
+    <string name="speech_prompt_spanish">Habla ahora…</string>
+    <string name="speech_prompt_german">Jetzt sprechen…</string>
+    <string name="speech_prompt_italian">Parla ora…</string>
+    <string name="speech_prompt_default">Speak now…</string>
+
+    <!-- Export Labels (for PDF and Markdown) -->
+    <string name="export_posture_label">Posture:</string>
+    <string name="export_tags_label">Tags:</string>
+    <string name="export_arguments_label">Arguments</string>
+    <string name="export_rebuttals_label">Contre-arguments</string>
+    <string name="export_evidence_label">Preuves</string>
+    <string name="export_questions_label">Questions</string>
+    <string name="export_sources_label">Sources</string>
+    <string name="export_created_label">Créé le:</string>
+    <string name="export_updated_label">Mis à jour le:</string>
+    <string name="export_summary_label">Résumé</string>
+    <string name="export_reliability_label">Fiabilité:</string>
+    <string name="export_citation_label">Citation:</string>
+    <string name="export_url_label">URL:</string>
+    <string name="export_date_label">Date:</string>
+    <string name="export_position_label">Position:</string>
+    <string name="export_strength_label">Force:</string>
+    <string name="export_source_label">Source:</string>
+    <string name="export_generated_by">Généré par ArguMentor le %1$s</string>
+    <string name="export_multiple_topics_title">Mes Topics ArguMentor</string>
+    <string name="export_exported_label">Exporté le %1$s</string>
+    <string name="export_and_more">... et %1$d autres</string>
+
+    <!-- Field Names (for validation) -->
+    <string name="field_title">Le titre</string>
+    <string name="field_text">Le texte</string>
+    <string name="field_content">Le contenu</string>
+    <string name="field_url">L\'URL</string>
+    <string name="field_email">L\'e-mail</string>
+    <string name="field_citation">La citation</string>
+    <string name="field_summary">Le résumé</string>
 </resources>

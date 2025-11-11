@@ -1,12 +1,16 @@
 package com.argumentor.app.util
 
+import android.content.Context
+import com.argumentor.app.R
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.util.Date
 import java.util.Locale
 
 /**
- * Utility object for locale-aware formatting of dates, numbers, and other data
+ * Utility object for locale-aware formatting of dates, numbers, and other data.
+ *
+ * INTERNATIONALIZATION: formatRelativeTime now requires Context parameter for string resources.
  */
 object FormattingUtils {
 
@@ -74,38 +78,32 @@ object FormattingUtils {
 
     /**
      * Format a relative time string (e.g., "2 hours ago", "3 days ago")
+     *
+     * INTERNATIONALIZATION: Now uses string resources instead of hardcoded FR/EN strings.
      * This is a simplified version - for production consider using
      * androidx.compose.ui.text.android.style.RelativeTimeTextSpan or similar
+     *
+     * @param context Context to access string resources
+     * @param timestamp The timestamp to format
+     * @param locale The locale for date formatting fallback (default: device locale)
      */
-    fun formatRelativeTime(timestamp: Long, locale: Locale = Locale.getDefault()): String {
+    fun formatRelativeTime(context: Context, timestamp: Long, locale: Locale = Locale.getDefault()): String {
         val now = System.currentTimeMillis()
         val diff = now - timestamp
 
         return when {
-            diff < 60_000 -> if (locale.language == "fr") "À l'instant" else "Just now"
+            diff < 60_000 -> context.getString(R.string.time_just_now)
             diff < 3600_000 -> {
                 val minutes = (diff / 60_000).toInt()
-                if (locale.language == "fr") {
-                    "Il y a $minutes minute${if (minutes > 1) "s" else ""}"
-                } else {
-                    "$minutes minute${if (minutes > 1) "s" else ""} ago"
-                }
+                context.getString(R.string.time_minutes_ago, minutes)
             }
             diff < 86400_000 -> {
                 val hours = (diff / 3600_000).toInt()
-                if (locale.language == "fr") {
-                    "Il y a $hours heure${if (hours > 1) "s" else ""}"
-                } else {
-                    "$hours hour${if (hours > 1) "s" else ""} ago"
-                }
+                context.getString(R.string.time_hours_ago, hours)
             }
             diff < 604800_000 -> {
                 val days = (diff / 86400_000).toInt()
-                if (locale.language == "fr") {
-                    "Il y a $days jour${if (days > 1) "s" else ""}"
-                } else {
-                    "$days day${if (days > 1) "s" else ""} ago"
-                }
+                context.getString(R.string.time_days_ago, days)
             }
             else -> formatMediumDate(timestamp, locale)
         }
