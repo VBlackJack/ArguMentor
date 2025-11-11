@@ -72,6 +72,19 @@ class ClaimRepository @Inject constructor(
     suspend fun getClaimByIdSync(claimId: String): Claim? = claimDao.getClaimById(claimId)
 
     /**
+     * Retrieves multiple claims by their IDs in a single query.
+     * PERFORMANCE: Prevents N+1 query problem when loading multiple claims.
+     * @param claimIds List of claim IDs to fetch
+     * @return List of Claims matching the provided IDs
+     * @throws IllegalArgumentException if any claimId format is invalid
+     */
+    suspend fun getClaimsByIds(claimIds: List<String>): List<Claim> {
+        if (claimIds.isEmpty()) return emptyList()
+        validateIds(claimIds, "claimId")
+        return claimDao.getClaimsByIds(claimIds)
+    }
+
+    /**
      * Retrieves all claims associated with a specific topic.
      * @param topicId The topic identifier
      * @return List of claims belonging to the topic

@@ -55,17 +55,70 @@ class RebuttalRepository @Inject constructor(
                 emit(null)
             }
 
-    suspend fun insertRebuttal(rebuttal: Rebuttal) =
-        rebuttalDao.insertRebuttal(rebuttal)
+    /**
+     * Insert a rebuttal with error handling.
+     *
+     * ROBUSTNESS: Returns Result to allow callers to handle errors gracefully.
+     * Previous version threw exceptions which could crash the app if unhandled.
+     *
+     * @return Result.success(Unit) if successful, Result.failure(exception) if error occurs
+     */
+    suspend fun insertRebuttal(rebuttal: Rebuttal): Result<Unit> =
+        try {
+            rebuttalDao.insertRebuttal(rebuttal)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to insert rebuttal: ${rebuttal.id}")
+            Result.failure(e)
+        }
 
-    suspend fun updateRebuttal(rebuttal: Rebuttal) =
-        rebuttalDao.updateRebuttal(rebuttal)
+    /**
+     * Update a rebuttal with error handling.
+     *
+     * ROBUSTNESS: Returns Result to allow callers to handle errors gracefully.
+     *
+     * @return Result.success(Unit) if successful, Result.failure(exception) if error occurs
+     */
+    suspend fun updateRebuttal(rebuttal: Rebuttal): Result<Unit> =
+        try {
+            rebuttalDao.updateRebuttal(rebuttal)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to update rebuttal: ${rebuttal.id}")
+            Result.failure(e)
+        }
 
-    suspend fun deleteRebuttal(rebuttal: Rebuttal) =
-        rebuttalDao.deleteRebuttal(rebuttal)
+    /**
+     * Delete a rebuttal with error handling.
+     *
+     * ROBUSTNESS: Returns Result to allow callers to handle errors gracefully.
+     *
+     * @return Result.success(Unit) if successful, Result.failure(exception) if error occurs
+     */
+    suspend fun deleteRebuttal(rebuttal: Rebuttal): Result<Unit> =
+        try {
+            rebuttalDao.deleteRebuttal(rebuttal)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to delete rebuttal: ${rebuttal.id}")
+            Result.failure(e)
+        }
 
-    suspend fun deleteRebuttalsByClaimId(claimId: String) =
-        rebuttalDao.deleteRebuttalsByClaimId(claimId)
+    /**
+     * Delete all rebuttals for a claim with error handling.
+     *
+     * ROBUSTNESS: Returns Result to allow callers to handle errors gracefully.
+     *
+     * @return Result.success(Unit) if successful, Result.failure(exception) if error occurs
+     */
+    suspend fun deleteRebuttalsByClaimId(claimId: String): Result<Unit> =
+        try {
+            rebuttalDao.deleteRebuttalsByClaimId(claimId)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to delete rebuttals for claim: $claimId")
+            Result.failure(e)
+        }
 
     /**
      * Search rebuttals using FTS with automatic fallback to LIKE search if FTS fails.
