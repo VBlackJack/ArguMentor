@@ -36,7 +36,7 @@ import com.argumentor.app.data.model.*
         TagFts::class
     ],
     version = 9,
-    exportSchema = true
+    exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class ArguMentorDatabase : RoomDatabase() {

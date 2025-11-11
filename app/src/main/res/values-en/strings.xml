@@ -305,6 +305,7 @@
     <string name="fallacy_division_name">Fallacy of Division</string>
     <string name="fallacy_genetic_fallacy_name">Genetic Fallacy</string>
     <string name="fallacy_bandwagon_name">Bandwagon</string>
+    <string name="fallacy_appeal_to_fear_name">Appeal to Fear</string>
 
     <!-- Fallacies - Descriptions -->
     <string name="fallacy_ad_hominem_description">Attacking the person rather than their argument</string>
@@ -336,6 +337,7 @@
     <string name="fallacy_division_description">Asserting what is true of the whole is true of each part</string>
     <string name="fallacy_genetic_fallacy_description">Judging something solely by its origin</string>
     <string name="fallacy_bandwagon_description">Asserting something is correct because everyone does it</string>
+    <string name="fallacy_appeal_to_fear_description">Using fear or threats to convince instead of evidence</string>
 
     <!-- Fallacies - Examples -->
     <string name="fallacy_ad_hominem_example">You can\'t be right, you\'re too young</string>
@@ -367,6 +369,7 @@
     <string name="fallacy_division_example">The team is rich, so each player must be rich</string>
     <string name="fallacy_genetic_fallacy_example">This theory comes from Nazis, therefore it\'s false</string>
     <string name="fallacy_bandwagon_example">Everyone uses this product, you should too</string>
+    <string name="fallacy_appeal_to_fear_example">If you don\'t support this law, criminals will run free</string>
 
     <!-- Demo Topic Data -->
     <string name="demo_topic_title">Should we learn to code?</string>

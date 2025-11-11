@@ -48,7 +48,8 @@ object FallacyCatalog {
         "composition",
         "division",
         "genetic_fallacy",
-        "bandwagon"
+        "bandwagon",
+        "appeal_to_fear"
     )
 
     /**

@@ -21,13 +21,29 @@ object SearchUtils {
      * @return true if the query is likely safe for FTS, false if it should use fallback LIKE
      */
     fun isSafeFtsQuery(query: String): Boolean {
+        val trimmed = query.trim()
+
+        // Reject queries with any standalone FTS special characters. They tend to
+        // trigger syntax errors unless the caller knows how to escape them.
+        if (trimmed.any { it in FTS_SPECIAL_CHARS }) {
+            return false
+        }
+
+        // Reject queries that rely on explicit FTS operators. This keeps the public
+        // search box consistent and falls back to LIKE when users attempt to craft
+        // advanced expressions.
+        val tokens = trimmed.split(Regex("\\s+")).filter { it.isNotEmpty() }
+        if (tokens.any { token -> FTS_OPERATORS.contains(token.uppercase()) }) {
+            return false
+        }
+
         // Check for unbalanced quotes
-        val quoteCount = query.count { it == '"' }
+        val quoteCount = trimmed.count { it == '"' }
         if (quoteCount % 2 != 0) return false
 
         // Check for unbalanced parentheses
         var parenBalance = 0
-        for (char in query) {
+        for (char in trimmed) {
             when (char) {
                 '(' -> parenBalance++
                 ')' -> parenBalance--
@@ -36,7 +52,6 @@ object SearchUtils {
         }
         if (parenBalance != 0) return false
 
-        // Query is safe for FTS
         return true
     }
 
