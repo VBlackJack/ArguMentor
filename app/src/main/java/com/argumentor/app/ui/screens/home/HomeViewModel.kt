@@ -37,6 +37,25 @@ class HomeViewModel @Inject constructor(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
+    /**
+     * Combined UI state that applies filtering based on search query and selected tag.
+     *
+     * Note on ViewModel vs Repository filtering:
+     * This filtering logic is INTENTIONALLY in the ViewModel (not Repository) because:
+     * 1. It's PRESENTATION logic - combines multiple UI state sources (searchQuery, selectedTag)
+     * 2. It's USER-DRIVEN - uses debounce for better UX (300ms delay on search)
+     * 3. It's REACTIVE - updates automatically when any input changes
+     * 4. It's TESTABLE - can be unit tested independently of the UI
+     *
+     * Repository filtering would be appropriate if:
+     * - Filtering was based on business rules (not UI state)
+     * - Results needed to be reused across multiple ViewModels
+     * - Database-level filtering was required for performance
+     *
+     * Current approach follows MVVM pattern: Repository provides data, ViewModel transforms
+     * it for presentation. For simple in-memory filtering on small datasets (typical use case
+     * here), ViewModel filtering is more appropriate and maintains separation of concerns.
+     */
     @OptIn(FlowPreview::class)
     val uiState: StateFlow<UiState<List<Topic>>> = combine(
         topicRepository.getAllTopics(),

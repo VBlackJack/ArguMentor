@@ -18,7 +18,18 @@ import java.util.UUID
  * @property createdAt Creation timestamp in ISO 8601 format
  * @property updatedAt Last update timestamp in ISO 8601 format
  *
- * Note: When this evidence is deleted, the parent claim (if exists) remains unchanged.
+ * Note on Default Values:
+ * - `type` has NO default: User MUST explicitly choose (STUDY vs STAT vs QUOTE vs EXAMPLE)
+ *   because the type fundamentally changes how the evidence is interpreted and presented
+ * - `quality` HAS default (MEDIUM): Quality is a subjective assessment that can be refined later,
+ *   starting with MEDIUM is a reasonable assumption for most evidence
+ *
+ * This pattern applies to all enums:
+ * - If the choice is SEMANTIC and affects behavior → NO default (force explicit choice)
+ * - If the choice is METADATA that can be refined → Has default (reasonable starting value)
+ *
+ * Note on Foreign Keys:
+ * When this evidence is deleted, the parent claim (if exists) remains unchanged.
  * When the parent claim is deleted, this evidence is automatically deleted (CASCADE).
  * When the referenced source is deleted, sourceId is set to NULL (SET NULL).
  */

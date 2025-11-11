@@ -17,6 +17,20 @@ import java.util.UUID
  * @property notes Additional notes about the source
  * @property createdAt Creation timestamp in ISO 8601 format
  * @property updatedAt Last update timestamp in ISO 8601 format
+ *
+ * Note on Validation Strategy:
+ * This entity validates `reliabilityScore` in the init block because:
+ * 1. It's a CONSTRAINT that must ALWAYS hold (mathematical bound)
+ * 2. Invalid values would cause logical errors downstream
+ * 3. It's a data integrity issue, not a business rule
+ *
+ * Other entities don't have init validation because:
+ * - Most validation is CONTEXTUAL (e.g., "empty title") and belongs in ViewModels
+ * - ViewModels validate before save, showing user-friendly error messages
+ * - Database constraints (NOT NULL, etc.) handle the rest
+ * - Only invariants that must NEVER be violated belong in entity init blocks
+ *
+ * This keeps entities lightweight while ensuring critical invariants are enforced.
  */
 @Entity(tableName = "sources")
 data class Source(

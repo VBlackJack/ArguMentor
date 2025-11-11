@@ -3,7 +3,6 @@ package com.argumentor.app.data.repository
 import com.argumentor.app.data.local.dao.ClaimDao
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.util.FingerprintUtils
-import com.argumentor.app.util.SearchUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
