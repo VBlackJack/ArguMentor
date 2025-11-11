@@ -18,19 +18,15 @@ fun Topic.toDto(): TopicDto = TopicDto(
     updatedAt = updatedAt
 )
 
-fun TopicDto.toModel(): Topic {
-    require(!createdAt.isNullOrBlank()) { "Topic '${id}': createdAt is required for data integrity" }
-    require(!updatedAt.isNullOrBlank()) { "Topic '${id}': updatedAt is required for data integrity" }
-    return Topic(
-        id = id,
-        title = title,
-        summary = summary,
-        posture = Topic.Posture.fromString(posture),
-        tags = tags,
-        createdAt = createdAt,
-        updatedAt = updatedAt
-    )
-}
+fun TopicDto.toModel(): Topic = Topic(
+    id = id,
+    title = title,
+    summary = summary,
+    posture = Topic.Posture.fromString(posture),
+    tags = tags,
+    createdAt = createdAt,
+    updatedAt = updatedAt
+)
 
 // Claim mappers
 fun Claim.toDto(): ClaimDto = ClaimDto(

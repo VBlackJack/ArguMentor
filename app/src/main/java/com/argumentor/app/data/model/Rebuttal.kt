@@ -15,6 +15,9 @@ import java.util.UUID
  * @property fallacyTag Optional fallacy tag (ad_hominem, straw_man, etc.)
  * @property createdAt Creation timestamp in ISO 8601 format
  * @property updatedAt Last update timestamp in ISO 8601 format
+ *
+ * Note: When this rebuttal is deleted, the parent claim (if exists) remains unchanged.
+ * When the parent claim is deleted, this rebuttal is automatically deleted (CASCADE).
  */
 @Entity(
     tableName = "rebuttals",

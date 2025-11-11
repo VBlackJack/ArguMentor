@@ -13,7 +13,7 @@ import java.util.UUID
  * @property id Unique identifier (UUID v4)
  * @property text The claim text content
  * @property stance Position: pro, con, or neutral
- * @property strength Evidence strength: low, med, high
+ * @property strength Evidence strength: low, medium, high
  * @property topics List of topic IDs this claim belongs to (many-to-many)
  * @property createdAt Creation timestamp in ISO 8601 format
  * @property updatedAt Last update timestamp in ISO 8601 format
@@ -71,7 +71,7 @@ data class Claim(
         override fun toString(): String {
             return when (this) {
                 LOW -> "low"
-                MEDIUM -> "med"
+                MEDIUM -> "medium"
                 HIGH -> "high"
             }
         }

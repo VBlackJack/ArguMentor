@@ -31,4 +31,12 @@ data class Source(
     val notes: String? = null,
     val createdAt: String = getCurrentIsoTimestamp(),
     val updatedAt: String = getCurrentIsoTimestamp()
-)
+) {
+    init {
+        reliabilityScore?.let { score ->
+            require(score in 0.0..1.0) {
+                "reliabilityScore must be between 0.0 and 1.0, got $score"
+            }
+        }
+    }
+}

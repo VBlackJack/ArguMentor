@@ -413,7 +413,9 @@ class ImportExportRepository @Inject constructor(
             }
         }
 
-        // Import Evidences
+        // Import Evidences with similarity checking
+        val allExistingEvidences = database.evidenceDao().getAllEvidenceSync()
+
         importData.evidences.forEach { evidenceDto ->
             try {
                 val evidence = evidenceDto.toModel()
@@ -438,10 +440,50 @@ class ImportExportRepository @Inject constructor(
 
                 val existing = database.evidenceDao().getEvidenceById(evidence.id)
                 if (existing != null) {
-                    duplicates++
+                    // Update if incoming is newer
+                    if (isNewerTimestamp(evidence.updatedAt, existing.updatedAt)) {
+                        database.evidenceDao().updateEvidence(evidence)
+                        updated++
+                    } else {
+                        duplicates++
+                    }
                 } else {
-                    database.evidenceDao().insertEvidence(evidence)
-                    created++
+                    // Check for near-duplicates among evidences for the same claim
+                    val candidateEvidences = allExistingEvidences.filter { it.claimId == evidence.claimId }
+
+                    var isNearDuplicate = false
+                    var similarTo: String? = null
+
+                    for (candidate in candidateEvidences) {
+                        if (FingerprintUtils.areSimilar(evidence.content, candidate.content, similarityThreshold)) {
+                            isNearDuplicate = true
+                            similarTo = candidate.id
+                            break
+                        }
+                    }
+
+                    if (isNearDuplicate) {
+                        nearDuplicates++
+                        itemsForReview.add(
+                            ReviewItem(
+                                type = "Evidence",
+                                incomingId = evidence.id,
+                                existingId = similarTo ?: "",
+                                incomingText = evidence.content.take(100),
+                                existingText = candidateEvidences.find { it.id == similarTo }?.content?.take(100) ?: "",
+                                similarityScore = candidateEvidences.find { it.id == similarTo }?.let {
+                                    FingerprintUtils.similarityRatio(
+                                        FingerprintUtils.normalizeText(evidence.content),
+                                        FingerprintUtils.normalizeText(it.content)
+                                    )
+                                } ?: 0.0,
+                                action = "review"
+                            )
+                        )
+                    } else {
+                        database.evidenceDao().insertEvidence(evidence)
+                        created++
+                    }
                 }
             } catch (e: Exception) {
                 errors++

@@ -58,4 +58,15 @@ interface QuestionDao {
 
     @Query("SELECT COUNT(*) FROM questions")
     suspend fun getQuestionCount(): Int
+
+    /**
+     * Deletes orphan questions where targetId doesn't reference any existing Topic or Claim.
+     * Returns the number of orphan questions deleted.
+     */
+    @Query("""
+        DELETE FROM questions
+        WHERE targetId NOT IN (SELECT id FROM topics)
+        AND targetId NOT IN (SELECT id FROM claims)
+    """)
+    suspend fun deleteOrphanQuestions(): Int
 }
