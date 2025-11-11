@@ -367,7 +367,7 @@
     <string name="fallacy_anecdotal_example">Mon grand-père fumait et a vécu 90 ans, donc le tabac n\'est pas dangereux</string>
     <string name="fallacy_composition_example">Chaque joueur est excellent, donc l\'équipe sera excellente</string>
     <string name="fallacy_division_example">L\'équipe est riche, donc chaque joueur doit être riche</string>
-    <string name="fallacy_genetic_fallacy_example">Cette théorie vient de Nazi, donc elle est fausse</string>
+    <string name="fallacy_genetic_fallacy_example">Cette théorie a été proposée par un astrologue, donc elle est fausse</string>
     <string name="fallacy_bandwagon_example">Tout le monde utilise ce produit, tu devrais aussi</string>
     <string name="fallacy_appeal_to_fear_example">Si tu n\'appuies pas cette loi, les criminels seront libres</string>
 

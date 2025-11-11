@@ -69,9 +69,6 @@ class TutorialManager @Inject constructor(
 
                 // Then generate new demo topic
                 sampleDataGenerator.generateSampleData()
-
-                // Reset onboarding to show tutorial again
-                settingsDataStore.setOnboardingCompleted(false)
             }
         }
     }
