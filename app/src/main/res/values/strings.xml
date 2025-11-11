@@ -251,6 +251,10 @@
     <string name="settings_tutorial">Tutoriel</string>
     <string name="settings_tutorial_enabled">Activer le tutoriel</string>
     <string name="settings_tutorial_enabled_description">Affiche un sujet d\'exemple au lancement. Le sujet sera mis à jour lors du changement de langue.</string>
+    <string name="settings_permissions">Permissions</string>
+    <string name="settings_permissions_microphone_title">Permission microphone</string>
+    <string name="settings_permissions_microphone_description">Gérer l\'accès au microphone pour la reconnaissance vocale</string>
+    <string name="settings_permissions_open_settings">Ouvrir les paramètres de l\'application</string>
     <string name="settings_about">À propos</string>
     <string name="settings_app_author">Auteur de l\'application</string>
     <string name="settings_version">Version</string>

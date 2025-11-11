@@ -251,6 +251,10 @@
     <string name="settings_tutorial">Tutorial</string>
     <string name="settings_tutorial_enabled">Enable tutorial</string>
     <string name="settings_tutorial_enabled_description">Shows a sample topic at launch. The topic will be updated when changing language.</string>
+    <string name="settings_permissions">Permissions</string>
+    <string name="settings_permissions_microphone_title">Microphone permission</string>
+    <string name="settings_permissions_microphone_description">Manage microphone access for voice recognition</string>
+    <string name="settings_permissions_open_settings">Open app settings</string>
     <string name="settings_about">About</string>
     <string name="settings_app_author">App author</string>
     <string name="settings_version">Version</string>

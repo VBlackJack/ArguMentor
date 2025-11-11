@@ -25,7 +25,6 @@ import com.argumentor.app.ui.screens.topic.TopicCreateEditScreen
 import com.argumentor.app.ui.screens.topic.TopicDetailScreen
 import com.argumentor.app.ui.screens.fallacy.FallacyCatalogScreen
 import com.argumentor.app.ui.screens.fallacy.FallacyDetailScreen
-import com.argumentor.app.ui.screens.ethics.EthicsWarningScreen
 
 /**
  * Main navigation component for ArguMentor app.
@@ -36,13 +35,11 @@ fun ArguMentorNavigation(
 ) {
     val navController = rememberNavController()
     val firstLaunchCompleted by viewModel.firstLaunchCompleted.collectAsState()
-    val ethicsWarningShown by viewModel.ethicsWarningShown.collectAsState()
     val onboardingCompleted by viewModel.onboardingCompleted.collectAsState()
 
     // Determine start destination based on state
     val startDestination = when {
         !firstLaunchCompleted -> Screen.LanguageSelection.route
-        !ethicsWarningShown -> Screen.EthicsWarning.route
         !onboardingCompleted -> Screen.Permissions.route
         else -> Screen.Home.route
     }
@@ -55,19 +52,8 @@ fun ArguMentorNavigation(
         composable(Screen.LanguageSelection.route) {
             LanguageSelectionScreen(
                 onComplete = {
-                    navController.navigate(Screen.EthicsWarning.route) {
-                        popUpTo(Screen.LanguageSelection.route) { inclusive = true }
-                    }
-                }
-            )
-        }
-
-        // Ethics Warning Screen
-        composable(Screen.EthicsWarning.route) {
-            EthicsWarningScreen(
-                onAccept = {
                     navController.navigate(Screen.Permissions.route) {
-                        popUpTo(Screen.EthicsWarning.route) { inclusive = true }
+                        popUpTo(Screen.LanguageSelection.route) { inclusive = true }
                     }
                 }
             )

@@ -1,6 +1,9 @@
 package com.argumentor.app.ui.screens.settings
 
 import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -164,6 +167,32 @@ fun SettingsScreen(
                     checked = tutorialEnabled,
                     onCheckedChange = { viewModel.toggleTutorialEnabled() }
                 )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Permissions section
+            SettingsSection(title = stringResource(R.string.settings_permissions)) {
+                SettingsItem(title = stringResource(R.string.settings_permissions_microphone_title)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            text = stringResource(R.string.settings_permissions_microphone_description),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Button(
+                            onClick = {
+                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                    data = Uri.fromParts("package", context.packageName, null)
+                                }
+                                context.startActivity(intent)
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(stringResource(R.string.settings_permissions_open_settings))
+                        }
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
