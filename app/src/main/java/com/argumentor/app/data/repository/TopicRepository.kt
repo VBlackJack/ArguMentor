@@ -58,5 +58,14 @@ class TopicRepository @Inject constructor(
         topicDao.deleteTopicById(topicId)
     }
 
-    fun searchTopics(query: String): Flow<List<Topic>> = topicDao.searchTopics(query)
+    /**
+     * Search topics using FTS with automatic fallback to LIKE search if FTS fails.
+     */
+    fun searchTopics(query: String): Flow<List<Topic>> {
+        return searchWithFtsFallback(
+            query = query,
+            ftsSearch = { topicDao.searchTopicsFts(it) },
+            likeSearch = { topicDao.searchTopicsLike(it) }
+        )
+    }
 }

@@ -99,8 +99,8 @@ data class RebuttalDto(
     @SerializedName("text")
     val text: String,
 
-    @SerializedName("fallacyTag")
-    val fallacyTag: String? = null,
+    @SerializedName("fallacyIds")
+    val fallacyIds: List<String> = emptyList(),
 
     @SerializedName("createdAt")
     val createdAt: String,

@@ -414,7 +414,7 @@ class ImportExportRepository @Inject constructor(
         }
 
         // Import Evidences with similarity checking
-        val allExistingEvidences = database.evidenceDao().getAllEvidenceSync()
+        val allExistingEvidences = database.evidenceDao().getAllEvidencesSync()
 
         importData.evidences.forEach { evidenceDto ->
             try {
@@ -579,7 +579,7 @@ class ImportExportRepository @Inject constructor(
     }
 
     private suspend fun getAllEvidences(): List<EvidenceDto> {
-        return database.evidenceDao().getAllEvidenceSync().map { it.toDto() }
+        return database.evidenceDao().getAllEvidencesSync().map { it.toDto() }
     }
 
     private suspend fun getAllQuestions(): List<QuestionDto> {

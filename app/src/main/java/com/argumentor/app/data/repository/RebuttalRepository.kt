@@ -22,6 +22,9 @@ class RebuttalRepository @Inject constructor(
     suspend fun getRebuttalById(rebuttalId: String): Rebuttal? =
         rebuttalDao.getRebuttalById(rebuttalId)
 
+    fun observeRebuttalById(rebuttalId: String): Flow<Rebuttal?> =
+        rebuttalDao.observeRebuttalById(rebuttalId)
+
     suspend fun insertRebuttal(rebuttal: Rebuttal) =
         rebuttalDao.insertRebuttal(rebuttal)
 
@@ -30,6 +33,9 @@ class RebuttalRepository @Inject constructor(
 
     suspend fun deleteRebuttal(rebuttal: Rebuttal) =
         rebuttalDao.deleteRebuttal(rebuttal)
+
+    suspend fun deleteRebuttalsByClaimId(claimId: String) =
+        rebuttalDao.deleteRebuttalsByClaimId(claimId)
 
     /**
      * Search rebuttals using FTS with automatic fallback to LIKE search if FTS fails.

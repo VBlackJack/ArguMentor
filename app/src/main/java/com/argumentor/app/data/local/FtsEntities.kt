@@ -43,3 +43,24 @@ data class SourceFts(
     val title: String,
     val citation: String?
 )
+
+/**
+ * Full-Text Search (FTS) entity for Topics.
+ * Enables fast text search across topic title and summary.
+ */
+@Fts4(contentEntity = com.argumentor.app.data.model.Topic::class)
+@Entity(tableName = "topics_fts")
+data class TopicFts(
+    val title: String,
+    val summary: String
+)
+
+/**
+ * Full-Text Search (FTS) entity for Evidences.
+ * Enables fast text search across evidence content.
+ */
+@Fts4(contentEntity = com.argumentor.app.data.model.Evidence::class)
+@Entity(tableName = "evidences_fts")
+data class EvidenceFts(
+    val content: String
+)

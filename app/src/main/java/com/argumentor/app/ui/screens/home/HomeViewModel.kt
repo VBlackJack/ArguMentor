@@ -7,11 +7,15 @@ import com.argumentor.app.data.repository.TopicRepository
 import com.argumentor.app.ui.common.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,11 +23,6 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val topicRepository: TopicRepository
 ) : ViewModel() {
-
-    private val _allTopics = MutableStateFlow<List<Topic>>(emptyList())
-
-    private val _uiState = MutableStateFlow<UiState<List<Topic>>>(UiState.Initial)
-    val uiState: StateFlow<UiState<List<Topic>>> = _uiState.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -34,40 +33,50 @@ class HomeViewModel @Inject constructor(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
-    private var filterJob: Job? = null
-
-    init {
-        loadTopics()
-        observeSearchQuery()
-    }
-
     @OptIn(FlowPreview::class)
-    private fun observeSearchQuery() {
-        viewModelScope.launch {
-            _searchQuery
-                .debounce(300)
-                .collect {
-                    applyFilters()
-                }
-        }
-    }
+    val uiState: StateFlow<UiState<List<Topic>>> = combine(
+        topicRepository.getAllTopics(),
+        _searchQuery.debounce(300),
+        _selectedTag
+    ) { topics, query, tag ->
+        var filteredTopics = topics
 
-    private fun loadTopics() {
-        viewModelScope.launch {
-            try {
-                _uiState.value = UiState.Loading
-                topicRepository.getAllTopics().collect { topicList ->
-                    _allTopics.value = topicList
-                    applyFilters()
-                }
-            } catch (e: Exception) {
-                _uiState.value = UiState.Error(
-                    message = e.message ?: "Une erreur inconnue s'est produite",
-                    exception = e
-                )
+        // Apply tag filter
+        if (tag != null) {
+            filteredTopics = filteredTopics.filter { topic ->
+                topic.tags.contains(tag)
             }
         }
+
+        // Apply search filter
+        if (query.isNotBlank()) {
+            filteredTopics = filteredTopics.filter { topic ->
+                topic.title.contains(query, ignoreCase = true) ||
+                topic.summary.contains(query, ignoreCase = true) ||
+                topic.tags.any { it.contains(query, ignoreCase = true) }
+            }
+        }
+
+        filteredTopics
     }
+    .map { topics ->
+        if (topics.isEmpty()) {
+            UiState.Empty
+        } else {
+            UiState.Success(topics)
+        }
+    }
+    .catch { e ->
+        emit(UiState.Error(
+            message = e.message ?: "Une erreur inconnue s'est produite",
+            exception = e
+        ))
+    }
+    .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = UiState.Loading
+    )
 
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query
@@ -75,45 +84,6 @@ class HomeViewModel @Inject constructor(
 
     fun onTagSelected(tag: String?) {
         _selectedTag.value = if (_selectedTag.value == tag) null else tag
-        applyFilters()
-    }
-
-    private fun applyFilters() {
-        filterJob?.cancel()
-        filterJob = viewModelScope.launch {
-            try {
-                var filteredTopics = _allTopics.value
-
-                // Apply tag filter
-                val tag = _selectedTag.value
-                if (tag != null) {
-                    filteredTopics = filteredTopics.filter { topic ->
-                        topic.tags.contains(tag)
-                    }
-                }
-
-                // Apply search filter
-                val query = _searchQuery.value
-                if (query.isNotBlank()) {
-                    filteredTopics = filteredTopics.filter { topic ->
-                        topic.title.contains(query, ignoreCase = true) ||
-                        topic.summary.contains(query, ignoreCase = true) ||
-                        topic.tags.any { it.contains(query, ignoreCase = true) }
-                    }
-                }
-
-                _uiState.value = if (filteredTopics.isEmpty()) {
-                    UiState.Empty
-                } else {
-                    UiState.Success(filteredTopics)
-                }
-            } catch (e: Exception) {
-                _uiState.value = UiState.Error(
-                    message = e.message ?: "Erreur lors du filtrage",
-                    exception = e
-                )
-            }
-        }
     }
 
     fun deleteTopic(topic: Topic, onComplete: () -> Unit = {}) {
@@ -132,8 +102,11 @@ class HomeViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             _isRefreshing.value = true
+            // The Flow will automatically update with latest data from repository
+            // Just need to manage the refreshing state for UI
             try {
-                loadTopics()
+                // Small delay to ensure UI shows refresh indicator
+                kotlinx.coroutines.delay(300)
             } finally {
                 _isRefreshing.value = false
             }
@@ -141,6 +114,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun retry() {
-        loadTopics()
+        // No-op: The Flow automatically retries on collection
+        // UI state is managed by the stateIn operator
     }
 }

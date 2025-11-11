@@ -4,6 +4,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.argumentor.app.data.local.Converters
 import java.util.UUID
 
 /**
@@ -12,7 +14,7 @@ import java.util.UUID
  * @property id Unique identifier (UUID v4)
  * @property claimId Reference to the parent claim
  * @property text The rebuttal text content
- * @property fallacyTag Optional fallacy tag (ad_hominem, straw_man, etc.)
+ * @property fallacyIds List of fallacy IDs identified in this rebuttal (consistent with Claim)
  * @property createdAt Creation timestamp in ISO 8601 format
  * @property updatedAt Last update timestamp in ISO 8601 format
  *
@@ -31,12 +33,13 @@ import java.util.UUID
     ],
     indices = [Index("claimId")]
 )
+@TypeConverters(Converters::class)
 data class Rebuttal(
     @PrimaryKey
     val id: String = UUID.randomUUID().toString(),
     val claimId: String,
     val text: String,
-    val fallacyTag: String? = null,
+    val fallacyIds: List<String> = emptyList(),
     val createdAt: String = getCurrentIsoTimestamp(),
     val updatedAt: String = getCurrentIsoTimestamp()
 )

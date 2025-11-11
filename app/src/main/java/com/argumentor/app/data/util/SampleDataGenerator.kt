@@ -112,14 +112,14 @@ class SampleDataGenerator @Inject constructor(
         val rebuttal1 = Rebuttal(
             claimId = claim3.id,
             text = context.getString(R.string.demo_rebuttal_1),
-            fallacyTag = null
+            fallacyIds = emptyList()
         )
         rebuttalRepository.insertRebuttal(rebuttal1)
 
         val rebuttal2 = Rebuttal(
             claimId = claim4.id,
             text = context.getString(R.string.demo_rebuttal_2),
-            fallacyTag = null
+            fallacyIds = emptyList()
         )
         rebuttalRepository.insertRebuttal(rebuttal2)
 

@@ -11,7 +11,7 @@ class EvidenceRepository @Inject constructor(
     private val evidenceDao: EvidenceDao
 ) {
     fun getAllEvidences(): Flow<List<Evidence>> =
-        evidenceDao.getAllEvidence()
+        evidenceDao.getAllEvidences()
 
     fun getEvidencesByClaimId(claimId: String): Flow<List<Evidence>> =
         evidenceDao.getEvidencesByClaimId(claimId)
@@ -22,6 +22,9 @@ class EvidenceRepository @Inject constructor(
     suspend fun getEvidenceById(evidenceId: String): Evidence? =
         evidenceDao.getEvidenceById(evidenceId)
 
+    fun observeEvidenceById(evidenceId: String): Flow<Evidence?> =
+        evidenceDao.observeEvidenceById(evidenceId)
+
     suspend fun insertEvidence(evidence: Evidence) =
         evidenceDao.insertEvidence(evidence)
 
@@ -30,4 +33,18 @@ class EvidenceRepository @Inject constructor(
 
     suspend fun deleteEvidence(evidence: Evidence) =
         evidenceDao.deleteEvidence(evidence)
+
+    suspend fun deleteEvidencesByClaimId(claimId: String) =
+        evidenceDao.deleteEvidencesByClaimId(claimId)
+
+    /**
+     * Search evidences using FTS with automatic fallback to LIKE search if FTS fails.
+     */
+    fun searchEvidences(query: String): Flow<List<Evidence>> {
+        return searchWithFtsFallback(
+            query = query,
+            ftsSearch = { evidenceDao.searchEvidencesFts(it) },
+            likeSearch = { evidenceDao.searchEvidencesLike(it) }
+        )
+    }
 }

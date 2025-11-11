@@ -6,26 +6,29 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface EvidenceDao {
-    @Query("SELECT * FROM evidences ORDER BY createdAt DESC")
-    fun getAllEvidence(): Flow<List<Evidence>>
+    @Query("SELECT * FROM evidences ORDER BY updatedAt DESC")
+    fun getAllEvidences(): Flow<List<Evidence>>
 
-    @Query("SELECT * FROM evidences ORDER BY createdAt DESC")
-    suspend fun getAllEvidenceSync(): List<Evidence>
+    @Query("SELECT * FROM evidences ORDER BY updatedAt DESC")
+    suspend fun getAllEvidencesSync(): List<Evidence>
 
-    @Query("SELECT * FROM evidences WHERE claimId = :claimId ORDER BY createdAt DESC")
+    @Query("SELECT * FROM evidences WHERE claimId = :claimId ORDER BY updatedAt DESC")
     fun getEvidencesByClaimId(claimId: String): Flow<List<Evidence>>
 
-    @Query("SELECT * FROM evidences WHERE claimId = :claimId ORDER BY createdAt DESC")
-    suspend fun getEvidenceForClaim(claimId: String): List<Evidence>
+    @Query("SELECT * FROM evidences WHERE claimId = :claimId ORDER BY updatedAt DESC")
+    suspend fun getEvidencesByClaimIdSync(claimId: String): List<Evidence>
 
     // Note: Evidence is linked to claims, not rebuttals
-    // @Query("SELECT * FROM evidences WHERE rebuttalId = :rebuttalId ORDER BY createdAt DESC")
+    // @Query("SELECT * FROM evidences WHERE rebuttalId = :rebuttalId ORDER BY updatedAt DESC")
     // suspend fun getEvidenceForRebuttal(rebuttalId: String): List<Evidence>
 
     @Query("SELECT * FROM evidences WHERE id = :evidenceId")
     suspend fun getEvidenceById(evidenceId: String): Evidence?
 
-    @Query("SELECT * FROM evidences WHERE sourceId = :sourceId ORDER BY createdAt DESC")
+    @Query("SELECT * FROM evidences WHERE id = :evidenceId")
+    fun observeEvidenceById(evidenceId: String): Flow<Evidence?>
+
+    @Query("SELECT * FROM evidences WHERE sourceId = :sourceId ORDER BY updatedAt DESC")
     fun getEvidencesBySourceId(sourceId: String): Flow<List<Evidence>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -42,6 +45,36 @@ interface EvidenceDao {
 
     @Query("DELETE FROM evidences WHERE id = :evidenceId")
     suspend fun deleteEvidenceById(evidenceId: String)
+
+    @Query("DELETE FROM evidences WHERE claimId = :claimId")
+    suspend fun deleteEvidencesByClaimId(claimId: String)
+
+    /**
+     * Full-text search on evidences using FTS4 index.
+     * Searches in content field.
+     * @param query Search query (supports FTS4 operators like OR, AND, *)
+     * @return Flow of matching evidences ordered by updated date
+     */
+    @Query("""
+        SELECT evidences.* FROM evidences
+        JOIN evidences_fts ON evidences.rowid = evidences_fts.rowid
+        WHERE evidences_fts MATCH :query
+        ORDER BY updatedAt DESC
+    """)
+    fun searchEvidencesFts(query: String): Flow<List<Evidence>>
+
+    /**
+     * Fallback search using LIKE (for when FTS query contains invalid operators).
+     * Searches in content field.
+     * @param query Search query string
+     * @return Flow of matching evidences ordered by updated date
+     */
+    @Query("""
+        SELECT * FROM evidences
+        WHERE content LIKE '%' || :query || '%'
+        ORDER BY updatedAt DESC
+    """)
+    fun searchEvidencesLike(query: String): Flow<List<Evidence>>
 
     @Query("SELECT COUNT(*) FROM evidences")
     suspend fun getEvidenceCount(): Int

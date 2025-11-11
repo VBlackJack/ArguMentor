@@ -13,6 +13,9 @@ import com.argumentor.app.data.model.*
  * Version 3 - Added index on claimFingerprint for faster duplicate detection
  * Version 4 - Added SourceFts for full-text search on sources
  * Version 5 - Added fallacyIds field to Claim for linking claims to identified fallacies
+ * Version 6 - Renamed fallacyTag to fallacyIds in Rebuttal for consistency with Claim
+ * Version 7 - Added TopicFts for full-text search on topics
+ * Version 8 - Added EvidenceFts for full-text search on evidences
  */
 @Database(
     entities = [
@@ -26,9 +29,11 @@ import com.argumentor.app.data.model.*
         ClaimFts::class,
         RebuttalFts::class,
         QuestionFts::class,
-        SourceFts::class
+        SourceFts::class,
+        TopicFts::class,
+        EvidenceFts::class
     ],
-    version = 5,
+    version = 8,
     exportSchema = true
 )
 @TypeConverters(Converters::class)

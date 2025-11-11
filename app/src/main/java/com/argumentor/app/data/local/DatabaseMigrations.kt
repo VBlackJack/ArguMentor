@@ -95,12 +95,109 @@ object DatabaseMigrations {
     }
 
     /**
+     * Migration from version 5 to 6.
+     *
+     * Changes:
+     * - Renamed fallacyTag to fallacyIds in rebuttals table for consistency with claims
+     * - Converted from nullable String to JSON array of strings
+     */
+    val MIGRATION_5_6 = object : Migration(5, 6) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Rename fallacyTag column to fallacyIds and convert single value to array
+            // SQLite doesn't support renaming columns directly in older versions,
+            // so we need to recreate the table
+
+            // Step 1: Create new table with updated schema
+            db.execSQL("""
+                CREATE TABLE rebuttals_new (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    claimId TEXT NOT NULL,
+                    text TEXT NOT NULL,
+                    fallacyIds TEXT NOT NULL DEFAULT '[]',
+                    createdAt TEXT NOT NULL,
+                    updatedAt TEXT NOT NULL,
+                    FOREIGN KEY (claimId) REFERENCES claims(id) ON DELETE CASCADE
+                )
+            """)
+
+            // Step 2: Create index on claimId
+            db.execSQL("CREATE INDEX index_rebuttals_new_claimId ON rebuttals_new(claimId)")
+
+            // Step 3: Copy data from old table to new table
+            // Convert single fallacyTag to array format [fallacyTag] if not null, else []
+            db.execSQL("""
+                INSERT INTO rebuttals_new (id, claimId, text, fallacyIds, createdAt, updatedAt)
+                SELECT id, claimId, text,
+                    CASE
+                        WHEN fallacyTag IS NULL OR fallacyTag = '' THEN '[]'
+                        ELSE '["' || fallacyTag || '"]'
+                    END,
+                    createdAt, updatedAt
+                FROM rebuttals
+            """)
+
+            // Step 4: Drop old table
+            db.execSQL("DROP TABLE rebuttals")
+
+            // Step 5: Rename new table to original name
+            db.execSQL("ALTER TABLE rebuttals_new RENAME TO rebuttals")
+        }
+    }
+
+    /**
+     * Migration from version 6 to 7.
+     *
+     * Changes:
+     * - Added TopicFts table for full-text search on topics
+     */
+    val MIGRATION_6_7 = object : Migration(6, 7) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Create FTS4 virtual table for topics
+            db.execSQL("""
+                CREATE VIRTUAL TABLE IF NOT EXISTS `topics_fts`
+                USING fts4(content=`topics`, title, summary)
+            """)
+
+            // Populate FTS table with existing data
+            db.execSQL("""
+                INSERT INTO topics_fts(docid, title, summary)
+                SELECT rowid, title, summary FROM topics
+            """)
+        }
+    }
+
+    /**
+     * Migration from version 7 to 8.
+     *
+     * Changes:
+     * - Added EvidenceFts table for full-text search on evidences
+     */
+    val MIGRATION_7_8 = object : Migration(7, 8) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Create FTS4 virtual table for evidences
+            db.execSQL("""
+                CREATE VIRTUAL TABLE IF NOT EXISTS `evidences_fts`
+                USING fts4(content=`evidences`, content)
+            """)
+
+            // Populate FTS table with existing data
+            db.execSQL("""
+                INSERT INTO evidences_fts(docid, content)
+                SELECT rowid, content FROM evidences
+            """)
+        }
+    }
+
+    /**
      * All migrations in order.
      */
     val ALL_MIGRATIONS = arrayOf(
         MIGRATION_1_2,
         MIGRATION_2_3,
         MIGRATION_3_4,
-        MIGRATION_4_5
+        MIGRATION_4_5,
+        MIGRATION_5_6,
+        MIGRATION_6_7,
+        MIGRATION_7_8
     )
 }

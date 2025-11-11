@@ -16,10 +16,13 @@ interface RebuttalDao {
     fun getRebuttalsByClaimId(claimId: String): Flow<List<Rebuttal>>
 
     @Query("SELECT * FROM rebuttals WHERE claimId = :claimId ORDER BY updatedAt DESC")
-    suspend fun getRebuttalsForClaim(claimId: String): List<Rebuttal>
+    suspend fun getRebuttalsByClaimIdSync(claimId: String): List<Rebuttal>
 
     @Query("SELECT * FROM rebuttals WHERE id = :rebuttalId")
     suspend fun getRebuttalById(rebuttalId: String): Rebuttal?
+
+    @Query("SELECT * FROM rebuttals WHERE id = :rebuttalId")
+    fun observeRebuttalById(rebuttalId: String): Flow<Rebuttal?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRebuttal(rebuttal: Rebuttal)
@@ -35,6 +38,9 @@ interface RebuttalDao {
 
     @Query("DELETE FROM rebuttals WHERE id = :rebuttalId")
     suspend fun deleteRebuttalById(rebuttalId: String)
+
+    @Query("DELETE FROM rebuttals WHERE claimId = :claimId")
+    suspend fun deleteRebuttalsByClaimId(claimId: String)
 
     // Full-text search
     @Query("""
