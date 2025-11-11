@@ -2,12 +2,14 @@ package com.argumentor.app.ui.navigation
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.argumentor.app.data.datastore.SettingsDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,4 +35,25 @@ class NavigationViewModel @Inject constructor(
         prefs.getBoolean("onboarding_completed", false)
     )
     val onboardingCompleted: StateFlow<Boolean> = _onboardingCompleted.asStateFlow()
+
+    init {
+        // Observe DataStore for updates after initial load
+        viewModelScope.launch {
+            settingsDataStore.firstLaunchCompleted.collect { value ->
+                _firstLaunchCompleted.value = value
+            }
+        }
+
+        viewModelScope.launch {
+            settingsDataStore.ethicsWarningShown.collect { value ->
+                _ethicsWarningShown.value = value
+            }
+        }
+
+        viewModelScope.launch {
+            settingsDataStore.onboardingCompleted.collect { value ->
+                _onboardingCompleted.value = value
+            }
+        }
+    }
 }
