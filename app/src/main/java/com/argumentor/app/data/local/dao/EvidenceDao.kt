@@ -25,6 +25,9 @@ interface EvidenceDao {
     @Query("SELECT * FROM evidences WHERE id = :evidenceId")
     suspend fun getEvidenceById(evidenceId: String): Evidence?
 
+    @Query("SELECT * FROM evidences WHERE id = :evidenceId")
+    fun observeEvidenceById(evidenceId: String): Flow<Evidence?>
+
     @Query("SELECT * FROM evidences WHERE sourceId = :sourceId ORDER BY updatedAt DESC")
     fun getEvidencesBySourceId(sourceId: String): Flow<List<Evidence>>
 

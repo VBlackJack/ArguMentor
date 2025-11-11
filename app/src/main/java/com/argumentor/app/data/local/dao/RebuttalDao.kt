@@ -21,6 +21,9 @@ interface RebuttalDao {
     @Query("SELECT * FROM rebuttals WHERE id = :rebuttalId")
     suspend fun getRebuttalById(rebuttalId: String): Rebuttal?
 
+    @Query("SELECT * FROM rebuttals WHERE id = :rebuttalId")
+    fun observeRebuttalById(rebuttalId: String): Flow<Rebuttal?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRebuttal(rebuttal: Rebuttal)
 

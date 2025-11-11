@@ -22,6 +22,9 @@ class EvidenceRepository @Inject constructor(
     suspend fun getEvidenceById(evidenceId: String): Evidence? =
         evidenceDao.getEvidenceById(evidenceId)
 
+    fun observeEvidenceById(evidenceId: String): Flow<Evidence?> =
+        evidenceDao.observeEvidenceById(evidenceId)
+
     suspend fun insertEvidence(evidence: Evidence) =
         evidenceDao.insertEvidence(evidence)
 

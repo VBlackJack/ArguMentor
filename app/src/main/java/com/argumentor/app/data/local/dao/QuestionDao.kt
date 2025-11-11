@@ -21,6 +21,9 @@ interface QuestionDao {
     @Query("SELECT * FROM questions WHERE id = :questionId")
     suspend fun getQuestionById(questionId: String): Question?
 
+    @Query("SELECT * FROM questions WHERE id = :questionId")
+    fun observeQuestionById(questionId: String): Flow<Question?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertQuestion(question: Question)
 

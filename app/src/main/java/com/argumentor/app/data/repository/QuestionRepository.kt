@@ -19,6 +19,9 @@ class QuestionRepository @Inject constructor(
     suspend fun getQuestionById(questionId: String): Question? =
         questionDao.getQuestionById(questionId)
 
+    fun observeQuestionById(questionId: String): Flow<Question?> =
+        questionDao.observeQuestionById(questionId)
+
     suspend fun getQuestionsForTopic(topicId: String): List<Question> =
         questionDao.getQuestionsForTopic(topicId)
 

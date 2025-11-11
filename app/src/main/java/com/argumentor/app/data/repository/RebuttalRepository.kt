@@ -22,6 +22,9 @@ class RebuttalRepository @Inject constructor(
     suspend fun getRebuttalById(rebuttalId: String): Rebuttal? =
         rebuttalDao.getRebuttalById(rebuttalId)
 
+    fun observeRebuttalById(rebuttalId: String): Flow<Rebuttal?> =
+        rebuttalDao.observeRebuttalById(rebuttalId)
+
     suspend fun insertRebuttal(rebuttal: Rebuttal) =
         rebuttalDao.insertRebuttal(rebuttal)
 
