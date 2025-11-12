@@ -624,6 +624,22 @@
     <string name="content_desc_edit_source">Edit source</string>
     <string name="content_desc_delete_source">Delete source</string>
 
+    <!-- Topic Create/Edit Screen -->
+    <string name="topic_create_title">New topic</string>
+    <string name="topic_edit_title">Edit topic</string>
+    <string name="topic_field_title">Title</string>
+    <string name="topic_field_title_required">Title is required</string>
+    <string name="topic_field_summary">Summary</string>
+    <string name="topic_posture_section">Posture</string>
+    <string name="topic_posture_neutral">Neutral &amp; Critical</string>
+    <string name="topic_posture_skeptical">Skeptical</string>
+    <string name="topic_posture_academic">Academic Comparative</string>
+    <string name="topic_tags_section">Tags</string>
+    <string name="topic_new_tag">New tag</string>
+    <string name="unsaved_changes_title">Unsaved changes</string>
+    <string name="unsaved_changes_message">You have unsaved changes. Do you really want to quit without saving?</string>
+    <string name="action_leave">Leave</string>
+
     <!-- Source Create/Edit Screen -->
     <string name="source_edit_title">Edit source</string>
     <string name="source_create_title">New source</string>

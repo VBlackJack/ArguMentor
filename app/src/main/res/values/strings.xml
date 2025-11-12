@@ -624,6 +624,22 @@
     <string name="content_desc_edit_source">Éditer la source</string>
     <string name="content_desc_delete_source">Supprimer la source</string>
 
+    <!-- Topic Create/Edit Screen -->
+    <string name="topic_create_title">Nouveau sujet</string>
+    <string name="topic_edit_title">Modifier le sujet</string>
+    <string name="topic_field_title">Titre</string>
+    <string name="topic_field_title_required">Le titre est requis</string>
+    <string name="topic_field_summary">Résumé</string>
+    <string name="topic_posture_section">Posture</string>
+    <string name="topic_posture_neutral">Neutre &amp; Critique</string>
+    <string name="topic_posture_skeptical">Sceptique</string>
+    <string name="topic_posture_academic">Comparatif Académique</string>
+    <string name="topic_tags_section">Tags</string>
+    <string name="topic_new_tag">Nouveau tag</string>
+    <string name="unsaved_changes_title">Modifications non sauvegardées</string>
+    <string name="unsaved_changes_message">Vous avez des modifications non sauvegardées. Voulez-vous vraiment quitter sans enregistrer ?</string>
+    <string name="action_leave">Quitter</string>
+
     <!-- Source Create/Edit Screen -->
     <string name="source_edit_title">Éditer la source</string>
     <string name="source_create_title">Nouvelle source</string>

@@ -11,8 +11,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.argumentor.app.R
 import com.argumentor.app.data.model.Topic
 import com.argumentor.app.ui.components.VoiceInputTextField
 import com.argumentor.app.ui.components.rememberCurrentLocale
@@ -50,8 +52,8 @@ fun TopicCreateEditScreen(
     if (showUnsavedChangesDialog) {
         AlertDialog(
             onDismissRequest = { showUnsavedChangesDialog = false },
-            title = { Text("Modifications non sauvegardées") },
-            text = { Text("Vous avez des modifications non sauvegardées. Voulez-vous vraiment quitter sans enregistrer ?") },
+            title = { Text(stringResource(R.string.unsaved_changes_title)) },
+            text = { Text(stringResource(R.string.unsaved_changes_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -59,12 +61,12 @@ fun TopicCreateEditScreen(
                         onNavigateBack()
                     }
                 ) {
-                    Text("Quitter")
+                    Text(stringResource(R.string.action_leave))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showUnsavedChangesDialog = false }) {
-                    Text("Annuler")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )
@@ -73,7 +75,7 @@ fun TopicCreateEditScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (topicId == null) "Nouveau sujet" else "Modifier le sujet") },
+                title = { Text(stringResource(if (topicId == null) R.string.topic_create_title else R.string.topic_edit_title)) },
                 navigationIcon = {
                     IconButton(onClick = {
                         if (viewModel.hasUnsavedChanges()) {
@@ -82,7 +84,7 @@ fun TopicCreateEditScreen(
                             onNavigateBack()
                         }
                     }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Retour")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.accessibility_back))
                     }
                 },
                 actions = {
@@ -95,7 +97,7 @@ fun TopicCreateEditScreen(
                         },
                         enabled = !isSaving
                     ) {
-                        Text("Enregistrer")
+                        Text(stringResource(R.string.accessibility_save))
                     }
                 }
             )
@@ -113,13 +115,13 @@ fun TopicCreateEditScreen(
             VoiceInputTextField(
                 value = title,
                 onValueChange = viewModel::onTitleChange,
-                label = "Titre",
+                label = stringResource(R.string.topic_field_title),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 locale = currentLocale,
                 isError = hasAttemptedSave && title.isBlank(),
                 supportingText = if (hasAttemptedSave && title.isBlank()) {
-                    { Text("Le titre est requis") }
+                    { Text(stringResource(R.string.topic_field_title_required)) }
                 } else null
             )
 
@@ -127,7 +129,7 @@ fun TopicCreateEditScreen(
             VoiceInputTextField(
                 value = summary,
                 onValueChange = viewModel::onSummaryChange,
-                label = "Résumé",
+                label = stringResource(R.string.topic_field_summary),
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
                 maxLines = 6,
@@ -135,7 +137,7 @@ fun TopicCreateEditScreen(
             )
 
             // Posture selector
-            Text("Posture", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.topic_posture_section), style = MaterialTheme.typography.titleMedium)
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Topic.Posture.values().forEach { postureOption ->
                     FilterChip(
@@ -143,11 +145,11 @@ fun TopicCreateEditScreen(
                         onClick = { viewModel.onPostureChange(postureOption) },
                         label = {
                             Text(
-                                when (postureOption) {
-                                    Topic.Posture.NEUTRAL_CRITICAL -> "Neutre & Critique"
-                                    Topic.Posture.SKEPTICAL -> "Sceptique"
-                                    Topic.Posture.ACADEMIC_COMPARATIVE -> "Comparatif Académique"
-                                }
+                                stringResource(when (postureOption) {
+                                    Topic.Posture.NEUTRAL_CRITICAL -> R.string.topic_posture_neutral
+                                    Topic.Posture.SKEPTICAL -> R.string.topic_posture_skeptical
+                                    Topic.Posture.ACADEMIC_COMPARATIVE -> R.string.topic_posture_academic
+                                })
                             )
                         }
                     )
@@ -155,7 +157,7 @@ fun TopicCreateEditScreen(
             }
 
             // Tags
-            Text("Tags", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.topic_tags_section), style = MaterialTheme.typography.titleMedium)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -163,7 +165,7 @@ fun TopicCreateEditScreen(
                 OutlinedTextField(
                     value = newTagText,
                     onValueChange = { newTagText = it },
-                    label = { Text("Nouveau tag") },
+                    label = { Text(stringResource(R.string.topic_new_tag)) },
                     modifier = Modifier.weight(1f),
                     singleLine = true
                 )
@@ -174,7 +176,7 @@ fun TopicCreateEditScreen(
                     },
                     enabled = newTagText.isNotBlank()
                 ) {
-                    Text("Ajouter")
+                    Text(stringResource(R.string.action_add))
                 }
             }
             Row(
@@ -189,7 +191,7 @@ fun TopicCreateEditScreen(
                         trailingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Close,
-                                contentDescription = "Supprimer",
+                                contentDescription = stringResource(R.string.accessibility_delete),
                                 modifier = Modifier.size(16.dp)
                             )
                         }
