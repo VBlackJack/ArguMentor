@@ -10,8 +10,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.argumentor.app.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,7 +34,7 @@ fun ImportExportScreen(
                     viewModel.exportData(outputStream)
                 }
             } catch (e: Exception) {
-                viewModel.setError("Erreur lors de l'export: ${e.message}")
+                viewModel.setError(context.getString(R.string.export_error, e.message ?: ""))
             }
         }
     }
@@ -50,7 +52,7 @@ fun ImportExportScreen(
                     viewModel.importDataFromString(json)
                 }
             } catch (e: Exception) {
-                viewModel.setError("Erreur lors de la lecture du fichier: ${e.message}")
+                viewModel.setError(context.getString(R.string.import_file_error, e.message ?: ""))
             }
         }
     }
@@ -58,10 +60,10 @@ fun ImportExportScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Import/Export") },
+                title = { Text(stringResource(R.string.importexport_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Retour")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.accessibility_back))
                     }
                 }
             )
@@ -85,13 +87,13 @@ fun ImportExportScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            "Exporter les données",
+                            stringResource(R.string.export_section_title),
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "Exporter tous les sujets, affirmations et sources au format JSON",
+                        stringResource(R.string.export_section_description),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -103,7 +105,7 @@ fun ImportExportScreen(
                     ) {
                         Icon(Icons.Default.FileDownload, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Exporter en JSON")
+                        Text(stringResource(R.string.export_json_button))
                     }
                 }
             }
@@ -117,16 +119,13 @@ fun ImportExportScreen(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        "📄 Export PDF/Markdown par sujet",
+                        stringResource(R.string.export_pdf_markdown_title),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onTertiaryContainer
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "Pour exporter un sujet spécifique en PDF ou Markdown :\n" +
-                        "1. Ouvrez le sujet\n" +
-                        "2. Menu ⋮ → \"Exporter en PDF\" ou \"Exporter en Markdown\"\n" +
-                        "3. Choisissez l'emplacement via le sélecteur de fichiers",
+                        stringResource(R.string.export_pdf_markdown_instructions),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onTertiaryContainer
                     )
@@ -144,13 +143,13 @@ fun ImportExportScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            "Importer les données",
+                            stringResource(R.string.import_section_title),
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "Importer des données depuis un fichier JSON avec détection des doublons",
+                        stringResource(R.string.import_section_description),
                         style = MaterialTheme.typography.bodyMedium
                     )
 
@@ -158,7 +157,7 @@ fun ImportExportScreen(
 
                     // Similarity threshold slider
                     Text(
-                        "Seuil de similarité: ${(similarityThreshold * 100).toInt()}%",
+                        stringResource(R.string.import_similarity_threshold, (similarityThreshold * 100).toInt()),
                         style = MaterialTheme.typography.labelMedium
                     )
                     Slider(
@@ -176,7 +175,7 @@ fun ImportExportScreen(
                     ) {
                         Icon(Icons.Default.FileUpload, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Importer")
+                        Text(stringResource(R.string.import_button))
                     }
                 }
             }
@@ -226,24 +225,24 @@ fun ImportExportScreen(
                     Card {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                "Aperçu de l'import",
+                                stringResource(R.string.import_preview_title),
                                 style = MaterialTheme.typography.titleMedium
                             )
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("Total: ${result.totalItems}")
-                            Text("Créés: ${result.created}")
-                            Text("Mis à jour: ${result.updated}")
-                            Text("Doublons: ${result.duplicates}")
-                            Text("Quasi-doublons: ${result.nearDuplicates}")
+                            Text(stringResource(R.string.import_stat_total, result.totalItems))
+                            Text(stringResource(R.string.import_stat_created, result.created))
+                            Text(stringResource(R.string.import_stat_updated, result.updated))
+                            Text(stringResource(R.string.import_stat_duplicates, result.duplicates))
+                            Text(stringResource(R.string.import_stat_near_duplicates, result.nearDuplicates))
                             if (result.errors > 0) {
-                                Text("Erreurs: ${result.errors}", color = MaterialTheme.colorScheme.error)
+                                Text(stringResource(R.string.import_stat_errors, result.errors), color = MaterialTheme.colorScheme.error)
                             }
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(
                                 onClick = { viewModel.confirmImport() },
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text("Confirmer")
+                                Text(stringResource(R.string.import_confirm_button))
                             }
                         }
                     }

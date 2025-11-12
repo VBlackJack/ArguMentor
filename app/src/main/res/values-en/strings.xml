@@ -624,6 +624,28 @@
     <string name="content_desc_edit_source">Edit source</string>
     <string name="content_desc_delete_source">Delete source</string>
 
+    <!-- Import/Export Screen -->
+    <string name="importexport_title">Import/Export</string>
+    <string name="export_section_title">Export data</string>
+    <string name="export_section_description">Export all topics, claims and sources in JSON format</string>
+    <string name="export_json_button">Export to JSON</string>
+    <string name="export_pdf_markdown_title">📄 PDF/Markdown export per topic</string>
+    <string name="export_pdf_markdown_instructions">To export a specific topic to PDF or Markdown:\n1. Open the topic\n2. Menu ⋮ → \"Export to PDF\" or \"Export to Markdown\"\n3. Choose the location via the file picker</string>
+    <string name="import_section_title">Import data</string>
+    <string name="import_section_description">Import data from a JSON file with duplicate detection</string>
+    <string name="import_similarity_threshold">Similarity threshold: %d%%</string>
+    <string name="import_button">Import</string>
+    <string name="import_preview_title">Import preview</string>
+    <string name="import_stat_total">Total: %d</string>
+    <string name="import_stat_created">Created: %d</string>
+    <string name="import_stat_updated">Updated: %d</string>
+    <string name="import_stat_duplicates">Duplicates: %d</string>
+    <string name="import_stat_near_duplicates">Near-duplicates: %d</string>
+    <string name="import_stat_errors">Errors: %d</string>
+    <string name="import_confirm_button">Confirm</string>
+    <string name="export_error">Export error: %s</string>
+    <string name="import_file_error">File read error: %s</string>
+
     <!-- Topic Create/Edit Screen -->
     <string name="topic_create_title">New topic</string>
     <string name="topic_edit_title">Edit topic</string>

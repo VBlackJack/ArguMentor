@@ -624,6 +624,28 @@
     <string name="content_desc_edit_source">Éditer la source</string>
     <string name="content_desc_delete_source">Supprimer la source</string>
 
+    <!-- Import/Export Screen -->
+    <string name="importexport_title">Import/Export</string>
+    <string name="export_section_title">Exporter les données</string>
+    <string name="export_section_description">Exporter tous les sujets, affirmations et sources au format JSON</string>
+    <string name="export_json_button">Exporter en JSON</string>
+    <string name="export_pdf_markdown_title">📄 Export PDF/Markdown par sujet</string>
+    <string name="export_pdf_markdown_instructions">Pour exporter un sujet spécifique en PDF ou Markdown :\n1. Ouvrez le sujet\n2. Menu ⋮ → \"Exporter en PDF\" ou \"Exporter en Markdown\"\n3. Choisissez l\'emplacement via le sélecteur de fichiers</string>
+    <string name="import_section_title">Importer les données</string>
+    <string name="import_section_description">Importer des données depuis un fichier JSON avec détection des doublons</string>
+    <string name="import_similarity_threshold">Seuil de similarité: %d%%</string>
+    <string name="import_button">Importer</string>
+    <string name="import_preview_title">Aperçu de l\'import</string>
+    <string name="import_stat_total">Total: %d</string>
+    <string name="import_stat_created">Créés: %d</string>
+    <string name="import_stat_updated">Mis à jour: %d</string>
+    <string name="import_stat_duplicates">Doublons: %d</string>
+    <string name="import_stat_near_duplicates">Quasi-doublons: %d</string>
+    <string name="import_stat_errors">Erreurs: %d</string>
+    <string name="import_confirm_button">Confirmer</string>
+    <string name="export_error">Erreur lors de l\'export: %s</string>
+    <string name="import_file_error">Erreur lors de la lecture du fichier: %s</string>
+
     <!-- Topic Create/Edit Screen -->
     <string name="topic_create_title">Nouveau sujet</string>
     <string name="topic_edit_title">Modifier le sujet</string>
