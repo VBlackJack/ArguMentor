@@ -6,7 +6,9 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.argumentor.app.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -29,7 +31,7 @@ fun AppNavigationDrawerContent(
     ModalDrawerSheet {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                "ArguMentor",
+                stringResource(R.string.app_name),
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -37,8 +39,8 @@ fun AppNavigationDrawerContent(
             Spacer(modifier = Modifier.height(16.dp))
 
             NavigationDrawerItem(
-                icon = { Icon(Icons.Default.Home, contentDescription = "Accueil") },
-                label = { Text("Accueil") },
+                icon = { Icon(Icons.Default.Home, contentDescription = stringResource(R.string.nav_home)) },
+                label = { Text(stringResource(R.string.nav_home)) },
                 selected = currentRoute == "home",
                 onClick = {
                     scope.launch { drawerState.close() }
@@ -47,8 +49,8 @@ fun AppNavigationDrawerContent(
             )
 
             NavigationDrawerItem(
-                icon = { Icon(Icons.Default.Add, contentDescription = "Nouveau sujet") },
-                label = { Text("Nouveau sujet") },
+                icon = { Icon(Icons.Default.Add, contentDescription = stringResource(R.string.nav_new_topic)) },
+                label = { Text(stringResource(R.string.nav_new_topic)) },
                 selected = false,
                 onClick = {
                     scope.launch { drawerState.close() }
@@ -61,8 +63,8 @@ fun AppNavigationDrawerContent(
             Spacer(modifier = Modifier.height(8.dp))
 
             NavigationDrawerItem(
-                icon = { Icon(Icons.Default.BarChart, contentDescription = "Statistiques") },
-                label = { Text("Statistiques") },
+                icon = { Icon(Icons.Default.BarChart, contentDescription = stringResource(R.string.nav_statistics)) },
+                label = { Text(stringResource(R.string.nav_statistics)) },
                 selected = currentRoute == "statistics",
                 onClick = {
                     scope.launch { drawerState.close() }
@@ -71,8 +73,8 @@ fun AppNavigationDrawerContent(
             )
 
             NavigationDrawerItem(
-                icon = { Icon(Icons.Default.FileUpload, contentDescription = "Import/Export") },
-                label = { Text("Import/Export") },
+                icon = { Icon(Icons.Default.FileUpload, contentDescription = stringResource(R.string.nav_import_export)) },
+                label = { Text(stringResource(R.string.nav_import_export)) },
                 selected = currentRoute == "import_export",
                 onClick = {
                     scope.launch { drawerState.close() }
@@ -85,8 +87,8 @@ fun AppNavigationDrawerContent(
             Spacer(modifier = Modifier.height(8.dp))
 
             NavigationDrawerItem(
-                icon = { Icon(Icons.Default.Settings, contentDescription = "Paramètres") },
-                label = { Text("Paramètres") },
+                icon = { Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.nav_settings)) },
+                label = { Text(stringResource(R.string.nav_settings)) },
                 selected = currentRoute == "settings",
                 onClick = {
                     scope.launch { drawerState.close() }
@@ -101,8 +103,8 @@ fun AppNavigationDrawerContent(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Info, contentDescription = "Catalogue des sophismes") },
-                    label = { Text("Catalogue des sophismes") },
+                    icon = { Icon(Icons.Default.Info, contentDescription = stringResource(R.string.nav_fallacy_catalog)) },
+                    label = { Text(stringResource(R.string.nav_fallacy_catalog)) },
                     selected = currentRoute == "fallacy/catalog",
                     onClick = {
                         scope.launch { drawerState.close() }

@@ -14,12 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.argumentor.app.R
 import com.argumentor.app.data.model.Evidence
 import com.argumentor.app.util.createSpeechIntent
 import com.argumentor.app.util.rememberSpeechToTextLauncher
@@ -70,14 +72,16 @@ fun EvidenceCreateEditScreen(
             TopAppBar(
                 title = {
                     Text(
-                        if (isEditMode) "Éditer la preuve" else "Nouvelle preuve"
+                        stringResource(
+                            if (isEditMode) R.string.evidence_edit_title else R.string.evidence_new_title
+                        )
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Retour"
+                            contentDescription = stringResource(R.string.accessibility_back)
                         )
                     }
                 },
@@ -86,7 +90,7 @@ fun EvidenceCreateEditScreen(
                         IconButton(onClick = { showDeleteDialog = true }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                contentDescription = "Supprimer"
+                                contentDescription = stringResource(R.string.accessibility_delete)
                             )
                         }
                     }
@@ -100,7 +104,7 @@ fun EvidenceCreateEditScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Save,
-                            contentDescription = "Enregistrer"
+                            contentDescription = stringResource(R.string.accessibility_save)
                         )
                     }
                 }
@@ -131,8 +135,8 @@ fun EvidenceCreateEditScreen(
                     OutlinedTextField(
                         value = content,
                         onValueChange = { viewModel.onContentChange(it) },
-                        label = { Text("Contenu de la preuve *") },
-                        placeholder = { Text("Décrivez la preuve...") },
+                        label = { Text(stringResource(R.string.evidence_content_label)) },
+                        placeholder = { Text(stringResource(R.string.evidence_content_placeholder)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = false,
                         minLines = 4,
@@ -146,7 +150,7 @@ fun EvidenceCreateEditScreen(
                             IconButton(onClick = { speechLauncher.launch(createSpeechIntent(context, currentLocale)) }) {
                                 Icon(
                                     imageVector = Icons.Default.Mic,
-                                    contentDescription = "Dictée vocale",
+                                    contentDescription = stringResource(R.string.content_desc_voice_input),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -156,7 +160,7 @@ fun EvidenceCreateEditScreen(
 
                 // Type selector
                 Text(
-                    text = "Type de preuve",
+                    text = stringResource(R.string.evidence_type),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -171,12 +175,14 @@ fun EvidenceCreateEditScreen(
                             onClick = { viewModel.onTypeChange(evidenceType) },
                             label = {
                                 Text(
-                                    when (evidenceType) {
-                                        Evidence.EvidenceType.STUDY -> "Étude"
-                                        Evidence.EvidenceType.STAT -> "Statistique"
-                                        Evidence.EvidenceType.QUOTE -> "Citation"
-                                        Evidence.EvidenceType.EXAMPLE -> "Exemple"
-                                    }
+                                    stringResource(
+                                        when (evidenceType) {
+                                            Evidence.EvidenceType.STUDY -> R.string.evidence_type_study
+                                            Evidence.EvidenceType.STAT -> R.string.evidence_type_stat
+                                            Evidence.EvidenceType.QUOTE -> R.string.evidence_type_quote
+                                            Evidence.EvidenceType.EXAMPLE -> R.string.evidence_type_example
+                                        }
+                                    )
                                 )
                             }
                         )
@@ -185,7 +191,7 @@ fun EvidenceCreateEditScreen(
 
                 // Quality selector
                 Text(
-                    text = "Qualité de la preuve",
+                    text = stringResource(R.string.evidence_quality_label),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -200,11 +206,13 @@ fun EvidenceCreateEditScreen(
                             onClick = { viewModel.onQualityChange(evidenceQuality) },
                             label = {
                                 Text(
-                                    when (evidenceQuality) {
-                                        Evidence.Quality.LOW -> "Faible"
-                                        Evidence.Quality.MEDIUM -> "Moyenne"
-                                        Evidence.Quality.HIGH -> "Élevée"
-                                    }
+                                    stringResource(
+                                        when (evidenceQuality) {
+                                            Evidence.Quality.LOW -> R.string.evidence_quality_low
+                                            Evidence.Quality.MEDIUM -> R.string.evidence_quality_medium
+                                            Evidence.Quality.HIGH -> R.string.evidence_quality_high
+                                        }
+                                    )
                                 )
                             }
                         )
@@ -215,7 +223,7 @@ fun EvidenceCreateEditScreen(
                 Divider()
 
                 Text(
-                    text = "Source (optionnelle)",
+                    text = stringResource(R.string.evidence_source_label),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -252,7 +260,7 @@ fun EvidenceCreateEditScreen(
                             IconButton(onClick = { viewModel.onSourceSelected(null) }) {
                                 Icon(
                                     imageVector = Icons.Default.Clear,
-                                    contentDescription = "Retirer la source"
+                                    contentDescription = stringResource(R.string.evidence_source_remove)
                                 )
                             }
                         }
@@ -273,7 +281,7 @@ fun EvidenceCreateEditScreen(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                "Choisir",
+                                stringResource(R.string.evidence_source_choose),
                                 style = MaterialTheme.typography.labelMedium
                             )
                         }
@@ -288,7 +296,7 @@ fun EvidenceCreateEditScreen(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                "Nouvelle",
+                                stringResource(R.string.evidence_source_new),
                                 style = MaterialTheme.typography.labelMedium
                             )
                         }
@@ -297,7 +305,7 @@ fun EvidenceCreateEditScreen(
 
                 // Help text
                 Text(
-                    text = "* Champs obligatoires",
+                    text = stringResource(R.string.evidence_required_fields),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -319,7 +327,7 @@ fun EvidenceCreateEditScreen(
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Enregistrer")
+                    Text(stringResource(R.string.save))
                 }
             }
         }
@@ -329,7 +337,7 @@ fun EvidenceCreateEditScreen(
     if (showSourceSelector) {
         AlertDialog(
             onDismissRequest = { showSourceSelector = false },
-            title = { Text("Sélectionner une source") },
+            title = { Text(stringResource(R.string.evidence_select_source_title)) },
             text = {
                 Column(
                     modifier = Modifier
@@ -352,9 +360,9 @@ fun EvidenceCreateEditScreen(
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Bold
                                 )
-                                if (!source.citation.isNullOrEmpty()) {
+                                source.citation?.takeIf { it.isNotEmpty() }?.let { citation ->
                                     Text(
-                                        text = source.citation!!,
+                                        text = citation,
                                         style = MaterialTheme.typography.bodySmall,
                                         maxLines = 2
                                     )
@@ -366,7 +374,7 @@ fun EvidenceCreateEditScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showSourceSelector = false }) {
-                    Text("Annuler")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -376,8 +384,8 @@ fun EvidenceCreateEditScreen(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Supprimer la preuve ?") },
-            text = { Text("Cette action est irréversible.") },
+            title = { Text(stringResource(R.string.evidence_delete_dialog_title)) },
+            text = { Text(stringResource(R.string.evidence_delete_dialog_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -387,12 +395,12 @@ fun EvidenceCreateEditScreen(
                         showDeleteDialog = false
                     }
                 ) {
-                    Text("Supprimer")
+                    Text(stringResource(R.string.delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Annuler")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )

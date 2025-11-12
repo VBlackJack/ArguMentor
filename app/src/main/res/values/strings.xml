@@ -72,8 +72,20 @@
 
     <!-- Evidence -->
     <string name="evidence_create">Ajouter une preuve</string>
+    <string name="evidence_edit">Éditer la preuve</string>
+    <string name="evidence_new_title">Nouvelle preuve</string>
+    <string name="evidence_edit_title">Modifier la preuve</string>
     <string name="evidence_type">Type de preuve</string>
+    <string name="evidence_content_label">Contenu de la preuve *</string>
     <string name="evidence_content_hint">Contenu de la preuve</string>
+    <string name="evidence_content_placeholder">Décrivez la preuve...</string>
+    <string name="evidence_quality_label">Qualité de la preuve</string>
+    <string name="evidence_source_label">Source (optionnelle)</string>
+    <string name="evidence_source_choose">Choisir</string>
+    <string name="evidence_source_new">Nouvelle</string>
+    <string name="evidence_source_remove">Retirer la source</string>
+    <string name="evidence_required_fields">* Champs obligatoires</string>
+    <string name="evidence_select_source_title">Sélectionner une source</string>
 
     <!-- Question -->
     <string name="question_create">Ajouter une question</string>
@@ -667,6 +679,58 @@
     <string name="source_linked_claims">Affirmations liées</string>
     <string name="source_evidence_count">%d preuve(s) utilise(nt) cette source</string>
     <string name="content_desc_voice_input">Dictée vocale</string>
+
+    <!-- Buttons -->
+    <string name="button_allow">Autoriser</string>
+    <string name="button_deny">Refuser</string>
+    <string name="button_confirm">Confirmer</string>
+    <string name="button_continue">Continuer</string>
+    <string name="button_later">Plus tard</string>
+
+    <!-- Permissions Dialog -->
+    <string name="permission_required_title">Permissions requises</string>
+    <string name="permission_microphone_title">Permission Microphone</string>
+    <string name="permission_microphone_description">ArguMentor a besoin d\'accéder au microphone pour la fonctionnalité de reconnaissance vocale (Speech-to-Text). Cela vous permet de dicter vos arguments rapidement.\n\nNote : L\'import/export de fichiers utilise le sélecteur de fichiers Android (SAF) et ne nécessite pas de permission de stockage.</string>
+    <string name="permission_rationale_intro">ArguMentor a besoin des permissions suivantes pour fonctionner correctement :\n\n</string>
+    <string name="permission_microphone_rationale">• Microphone : pour la reconnaissance vocale (Speech-to-Text)\n</string>
+    <string name="permission_saf_note">\n📁 Import/Export : Le sélecteur de fichiers Android (SAF) est utilisé. Aucune permission de stockage requise.</string>
+    <string name="permission_settings_note_short">\n\nVous pouvez modifier ces permissions à tout moment dans les paramètres de l\'application.</string>
+
+    <!-- Statistics Screen -->
+    <string name="stats_title">Statistiques</string>
+    <string name="stats_overview_section">Vue d\'ensemble</string>
+    <string name="stats_topics_title">Sujets</string>
+    <string name="stats_claims_title">Affirmations</string>
+    <string name="stats_evidence_title">Preuves</string>
+    <string name="stats_questions_title">Questions</string>
+    <string name="stats_sources_title">Sources</string>
+    <string name="stats_tags_title">Tags</string>
+    <string name="stats_distribution_section">Distribution</string>
+    <string name="stats_by_stance">Par position</string>
+    <string name="stats_by_strength">Par force</string>
+    <string name="stats_by_posture">Par posture</string>
+    <string name="stats_empty_state_title">Pas encore de statistiques</string>
+    <string name="stats_empty_state_description">Créez des sujets et des affirmations pour voir vos statistiques apparaître ici.</string>
+    <string name="stats_empty_state_action">Créer un sujet</string>
+
+    <!-- Content Descriptions -->
+    <string name="content_desc_back">Retour</string>
+    <string name="content_desc_menu">Menu</string>
+
+    <!-- Statistics Screen - Additional -->
+    <string name="stats_most_debated_topics">Topics les plus débattus</string>
+    <string name="stats_rebuttals_short">Contre-args</string>
+    <string name="stats_claims_short">Arguments</string>
+    <string name="stats_evidences_short">Preuves</string>
+    <string name="stats_no_arguments">Aucun argument pour le moment</string>
+    <string name="stats_no_topics">Aucun topic pour le moment</string>
+    <string name="stats_arguments_distribution">Distribution des arguments</string>
+    <string name="stats_arguments_strength">Force des arguments</string>
+    <string name="stats_topics_posture">Postures des topics</string>
+    <string name="stats_averages">Moyennes</string>
+    <string name="stats_avg_claims_per_topic">Arguments par topic</string>
+    <string name="stats_avg_rebuttals_per_claim">Contre-arguments par argument</string>
+    <string name="stats_avg_strength">Force moyenne</string>
 
     <!-- Miscellaneous -->
     <string name="bullet_point">•</string>
