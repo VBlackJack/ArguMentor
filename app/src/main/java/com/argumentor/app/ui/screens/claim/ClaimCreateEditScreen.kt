@@ -35,8 +35,10 @@ fun ClaimCreateEditScreen(
     val selectedFallacies by viewModel.selectedFallacies.collectAsState()
     val allFallacies by viewModel.allFallacies.collectAsState()
     val isSaving by viewModel.isSaving.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
     val currentLocale = rememberCurrentLocale()
     val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     // UI state preservation on configuration changes (e.g., screen rotation)
     var showUnsavedChangesDialog by rememberSaveable { mutableStateOf(false) }
@@ -45,6 +47,17 @@ fun ClaimCreateEditScreen(
 
     LaunchedEffect(claimId, topicId) {
         viewModel.loadClaim(claimId, topicId)
+    }
+
+    // Display error messages via Snackbar
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let { message ->
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Long
+            )
+            viewModel.clearError()
+        }
     }
 
     // Handle back button press
@@ -113,6 +126,9 @@ fun ClaimCreateEditScreen(
                     }
                 }
             )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         }
     ) { paddingValues ->
         Column(
