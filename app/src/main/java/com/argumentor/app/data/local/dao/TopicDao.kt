@@ -4,6 +4,15 @@ import androidx.room.*
 import com.argumentor.app.data.model.Topic
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Data class for topic statistics returned by SQL JOIN queries.
+ * Used to avoid N+1 query patterns.
+ */
+data class TopicWithClaimCount(
+    @Embedded val topic: Topic,
+    @ColumnInfo(name = "claimCount") val claimCount: Int
+)
+
 @Dao
 interface TopicDao {
     @Query("SELECT * FROM topics ORDER BY updatedAt DESC")
@@ -69,4 +78,27 @@ interface TopicDao {
 
     @Query("SELECT COUNT(*) FROM topics WHERE posture = :posture")
     suspend fun getTopicCountByPosture(posture: Topic.Posture): Int
+
+    /**
+     * Optimized query to get topics with claim counts using a single JOIN query.
+     * This prevents N+1 query patterns where we'd load topics first, then query
+     * claims for each topic separately.
+     *
+     * PERFORMANCE IMPROVEMENT (PERF-001):
+     * - Single SQL query with JOIN instead of 1 + N queries
+     * - Much faster for large databases
+     * - Reduces database I/O from O(n) to O(1)
+     *
+     * @param limit Maximum number of topics to return (sorted by claim count DESC)
+     * @return List of topics with their claim counts
+     */
+    @Query("""
+        SELECT topics.*, COUNT(claims.id) as claimCount
+        FROM topics
+        LEFT JOIN claims ON claims.topicId = topics.id
+        GROUP BY topics.id
+        ORDER BY claimCount DESC
+        LIMIT :limit
+    """)
+    suspend fun getTopicsWithClaimCount(limit: Int): List<TopicWithClaimCount>
 }

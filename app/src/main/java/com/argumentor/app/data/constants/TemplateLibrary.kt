@@ -1,8 +1,13 @@
 package com.argumentor.app.data.constants
 
+import android.content.Context
+
 /**
  * Library of templates for different types of argument structures.
  * Helps users create well-structured arguments following academic patterns.
+ *
+ * All template texts are internationalized and loaded from string resources
+ * to support multiple languages (FR/EN).
  */
 object TemplateLibrary {
     data class Template(
@@ -19,106 +24,367 @@ object TemplateLibrary {
         val multiline: Boolean = false
     )
 
-    val TEMPLATES = listOf(
+    /**
+     * Returns the list of all available templates with localized strings.
+     *
+     * @param context Android context used to access string resources
+     * @return List of templates with internationalized content
+     */
+    fun getTemplates(context: Context): List<Template> = listOf(
         Template(
             id = "doctrinal_claim",
-            name = "Affirmation Doctrinale",
-            description = "Pour analyser une position doctrinale religieuse, philosophique ou idéologique",
+            name = context.getString(com.argumentor.app.R.string.template_doctrinal_claim_name),
+            description = context.getString(com.argumentor.app.R.string.template_doctrinal_claim_description),
             fields = listOf(
-                TemplateField("Définition", "Définition claire de la doctrine", true, true),
-                TemplateField("Textes cités", "Citations des textes sources", true, true),
-                TemplateField("Contexte historique", "Contexte de formulation", true, true),
-                TemplateField("Variantes", "Différentes interprétations", false, true),
-                TemplateField("Sources primaires", "Textes originaux", true, true),
-                TemplateField("Sources secondaires", "Analyses académiques", false, true),
-                TemplateField("Contre-arguments typiques", "Objections courantes", false, true),
-                TemplateField("Questions socratiques", "Questions pour approfondir", false, true)
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_doctrinal_claim_field_definition_name),
+                    context.getString(com.argumentor.app.R.string.template_doctrinal_claim_field_definition_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_doctrinal_claim_field_texts_name),
+                    context.getString(com.argumentor.app.R.string.template_doctrinal_claim_field_texts_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_doctrinal_claim_field_historical_context_name),
+                    context.getString(com.argumentor.app.R.string.template_doctrinal_claim_field_historical_context_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_doctrinal_claim_field_variants_name),
+                    context.getString(com.argumentor.app.R.string.template_doctrinal_claim_field_variants_description),
+                    false,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_doctrinal_claim_field_primary_sources_name),
+                    context.getString(com.argumentor.app.R.string.template_doctrinal_claim_field_primary_sources_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_doctrinal_claim_field_secondary_sources_name),
+                    context.getString(com.argumentor.app.R.string.template_doctrinal_claim_field_secondary_sources_description),
+                    false,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_doctrinal_claim_field_counterarguments_name),
+                    context.getString(com.argumentor.app.R.string.template_doctrinal_claim_field_counterarguments_description),
+                    false,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_doctrinal_claim_field_socratic_questions_name),
+                    context.getString(com.argumentor.app.R.string.template_doctrinal_claim_field_socratic_questions_description),
+                    false,
+                    true
+                )
             )
         ),
         Template(
             id = "argument_from_authority",
-            name = "Argument d'Autorité",
-            description = "Pour évaluer un argument basé sur l'expertise d'une autorité",
+            name = context.getString(com.argumentor.app.R.string.template_argument_from_authority_name),
+            description = context.getString(com.argumentor.app.R.string.template_argument_from_authority_description),
             fields = listOf(
-                TemplateField("Qui est l'autorité", "Nom et titre", true),
-                TemplateField("Domaine d'expertise", "Champ de compétence", true),
-                TemplateField("Qualifications", "Diplômes, publications, expérience", true, true),
-                TemplateField("Conflits d'intérêt", "Biais potentiels", true, true),
-                TemplateField("Consensus scientifique", "Position de la communauté", true, true),
-                TemplateField("Sources contradictoires", "Autorités en désaccord", false, true),
-                TemplateField("Date de l'affirmation", "Contexte temporel", false)
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_argument_from_authority_field_authority_name),
+                    context.getString(com.argumentor.app.R.string.template_argument_from_authority_field_authority_description),
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_argument_from_authority_field_expertise_name),
+                    context.getString(com.argumentor.app.R.string.template_argument_from_authority_field_expertise_description),
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_argument_from_authority_field_qualifications_name),
+                    context.getString(com.argumentor.app.R.string.template_argument_from_authority_field_qualifications_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_argument_from_authority_field_conflicts_name),
+                    context.getString(com.argumentor.app.R.string.template_argument_from_authority_field_conflicts_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_argument_from_authority_field_consensus_name),
+                    context.getString(com.argumentor.app.R.string.template_argument_from_authority_field_consensus_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_argument_from_authority_field_contradictory_sources_name),
+                    context.getString(com.argumentor.app.R.string.template_argument_from_authority_field_contradictory_sources_description),
+                    false,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_argument_from_authority_field_date_name),
+                    context.getString(com.argumentor.app.R.string.template_argument_from_authority_field_date_description),
+                    false
+                )
             )
         ),
         Template(
             id = "scientific_fact",
-            name = "Fait Scientifique",
-            description = "Pour documenter une affirmation scientifique",
+            name = context.getString(com.argumentor.app.R.string.template_scientific_fact_name),
+            description = context.getString(com.argumentor.app.R.string.template_scientific_fact_description),
             fields = listOf(
-                TemplateField("Hypothèse", "Hypothèse testée", true, true),
-                TemplateField("Méthode", "Protocole expérimental", true, true),
-                TemplateField("Échantillon", "Taille et caractéristiques", true),
-                TemplateField("Résultats", "Données obtenues", true, true),
-                TemplateField("Date de publication", "Année de l'étude", true),
-                TemplateField("Limites", "Limitations méthodologiques", true, true),
-                TemplateField("Réplications", "Études confirmant/infirmant", false, true),
-                TemplateField("Méta-analyses", "Synthèses disponibles", false, true),
-                TemplateField("Niveau de preuve", "Force de l'évidence (faible/moyen/fort)", true)
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_hypothesis_name),
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_hypothesis_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_method_name),
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_method_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_sample_name),
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_sample_description),
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_results_name),
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_results_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_publication_date_name),
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_publication_date_description),
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_limits_name),
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_limits_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_replications_name),
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_replications_description),
+                    false,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_meta_analyses_name),
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_meta_analyses_description),
+                    false,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_evidence_level_name),
+                    context.getString(com.argumentor.app.R.string.template_scientific_fact_field_evidence_level_description),
+                    true
+                )
             )
         ),
         Template(
             id = "testimony",
-            name = "Témoignage",
-            description = "Pour évaluer la fiabilité d'un témoignage",
+            name = context.getString(com.argumentor.app.R.string.template_testimony_name),
+            description = context.getString(com.argumentor.app.R.string.template_testimony_description),
             fields = listOf(
-                TemplateField("Témoin", "Identité et contexte", true),
-                TemplateField("Date du témoignage", "Quand rapporté", true),
-                TemplateField("Date des faits", "Quand observés", true),
-                TemplateField("Circonstances", "Conditions d'observation", true, true),
-                TemplateField("Vérifiabilité", "Éléments vérifiables", true, true),
-                TemplateField("Corroborations", "Témoignages concordants", false, true),
-                TemplateField("Contradictions", "Témoignages divergents", false, true),
-                TemplateField("Explications alternatives", "Autres interprétations possibles", false, true),
-                TemplateField("Motivations", "Raisons de témoigner", false, true)
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_witness_name),
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_witness_description),
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_testimony_date_name),
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_testimony_date_description),
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_event_date_name),
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_event_date_description),
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_circumstances_name),
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_circumstances_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_verifiability_name),
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_verifiability_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_corroborations_name),
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_corroborations_description),
+                    false,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_contradictions_name),
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_contradictions_description),
+                    false,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_alternative_explanations_name),
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_alternative_explanations_description),
+                    false,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_motivations_name),
+                    context.getString(com.argumentor.app.R.string.template_testimony_field_motivations_description),
+                    false,
+                    true
+                )
             )
         ),
         Template(
             id = "academic_comparison",
-            name = "Comparatif Académique",
-            description = "Pour comparer deux thèses ou positions de manière systématique",
+            name = context.getString(com.argumentor.app.R.string.template_academic_comparison_name),
+            description = context.getString(com.argumentor.app.R.string.template_academic_comparison_description),
             fields = listOf(
-                TemplateField("Thèse A", "Première position", true, true),
-                TemplateField("Thèse B", "Deuxième position", true, true),
-                TemplateField("Critères de comparaison", "Points d'évaluation", true, true),
-                TemplateField("Arguments pour A", "Forces de la thèse A", true, true),
-                TemplateField("Arguments contre A", "Faiblesses de la thèse A", true, true),
-                TemplateField("Arguments pour B", "Forces de la thèse B", true, true),
-                TemplateField("Arguments contre B", "Faiblesses de la thèse B", true, true),
-                TemplateField("Consensus académique", "Position dominante", false, true),
-                TemplateField("Bibliographie", "Sources principales", true, true)
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_thesis_a_name),
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_thesis_a_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_thesis_b_name),
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_thesis_b_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_criteria_name),
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_criteria_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_arguments_for_a_name),
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_arguments_for_a_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_arguments_against_a_name),
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_arguments_against_a_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_arguments_for_b_name),
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_arguments_for_b_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_arguments_against_b_name),
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_arguments_against_b_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_academic_consensus_name),
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_academic_consensus_description),
+                    false,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_bibliography_name),
+                    context.getString(com.argumentor.app.R.string.template_academic_comparison_field_bibliography_description),
+                    true,
+                    true
+                )
             )
         ),
         Template(
             id = "historical_claim",
-            name = "Affirmation Historique",
-            description = "Pour analyser une affirmation sur un événement historique",
+            name = context.getString(com.argumentor.app.R.string.template_historical_claim_name),
+            description = context.getString(com.argumentor.app.R.string.template_historical_claim_description),
             fields = listOf(
-                TemplateField("Événement", "Description de l'événement", true, true),
-                TemplateField("Date", "Datation de l'événement", true),
-                TemplateField("Sources primaires", "Documents contemporains", true, true),
-                TemplateField("Datation des sources", "Âge des manuscrits/artefacts", true, true),
-                TemplateField("Sources secondaires", "Analyses historiques", false, true),
-                TemplateField("Consensus historique", "Position des historiens", true, true),
-                TemplateField("Débats", "Points de controverse", false, true),
-                TemplateField("Contexte", "Contexte historique", true, true)
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_historical_claim_field_event_name),
+                    context.getString(com.argumentor.app.R.string.template_historical_claim_field_event_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_historical_claim_field_date_name),
+                    context.getString(com.argumentor.app.R.string.template_historical_claim_field_date_description),
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_historical_claim_field_primary_sources_name),
+                    context.getString(com.argumentor.app.R.string.template_historical_claim_field_primary_sources_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_historical_claim_field_source_dating_name),
+                    context.getString(com.argumentor.app.R.string.template_historical_claim_field_source_dating_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_historical_claim_field_secondary_sources_name),
+                    context.getString(com.argumentor.app.R.string.template_historical_claim_field_secondary_sources_description),
+                    false,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_historical_claim_field_historical_consensus_name),
+                    context.getString(com.argumentor.app.R.string.template_historical_claim_field_historical_consensus_description),
+                    true,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_historical_claim_field_debates_name),
+                    context.getString(com.argumentor.app.R.string.template_historical_claim_field_debates_description),
+                    false,
+                    true
+                ),
+                TemplateField(
+                    context.getString(com.argumentor.app.R.string.template_historical_claim_field_context_name),
+                    context.getString(com.argumentor.app.R.string.template_historical_claim_field_context_description),
+                    true,
+                    true
+                )
             )
         )
     )
 
-    fun getTemplateById(id: String): Template? = TEMPLATES.find { it.id == id }
+    /**
+     * Finds a template by its ID.
+     *
+     * @param context Android context used to access string resources
+     * @param id The unique identifier of the template
+     * @return The template with the given ID, or null if not found
+     */
+    fun getTemplateById(context: Context, id: String): Template? =
+        getTemplates(context).find { it.id == id }
 
-    fun searchTemplates(query: String): List<Template> {
+    /**
+     * Searches templates by name or description.
+     *
+     * @param context Android context used to access string resources
+     * @param query The search query (case-insensitive)
+     * @return List of templates matching the query
+     */
+    fun searchTemplates(context: Context, query: String): List<Template> {
         val lowerQuery = query.lowercase()
-        return TEMPLATES.filter {
+        return getTemplates(context).filter {
             it.name.lowercase().contains(lowerQuery) ||
             it.description.lowercase().contains(lowerQuery)
         }

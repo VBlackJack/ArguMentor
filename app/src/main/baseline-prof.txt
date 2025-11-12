@@ -1,0 +1,144 @@
+# Baseline Profile for ArguMentor
+# This file defines critical code paths to be compiled AOT (Ahead-Of-Time)
+# for improved app startup performance (up to 30% faster cold starts).
+#
+# Generated rules target:
+# - App startup (MainActivity, Navigation)
+# - Initial screen rendering (HomeScreen, TopicListScreen)
+# - Dependency injection initialization (Hilt)
+# - Database initialization (Room)
+#
+# Profile syntax: Human-readable method descriptors (HRD) format
+# See: https://developer.android.com/topic/performance/baselineprofiles/profile-rules-syntax
+
+# =============================================================================
+# APPLICATION STARTUP
+# =============================================================================
+
+# Main Activity and Application
+Lcom/argumentor/app/MainActivity;
+HSPLcom/argumentor/app/MainActivity;->onCreate(Landroid/os/Bundle;)V
+Lcom/argumentor/app/ArguMentorApplication;
+HSPLcom/argumentor/app/ArguMentorApplication;->onCreate()V
+
+# =============================================================================
+# JETPACK COMPOSE NAVIGATION & UI
+# =============================================================================
+
+# Navigation setup (critical for initial screen load)
+Lcom/argumentor/app/ui/navigation/AppNavHost;
+HSPLcom/argumentor/app/ui/navigation/AppNavHost;->AppNavHost(Landroidx/compose/runtime/Composer;I)V
+
+# Navigation routes
+Lcom/argumentor/app/ui/navigation/Screen;
+
+# =============================================================================
+# HOME SCREEN (FIRST SCREEN SHOWN)
+# =============================================================================
+
+# HomeScreen composable and ViewModel
+Lcom/argumentor/app/ui/screens/home/HomeScreen;
+HSPLcom/argumentor/app/ui/screens/home/HomeScreen;->HomeScreen(Landroidx/navigation/NavController;Landroidx/compose/runtime/Composer;I)V
+Lcom/argumentor/app/ui/screens/home/HomeViewModel;
+HSPLcom/argumentor/app/ui/screens/home/HomeViewModel;-><init>(Lcom/argumentor/app/data/repository/TopicRepository;)V
+HSPLcom/argumentor/app/ui/screens/home/HomeViewModel;->getTopics()Lkotlinx/coroutines/flow/Flow;
+
+# =============================================================================
+# TOPIC LIST (FREQUENTLY ACCESSED)
+# =============================================================================
+
+# TopicListScreen
+Lcom/argumentor/app/ui/screens/topic/TopicListScreen;
+Lcom/argumentor/app/ui/screens/topic/TopicDetailScreen;
+Lcom/argumentor/app/ui/screens/topic/TopicViewModel;
+
+# =============================================================================
+# DEPENDENCY INJECTION (HILT)
+# =============================================================================
+
+# Hilt generated classes (critical for DI initialization)
+Lcom/argumentor/app/ArguMentorApplication_HiltComponents;
+Lcom/argumentor/app/MainActivity_GeneratedInjector;
+Lcom/argumentor/app/di/DatabaseModule;
+HSPLcom/argumentor/app/di/DatabaseModule;->provideDatabase(Landroid/content/Context;)Lcom/argumentor/app/data/local/AppDatabase;
+Lcom/argumentor/app/di/RepositoryModule;
+
+# =============================================================================
+# ROOM DATABASE (STARTUP INITIALIZATION)
+# =============================================================================
+
+# Database initialization
+Lcom/argumentor/app/data/local/AppDatabase;
+HSPLcom/argumentor/app/data/local/AppDatabase;->getInstance(Landroid/content/Context;)Lcom/argumentor/app/data/local/AppDatabase;
+HSPLcom/argumentor/app/data/local/AppDatabase;->getTopicDao()Lcom/argumentor/app/data/local/dao/TopicDao;
+HSPLcom/argumentor/app/data/local/AppDatabase;->getClaimDao()Lcom/argumentor/app/data/local/dao/ClaimDao;
+
+# DAO implementations (Room generated)
+Lcom/argumentor/app/data/local/dao/TopicDao_Impl;
+HSPLcom/argumentor/app/data/local/dao/TopicDao_Impl;->getAllTopics()Lkotlinx/coroutines/flow/Flow;
+Lcom/argumentor/app/data/local/dao/ClaimDao_Impl;
+Lcom/argumentor/app/data/local/dao/QuestionDao_Impl;
+
+# =============================================================================
+# REPOSITORY LAYER (DATA ACCESS)
+# =============================================================================
+
+# TopicRepository (most frequently accessed repository)
+Lcom/argumentor/app/data/repository/TopicRepository;
+HSPLcom/argumentor/app/data/repository/TopicRepository;-><init>(Lcom/argumentor/app/data/local/dao/TopicDao;Lcom/argumentor/app/data/local/dao/ClaimDao;Lcom/argumentor/app/data/local/dao/RebuttalDao;Lcom/argumentor/app/data/local/dao/EvidenceDao;Lcom/argumentor/app/data/local/dao/QuestionDao;)V
+HSPLcom/argumentor/app/data/repository/TopicRepository;->getAllTopics()Lkotlinx/coroutines/flow/Flow;
+
+# StatisticsRepository (for statistics screen)
+Lcom/argumentor/app/data/repository/StatisticsRepository;
+
+# =============================================================================
+# DOMAIN MODELS (FREQUENTLY SERIALIZED/DESERIALIZED)
+# =============================================================================
+
+# Core data models
+Lcom/argumentor/app/data/model/Topic;
+Lcom/argumentor/app/data/model/Claim;
+Lcom/argumentor/app/data/model/Question;
+Lcom/argumentor/app/data/model/Source;
+
+# =============================================================================
+# KOTLIN COROUTINES (ASYNC OPERATIONS)
+# =============================================================================
+
+# Flow operators (used for reactive data streams)
+Lkotlinx/coroutines/flow/FlowKt;
+Lkotlinx/coroutines/flow/StateFlowKt;
+
+# =============================================================================
+# COMPOSE RUNTIME (UI RENDERING)
+# =============================================================================
+
+# Compose recomposition and state management
+Landroidx/compose/runtime/ComposerKt;
+Landroidx/compose/runtime/RecomposerKt;
+Landroidx/compose/ui/platform/AndroidCompositionLocals_androidKt;
+
+# Material3 components (frequently used in UI)
+Landroidx/compose/material3/ScaffoldKt;
+Landroidx/compose/material3/TopAppBarKt;
+Landroidx/compose/material3/FloatingActionButtonKt;
+Landroidx/compose/material3/CardKt;
+
+# =============================================================================
+# NOTES:
+# =============================================================================
+#
+# Rule types:
+# - H (Hot): Method is called frequently
+# - S (Startup): Method is called during app startup
+# - P (Post-startup): Method is called shortly after startup
+# - L (Layout): Method is part of UI layout/rendering
+#
+# To regenerate this profile based on actual app usage:
+# 1. Install Macrobenchmark test module
+# 2. Run benchmark tests to generate profile from real interactions
+# 3. Use BaselineProfileRule to automate generation
+# 4. Update this file with generated rules
+#
+# For production apps, it's recommended to generate profiles from
+# actual user interactions using Macrobenchmark library.
