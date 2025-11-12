@@ -2,6 +2,10 @@ package com.argumentor.app.util
 
 /**
  * Utilities for handling search queries, especially FTS (Full-Text Search) queries.
+ *
+ * PERFORMANCE OPTIMIZATION:
+ * - Regex patterns are pre-compiled for better performance
+ * - Avoids recompiling patterns on every query validation
  */
 object SearchUtils {
 
@@ -15,6 +19,14 @@ object SearchUtils {
      * FTS operators that might cause issues if used incorrectly.
      */
     private val FTS_OPERATORS = setOf("AND", "OR", "NOT", "NEAR")
+
+    /**
+     * Pre-compiled regex patterns for performance optimization.
+     * These patterns are used frequently in query validation.
+     */
+    private val NEAR_OPERATOR_PATTERN = Regex("\\bNEAR(/\\d+)?\\b", RegexOption.IGNORE_CASE)
+    private val WHITESPACE_SPLIT_PATTERN = Regex("\\s+")
+    private val CONSECUTIVE_OPERATORS_PATTERN = Regex("[*\\-]{2,}")
 
     /**
      * Check if a query contains FTS operators or special characters that might cause errors.
@@ -41,14 +53,14 @@ object SearchUtils {
 
         // Check for NEAR operator with distance (e.g., NEAR/5)
         // This pattern: NEAR followed by optional slash and digit
-        if (Regex("\\bNEAR(/\\d+)?\\b", RegexOption.IGNORE_CASE).containsMatchIn(trimmed)) {
+        if (NEAR_OPERATOR_PATTERN.containsMatchIn(trimmed)) {
             return false
         }
 
         // Reject queries that rely on explicit FTS operators. This keeps the public
         // search box consistent and falls back to LIKE when users attempt to craft
         // advanced expressions.
-        val tokens = trimmed.split(Regex("\\s+")).filter { it.isNotEmpty() }
+        val tokens = trimmed.split(WHITESPACE_SPLIT_PATTERN).filter { it.isNotEmpty() }
         if (tokens.any { token -> FTS_OPERATORS.contains(token.uppercase()) }) {
             return false
         }
@@ -69,7 +81,7 @@ object SearchUtils {
         }
 
         // Reject queries with multiple consecutive operators or special chars
-        if (Regex("[*\\-]{2,}").containsMatchIn(trimmed)) {
+        if (CONSECUTIVE_OPERATORS_PATTERN.containsMatchIn(trimmed)) {
             return false
         }
 

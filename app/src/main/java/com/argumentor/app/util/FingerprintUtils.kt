@@ -68,8 +68,15 @@ object FingerprintUtils {
     /**
      * Generate SHA-256 hash of normalized text.
      * Returns first FINGERPRINT_HASH_LENGTH characters of hex digest for compactness.
+     *
+     * SECURITY/PERFORMANCE FIX:
+     * - Validates input length to prevent DoS attacks with extremely long strings
+     * - Throws IllegalArgumentException if text exceeds MAX_TEXT_LENGTH
      */
     fun generateTextFingerprint(text: String): String {
+        require(text.length <= MAX_TEXT_LENGTH) {
+            "Text too long for fingerprinting: ${text.length} characters (max: $MAX_TEXT_LENGTH)"
+        }
         val normalized = normalizeText(text)
         val digest = MessageDigest.getInstance("SHA-256")
         val hashBytes = digest.digest(normalized.toByteArray(Charsets.UTF_8))

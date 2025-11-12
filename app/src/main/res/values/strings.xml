@@ -478,6 +478,7 @@
     <string name="validation_url_http_only">Seuls les protocoles HTTP et HTTPS sont autorisés</string>
     <string name="validation_email_invalid">Adresse e-mail invalide</string>
     <string name="validation_score_invalid">Le score doit être compris entre 0.0 et 1.0</string>
+    <string name="validation_timestamp_invalid_format">Format de date invalide (doit être au format ISO 8601)</string>
 
     <!-- Share Messages -->
     <string name="share_from_app">Partagé depuis ArguMentor</string>

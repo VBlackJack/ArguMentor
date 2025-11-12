@@ -4,10 +4,14 @@ import com.argumentor.app.data.local.dao.*
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.data.model.Topic
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -64,14 +68,19 @@ class StatisticsRepository @Inject constructor(
      * - Prevents Out Of Memory errors on large databases
      * - Much faster and more efficient
      * - Each stat is calculated via a dedicated SQL query
+     *
+     * MEMORY LEAK FIX:
+     * - Uses callbackFlow with isActive check to prevent infinite loop memory leaks
+     * - Properly cancels when collector is disposed
      */
-    fun getStatistics(): Flow<Statistics> = kotlinx.coroutines.flow.flow {
-        while (true) {
+    fun getStatistics(): Flow<Statistics> = callbackFlow {
+        while (isActive) {
             val stats = calculateStatistics()
-            emit(stats)
+            send(stats)
             // Re-emit when database changes (polling interval)
-            kotlinx.coroutines.delay(1000)
+            delay(1000)
         }
+        awaitClose { /* cleanup if needed */ }
     }.flowOn(Dispatchers.IO)
 
     /**
@@ -136,6 +145,28 @@ class StatisticsRepository @Inject constructor(
     /**
      * Calculate most debated topics stats.
      * Only loads topics (not all claims/rebuttals) to reduce memory usage.
+     *
+     * PERFORMANCE NOTE (PERF-001):
+     * This method has N+1 query pattern: for each topic, it makes separate queries for claims,
+     * rebuttals, evidence, and questions. This is acceptable for small datasets (< 100 topics)
+     * but could be optimized with a single SQL JOIN query for larger databases.
+     *
+     * TODO (Low Priority): Consider adding a single DAO method with JOIN:
+     *   @Query("""
+     *     SELECT t.id, t.title,
+     *       COUNT(DISTINCT c.id) as claimCount,
+     *       COUNT(DISTINCT r.id) as rebuttalCount,
+     *       COUNT(DISTINCT e.id) as evidenceCount,
+     *       COUNT(DISTINCT q.id) as questionCount
+     *     FROM topics t
+     *     LEFT JOIN claims c ON c.topics LIKE '%' || t.id || '%'
+     *     LEFT JOIN rebuttals r ON r.claimId IN (SELECT id FROM claims WHERE topics LIKE '%' || t.id || '%')
+     *     LEFT JOIN evidence e ON e.claimId IN (SELECT id FROM claims WHERE topics LIKE '%' || t.id || '%')
+     *     LEFT JOIN questions q ON q.topicId = t.id
+     *     GROUP BY t.id
+     *     ORDER BY claimCount DESC
+     *     LIMIT 5
+     *   """)
      */
     private suspend fun calculateMostDebatedTopics(): List<TopicStats> {
         val topics = topicDao.getAllTopicsSync()
