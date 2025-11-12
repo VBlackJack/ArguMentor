@@ -39,11 +39,15 @@ class TutorialManager @Inject constructor(
         scope.launch {
             val currentLanguage = languagePreferences.getCurrentLanguage()
             val lastLanguage = getLastLanguage()
+            val tutorialEnabled = settingsDataStore.tutorialEnabled.first()
+            val demoTopicId = settingsDataStore.demoTopicId.first()
 
-            // If language has changed and tutorial is enabled, replace demo topic
-            if (lastLanguage != null && lastLanguage != currentLanguage) {
-                val tutorialEnabled = settingsDataStore.tutorialEnabled.first()
-                if (tutorialEnabled) {
+            // Regenerate demo topic if:
+            // 1. Language has changed (including first launch where lastLanguage is null)
+            // 2. AND either tutorial is enabled OR a demo topic already exists
+            // This ensures demo topic is translated even if user disabled tutorial after creation
+            if (lastLanguage != currentLanguage) {
+                if (tutorialEnabled || demoTopicId != null) {
                     sampleDataGenerator.replaceDemoTopic()
                 }
             }
