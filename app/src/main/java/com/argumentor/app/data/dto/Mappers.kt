@@ -40,27 +40,17 @@ fun Claim.toDto(): ClaimDto = ClaimDto(
     updatedAt = updatedAt,
     // BUGFIX: Use generateClaimFingerprint instead of generateTextFingerprint
     // to ensure consistency with ClaimRepository's duplicate detection
+    // MEDIUM-002 FIX: Use this.copy() instead of reconstructing entire object
     claimFingerprint = claimFingerprint.ifEmpty {
-        FingerprintUtils.generateClaimFingerprint(
-            Claim(
-                id = id,
-                text = text,
-                stance = stance,
-                strength = strength,
-                topics = topics,
-                fallacyIds = fallacyIds,
-                createdAt = createdAt,
-                updatedAt = updatedAt,
-                claimFingerprint = ""
-            )
-        )
+        FingerprintUtils.generateClaimFingerprint(this.copy(claimFingerprint = ""))
     }
 )
 
 fun ClaimDto.toModel(): Claim {
     // BUGFIX: Use generateClaimFingerprint for consistency with toDto()
     // This ensures import/export duplicate detection works correctly
-    val tempClaim = Claim(
+    // MEDIUM-002 FIX: Simplified to avoid double object construction
+    return Claim(
         id = id,
         text = text,
         stance = Claim.Stance.fromString(stance),
@@ -69,11 +59,19 @@ fun ClaimDto.toModel(): Claim {
         fallacyIds = fallacyIds,
         createdAt = createdAt,
         updatedAt = updatedAt,
-        claimFingerprint = claimFingerprint ?: ""
-    )
-
-    return tempClaim.copy(
-        claimFingerprint = claimFingerprint ?: FingerprintUtils.generateClaimFingerprint(tempClaim)
+        claimFingerprint = claimFingerprint ?: FingerprintUtils.generateClaimFingerprint(
+            Claim(
+                id = id,
+                text = text,
+                stance = Claim.Stance.fromString(stance),
+                strength = Claim.Strength.fromString(strength),
+                topics = topics,
+                fallacyIds = fallacyIds,
+                createdAt = createdAt,
+                updatedAt = updatedAt,
+                claimFingerprint = ""
+            )
+        )
     )
 }
 

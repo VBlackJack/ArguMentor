@@ -4,14 +4,8 @@ import com.argumentor.app.data.local.dao.*
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.data.model.Topic
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -69,19 +63,23 @@ class StatisticsRepository @Inject constructor(
      * - Much faster and more efficient
      * - Each stat is calculated via a dedicated SQL query
      *
-     * MEMORY LEAK FIX:
-     * - Uses callbackFlow with isActive check to prevent infinite loop memory leaks
-     * - Properly cancels when collector is disposed
+     * REACTIVITY FIX (HIGH-003):
+     * - Replaced inefficient 1-second polling with Room's reactive Flow observers
+     * - Statistics now update automatically when database changes (no CPU/battery drain)
+     * - Uses combine() to merge all DAO flows and recalculate on any change
      */
-    fun getStatistics(): Flow<Statistics> = callbackFlow {
-        while (isActive) {
-            val stats = calculateStatistics()
-            send(stats)
-            // Re-emit when database changes (polling interval)
-            delay(1000)
-        }
-        awaitClose { /* cleanup if needed */ }
-    }.flowOn(Dispatchers.IO)
+    fun getStatistics(): Flow<Statistics> =
+        kotlinx.coroutines.flow.combine(
+            topicDao.getAllTopics(),
+            claimDao.getAllClaims(),
+            rebuttalDao.getAllRebuttals(),
+            evidenceDao.getAllEvidences(),
+            questionDao.getAllQuestions(),
+            sourceDao.getAllSources()
+        ) { _, _, _, _, _, _ ->
+            // Recalculate statistics when any data changes
+            calculateStatistics()
+        }.flowOn(Dispatchers.IO)
 
     /**
      * Calculate statistics using SQL aggregation queries.
@@ -231,27 +229,20 @@ class StatisticsRepository @Inject constructor(
     }
 
     /**
-     * Get total count of all entities
+     * Get total count of all entities.
+     *
+     * CRITICAL-001 FIX:
+     * - Changed from loading ALL entities into memory (causing OOM on large databases)
+     * - Now uses efficient SQL COUNT queries via DAOs
+     * - Memory usage: O(1) instead of O(n) where n = total entities
+     * - Prevents Out-Of-Memory errors with thousands of records
      */
     suspend fun getTotalEntityCount(): Int = withContext(Dispatchers.IO) {
-        val topics = topicDao.getAllTopicsSync().size
-        val claims = claimDao.getAllClaimsSync().size
-        val rebuttals = rebuttalDao.getAllRebuttalsSync().size
-        val evidence = evidenceDao.getAllEvidencesSync().size
-        val questions = questionDao.getAllQuestionsSync().size
-        val sources = sourceDao.getAllSourcesSync().size
-
-        topics + claims + rebuttals + evidence + questions + sources
-    }
-
-    /**
-     * Convert strength to numeric value for average calculation
-     */
-    private fun strengthToNumeric(strength: Claim.Strength): Double {
-        return when (strength) {
-            Claim.Strength.LOW -> 1.0
-            Claim.Strength.MEDIUM -> 2.0
-            Claim.Strength.HIGH -> 3.0
-        }
+        topicDao.getTopicCount() +
+        claimDao.getClaimCount() +
+        rebuttalDao.getRebuttalCount() +
+        evidenceDao.getEvidenceCount() +
+        questionDao.getQuestionCount() +
+        sourceDao.getSourceCount()
     }
 }

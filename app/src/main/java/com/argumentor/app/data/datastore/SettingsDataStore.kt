@@ -48,6 +48,7 @@ class SettingsDataStore @Inject constructor(
         val FIRST_LAUNCH_COMPLETED = booleanPreferencesKey("first_launch_completed")
         val TUTORIAL_ENABLED = booleanPreferencesKey("tutorial_enabled")
         val DEMO_TOPIC_ID = stringPreferencesKey("demo_subject_id") // Key kept as "demo_subject_id" for backward compatibility
+        val DEMO_SOURCE_ID = stringPreferencesKey("demo_source_id") // HIGH-003 FIX: Track demo source for safe deletion
     }
 
     val isDarkTheme: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -88,6 +89,10 @@ class SettingsDataStore @Inject constructor(
 
     val demoTopicId: Flow<String?> = context.dataStore.data.map { preferences ->
         preferences[PreferencesKeys.DEMO_TOPIC_ID]
+    }
+
+    val demoSourceId: Flow<String?> = context.dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.DEMO_SOURCE_ID]
     }
 
     /**
@@ -249,6 +254,25 @@ class SettingsDataStore @Inject constructor(
                 preferences[PreferencesKeys.DEMO_TOPIC_ID] = id
             } else {
                 preferences.remove(PreferencesKeys.DEMO_TOPIC_ID)
+            }
+        }
+    }
+
+    /**
+     * Updates the ID of the demo source used for tutorial purposes.
+     *
+     * HIGH-003 FIX: This allows safe deletion of demo sources without
+     * accidentally deleting user-created sources that contain "Demo" or "Tutorial"
+     * in their titles.
+     *
+     * @param id The source ID to use for demo, or null to remove
+     */
+    suspend fun setDemoSourceId(id: String?) {
+        context.dataStore.edit { preferences ->
+            if (id != null) {
+                preferences[PreferencesKeys.DEMO_SOURCE_ID] = id
+            } else {
+                preferences.remove(PreferencesKeys.DEMO_SOURCE_ID)
             }
         }
     }

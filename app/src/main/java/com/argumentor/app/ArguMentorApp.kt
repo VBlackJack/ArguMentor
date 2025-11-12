@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.argumentor.app.data.repository.FallacyRepository
+import com.argumentor.app.util.AppConstants
 import com.argumentor.app.util.LocaleHelper
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
@@ -40,28 +41,24 @@ class ArguMentorApp : Application(), Configuration.Provider {
             .build()
     }
 
-    companion object {
-        // Constants for SharedPreferences to avoid hardcoded strings
-        private const val PREFS_NAME = "app_language_prefs"
-        private const val PREF_LANGUAGE_CODE = "language_code"
-        private const val DEFAULT_LANGUAGE = "fr"
-
-        // Supported language codes
-        private val SUPPORTED_LANGUAGES = setOf("fr", "en")
-    }
-
     override fun attachBaseContext(base: Context) {
         try {
-            // Read language from SharedPreferences with validation
-            val prefs = base.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            val languageCode = prefs.getString(PREF_LANGUAGE_CODE, DEFAULT_LANGUAGE) ?: DEFAULT_LANGUAGE
+            // ISSUE-005 FIX: Now uses AppConstants for consistent configuration
+            val prefs = base.getSharedPreferences(
+                AppConstants.Language.PREFS_NAME,
+                Context.MODE_PRIVATE
+            )
+            val languageCode = prefs.getString(
+                AppConstants.Language.PREF_KEY_LANGUAGE_CODE,
+                AppConstants.Language.DEFAULT_LANGUAGE
+            )
 
-            // Validate language code for security
-            val validatedLanguageCode = if (languageCode in SUPPORTED_LANGUAGES) {
-                languageCode
-            } else {
-                Timber.w("Invalid language code: $languageCode, falling back to $DEFAULT_LANGUAGE")
-                DEFAULT_LANGUAGE
+            // Validate language code for security using centralized validation
+            val validatedLanguageCode = AppConstants.Language.getValidatedLanguageCode(languageCode)
+
+            // Log warning if invalid language code was detected
+            if (languageCode != null && languageCode != validatedLanguageCode) {
+                Timber.w("Invalid language code: $languageCode, falling back to $validatedLanguageCode")
             }
 
             val locale = when (validatedLanguageCode) {
