@@ -53,14 +53,17 @@ class SampleDataGenerator @Inject constructor(
     }
 
     suspend fun replaceDemoTopic() = demoTopicMutex.withLock {
-        // Check if tutorial is enabled
+        // Allow regeneration even if tutorial is disabled, as long as a demo topic exists
+        // This ensures the demo topic is translated when language changes
         val tutorialEnabled = settingsDataStore.tutorialEnabled.first()
-        if (!tutorialEnabled) {
-            return
+        val existingDemoTopicId = settingsDataStore.demoTopicId.first()
+
+        if (!tutorialEnabled && existingDemoTopicId == null) {
+            // Tutorial disabled and no existing demo topic, don't create one
+            return@withLock
         }
 
         // Delete existing demo topic if it exists (atomic with creation)
-        val existingDemoTopicId = settingsDataStore.demoTopicId.first()
         if (existingDemoTopicId != null) {
             deleteDemoTopicCompletely(existingDemoTopicId)
             settingsDataStore.setDemoTopicId(null)
