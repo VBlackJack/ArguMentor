@@ -49,7 +49,9 @@ class TutorialManager @Inject constructor(
             // This ensures demo topic is translated even if user disabled tutorial after creation
             if (lastLanguage != currentLanguage) {
                 if (tutorialEnabled || demoTopicId != null) {
-                    sampleDataGenerator.replaceDemoTopic()
+                    // BUGFIX: Pass the TARGET language (currentLanguage) to replaceDemoTopic
+                    // This ensures the demo topic is created in the NEW language, not the old one
+                    sampleDataGenerator.replaceDemoTopic(currentLanguage)
                     // Store flag to show notification
                     setDemoTopicReplaced(true)
                 } else {
