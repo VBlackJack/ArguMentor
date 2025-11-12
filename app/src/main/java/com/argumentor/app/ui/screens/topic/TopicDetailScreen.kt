@@ -99,7 +99,11 @@ fun TopicDetailScreen(
                 viewModel.exportTopicToPdf(topicId, os) { success, error ->
                     coroutineScope.launch {
                         snackbarHostState.showSnackbar(
-                            message = if (success) "PDF exporté avec succès" else "Erreur: $error"
+                            message = if (success) {
+                                context.getString(R.string.export_pdf_success)
+                            } else {
+                                context.getString(R.string.export_error, error ?: "")
+                            }
                         )
                     }
                 }
@@ -117,7 +121,11 @@ fun TopicDetailScreen(
                 viewModel.exportTopicToMarkdown(topicId, os) { success, error ->
                     coroutineScope.launch {
                         snackbarHostState.showSnackbar(
-                            message = if (success) "Markdown exporté avec succès" else "Erreur: $error"
+                            message = if (success) {
+                                context.getString(R.string.export_markdown_success)
+                            } else {
+                                context.getString(R.string.export_error, error ?: "")
+                            }
                         )
                     }
                 }
@@ -133,26 +141,26 @@ fun TopicDetailScreen(
     if (showDeleteTopicDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteTopicDialog = false },
-            title = { Text("Supprimer le sujet ?") },
-            text = { Text("Cette action est irréversible. Toutes les affirmations, réfutations, preuves et questions associées seront également supprimées.") },
+            title = { Text(stringResource(R.string.topic_delete_dialog_title)) },
+            text = { Text(stringResource(R.string.topic_delete_dialog_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
                         showDeleteTopicDialog = false
                         viewModel.deleteTopic {
                             coroutineScope.launch {
-                                snackbarHostState.showSnackbar("Sujet supprimé")
+                                snackbarHostState.showSnackbar(context.getString(R.string.topic_deleted_message))
                             }
                             onNavigateBack()
                         }
                     }
                 ) {
-                    Text("Supprimer", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.action_delete), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteTopicDialog = false }) {
-                    Text("Annuler")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )
@@ -180,7 +188,7 @@ fun TopicDetailScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = topic?.title ?: "Sujet",
+                            text = topic?.title ?: stringResource(R.string.topic_default_title),
                             maxLines = 1,
                             overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                             modifier = Modifier.semantics { heading() }
@@ -218,7 +226,7 @@ fun TopicDetailScreen(
                         onDismissRequest = { showExportMenu = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Exporter en PDF") },
+                            text = { Text(stringResource(R.string.export_pdf_action)) },
                             leadingIcon = {
                                 Icon(
                                     Icons.Default.PictureAsPdf,
@@ -233,7 +241,7 @@ fun TopicDetailScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Exporter en Markdown") },
+                            text = { Text(stringResource(R.string.export_markdown_action)) },
                             leadingIcon = {
                                 Icon(
                                     Icons.Default.Description,
@@ -249,7 +257,7 @@ fun TopicDetailScreen(
                         )
                         Divider()
                         DropdownMenuItem(
-                            text = { Text("Supprimer le sujet", color = MaterialTheme.colorScheme.error) },
+                            text = { Text(stringResource(R.string.topic_delete_action), color = MaterialTheme.colorScheme.error) },
                             leadingIcon = {
                                 Icon(
                                     Icons.Default.Delete,
@@ -284,7 +292,7 @@ fun TopicDetailScreen(
                                 contentDescription = null
                             )
                         },
-                        text = { Text("Affirmation") }
+                        text = { Text(stringResource(R.string.fab_add_claim)) }
                     )
                     1 -> ExtendedFloatingActionButton(
                         onClick = { onNavigateToAddQuestion(topicId, null) },
@@ -294,7 +302,7 @@ fun TopicDetailScreen(
                                 contentDescription = null
                             )
                         },
-                        text = { Text("Question") }
+                        text = { Text(stringResource(R.string.fab_add_question)) }
                     )
                     2 -> ExtendedFloatingActionButton(
                         onClick = { onNavigateToAddSource(null) },
@@ -304,7 +312,7 @@ fun TopicDetailScreen(
                                 contentDescription = null
                             )
                         },
-                        text = { Text("Source") }
+                        text = { Text(stringResource(R.string.fab_add_source)) }
                     )
                     else -> null
                 }
@@ -345,7 +353,7 @@ fun TopicDetailScreen(
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
-                                    text = "Résumé du sujet",
+                                    text = stringResource(R.string.topic_summary_section),
                                     style = MaterialTheme.typography.labelLarge.copy(
                                         fontWeight = FontWeight.SemiBold,
                                         fontSize = 13.sp
@@ -358,12 +366,16 @@ fun TopicDetailScreen(
                                 modifier = Modifier
                                     .size(28.dp)
                                     .semantics {
-                                        stateDescription = if (showSummary) "Résumé développé" else "Résumé réduit"
+                                        stateDescription = stringResource(
+                                            if (showSummary) R.string.topic_summary_expanded else R.string.topic_summary_collapsed
+                                        )
                                     }
                             ) {
                                 Icon(
                                     if (showSummary) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                                    contentDescription = if (showSummary) "Masquer le résumé" else "Afficher le résumé",
+                                    contentDescription = stringResource(
+                                        if (showSummary) R.string.topic_hide_summary else R.string.topic_show_summary
+                                    ),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -417,17 +429,17 @@ fun TopicDetailScreen(
                 Tab(
                     selected = selectedTab == 0,
                     onClick = { viewModel.onTabSelected(0) },
-                    text = { Text("Affirmations (${claims.size})") }
+                    text = { Text(stringResource(R.string.tab_claims_count, claims.size)) }
                 )
                 Tab(
                     selected = selectedTab == 1,
                     onClick = { viewModel.onTabSelected(1) },
-                    text = { Text("Questions (${questions.size})") }
+                    text = { Text(stringResource(R.string.tab_questions_count, questions.size)) }
                 )
                 Tab(
                     selected = selectedTab == 2,
                     onClick = { viewModel.onTabSelected(2) },
-                    text = { Text("Sources (${sources.size})") }
+                    text = { Text(stringResource(R.string.tab_sources_count, sources.size)) }
                 )
             }
 
@@ -444,8 +456,8 @@ fun TopicDetailScreen(
                         viewModel.deleteClaim(claim) {
                             coroutineScope.launch {
                                 val result = snackbarHostState.showSnackbar(
-                                    message = "Affirmation supprimée",
-                                    actionLabel = "Annuler",
+                                    message = context.getString(R.string.claim_deleted_message),
+                                    actionLabel = context.getString(R.string.snackbar_undo),
                                     duration = SnackbarDuration.Short
                                 )
                                 if (result == SnackbarResult.ActionPerformed) {
@@ -473,8 +485,8 @@ fun TopicDetailScreen(
                         viewModel.deleteQuestion(question) {
                             coroutineScope.launch {
                                 val result = snackbarHostState.showSnackbar(
-                                    message = "Question supprimée",
-                                    actionLabel = "Annuler",
+                                    message = context.getString(R.string.question_deleted_message),
+                                    actionLabel = context.getString(R.string.snackbar_undo),
                                     duration = SnackbarDuration.Short
                                 )
                                 if (result == SnackbarResult.ActionPerformed) {
@@ -500,8 +512,8 @@ fun TopicDetailScreen(
                         viewModel.deleteSource(source) {
                             coroutineScope.launch {
                                 val result = snackbarHostState.showSnackbar(
-                                    message = "Source supprimée",
-                                    actionLabel = "Annuler",
+                                    message = context.getString(R.string.source_deleted_message),
+                                    actionLabel = context.getString(R.string.snackbar_undo),
                                     duration = SnackbarDuration.Short
                                 )
                                 if (result == SnackbarResult.ActionPerformed) {
@@ -533,9 +545,9 @@ private fun ClaimsTab(
     if (claims.isEmpty()) {
         EngagingEmptyState(
             icon = Icons.Default.Comment,
-            title = "Aucune affirmation pour l'instant",
-            description = "Les affirmations sont les arguments principaux de votre débat. Ajoutez votre première affirmation pour structurer votre réflexion.",
-            actionText = "Ajouter une affirmation",
+            title = stringResource(R.string.claims_empty_title),
+            description = stringResource(R.string.claims_empty_description),
+            actionText = stringResource(R.string.claims_empty_action),
             onAction = onAddClaim
         )
     } else {
@@ -580,8 +592,8 @@ private fun ClaimCard(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Supprimer l'affirmation ?") },
-            text = { Text("Cette action est irréversible. Toutes les réfutations et preuves associées seront également supprimées.") },
+            title = { Text(stringResource(R.string.claim_delete_dialog_title)) },
+            text = { Text(stringResource(R.string.claim_delete_dialog_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -589,12 +601,12 @@ private fun ClaimCard(
                         onDelete()
                     }
                 ) {
-                    Text("Supprimer", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.action_delete), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Annuler")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )
@@ -616,16 +628,16 @@ private fun ClaimCard(
         Claim.Stance.NEUTRAL -> Color(0xFF424242)  // Gris foncé
     }
 
-    val stanceText = when (claim.stance) {
-        Claim.Stance.PRO -> "Pour"
-        Claim.Stance.CON -> "Contre"
-        Claim.Stance.NEUTRAL -> "Neutre"
-    }
-    val strengthText = when (claim.strength) {
-        Claim.Strength.LOW -> "Faible"
-        Claim.Strength.MEDIUM -> "Moyen"
-        Claim.Strength.HIGH -> "Fort"
-    }
+    val stanceText = stringResource(when (claim.stance) {
+        Claim.Stance.PRO -> R.string.stance_pro
+        Claim.Stance.CON -> R.string.stance_con
+        Claim.Stance.NEUTRAL -> R.string.stance_neutral
+    })
+    val strengthText = stringResource(when (claim.strength) {
+        Claim.Strength.LOW -> R.string.strength_low
+        Claim.Strength.MEDIUM -> R.string.strength_medium
+        Claim.Strength.HIGH -> R.string.strength_high
+    })
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -635,7 +647,7 @@ private fun ClaimCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .semantics(mergeDescendants = true) {
-                    contentDescription = "Affirmation $stanceText, force $strengthText: ${claim.text}"
+                    contentDescription = stringResource(R.string.content_desc_claim_card, stanceText, strengthText, claim.text)
                 },
             colors = CardDefaults.elevatedCardColors(containerColor = backgroundColor),
             elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
@@ -667,11 +679,11 @@ private fun ClaimCard(
                                 .padding(horizontal = 8.dp, vertical = 3.dp)
                         ) {
                             Text(
-                                text = when (claim.stance) {
-                                    Claim.Stance.PRO -> "Pour"
-                                    Claim.Stance.CON -> "Contre"
-                                    Claim.Stance.NEUTRAL -> "Neutre"
-                                },
+                                text = stringResource(when (claim.stance) {
+                                    Claim.Stance.PRO -> R.string.stance_pro
+                                    Claim.Stance.CON -> R.string.stance_con
+                                    Claim.Stance.NEUTRAL -> R.string.stance_neutral
+                                }),
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 10.sp
@@ -681,17 +693,17 @@ private fun ClaimCard(
                         }
                         // Divider
                         Text(
-                            text = "•",
+                            text = stringResource(R.string.bullet_point),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         // Strength text
                         Text(
-                            text = when (claim.strength) {
-                                Claim.Strength.LOW -> "Faible"
-                                Claim.Strength.MEDIUM -> "Moyen"
-                                Claim.Strength.HIGH -> "Fort"
-                            },
+                            text = stringResource(when (claim.strength) {
+                                Claim.Strength.LOW -> R.string.strength_low
+                                Claim.Strength.MEDIUM -> R.string.strength_medium
+                                Claim.Strength.HIGH -> R.string.strength_high
+                            }),
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 10.sp,
@@ -769,7 +781,7 @@ private fun ClaimCard(
                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Preuves (${evidences.size})",
+                            text = stringResource(R.string.evidence_section_title, evidences.size),
                             style = MaterialTheme.typography.titleSmall,
                             color = cs.onSurface,
                             fontWeight = FontWeight.SemiBold
@@ -784,7 +796,7 @@ private fun ClaimCard(
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Ajouter", style = MaterialTheme.typography.labelSmall)
+                            Text(stringResource(R.string.evidence_add_button), style = MaterialTheme.typography.labelSmall)
                         }
                     }
 
@@ -795,8 +807,8 @@ private fun ClaimCard(
                         if (showDeleteEvidenceDialog) {
                             AlertDialog(
                                 onDismissRequest = { showDeleteEvidenceDialog = false },
-                                title = { Text("Supprimer la preuve ?") },
-                                text = { Text("Cette action est irréversible.") },
+                                title = { Text(stringResource(R.string.evidence_delete_dialog_title)) },
+                                text = { Text(stringResource(R.string.evidence_delete_dialog_message)) },
                                 confirmButton = {
                                     TextButton(
                                         onClick = {
@@ -806,8 +818,8 @@ private fun ClaimCard(
                                                 showDeleteEvidenceDialog = false
                                                 coroutineScope.launch {
                                                     val result = snackbarHostState.showSnackbar(
-                                                        message = "Preuve supprimée",
-                                                        actionLabel = "Annuler",
+                                                        message = context.getString(R.string.evidence_deleted_message),
+                                                        actionLabel = context.getString(R.string.snackbar_undo),
                                                         duration = SnackbarDuration.Short
                                                     )
                                                     if (result == SnackbarResult.ActionPerformed) {
@@ -817,12 +829,12 @@ private fun ClaimCard(
                                             }
                                         }
                                     ) {
-                                        Text("Supprimer", color = MaterialTheme.colorScheme.error)
+                                        Text(stringResource(R.string.action_delete), color = MaterialTheme.colorScheme.error)
                                     }
                                 },
                                 dismissButton = {
                                     TextButton(onClick = { showDeleteEvidenceDialog = false }) {
-                                        Text("Annuler")
+                                        Text(stringResource(R.string.action_cancel))
                                     }
                                 }
                             )
@@ -870,12 +882,12 @@ private fun ClaimCard(
                                                 .padding(horizontal = 6.dp, vertical = 2.dp)
                                         ) {
                                             Text(
-                                                text = when (evidence.type) {
-                                                    com.argumentor.app.data.model.Evidence.EvidenceType.STUDY -> "Étude"
-                                                    com.argumentor.app.data.model.Evidence.EvidenceType.STAT -> "Stat"
-                                                    com.argumentor.app.data.model.Evidence.EvidenceType.QUOTE -> "Citation"
-                                                    com.argumentor.app.data.model.Evidence.EvidenceType.EXAMPLE -> "Exemple"
-                                                },
+                                                text = stringResource(when (evidence.type) {
+                                                    com.argumentor.app.data.model.Evidence.EvidenceType.STUDY -> R.string.evidence_type_study
+                                                    com.argumentor.app.data.model.Evidence.EvidenceType.STAT -> R.string.evidence_type_stat
+                                                    com.argumentor.app.data.model.Evidence.EvidenceType.QUOTE -> R.string.evidence_type_quote
+                                                    com.argumentor.app.data.model.Evidence.EvidenceType.EXAMPLE -> R.string.evidence_type_example
+                                                }),
                                                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
                                                 color = cs.onSurfaceVariant
                                             )
@@ -888,11 +900,11 @@ private fun ClaimCard(
                                                 .padding(horizontal = 6.dp, vertical = 2.dp)
                                         ) {
                                             Text(
-                                                text = when (evidence.quality) {
-                                                    com.argumentor.app.data.model.Evidence.Quality.HIGH -> "Élevée"
-                                                    com.argumentor.app.data.model.Evidence.Quality.MEDIUM -> "Moyenne"
-                                                    com.argumentor.app.data.model.Evidence.Quality.LOW -> "Faible"
-                                                },
+                                                text = stringResource(when (evidence.quality) {
+                                                    com.argumentor.app.data.model.Evidence.Quality.HIGH -> R.string.evidence_quality_high
+                                                    com.argumentor.app.data.model.Evidence.Quality.MEDIUM -> R.string.evidence_quality_medium
+                                                    com.argumentor.app.data.model.Evidence.Quality.LOW -> R.string.evidence_quality_low
+                                                }),
                                                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
                                                 color = qualityTextColor
                                             )
@@ -913,7 +925,7 @@ private fun ClaimCard(
                                     ) {
                                         Icon(
                                             Icons.Default.Edit,
-                                            contentDescription = "Éditer",
+                                            contentDescription = stringResource(R.string.content_desc_edit_evidence),
                                             modifier = Modifier.size(16.dp),
                                             tint = cs.onSurfaceVariant
                                         )
@@ -924,7 +936,7 @@ private fun ClaimCard(
                                     ) {
                                         Icon(
                                             Icons.Default.Delete,
-                                            contentDescription = "Supprimer",
+                                            contentDescription = stringResource(R.string.content_desc_delete_evidence),
                                             modifier = Modifier.size(16.dp),
                                             tint = cs.error
                                         )
@@ -951,9 +963,9 @@ private fun QuestionsTab(
     if (questions.isEmpty()) {
         EngagingEmptyState(
             icon = Icons.Default.QuestionAnswer,
-            title = "Aucune question pour l'instant",
-            description = "Les questions permettent d'approfondir votre réflexion, d'explorer les nuances du sujet et de challenger vos affirmations.",
-            actionText = "Ajouter une question",
+            title = stringResource(R.string.questions_empty_title),
+            description = stringResource(R.string.questions_empty_description),
+            actionText = stringResource(R.string.questions_empty_action),
             onAction = onAddQuestion
         )
     } else {
@@ -968,8 +980,8 @@ private fun QuestionsTab(
                 if (showDeleteDialog) {
                     AlertDialog(
                         onDismissRequest = { showDeleteDialog = false },
-                        title = { Text("Supprimer la question ?") },
-                        text = { Text("Cette action est irréversible.") },
+                        title = { Text(stringResource(R.string.question_delete_dialog_title)) },
+                        text = { Text(stringResource(R.string.question_delete_dialog_message)) },
                         confirmButton = {
                             TextButton(
                                 onClick = {
@@ -977,12 +989,12 @@ private fun QuestionsTab(
                                     onDeleteQuestion(question)
                                 }
                             ) {
-                                Text("Supprimer", color = MaterialTheme.colorScheme.error)
+                                Text(stringResource(R.string.action_delete), color = MaterialTheme.colorScheme.error)
                             }
                         },
                         dismissButton = {
                             TextButton(onClick = { showDeleteDialog = false }) {
-                                Text("Annuler")
+                                Text(stringResource(R.string.action_cancel))
                             }
                         }
                     )
@@ -999,12 +1011,12 @@ private fun QuestionsTab(
                                 verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = when (question.kind) {
-                                        com.argumentor.app.data.model.Question.QuestionKind.SOCRATIC -> "Socratique"
-                                        com.argumentor.app.data.model.Question.QuestionKind.CLARIFYING -> "Clarification"
-                                        com.argumentor.app.data.model.Question.QuestionKind.CHALLENGE -> "Contestation"
-                                        com.argumentor.app.data.model.Question.QuestionKind.EVIDENCE -> "Preuve"
-                                    },
+                                    text = stringResource(when (question.kind) {
+                                        com.argumentor.app.data.model.Question.QuestionKind.SOCRATIC -> R.string.question_kind_socratic
+                                        com.argumentor.app.data.model.Question.QuestionKind.CLARIFYING -> R.string.question_kind_clarifying
+                                        com.argumentor.app.data.model.Question.QuestionKind.CHALLENGE -> R.string.question_kind_challenge
+                                        com.argumentor.app.data.model.Question.QuestionKind.EVIDENCE -> R.string.question_kind_evidence
+                                    }),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -1012,9 +1024,9 @@ private fun QuestionsTab(
                                 if (question.targetId != topicId) {
                                     val targetClaim = claims.find { claim -> claim.id == question.targetId }
                                     if (targetClaim != null) {
-                                        Text("•", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        Text(stringResource(R.string.bullet_point), color = MaterialTheme.colorScheme.onSurfaceVariant)
                                         Text(
-                                            text = "→ Affirmation",
+                                            text = stringResource(R.string.question_target_claim),
                                             style = MaterialTheme.typography.labelSmall,
                                             color = MaterialTheme.colorScheme.secondary
                                         )
@@ -1079,9 +1091,9 @@ private fun SourcesTab(
     if (sources.isEmpty()) {
         EngagingEmptyState(
             icon = Icons.Default.MenuBook,
-            title = "Aucune source",
-            description = "Les sources bibliographiques apparaîtront ici. Ajoutez des preuves avec sources à vos affirmations.",
-            actionText = "Ajouter une source",
+            title = stringResource(R.string.sources_empty_title),
+            description = stringResource(R.string.sources_empty_description),
+            actionText = stringResource(R.string.sources_empty_action),
             onAction = onAddSource
         )
     } else {
@@ -1154,7 +1166,7 @@ private fun SourcesTab(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Edit,
-                                    contentDescription = "Éditer la source",
+                                    contentDescription = stringResource(R.string.content_desc_edit_source),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -1164,7 +1176,7 @@ private fun SourcesTab(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Delete,
-                                    contentDescription = "Supprimer la source",
+                                    contentDescription = stringResource(R.string.content_desc_delete_source),
                                     tint = MaterialTheme.colorScheme.error
                                 )
                             }
