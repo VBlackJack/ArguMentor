@@ -33,6 +33,7 @@ class TutorialManager @Inject constructor(
 
     companion object {
         private const val KEY_LAST_LANGUAGE = "last_language"
+        private const val KEY_DEMO_TOPIC_REPLACED = "demo_topic_replaced"
     }
 
     fun checkAndHandleLanguageChange() {
@@ -49,12 +50,30 @@ class TutorialManager @Inject constructor(
             if (lastLanguage != currentLanguage) {
                 if (tutorialEnabled || demoTopicId != null) {
                     sampleDataGenerator.replaceDemoTopic()
+                    // Store flag to show notification
+                    setDemoTopicReplaced(true)
+                } else {
+                    setDemoTopicReplaced(false)
                 }
+            } else {
+                setDemoTopicReplaced(false)
             }
 
             // Save current language for next comparison
             saveLastLanguage(currentLanguage)
         }
+    }
+
+    fun getDemoTopicReplaced(): Boolean {
+        return prefs.getBoolean(KEY_DEMO_TOPIC_REPLACED, false)
+    }
+
+    fun clearDemoTopicReplacedFlag() {
+        prefs.edit().putBoolean(KEY_DEMO_TOPIC_REPLACED, false).apply()
+    }
+
+    private fun setDemoTopicReplaced(replaced: Boolean) {
+        prefs.edit().putBoolean(KEY_DEMO_TOPIC_REPLACED, replaced).apply()
     }
 
     fun handleTutorialToggle(enabled: Boolean) {

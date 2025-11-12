@@ -2,6 +2,7 @@ package com.argumentor.app.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.argumentor.app.R
 import com.argumentor.app.data.preferences.LanguagePreferences
 import com.argumentor.app.data.util.TutorialManager
 import com.argumentor.app.ui.navigation.ArguMentorNavigation
@@ -80,6 +82,16 @@ class MainActivity : ComponentActivity() {
 
         // Check for language changes and update demo topic if needed
         tutorialManager.checkAndHandleLanguageChange()
+
+        // Show toast if demo topic was replaced
+        if (tutorialManager.getDemoTopicReplaced()) {
+            Toast.makeText(
+                this,
+                getString(R.string.demo_topic_translated),
+                Toast.LENGTH_LONG
+            ).show()
+            tutorialManager.clearDemoTopicReplacedFlag()
+        }
 
         // Enable modern edge-to-edge (content draws behind system bars)
         WindowCompat.setDecorFitsSystemWindows(window, false)
