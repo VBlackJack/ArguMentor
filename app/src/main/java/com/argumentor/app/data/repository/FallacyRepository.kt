@@ -2,7 +2,9 @@ package com.argumentor.app.data.repository
 
 import com.argumentor.app.data.local.dao.FallacyDao
 import com.argumentor.app.data.model.Fallacy
+import com.argumentor.app.data.model.getCurrentIsoTimestamp
 import kotlinx.coroutines.flow.Flow
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -157,4 +159,80 @@ class FallacyRepository @Inject constructor(
      * @return The number of custom fallacies
      */
     suspend fun getCustomFallacyCount(): Int = fallacyDao.getCustomFallacyCount()
+
+    /**
+     * Ensures default fallacies are loaded in the database.
+     * This fixes the issue where first-time installations don't have any fallacies
+     * because the migration only runs on database upgrades, not on initial creation.
+     *
+     * BUG FIX: The MIGRATION_9_10 only runs when upgrading from version 9 to 10.
+     * If a user installs the app for the first time after version 10, the migration
+     * never runs and the fallacies table remains empty.
+     *
+     * This method should be called once at app startup to ensure the default
+     * fallacies are always available.
+     */
+    suspend fun ensureDefaultFallaciesExist() {
+        try {
+            val count = getFallacyCount()
+
+            // Only insert defaults if the database is completely empty
+            if (count == 0) {
+                Timber.d("No fallacies found in database. Inserting 30 default fallacies...")
+
+                val currentTime = getCurrentIsoTimestamp()
+                val defaultFallacies = listOf(
+                    "ad_hominem" to "Ad Hominem",
+                    "straw_man" to "Straw Man",
+                    "appeal_to_ignorance" to "Appeal to Ignorance",
+                    "post_hoc" to "Post Hoc",
+                    "false_dilemma" to "False Dilemma",
+                    "begging_question" to "Begging the Question",
+                    "slippery_slope" to "Slippery Slope",
+                    "postdiction" to "Postdiction",
+                    "cherry_picking" to "Cherry Picking",
+                    "appeal_to_tradition" to "Appeal to Tradition",
+                    "appeal_to_authority" to "Appeal to Authority",
+                    "appeal_to_popularity" to "Appeal to Popularity",
+                    "circular_reasoning" to "Circular Reasoning",
+                    "tu_quoque" to "Tu Quoque",
+                    "hasty_generalization" to "Hasty Generalization",
+                    "red_herring" to "Red Herring",
+                    "no_true_scotsman" to "No True Scotsman",
+                    "loaded_question" to "Loaded Question",
+                    "appeal_to_emotion" to "Appeal to Emotion",
+                    "appeal_to_nature" to "Appeal to Nature",
+                    "false_equivalence" to "False Equivalence",
+                    "burden_of_proof" to "Burden of Proof",
+                    "texas_sharpshooter" to "Texas Sharpshooter",
+                    "middle_ground" to "Middle Ground",
+                    "anecdotal" to "Anecdotal",
+                    "composition" to "Composition",
+                    "division" to "Division",
+                    "genetic_fallacy" to "Genetic Fallacy",
+                    "bandwagon" to "Bandwagon",
+                    "appeal_to_fear" to "Appeal to Fear"
+                ).map { (id, name) ->
+                    Fallacy(
+                        id = id,
+                        name = name,
+                        description = "See string resource: fallacy_${id}_description",
+                        example = "See string resource: fallacy_${id}_example",
+                        category = "",
+                        isCustom = false,
+                        createdAt = currentTime,
+                        updatedAt = currentTime
+                    )
+                }
+
+                insertFallacies(defaultFallacies)
+                Timber.i("Successfully inserted ${defaultFallacies.size} default fallacies")
+            } else {
+                Timber.d("Fallacies already exist in database (count: $count). Skipping initialization.")
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to ensure default fallacies exist")
+            // Don't throw - allow the app to continue even if this fails
+        }
+    }
 }

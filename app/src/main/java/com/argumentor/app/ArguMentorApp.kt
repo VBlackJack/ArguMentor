@@ -4,8 +4,13 @@ import android.app.Application
 import android.content.Context
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import com.argumentor.app.data.repository.FallacyRepository
 import com.argumentor.app.util.LocaleHelper
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -21,6 +26,12 @@ class ArguMentorApp : Application(), Configuration.Provider {
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
+
+    @Inject
+    lateinit var fallacyRepository: FallacyRepository
+
+    // Application-scoped coroutine scope for background initialization tasks
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     // Lazy configuration to avoid race condition with Hilt injection
     private val _workManagerConfiguration by lazy {
@@ -87,6 +98,15 @@ class ArguMentorApp : Application(), Configuration.Provider {
                     }
                 }
             })
+        }
+
+        // BUG FIX: Initialize default fallacies on first launch
+        // The migration MIGRATION_9_10 only runs when upgrading from version 9 to 10.
+        // Users who install the app for the first time after version 10 would have
+        // an empty fallacies table. This ensures the 30 default fallacies are always
+        // available, even on fresh installations.
+        applicationScope.launch {
+            fallacyRepository.ensureDefaultFallaciesExist()
         }
     }
 
