@@ -113,7 +113,7 @@ private fun NavigationDrawerContent(
 ) {
     Column(modifier = Modifier.padding(16.dp)) {
         Text(
-            "ArguMentor",
+            stringResource(R.string.app_name),
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(bottom = 16.dp)
         )

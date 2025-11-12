@@ -161,7 +161,7 @@ private fun FallacyCard(
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Annuler")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -204,7 +204,7 @@ private fun FallacyCard(
                         ) {
                             Icon(
                                 Icons.Default.Edit,
-                                contentDescription = "Modifier",
+                                contentDescription = stringResource(R.string.edit),
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
                             )
@@ -217,7 +217,7 @@ private fun FallacyCard(
                         ) {
                             Icon(
                                 Icons.Default.Delete,
-                                contentDescription = "Supprimer",
+                                contentDescription = stringResource(R.string.delete),
                                 tint = MaterialTheme.colorScheme.error,
                                 modifier = Modifier.size(18.dp)
                             )
@@ -251,7 +251,7 @@ private fun FallacyCard(
                             shape = MaterialTheme.shapes.small
                         ) {
                             Text(
-                                text = "Personnalisé",
+                                text = stringResource(R.string.fallacy_custom_badge),
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer

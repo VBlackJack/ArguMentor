@@ -4,6 +4,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.argumentor.app.R
 import com.argumentor.app.util.AppPermission
 
 @Composable
@@ -14,9 +16,8 @@ fun PermissionDialog(
 ) {
     val (title, description) = when (permission) {
         AppPermission.RECORD_AUDIO -> Pair(
-            "Permission Microphone",
-            "ArguMentor a besoin d'accéder au microphone pour la fonctionnalité de reconnaissance vocale (Speech-to-Text). Cela vous permet de dicter vos arguments rapidement.\n\n" +
-            "Note : L'import/export de fichiers utilise le sélecteur de fichiers Android (SAF) et ne nécessite pas de permission de stockage."
+            stringResource(R.string.permission_microphone_title),
+            stringResource(R.string.permission_microphone_description)
         )
     }
 
@@ -26,12 +27,12 @@ fun PermissionDialog(
         text = { Text(description) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("Autoriser")
+                Text(stringResource(R.string.button_allow))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Refuser")
+                Text(stringResource(R.string.button_deny))
             }
         }
     )
@@ -43,19 +44,19 @@ fun PermissionRationaleDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
-    val title = "Permissions requises"
+    val title = stringResource(R.string.permission_required_title)
     val description = buildString {
-        append("ArguMentor a besoin des permissions suivantes pour fonctionner correctement :\n\n")
+        append(stringResource(R.string.permission_rationale_intro))
 
         permissions.forEach { permission ->
             when (permission) {
                 AppPermission.RECORD_AUDIO ->
-                    append("• Microphone : pour la reconnaissance vocale (Speech-to-Text)\n")
+                    append(stringResource(R.string.permission_microphone_rationale))
             }
         }
 
-        append("\n📁 Import/Export : Le sélecteur de fichiers Android (SAF) est utilisé. Aucune permission de stockage requise.")
-        append("\n\nVous pouvez modifier ces permissions à tout moment dans les paramètres de l'application.")
+        append(stringResource(R.string.permission_saf_note))
+        append(stringResource(R.string.permission_settings_note_short))
     }
 
     AlertDialog(
@@ -64,12 +65,12 @@ fun PermissionRationaleDialog(
         text = { Text(description) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("Continuer")
+                Text(stringResource(R.string.button_continue))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Plus tard")
+                Text(stringResource(R.string.button_later))
             }
         }
     )

@@ -61,14 +61,16 @@ fun VoiceInputTextField(
         }
     }
 
-    val promptText = when (locale.language) {
-        "fr" -> "Parlez maintenant..."
-        "en" -> "Speak now..."
-        "es" -> "Habla ahora..."
-        "de" -> "Jetzt sprechen..."
-        "it" -> "Parla ora..."
-        else -> "Speak now..."
-    }
+    val promptText = androidx.compose.ui.platform.LocalContext.current.getString(
+        when (locale.language) {
+            "fr" -> R.string.speech_prompt_french
+            "en" -> R.string.speech_prompt_english
+            "es" -> R.string.speech_prompt_spanish
+            "de" -> R.string.speech_prompt_german
+            "it" -> R.string.speech_prompt_italian
+            else -> R.string.speech_prompt_default
+        }
+    )
 
     // BUGFIX: Properly format language code - handle empty country
     // Format: "fr-FR" or "en-US", or just "fr" if no country

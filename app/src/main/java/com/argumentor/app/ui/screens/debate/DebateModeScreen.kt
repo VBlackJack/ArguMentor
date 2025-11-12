@@ -70,7 +70,7 @@ fun DebateModeScreen(
                     if (debateCards.isNotEmpty()) {
                         Box {
                             IconButton(onClick = { showCardMenu = true }) {
-                                Icon(Icons.Default.List, contentDescription = "Sélectionner une carte")
+                                Icon(Icons.Default.List, contentDescription = stringResource(R.string.debate_select_card))
                             }
                             DropdownMenu(
                                 expanded = showCardMenu,
@@ -306,6 +306,12 @@ private fun FlipCard(
         animationSpec = tween(durationMillis = 400), label = ""
     )
 
+    // Capture state description using stringResource
+    val stateDescriptionText = if (isFlipped)
+        stringResource(R.string.debate_showing_answer)
+    else
+        stringResource(R.string.debate_showing_claim)
+
     Card(
         modifier = modifier
             .graphicsLayer {
@@ -337,7 +343,7 @@ private fun FlipCard(
             }
             .clickable { onFlip() }
             .semantics {
-                stateDescription = if (isFlipped) "Affichage de la réponse" else "Affichage de l'affirmation"
+                stateDescription = stateDescriptionText
             }
     ) {
         Box(
@@ -382,9 +388,9 @@ private fun ClaimFront(
         ) {
             Text(
                 text = when (card.claim.stance) {
-                    com.argumentor.app.data.model.Claim.Stance.PRO -> "POUR"
-                    com.argumentor.app.data.model.Claim.Stance.CON -> "CONTRE"
-                    com.argumentor.app.data.model.Claim.Stance.NEUTRAL -> "NEUTRE"
+                    com.argumentor.app.data.model.Claim.Stance.PRO -> stringResource(R.string.debate_stance_pro)
+                    com.argumentor.app.data.model.Claim.Stance.CON -> stringResource(R.string.debate_stance_con)
+                    com.argumentor.app.data.model.Claim.Stance.NEUTRAL -> stringResource(R.string.debate_stance_neutral)
                 },
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                 style = MaterialTheme.typography.labelMedium,
@@ -443,7 +449,7 @@ private fun ClaimFront(
                                     )
                                     Icon(
                                         Icons.Default.ChevronRight,
-                                        contentDescription = "Voir détails",
+                                        contentDescription = stringResource(R.string.debate_view_details),
                                         tint = MaterialTheme.colorScheme.error,
                                         modifier = Modifier.size(16.dp)
                                     )
@@ -521,7 +527,7 @@ private fun ClaimBack(
                             if (rebuttal.fallacyIds.isNotEmpty()) {
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    text = "Sophismes identifiés:",
+                                    text = stringResource(R.string.debate_fallacies_identified),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.error
@@ -554,7 +560,7 @@ private fun ClaimBack(
                                             )
                                             Icon(
                                                 Icons.Default.ChevronRight,
-                                                contentDescription = "Voir détails",
+                                                contentDescription = stringResource(R.string.debate_view_details),
                                                 tint = MaterialTheme.colorScheme.error,
                                                 modifier = Modifier.size(14.dp)
                                             )
@@ -586,7 +592,7 @@ private fun ClaimBack(
                             if (evidence.sourceId != null) {
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
-                                    text = "Avec source",
+                                    text = stringResource(R.string.debate_with_source),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.secondary
                                 )

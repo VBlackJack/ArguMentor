@@ -43,6 +43,10 @@ class TopicDetailViewModel @Inject constructor(
     private val _sources = MutableStateFlow<List<Source>>(emptyList())
     val sources: StateFlow<List<Source>> = _sources.asStateFlow()
 
+    // PERFORMANCE OPTIMIZATION: Preload all evidences to avoid N+1 subscriptions
+    private val _evidencesByClaimId = MutableStateFlow<Map<String, List<Evidence>>>(emptyMap())
+    val evidencesByClaimId: StateFlow<Map<String, List<Evidence>>> = _evidencesByClaimId.asStateFlow()
+
     private val _selectedTab = MutableStateFlow(0)
     val selectedTab: StateFlow<Int> = _selectedTab.asStateFlow()
 
@@ -77,10 +81,17 @@ class TopicDetailViewModel @Inject constructor(
                 topicRepository.getTopicById(topicId),
                 claimRepository.getAllClaims(),
                 sourceRepository.getAllSources(),
-                questionRepository.getQuestionsByTargetId(topicId)
-            ) { topic, allClaims, allSources, topicQuestions ->
+                questionRepository.getQuestionsByTargetId(topicId),
+                evidenceRepository.getAllEvidences() // PERF: Preload all evidences
+            ) { topic, allClaims, allSources, topicQuestions, allEvidences ->
                 // Filter claims for this topic
                 val filteredClaims = allClaims.filter { claim -> claim.topics.contains(topicId) }
+                val claimIds = filteredClaims.map { it.id }
+
+                // PERF: Group evidences by claimId to avoid N+1 Flow subscriptions
+                val evidencesMap = allEvidences
+                    .filter { it.claimId in claimIds }
+                    .groupBy { it.claimId }
 
                 // Return all data together
                 TopicData(
@@ -88,7 +99,8 @@ class TopicDetailViewModel @Inject constructor(
                     claims = filteredClaims,
                     sources = allSources,
                     topicQuestions = topicQuestions,
-                    claimIds = filteredClaims.map { it.id }
+                    claimIds = claimIds,
+                    evidencesByClaimId = evidencesMap
                 )
             }.flatMapLatest { data ->
                 // Load questions for all claims
@@ -110,13 +122,14 @@ class TopicDetailViewModel @Inject constructor(
             }.stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-                initialValue = TopicData(null, emptyList(), emptyList(), emptyList(), emptyList()) to emptyList()
+                initialValue = TopicData(null, emptyList(), emptyList(), emptyList(), emptyList(), emptyMap()) to emptyList()
             ).collect { (data, allQuestions) ->
                 // Update all state atomically at once to prevent inconsistent UI state
                 _topic.value = data.topic
                 _claims.value = data.claims
                 _sources.value = data.sources
                 _questions.value = allQuestions
+                _evidencesByClaimId.value = data.evidencesByClaimId
             }
         }
     }
@@ -129,7 +142,8 @@ class TopicDetailViewModel @Inject constructor(
         val claims: List<Claim>,
         val sources: List<Source>,
         val topicQuestions: List<Question>,
-        val claimIds: List<String>
+        val claimIds: List<String>,
+        val evidencesByClaimId: Map<String, List<Evidence>>
     )
 
     fun onTabSelected(index: Int) {

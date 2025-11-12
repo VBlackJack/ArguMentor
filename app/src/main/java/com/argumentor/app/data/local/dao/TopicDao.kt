@@ -64,4 +64,9 @@ interface TopicDao {
 
     @Query("SELECT COUNT(*) FROM topics")
     suspend fun getTopicCount(): Int
+
+    // Aggregated queries for statistics (prevents OOM by not loading all data in memory)
+
+    @Query("SELECT COUNT(*) FROM topics WHERE posture = :posture")
+    suspend fun getTopicCountByPosture(posture: Topic.Posture): Int
 }

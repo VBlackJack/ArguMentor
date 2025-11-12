@@ -9,11 +9,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.argumentor.app.R
 import com.argumentor.app.data.model.Topic
 import com.argumentor.app.data.model.Claim
 import com.argumentor.app.data.repository.Statistics
@@ -30,10 +33,10 @@ fun StatisticsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Statistiques") },
+                title = { Text(stringResource(R.string.stats_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Retour")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.content_desc_back))
                     }
                 }
             )
@@ -75,7 +78,7 @@ fun StatisticsScreen(
             if (statistics.mostDebatedTopics.isNotEmpty()) {
                 item {
                     Text(
-                        text = "Topics les plus débattus",
+                        text = stringResource(R.string.stats_most_debated_topics),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -101,7 +104,7 @@ private fun OverviewCard(statistics: Statistics) {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Vue d'ensemble",
+                text = stringResource(R.string.stats_overview_section),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -115,17 +118,17 @@ private fun OverviewCard(statistics: Statistics) {
             ) {
                 StatItem(
                     icon = Icons.Default.Topic,
-                    label = "Topics",
+                    label = stringResource(R.string.stats_topics_title),
                     value = statistics.totalTopics.toString()
                 )
                 StatItem(
                     icon = Icons.Default.Chat,
-                    label = "Arguments",
+                    label = stringResource(R.string.stats_claims_short),
                     value = statistics.totalClaims.toString()
                 )
                 StatItem(
                     icon = Icons.Default.Reply,
-                    label = "Contre-args",
+                    label = stringResource(R.string.stats_rebuttals_short),
                     value = statistics.totalRebuttals.toString()
                 )
             }
@@ -138,17 +141,17 @@ private fun OverviewCard(statistics: Statistics) {
             ) {
                 StatItem(
                     icon = Icons.Default.Article,
-                    label = "Preuves",
+                    label = stringResource(R.string.stats_evidences_short),
                     value = statistics.totalEvidence.toString()
                 )
                 StatItem(
                     icon = Icons.Default.HelpOutline,
-                    label = "Questions",
+                    label = stringResource(R.string.stats_questions_title),
                     value = statistics.totalQuestions.toString()
                 )
                 StatItem(
                     icon = Icons.Default.Source,
-                    label = "Sources",
+                    label = stringResource(R.string.stats_sources_title),
                     value = statistics.totalSources.toString()
                 )
             }
@@ -190,14 +193,15 @@ private fun StanceDistributionCard(claimsByStance: Map<Claim.Stance, Int>) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Distribution des arguments",
+                text = stringResource(R.string.stats_arguments_distribution),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            val total = claimsByStance.values.sum()
+            // PERFORMANCE FIX: Memoize total to avoid recalculating on every recomposition
+            val total = remember(claimsByStance) { claimsByStance.values.sum() }
             if (total > 0) {
                 Claim.Stance.values().forEach { stance ->
                     val count = claimsByStance[stance] ?: 0
@@ -247,7 +251,7 @@ private fun StanceDistributionCard(claimsByStance: Map<Claim.Stance, Int>) {
                 }
             } else {
                 Text(
-                    text = "Aucun argument pour le moment",
+                    text = stringResource(R.string.stats_no_arguments),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -261,14 +265,15 @@ private fun StrengthDistributionCard(claimsByStrength: Map<Claim.Strength, Int>)
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Force des arguments",
+                text = stringResource(R.string.stats_arguments_strength),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            val total = claimsByStrength.values.sum()
+            // PERFORMANCE FIX: Memoize total to avoid recalculating on every recomposition
+            val total = remember(claimsByStrength) { claimsByStrength.values.sum() }
             if (total > 0) {
                 Claim.Strength.values().forEach { strength ->
                     val count = claimsByStrength[strength] ?: 0
@@ -302,7 +307,7 @@ private fun StrengthDistributionCard(claimsByStrength: Map<Claim.Strength, Int>)
                 }
             } else {
                 Text(
-                    text = "Aucun argument pour le moment",
+                    text = stringResource(R.string.stats_no_arguments),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -316,14 +321,15 @@ private fun PostureDistributionCard(topicsByPosture: Map<Topic.Posture, Int>) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Postures des topics",
+                text = stringResource(R.string.stats_topics_posture),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            val total = topicsByPosture.values.sum()
+            // PERFORMANCE FIX: Memoize total to avoid recalculating on every recomposition
+            val total = remember(topicsByPosture) { topicsByPosture.values.sum() }
             if (total > 0) {
                 Topic.Posture.values().forEach { posture ->
                     val count = topicsByPosture[posture] ?: 0
@@ -358,7 +364,7 @@ private fun PostureDistributionCard(topicsByPosture: Map<Topic.Posture, Int>) {
                 }
             } else {
                 Text(
-                    text = "Aucun topic pour le moment",
+                    text = stringResource(R.string.stats_no_topics),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -377,7 +383,7 @@ private fun AveragesCard(statistics: Statistics) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Moyennes",
+                text = stringResource(R.string.stats_averages),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onTertiaryContainer
@@ -386,17 +392,17 @@ private fun AveragesCard(statistics: Statistics) {
             Spacer(modifier = Modifier.height(12.dp))
 
             AverageItem(
-                label = "Arguments par topic",
+                label = stringResource(R.string.stats_avg_claims_per_topic),
                 value = String.format("%.1f", statistics.averageClaimsPerTopic)
             )
 
             AverageItem(
-                label = "Contre-arguments par argument",
+                label = stringResource(R.string.stats_avg_rebuttals_per_claim),
                 value = String.format("%.1f", statistics.averageRebuttalsPerClaim)
             )
 
             AverageItem(
-                label = "Force moyenne",
+                label = stringResource(R.string.stats_avg_strength),
                 value = String.format("%.1f/3.0", statistics.averageStrength)
             )
         }
@@ -442,10 +448,10 @@ private fun TopicStatsCard(topicStats: TopicStats) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                SmallStatItem("Arguments", topicStats.claimCount)
-                SmallStatItem("Contre-args", topicStats.rebuttalCount)
-                SmallStatItem("Preuves", topicStats.evidenceCount)
-                SmallStatItem("Questions", topicStats.questionCount)
+                SmallStatItem(stringResource(R.string.stats_claims_short), topicStats.claimCount)
+                SmallStatItem(stringResource(R.string.stats_rebuttals_short), topicStats.rebuttalCount)
+                SmallStatItem(stringResource(R.string.stats_evidences_short), topicStats.evidenceCount)
+                SmallStatItem(stringResource(R.string.stats_questions_title), topicStats.questionCount)
             }
         }
     }

@@ -53,8 +53,8 @@ fun FallacyDetailScreen(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Supprimer ce sophisme ?") },
-            text = { Text("Cette action est irréversible. Voulez-vous vraiment supprimer ce sophisme personnalisé ?") },
+            title = { Text(stringResource(R.string.fallacy_delete_dialog_title)) },
+            text = { Text(stringResource(R.string.fallacy_delete_dialog_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -62,12 +62,12 @@ fun FallacyDetailScreen(
                         showDeleteDialog = false
                     }
                 ) {
-                    Text("Supprimer", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Annuler")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -96,13 +96,13 @@ fun FallacyDetailScreen(
                         IconButton(onClick = { onNavigateToEdit(fallacyId) }) {
                             Icon(
                                 Icons.Default.Edit,
-                                contentDescription = "Modifier"
+                                contentDescription = stringResource(R.string.edit)
                             )
                         }
                         IconButton(onClick = { showDeleteDialog = true }) {
                             Icon(
                                 Icons.Default.Delete,
-                                contentDescription = "Supprimer",
+                                contentDescription = stringResource(R.string.delete),
                                 tint = MaterialTheme.colorScheme.error
                             )
                         }
@@ -111,7 +111,8 @@ fun FallacyDetailScreen(
             )
         }
     ) { paddingValues ->
-        if (fallacy == null) {
+        val currentFallacy = fallacy
+        if (currentFallacy == null) {
             // Fallacy not found
             Box(
                 modifier = Modifier
@@ -125,7 +126,6 @@ fun FallacyDetailScreen(
                 )
             }
         } else {
-            val currentFallacy = fallacy!!
             Column(
                 modifier = Modifier
                     .fillMaxSize()

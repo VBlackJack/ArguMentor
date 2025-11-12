@@ -90,4 +90,15 @@ interface ClaimDao {
 
     @Query("SELECT COUNT(*) FROM claims")
     suspend fun getClaimCount(): Int
+
+    // Aggregated queries for statistics (prevents OOM by not loading all data in memory)
+
+    @Query("SELECT COUNT(*) FROM claims WHERE stance = :stance")
+    suspend fun getClaimCountByStance(stance: Claim.Stance): Int
+
+    @Query("SELECT COUNT(*) FROM claims WHERE strength = :strength")
+    suspend fun getClaimCountByStrength(strength: Claim.Strength): Int
+
+    @Query("SELECT AVG(CASE strength WHEN 'LOW' THEN 1 WHEN 'MEDIUM' THEN 2 WHEN 'HIGH' THEN 3 ELSE 0 END) FROM claims")
+    suspend fun getAverageStrength(): Double?
 }
