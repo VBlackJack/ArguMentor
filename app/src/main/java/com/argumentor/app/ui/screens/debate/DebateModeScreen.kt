@@ -306,6 +306,12 @@ private fun FlipCard(
         animationSpec = tween(durationMillis = 400), label = ""
     )
 
+    // Capture state description using stringResource
+    val stateDescriptionText = if (isFlipped)
+        stringResource(R.string.debate_showing_answer)
+    else
+        stringResource(R.string.debate_showing_claim)
+
     Card(
         modifier = modifier
             .graphicsLayer {
@@ -337,11 +343,7 @@ private fun FlipCard(
             }
             .clickable { onFlip() }
             .semantics {
-                val context = androidx.compose.ui.platform.LocalContext.current
-                stateDescription = if (isFlipped)
-                    context.getString(R.string.debate_showing_answer)
-                else
-                    context.getString(R.string.debate_showing_claim)
+                stateDescription = stateDescriptionText
             }
     ) {
         Box(

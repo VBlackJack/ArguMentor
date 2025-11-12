@@ -39,18 +39,6 @@ class ImportExportRepository @Inject constructor(
     }
 
     /**
-     * Helper class to track import statistics.
-     */
-    private data class ImportStats(
-        var created: Int = 0,
-        var updated: Int = 0,
-        var duplicates: Int = 0,
-        var nearDuplicates: Int = 0,
-        var errors: Int = 0,
-        val errorMessages: MutableList<String> = mutableListOf()
-    )
-
-    /**
      * Export all data to JSON format (schema v1.0).
      */
     suspend fun exportToJson(outputStream: OutputStream): Result<Unit> = withContext(Dispatchers.IO) {
@@ -199,9 +187,6 @@ class ImportExportRepository @Inject constructor(
      * to ensure atomicity. If any error occurs, all changes are rolled back,
      * preventing partial imports that could leave the database in an inconsistent state.
      *
-     * CODE QUALITY FIX: Refactored to extract sub-functions for each entity type.
-     * This reduces cyclomatic complexity and improves maintainability.
-     *
      * Import order (respects foreign key dependencies):
      * 1. Tags (no dependencies)
      * 2. Sources (no dependencies)
@@ -225,72 +210,39 @@ class ImportExportRepository @Inject constructor(
         importData: ExportData,
         similarityThreshold: Double
     ): ImportResult = database.withTransaction {
-        val stats = ImportStats()
+        var created = 0
+        var updated = 0
+        var duplicates = 0
+        var nearDuplicates = 0
+        var errors = 0
+        val errorMessages = mutableListOf<String>()
         val itemsForReview = mutableListOf<ReviewItem>()
 
-        // Import in correct order to respect foreign key dependencies
-        importTags(importData.tags, stats)
-        importSources(importData.sources, similarityThreshold, stats, itemsForReview)
-        importTopics(importData.topics, stats)
-        importClaims(importData.claims, similarityThreshold, stats, itemsForReview)
-        importRebuttals(importData.rebuttals, similarityThreshold, stats, itemsForReview)
-        importEvidences(importData.evidences, similarityThreshold, stats, itemsForReview)
-        importQuestions(importData.questions, stats)
-
-        val totalItems = importData.topics.size + importData.claims.size +
-                importData.rebuttals.size + importData.evidences.size +
-                importData.questions.size + importData.sources.size + importData.tags.size
-
-        ImportResult(
-            success = stats.errors == 0,
-            totalItems = totalItems,
-            created = stats.created,
-            updated = stats.updated,
-            duplicates = stats.duplicates,
-            nearDuplicates = stats.nearDuplicates,
-            errors = stats.errors,
-            errorMessages = stats.errorMessages,
-            itemsForReview = itemsForReview
-        )
-    }
-
-    /**
-     * Import Tags (no dependencies).
-     */
-    private suspend fun importTags(tags: List<TagDto>, stats: ImportStats) {
-        tags.forEach { tagDto ->
+        // Import Tags first (no dependencies)
+        importData.tags.forEach { tagDto ->
             try {
                 val existing = database.tagDao().getTagById(tagDto.id)
                 if (existing != null) {
-                    stats.duplicates++
+                    duplicates++
                 } else {
                     val existingByLabel = database.tagDao().getTagByLabel(tagDto.label)
                     if (existingByLabel != null) {
-                        stats.duplicates++
+                        duplicates++
                     } else {
                         database.tagDao().insertTag(tagDto.toModel())
-                        stats.created++
+                        created++
                     }
                 }
             } catch (e: Exception) {
-                stats.errors++
-                stats.errorMessages.add("Tag ${tagDto.id}: ${e.message}")
+                errors++
+                errorMessages.add("Tag ${tagDto.id}: ${e.message}")
             }
         }
-    }
 
-    /**
-     * Import Sources with fingerprint checking.
-     */
-    private suspend fun importSources(
-        sources: List<SourceDto>,
-        similarityThreshold: Double,
-        stats: ImportStats,
-        itemsForReview: MutableList<ReviewItem>
-    ) {
+        // Import Sources with fingerprint checking
         val allExistingSources = database.sourceDao().getAllSourcesSync()
 
-        sources.forEach { sourceDto ->
+        importData.sources.forEach { sourceDto ->
             try {
                 val source = sourceDto.toModel()
                 val fingerprint = FingerprintUtils.generateSourceFingerprint(source)
@@ -300,9 +252,9 @@ class ImportExportRepository @Inject constructor(
                     // Update if incoming is newer
                     if (isNewerTimestamp(source.updatedAt, existing.updatedAt)) {
                         database.sourceDao().updateSource(source)
-                        stats.updated++
+                        updated++
                     } else {
-                        stats.duplicates++
+                        duplicates++
                     }
                 } else {
                     // Check for near-duplicates using title similarity
@@ -318,7 +270,7 @@ class ImportExportRepository @Inject constructor(
                     }
 
                     if (isNearDuplicate) {
-                        stats.nearDuplicates++
+                        nearDuplicates++
                         itemsForReview.add(
                             ReviewItem(
                                 type = "Source",
@@ -337,21 +289,17 @@ class ImportExportRepository @Inject constructor(
                         )
                     } else {
                         database.sourceDao().insertSource(source)
-                        stats.created++
+                        created++
                     }
                 }
             } catch (e: Exception) {
-                stats.errors++
-                stats.errorMessages.add("Source ${sourceDto.id}: ${e.message}")
+                errors++
+                errorMessages.add("Source ${sourceDto.id}: ${e.message}")
             }
         }
-    }
 
-    /**
-     * Import Topics (references Tags).
-     */
-    private suspend fun importTopics(topics: List<TopicDto>, stats: ImportStats) {
-        topics.forEach { topicDto ->
+        // Import Topics
+        importData.topics.forEach { topicDto ->
             try {
                 val existing = database.topicDao().getTopicById(topicDto.id)
                 if (existing != null) {
