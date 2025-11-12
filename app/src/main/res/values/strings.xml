@@ -52,6 +52,7 @@
     <string name="claim_add_fallacy">Ajouter un sophisme</string>
     <string name="claim_select_fallacy">Sélectionner un sophisme</string>
     <string name="claim_no_more_fallacies">Tous les sophismes disponibles ont été ajoutés</string>
+    <string name="claim_no_fallacies_in_catalog">Aucun sophisme disponible. Veuillez d\'abord créer des sophismes dans le catalogue.</string>
     <string name="claim_error_text_required">Le texte de l\'affirmation est obligatoire</string>
 
     <!-- Stance -->

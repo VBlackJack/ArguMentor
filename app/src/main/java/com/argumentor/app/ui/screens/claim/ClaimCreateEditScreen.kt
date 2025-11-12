@@ -279,8 +279,14 @@ fun FallacySelectionDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (availableFallacies.isEmpty()) {
+                    // Distinguish between no fallacies in database vs all fallacies already selected
+                    val messageResId = if (allFallacies.isEmpty()) {
+                        R.string.claim_no_fallacies_in_catalog
+                    } else {
+                        R.string.claim_no_more_fallacies
+                    }
                     Text(
-                        stringResource(R.string.claim_no_more_fallacies),
+                        stringResource(messageResId),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
