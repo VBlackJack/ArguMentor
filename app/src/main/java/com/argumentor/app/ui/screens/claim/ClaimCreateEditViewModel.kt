@@ -39,8 +39,16 @@ class ClaimCreateEditViewModel @Inject constructor(
     private val _selectedFallacies = MutableStateFlow<List<String>>(emptyList())
     val selectedFallacies: StateFlow<List<String>> = _selectedFallacies.asStateFlow()
 
-    private val _allFallacies = MutableStateFlow<List<Fallacy>>(emptyList())
-    val allFallacies: StateFlow<List<Fallacy>> = _allFallacies.asStateFlow()
+    /**
+     * MEMORY LEAK FIX: Expose fallacies as StateFlow with lifecycle-aware collection.
+     * Flow only collects while there are active subscribers (UI visible).
+     */
+    val allFallacies: StateFlow<List<Fallacy>> = fallacyRepository.getAllFallacies()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+            initialValue = emptyList()
+        )
 
     private val _isEditMode = MutableStateFlow(false)
     private val _claimId = MutableStateFlow<String?>(null)
@@ -60,15 +68,6 @@ class ClaimCreateEditViewModel @Inject constructor(
     private val _initialStrength = MutableStateFlow(Claim.Strength.MEDIUM)
     private val _initialTopics = MutableStateFlow<List<String>>(emptyList())
     private val _initialFallacies = MutableStateFlow<List<String>>(emptyList())
-
-    init {
-        // Load all fallacies from database for selection
-        viewModelScope.launch {
-            fallacyRepository.getAllFallacies().collect { fallacies ->
-                _allFallacies.value = fallacies
-            }
-        }
-    }
 
     fun clearError() {
         _errorMessage.value = null

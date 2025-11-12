@@ -3,6 +3,7 @@ package com.argumentor.app.ui.components
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
@@ -39,31 +40,38 @@ fun HighlightedText(
         return
     }
 
-    val annotatedString = buildAnnotatedString {
-        var currentIndex = 0
-        val lowerText = text.lowercase()
-        val lowerQuery = query.lowercase()
+    /**
+     * PERFORMANCE FIX: Memoize annotated string calculation.
+     * Without remember(), buildAnnotatedString would be recalculated on every recomposition,
+     * causing unnecessary CPU usage and potential UI jank.
+     */
+    val annotatedString = remember(text, query, highlightColor) {
+        buildAnnotatedString {
+            var currentIndex = 0
+            val lowerText = text.lowercase()
+            val lowerQuery = query.lowercase()
 
-        while (currentIndex < text.length) {
-            val index = lowerText.indexOf(lowerQuery, currentIndex)
+            while (currentIndex < text.length) {
+                val index = lowerText.indexOf(lowerQuery, currentIndex)
 
-            if (index == -1) {
-                // No more matches, append rest of text
-                append(text.substring(currentIndex))
-                break
+                if (index == -1) {
+                    // No more matches, append rest of text
+                    append(text.substring(currentIndex))
+                    break
+                }
+
+                // Append text before match
+                if (index > currentIndex) {
+                    append(text.substring(currentIndex, index))
+                }
+
+                // Append highlighted match
+                withStyle(SpanStyle(background = highlightColor)) {
+                    append(text.substring(index, index + query.length))
+                }
+
+                currentIndex = index + query.length
             }
-
-            // Append text before match
-            if (index > currentIndex) {
-                append(text.substring(currentIndex, index))
-            }
-
-            // Append highlighted match
-            withStyle(SpanStyle(background = highlightColor)) {
-                append(text.substring(index, index + query.length))
-            }
-
-            currentIndex = index + query.length
         }
     }
 

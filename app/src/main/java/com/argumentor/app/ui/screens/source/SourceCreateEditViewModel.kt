@@ -116,19 +116,26 @@ class SourceCreateEditViewModel @Inject constructor(
             _isLoading.value = false
         }
 
-        // Load linked evidences and claims
+        // MEMORY LEAK FIX: Load linked evidences and claims with lifecycle-aware collection
+        // using stateIn() so collection stops when UI is not visible
         viewModelScope.launch {
-            evidenceRepository.getEvidencesBySourceId(sourceId).collect { evidences ->
-                _linkedEvidences.value = evidences
+            evidenceRepository.getEvidencesBySourceId(sourceId)
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+                    initialValue = emptyList()
+                )
+                .collect { evidences ->
+                    _linkedEvidences.value = evidences
 
-                // PERFORMANCE: Use bulk query instead of loading ALL claims and filtering in memory
-                val claimIds = evidences.map { it.claimId }.distinct()
-                if (claimIds.isNotEmpty()) {
-                    _linkedClaims.value = claimRepository.getClaimsByIds(claimIds)
-                } else {
-                    _linkedClaims.value = emptyList()
+                    // PERFORMANCE: Use bulk query instead of loading ALL claims and filtering in memory
+                    val claimIds = evidences.map { it.claimId }.distinct()
+                    if (claimIds.isNotEmpty()) {
+                        _linkedClaims.value = claimRepository.getClaimsByIds(claimIds)
+                    } else {
+                        _linkedClaims.value = emptyList()
+                    }
                 }
-            }
         }
     }
 
