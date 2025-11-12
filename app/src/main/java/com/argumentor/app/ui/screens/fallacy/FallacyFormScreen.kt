@@ -60,7 +60,7 @@ fun FallacyFormScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = if (isEditMode) "Modifier le sophisme" else "Nouveau sophisme",
+                        text = stringResource(if (isEditMode) R.string.fallacy_form_title_edit else R.string.fallacy_form_title_new),
                         modifier = Modifier.semantics { heading() }
                     )
                 },
@@ -109,8 +109,7 @@ fun FallacyFormScreen(
                             tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Text(
-                            text = "Créez un sophisme personnalisé pour enrichir le catalogue. " +
-                                    "Les sophismes personnalisés peuvent être utilisés dans vos débats.",
+                            text = stringResource(R.string.fallacy_form_info),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
@@ -121,8 +120,8 @@ fun FallacyFormScreen(
                 OutlinedTextField(
                     value = name,
                     onValueChange = viewModel::onNameChange,
-                    label = { Text("Nom du sophisme *") },
-                    placeholder = { Text("Ex: Faux Dilemme") },
+                    label = { Text(stringResource(R.string.fallacy_field_name)) },
+                    placeholder = { Text(stringResource(R.string.fallacy_field_name_placeholder)) },
                     isError = nameError != null,
                     supportingText = nameError?.let { { Text(it) } },
                     modifier = Modifier.fillMaxWidth(),
@@ -133,8 +132,8 @@ fun FallacyFormScreen(
                 OutlinedTextField(
                     value = description,
                     onValueChange = viewModel::onDescriptionChange,
-                    label = { Text("Description *") },
-                    placeholder = { Text("Expliquez ce qu'est ce sophisme...") },
+                    label = { Text(stringResource(R.string.fallacy_field_description)) },
+                    placeholder = { Text(stringResource(R.string.fallacy_field_description_placeholder)) },
                     isError = descriptionError != null,
                     supportingText = descriptionError?.let { { Text(it) } },
                     modifier = Modifier.fillMaxWidth(),
@@ -146,8 +145,8 @@ fun FallacyFormScreen(
                 OutlinedTextField(
                     value = example,
                     onValueChange = viewModel::onExampleChange,
-                    label = { Text("Exemple *") },
-                    placeholder = { Text("Donnez un exemple concret...") },
+                    label = { Text(stringResource(R.string.fallacy_field_example)) },
+                    placeholder = { Text(stringResource(R.string.fallacy_field_example_placeholder)) },
                     isError = exampleError != null,
                     supportingText = exampleError?.let { { Text(it) } },
                     modifier = Modifier.fillMaxWidth(),
@@ -159,8 +158,8 @@ fun FallacyFormScreen(
                 OutlinedTextField(
                     value = category,
                     onValueChange = viewModel::onCategoryChange,
-                    label = { Text("Catégorie (optionnel)") },
-                    placeholder = { Text("Ex: Appel à l'émotion") },
+                    label = { Text(stringResource(R.string.fallacy_field_category)) },
+                    placeholder = { Text(stringResource(R.string.fallacy_field_category_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -180,7 +179,7 @@ fun FallacyFormScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                     }
-                    Text(if (isEditMode) "Enregistrer" else "Créer")
+                    Text(stringResource(if (isEditMode) R.string.fallacy_button_save else R.string.fallacy_button_create))
                 }
 
                 // Cancel button
@@ -189,7 +188,7 @@ fun FallacyFormScreen(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !isSaving
                 ) {
-                    Text("Annuler")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         }

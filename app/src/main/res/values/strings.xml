@@ -735,4 +735,33 @@
     <!-- Miscellaneous -->
     <string name="bullet_point">•</string>
     <string name="snackbar_undo">Annuler</string>
+
+    <!-- Debate Mode - Additional strings -->
+    <string name="debate_select_card">Sélectionner une carte</string>
+    <string name="debate_showing_answer">Affichage de la réponse</string>
+    <string name="debate_showing_claim">Affichage de l\'affirmation</string>
+    <string name="debate_stance_pro">POUR</string>
+    <string name="debate_stance_con">CONTRE</string>
+    <string name="debate_stance_neutral">NEUTRE</string>
+    <string name="debate_view_details">Voir détails</string>
+    <string name="debate_fallacies_identified">Sophismes identifiés:</string>
+    <string name="debate_with_source">Avec source</string>
+
+    <!-- Fallacy Catalog - Additional strings -->
+    <string name="fallacy_custom_badge">Personnalisé</string>
+
+    <!-- Fallacy Form -->
+    <string name="fallacy_form_title_edit">Modifier le sophisme</string>
+    <string name="fallacy_form_title_new">Nouveau sophisme</string>
+    <string name="fallacy_form_info">Créez un sophisme personnalisé pour enrichir le catalogue. Les sophismes personnalisés peuvent être utilisés dans vos débats.</string>
+    <string name="fallacy_field_name">Nom du sophisme *</string>
+    <string name="fallacy_field_name_placeholder">Ex: Faux Dilemme</string>
+    <string name="fallacy_field_description">Description *</string>
+    <string name="fallacy_field_description_placeholder">Expliquez ce qu\'est ce sophisme...</string>
+    <string name="fallacy_field_example">Exemple *</string>
+    <string name="fallacy_field_example_placeholder">Donnez un exemple concret...</string>
+    <string name="fallacy_field_category">Catégorie (optionnel)</string>
+    <string name="fallacy_field_category_placeholder">Ex: Appel à l\'émotion</string>
+    <string name="fallacy_button_save">Enregistrer</string>
+    <string name="fallacy_button_create">Créer</string>
 </resources>
