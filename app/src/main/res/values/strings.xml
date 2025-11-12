@@ -242,6 +242,8 @@
     <string name="accessibility_statistics">Statistiques</string>
     <string name="accessibility_settings">Paramètres</string>
     <string name="accessibility_import_export">Import/Export</string>
+    <string name="accessibility_save">Enregistrer</string>
+    <string name="accessibility_delete">Supprimer</string>
     <!-- Settings Screen -->
     <string name="settings_title">Paramètres</string>
     <string name="settings_appearance">Apparence</string>
@@ -472,15 +474,23 @@
 
     <!-- Relative Time Formatting -->
     <string name="time_just_now">À l\'instant</string>
+    <string name="time_minutes_ago">Il y a %d minutes</string>
     <string name="time_minutes_ago_one">Il y a %d minute</string>
     <string name="time_minutes_ago_other">Il y a %d minutes</string>
+    <string name="time_hours_ago">Il y a %d heures</string>
     <string name="time_hours_ago_one">Il y a %d heure</string>
     <string name="time_hours_ago_other">Il y a %d heures</string>
+    <string name="time_days_ago">Il y a %d jours</string>
     <string name="time_days_ago_one">Il y a %d jour</string>
     <string name="time_days_ago_other">Il y a %d jours</string>
     <string name="time_weeks_ago">Il y a plus d\'une semaine</string>
 
     <!-- Speech Recognition Prompts -->
+    <string name="speech_prompt_fr">Parlez maintenant…</string>
+    <string name="speech_prompt_en">Speak now…</string>
+    <string name="speech_prompt_es">Habla ahora…</string>
+    <string name="speech_prompt_de">Jetzt sprechen…</string>
+    <string name="speech_prompt_it">Parla ora…</string>
     <string name="speech_prompt_french">Parlez maintenant…</string>
     <string name="speech_prompt_english">Speak now…</string>
     <string name="speech_prompt_spanish">Habla ahora…</string>
@@ -565,9 +575,6 @@
     <string name="claims_empty_title">Aucune affirmation pour l\'instant</string>
     <string name="claims_empty_description">Les affirmations sont les arguments principaux de votre débat. Ajoutez votre première affirmation pour structurer votre réflexion.</string>
     <string name="claims_empty_action">Ajouter une affirmation</string>
-    <string name="questions_empty_title">Aucune question pour l\'instant</string>
-    <string name="questions_empty_description">Les questions permettent d\'approfondir votre réflexion, d\'explorer les nuances du sujet et de challenger vos affirmations.</string>
-    <string name="questions_empty_action">Ajouter une question</string>
     <string name="sources_empty_title">Aucune source</string>
     <string name="sources_empty_description">Les sources bibliographiques apparaîtront ici. Ajoutez des preuves avec sources à vos affirmations.</string>
     <string name="sources_empty_action">Ajouter une source</string>
@@ -581,17 +588,7 @@
     <!-- Export Messages -->
     <string name="export_pdf_success">PDF exporté avec succès</string>
     <string name="export_markdown_success">Markdown exporté avec succès</string>
-    <string name="export_error">Erreur: %s</string>
-
-    <!-- Claim Stance Labels -->
-    <string name="stance_pro">Pour</string>
-    <string name="stance_con">Contre</string>
-    <string name="stance_neutral">Neutre</string>
-
-    <!-- Claim Strength Labels -->
-    <string name="strength_low">Faible</string>
-    <string name="strength_medium">Moyen</string>
-    <string name="strength_high">Fort</string>
+    <string name="export_error_formatted">Erreur: %s</string>
 
     <!-- Evidence Section -->
     <string name="evidence_section_title">Preuves (%d)</string>
@@ -607,15 +604,6 @@
     <string name="evidence_quality_high">Élevée</string>
     <string name="evidence_quality_medium">Moyenne</string>
     <string name="evidence_quality_low">Faible</string>
-
-    <!-- Question Kind Labels -->
-    <string name="question_kind_socratic">Socratique</string>
-    <string name="question_kind_clarifying">Clarification</string>
-    <string name="question_kind_challenge">Contestation</string>
-    <string name="question_kind_evidence">Preuve</string>
-
-    <!-- Question Target Labels -->
-    <string name="question_target_claim">→ Affirmation</string>
 
     <!-- Content Descriptions -->
     <string name="content_desc_claim_card">Affirmation %1$s, force %2$s: %3$s</string>
@@ -643,7 +631,6 @@
     <string name="import_stat_near_duplicates">Quasi-doublons: %d</string>
     <string name="import_stat_errors">Erreurs: %d</string>
     <string name="import_confirm_button">Confirmer</string>
-    <string name="export_error">Erreur lors de l\'export: %s</string>
     <string name="import_file_error">Erreur lors de la lecture du fichier: %s</string>
 
     <!-- Topic Create/Edit Screen -->
@@ -658,8 +645,6 @@
     <string name="topic_posture_academic">Comparatif Académique</string>
     <string name="topic_tags_section">Tags</string>
     <string name="topic_new_tag">Nouveau tag</string>
-    <string name="unsaved_changes_title">Modifications non sauvegardées</string>
-    <string name="unsaved_changes_message">Vous avez des modifications non sauvegardées. Voulez-vous vraiment quitter sans enregistrer ?</string>
     <string name="action_leave">Quitter</string>
 
     <!-- Source Create/Edit Screen -->
