@@ -19,6 +19,7 @@ import com.argumentor.app.data.preferences.LanguagePreferences
 import com.argumentor.app.data.util.TutorialManager
 import com.argumentor.app.ui.navigation.ArguMentorNavigation
 import com.argumentor.app.ui.theme.ArguMentorTheme
+import com.argumentor.app.util.AppConstants
 import com.argumentor.app.util.LocaleHelper
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -36,19 +37,42 @@ class MainActivity : ComponentActivity() {
     lateinit var tutorialManager: TutorialManager
 
     override fun attachBaseContext(newBase: Context) {
-        // Read language from a simple preferences file
-        // We use a separate SharedPreferences file for quick access
-        val prefs = newBase.getSharedPreferences("app_language_prefs", Context.MODE_PRIVATE)
-        val languageCode = prefs.getString("language_code", "fr") ?: "fr"
-        
-        val locale = when (languageCode) {
-            "en" -> java.util.Locale("en", "US")
-            "fr" -> java.util.Locale("fr", "FR")
-            else -> java.util.Locale("fr", "FR")
+        try {
+            // ISSUE-004 FIX: Added language code validation and error handling
+            // ISSUE-005 FIX: Now uses AppConstants for consistent configuration
+            val prefs = newBase.getSharedPreferences(
+                AppConstants.Language.PREFS_NAME,
+                Context.MODE_PRIVATE
+            )
+            val languageCode = prefs.getString(
+                AppConstants.Language.PREF_KEY_LANGUAGE_CODE,
+                AppConstants.Language.DEFAULT_LANGUAGE
+            )
+
+            // Validate language code against whitelist
+            val validatedLanguageCode = AppConstants.Language.getValidatedLanguageCode(languageCode)
+
+            // Log warning if invalid language code was detected
+            if (languageCode != null && languageCode != validatedLanguageCode) {
+                android.util.Log.w(
+                    "MainActivity",
+                    "Invalid language code: $languageCode, falling back to $validatedLanguageCode"
+                )
+            }
+
+            val locale = when (validatedLanguageCode) {
+                "en" -> java.util.Locale("en", "US")
+                "fr" -> java.util.Locale("fr", "FR")
+                else -> java.util.Locale("fr", "FR") // Fallback
+            }
+
+            val context = LocaleHelper.setLocale(newBase, locale)
+            super.attachBaseContext(context)
+        } catch (e: Exception) {
+            // Fallback to default context on error
+            android.util.Log.e("MainActivity", "Failed to set locale", e)
+            super.attachBaseContext(newBase)
         }
-        
-        val context = LocaleHelper.setLocale(newBase, locale)
-        super.attachBaseContext(context)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

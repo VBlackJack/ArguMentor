@@ -216,13 +216,16 @@ fun rememberSpeechToTextLauncher(
  * Create a speech recognition intent with specified locale.
  * Handles locales with or without country codes properly.
  *
- * INTERNATIONALIZATION: Now uses string resources for prompts instead of hardcoded text.
+ * INTERNATIONALIZATION FIX:
+ * - Now uses string resources for prompts instead of hardcoded text
+ * - Default locale changed from Locale.FRENCH to Locale.getDefault() for better i18n support
+ * - Automatically adapts to user's device language
  *
  * @param context Context to access string resources
- * @param locale The locale to use for recognition (default: French)
+ * @param locale The locale to use for recognition (default: system default locale)
  * @return Configured Intent for speech recognition
  */
-fun createSpeechIntent(context: Context, locale: Locale = Locale.FRENCH): Intent {
+fun createSpeechIntent(context: Context, locale: Locale = Locale.getDefault()): Intent {
     // Use resource strings for prompts instead of hardcoded text
     val promptText = when (locale.language) {
         "fr" -> context.getString(R.string.speech_prompt_fr)

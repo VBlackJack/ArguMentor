@@ -466,6 +466,7 @@
     <string name="validation_url_http_only">Only HTTP and HTTPS protocols are allowed</string>
     <string name="validation_email_invalid">Invalid email address</string>
     <string name="validation_score_invalid">Score must be between 0.0 and 1.0</string>
+    <string name="validation_timestamp_invalid_format">Invalid date format (must be in ISO 8601 format)</string>
 
     <!-- Share Messages -->
     <string name="share_from_app">Shared from ArguMentor</string>
@@ -671,4 +672,129 @@
     <!-- Miscellaneous -->
     <string name="bullet_point">•</string>
     <string name="snackbar_undo">Undo</string>
+
+    <!-- Template Library -->
+    <!-- Doctrinal Claim Template -->
+    <string name="template_doctrinal_claim_name">Doctrinal Claim</string>
+    <string name="template_doctrinal_claim_description">To analyze a religious, philosophical or ideological doctrinal position</string>
+    <string name="template_doctrinal_claim_field_definition_name">Definition</string>
+    <string name="template_doctrinal_claim_field_definition_description">Clear definition of the doctrine</string>
+    <string name="template_doctrinal_claim_field_texts_name">Cited texts</string>
+    <string name="template_doctrinal_claim_field_texts_description">Source text citations</string>
+    <string name="template_doctrinal_claim_field_historical_context_name">Historical context</string>
+    <string name="template_doctrinal_claim_field_historical_context_description">Formulation context</string>
+    <string name="template_doctrinal_claim_field_variants_name">Variants</string>
+    <string name="template_doctrinal_claim_field_variants_description">Different interpretations</string>
+    <string name="template_doctrinal_claim_field_primary_sources_name">Primary sources</string>
+    <string name="template_doctrinal_claim_field_primary_sources_description">Original texts</string>
+    <string name="template_doctrinal_claim_field_secondary_sources_name">Secondary sources</string>
+    <string name="template_doctrinal_claim_field_secondary_sources_description">Academic analyses</string>
+    <string name="template_doctrinal_claim_field_counterarguments_name">Typical counterarguments</string>
+    <string name="template_doctrinal_claim_field_counterarguments_description">Common objections</string>
+    <string name="template_doctrinal_claim_field_socratic_questions_name">Socratic questions</string>
+    <string name="template_doctrinal_claim_field_socratic_questions_description">Questions to deepen understanding</string>
+
+    <!-- Argument from Authority Template -->
+    <string name="template_argument_from_authority_name">Argument from Authority</string>
+    <string name="template_argument_from_authority_description">To evaluate an argument based on the expertise of an authority</string>
+    <string name="template_argument_from_authority_field_authority_name">Who is the authority</string>
+    <string name="template_argument_from_authority_field_authority_description">Name and title</string>
+    <string name="template_argument_from_authority_field_expertise_name">Field of expertise</string>
+    <string name="template_argument_from_authority_field_expertise_description">Area of competence</string>
+    <string name="template_argument_from_authority_field_qualifications_name">Qualifications</string>
+    <string name="template_argument_from_authority_field_qualifications_description">Degrees, publications, experience</string>
+    <string name="template_argument_from_authority_field_conflicts_name">Conflicts of interest</string>
+    <string name="template_argument_from_authority_field_conflicts_description">Potential biases</string>
+    <string name="template_argument_from_authority_field_consensus_name">Scientific consensus</string>
+    <string name="template_argument_from_authority_field_consensus_description">Position of the community</string>
+    <string name="template_argument_from_authority_field_contradictory_sources_name">Contradictory sources</string>
+    <string name="template_argument_from_authority_field_contradictory_sources_description">Authorities in disagreement</string>
+    <string name="template_argument_from_authority_field_date_name">Date of statement</string>
+    <string name="template_argument_from_authority_field_date_description">Temporal context</string>
+
+    <!-- Scientific Fact Template -->
+    <string name="template_scientific_fact_name">Scientific Fact</string>
+    <string name="template_scientific_fact_description">To document a scientific claim</string>
+    <string name="template_scientific_fact_field_hypothesis_name">Hypothesis</string>
+    <string name="template_scientific_fact_field_hypothesis_description">Tested hypothesis</string>
+    <string name="template_scientific_fact_field_method_name">Method</string>
+    <string name="template_scientific_fact_field_method_description">Experimental protocol</string>
+    <string name="template_scientific_fact_field_sample_name">Sample</string>
+    <string name="template_scientific_fact_field_sample_description">Size and characteristics</string>
+    <string name="template_scientific_fact_field_results_name">Results</string>
+    <string name="template_scientific_fact_field_results_description">Obtained data</string>
+    <string name="template_scientific_fact_field_publication_date_name">Publication date</string>
+    <string name="template_scientific_fact_field_publication_date_description">Year of the study</string>
+    <string name="template_scientific_fact_field_limits_name">Limitations</string>
+    <string name="template_scientific_fact_field_limits_description">Methodological limitations</string>
+    <string name="template_scientific_fact_field_replications_name">Replications</string>
+    <string name="template_scientific_fact_field_replications_description">Confirming/refuting studies</string>
+    <string name="template_scientific_fact_field_meta_analyses_name">Meta-analyses</string>
+    <string name="template_scientific_fact_field_meta_analyses_description">Available syntheses</string>
+    <string name="template_scientific_fact_field_evidence_level_name">Evidence level</string>
+    <string name="template_scientific_fact_field_evidence_level_description">Strength of evidence (low/medium/high)</string>
+
+    <!-- Testimony Template -->
+    <string name="template_testimony_name">Testimony</string>
+    <string name="template_testimony_description">To evaluate the reliability of a testimony</string>
+    <string name="template_testimony_field_witness_name">Witness</string>
+    <string name="template_testimony_field_witness_description">Identity and context</string>
+    <string name="template_testimony_field_testimony_date_name">Testimony date</string>
+    <string name="template_testimony_field_testimony_date_description">When reported</string>
+    <string name="template_testimony_field_event_date_name">Event date</string>
+    <string name="template_testimony_field_event_date_description">When observed</string>
+    <string name="template_testimony_field_circumstances_name">Circumstances</string>
+    <string name="template_testimony_field_circumstances_description">Observation conditions</string>
+    <string name="template_testimony_field_verifiability_name">Verifiability</string>
+    <string name="template_testimony_field_verifiability_description">Verifiable elements</string>
+    <string name="template_testimony_field_corroborations_name">Corroborations</string>
+    <string name="template_testimony_field_corroborations_description">Concordant testimonies</string>
+    <string name="template_testimony_field_contradictions_name">Contradictions</string>
+    <string name="template_testimony_field_contradictions_description">Divergent testimonies</string>
+    <string name="template_testimony_field_alternative_explanations_name">Alternative explanations</string>
+    <string name="template_testimony_field_alternative_explanations_description">Other possible interpretations</string>
+    <string name="template_testimony_field_motivations_name">Motivations</string>
+    <string name="template_testimony_field_motivations_description">Reasons for testifying</string>
+
+    <!-- Academic Comparison Template -->
+    <string name="template_academic_comparison_name">Academic Comparison</string>
+    <string name="template_academic_comparison_description">To systematically compare two theses or positions</string>
+    <string name="template_academic_comparison_field_thesis_a_name">Thesis A</string>
+    <string name="template_academic_comparison_field_thesis_a_description">First position</string>
+    <string name="template_academic_comparison_field_thesis_b_name">Thesis B</string>
+    <string name="template_academic_comparison_field_thesis_b_description">Second position</string>
+    <string name="template_academic_comparison_field_criteria_name">Comparison criteria</string>
+    <string name="template_academic_comparison_field_criteria_description">Evaluation points</string>
+    <string name="template_academic_comparison_field_arguments_for_a_name">Arguments for A</string>
+    <string name="template_academic_comparison_field_arguments_for_a_description">Strengths of thesis A</string>
+    <string name="template_academic_comparison_field_arguments_against_a_name">Arguments against A</string>
+    <string name="template_academic_comparison_field_arguments_against_a_description">Weaknesses of thesis A</string>
+    <string name="template_academic_comparison_field_arguments_for_b_name">Arguments for B</string>
+    <string name="template_academic_comparison_field_arguments_for_b_description">Strengths of thesis B</string>
+    <string name="template_academic_comparison_field_arguments_against_b_name">Arguments against B</string>
+    <string name="template_academic_comparison_field_arguments_against_b_description">Weaknesses of thesis B</string>
+    <string name="template_academic_comparison_field_academic_consensus_name">Academic consensus</string>
+    <string name="template_academic_comparison_field_academic_consensus_description">Dominant position</string>
+    <string name="template_academic_comparison_field_bibliography_name">Bibliography</string>
+    <string name="template_academic_comparison_field_bibliography_description">Main sources</string>
+
+    <!-- Historical Claim Template -->
+    <string name="template_historical_claim_name">Historical Claim</string>
+    <string name="template_historical_claim_description">To analyze a claim about a historical event</string>
+    <string name="template_historical_claim_field_event_name">Event</string>
+    <string name="template_historical_claim_field_event_description">Description of the event</string>
+    <string name="template_historical_claim_field_date_name">Date</string>
+    <string name="template_historical_claim_field_date_description">Dating of the event</string>
+    <string name="template_historical_claim_field_primary_sources_name">Primary sources</string>
+    <string name="template_historical_claim_field_primary_sources_description">Contemporary documents</string>
+    <string name="template_historical_claim_field_source_dating_name">Source dating</string>
+    <string name="template_historical_claim_field_source_dating_description">Age of manuscripts/artifacts</string>
+    <string name="template_historical_claim_field_secondary_sources_name">Secondary sources</string>
+    <string name="template_historical_claim_field_secondary_sources_description">Historical analyses</string>
+    <string name="template_historical_claim_field_historical_consensus_name">Historical consensus</string>
+    <string name="template_historical_claim_field_historical_consensus_description">Position of historians</string>
+    <string name="template_historical_claim_field_debates_name">Debates</string>
+    <string name="template_historical_claim_field_debates_description">Points of controversy</string>
+    <string name="template_historical_claim_field_context_name">Context</string>
+    <string name="template_historical_claim_field_context_description">Historical context</string>
 </resources>

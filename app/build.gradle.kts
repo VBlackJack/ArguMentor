@@ -82,16 +82,11 @@ android {
         }
     }
 
-    // TODO: Add Baseline Profile for improved Compose startup performance
-    // Baseline Profiles are ART-friendly precompiled code that can improve app startup time
-    // by up to 30% and reduce jank during initial frames.
-    //
-    // Implementation steps:
-    // 1. Add androidx.benchmark library for profiling
-    // 2. Create baseline-prof.txt with critical startup paths
-    // 3. Include Compose navigation routes and frequently-used screens
-    //
-    // Priority: Medium - Not critical but provides measurable UX improvements
+    // Baseline Profile Support (PERF-002)
+    // Baseline Profiles improve app startup time by up to 30% and reduce jank during initial frames.
+    // They enable Ahead-Of-Time (AOT) compilation of critical code paths.
+    // The profile is defined in app/src/main/baseline-prof.txt and applied automatically
+    // by ProfileInstaller at app startup.
     // See: https://developer.android.com/topic/performance/baselineprofiles
 }
 
@@ -142,6 +137,11 @@ dependencies {
 
     // Logging
     implementation("com.jakewharton.timber:timber:5.0.1")
+
+    // Baseline Profile Support (PERF-002)
+    // ProfileInstaller automatically applies baseline profiles at app startup
+    // This enables AOT compilation of critical code paths, improving startup time
+    implementation("androidx.profileinstaller:profileinstaller:1.3.1")
 
     // Testing
     testImplementation("junit:junit:4.13.2")

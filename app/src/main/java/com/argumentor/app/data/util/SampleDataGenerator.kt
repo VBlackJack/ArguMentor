@@ -7,9 +7,19 @@ import com.argumentor.app.data.model.*
 import com.argumentor.app.data.repository.*
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Generates sample/demo data for tutorial purposes.
+ *
+ * RACE CONDITION FIX:
+ * - Uses Mutex to prevent concurrent calls from creating duplicate demo topics
+ * - Ensures atomic check-and-create operations
+ */
 @Singleton
 class SampleDataGenerator @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -21,40 +31,45 @@ class SampleDataGenerator @Inject constructor(
     private val sourceRepository: SourceRepository,
     private val settingsDataStore: SettingsDataStore
 ) {
+    // Mutex to prevent race conditions when creating demo topics
+    private val demoTopicMutex = Mutex()
 
-    suspend fun generateSampleData() {
+    suspend fun generateSampleData() = demoTopicMutex.withLock {
         // Check if tutorial is enabled
         val tutorialEnabled = settingsDataStore.tutorialEnabled.first()
         if (!tutorialEnabled) {
             return
         }
 
-        // Check if demo topic already exists
+        // Check if demo topic already exists (atomic with creation)
         val demoTopicId = settingsDataStore.demoTopicId.first()
         if (demoTopicId != null) {
             // Demo topic already exists, don't duplicate
             return
         }
 
-        // Generate the demo topic
+        // Generate the demo topic (still under mutex lock)
         createDemoTopic()
     }
 
-    suspend fun replaceDemoTopic() {
+    suspend fun replaceDemoTopic() = demoTopicMutex.withLock {
         // Check if tutorial is enabled
         val tutorialEnabled = settingsDataStore.tutorialEnabled.first()
         if (!tutorialEnabled) {
             return
         }
 
-        // Delete existing demo topic if it exists
+        // Delete existing demo topic if it exists (atomic with creation)
         val existingDemoTopicId = settingsDataStore.demoTopicId.first()
         if (existingDemoTopicId != null) {
             deleteDemoTopicCompletely(existingDemoTopicId)
             settingsDataStore.setDemoTopicId(null)
+            // HIGH-003 FIX: Also clear demo source ID when replacing demo topic
+            // (it's already deleted in deleteDemoTopicCompletely, this is redundant but safe)
+            settingsDataStore.setDemoSourceId(null)
         }
 
-        // Create new demo topic in current language
+        // Create new demo topic in current language (still under mutex lock)
         createDemoTopic()
     }
 
@@ -131,6 +146,9 @@ class SampleDataGenerator @Inject constructor(
         )
         sourceRepository.insertSource(source1)
 
+        // HIGH-003 FIX: Store demo source ID for safe deletion
+        settingsDataStore.setDemoSourceId(source1.id)
+
         val evidence1 = Evidence(
             claimId = claim1.id,
             content = context.getString(R.string.demo_evidence_1),
@@ -201,16 +219,16 @@ class SampleDataGenerator @Inject constructor(
             questionRepository.deleteQuestion(question)
         }
 
-        // Delete associated sources (demo sources only)
-        // Get all sources and delete those created for demo
-        val allSources = sourceRepository.getAllSources().first()
-        allSources.forEach { source ->
-            // Delete sources that match demo patterns (simplified check)
-            if (source.title.contains("Démo", ignoreCase = true) ||
-                source.title.contains("Demo", ignoreCase = true) ||
-                source.title.contains("Tutorial", ignoreCase = true) ||
-                source.title.contains("Tutoriel", ignoreCase = true)) {
-                sourceRepository.deleteSource(source)
+        // HIGH-003 FIX: Delete demo source using stored ID instead of fragile pattern matching
+        // This prevents accidental deletion of user-created sources with "Demo" in titles
+        val demoSourceId = settingsDataStore.demoSourceId.first()
+        if (demoSourceId != null) {
+            try {
+                sourceRepository.deleteSourceById(demoSourceId)
+                settingsDataStore.setDemoSourceId(null)
+            } catch (e: Exception) {
+                // Source may already be deleted or not exist, continue
+                Timber.w(e, "Failed to delete demo source: $demoSourceId")
             }
         }
 
