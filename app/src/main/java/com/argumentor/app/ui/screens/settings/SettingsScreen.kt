@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -40,7 +41,8 @@ fun SettingsScreen(
     val pendingLanguage by viewModel.pendingLanguage.collectAsState()
     val tutorialEnabled by viewModel.tutorialEnabled.collectAsState()
     val context = LocalContext.current
-    var showRestartDialog by remember { mutableStateOf(false) }
+    // UI state preservation on configuration changes
+    var showRestartDialog by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {

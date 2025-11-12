@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,11 +33,9 @@ fun TopicCreateEditScreen(
     var newTagText by remember { mutableStateOf("") }
     val currentLocale = rememberCurrentLocale()
 
-    // Dialog state for unsaved changes confirmation
-    var showUnsavedChangesDialog by remember { mutableStateOf(false) }
-
-    // Track validation state - show errors after first save attempt
-    var hasAttemptedSave by remember { mutableStateOf(false) }
+    // UI state preservation on configuration changes
+    var showUnsavedChangesDialog by rememberSaveable { mutableStateOf(false) }
+    var hasAttemptedSave by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(topicId) {
         viewModel.loadTopic(topicId)

@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -80,9 +81,10 @@ fun TopicDetailScreen(
     val sources by viewModel.sources.collectAsState()
     val selectedTab by viewModel.selectedTab.collectAsState()
 
-    var showExportMenu by remember { mutableStateOf(false) }
-    var showDeleteTopicDialog by remember { mutableStateOf(false) }
-    var showSummary by remember { mutableStateOf(true) }
+    // UI state preservation on configuration changes
+    var showExportMenu by rememberSaveable { mutableStateOf(false) }
+    var showDeleteTopicDialog by rememberSaveable { mutableStateOf(false) }
+    var showSummary by rememberSaveable { mutableStateOf(true) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
