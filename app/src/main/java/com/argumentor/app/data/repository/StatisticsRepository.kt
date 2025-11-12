@@ -74,10 +74,12 @@ class StatisticsRepository @Inject constructor(
             claimDao.getAllClaims(),
             rebuttalDao.getAllRebuttals(),
             evidenceDao.getAllEvidences(),
-            questionDao.getAllQuestions(),
-            sourceDao.getAllSources()
-        ) { _: List<*>, _: List<*>, _: List<*>, _: List<*>, _: List<*>, _: List<*> ->
-            // Recalculate statistics when any data changes
+            questionDao.getAllQuestions()
+        ) { _, _, _, _, _ ->
+            // Combine first 5 flows, ignore their values
+            Unit
+        }.combine(sourceDao.getAllSources()) { _, _ ->
+            // Combine with 6th flow, recalculate on any change
             calculateStatistics()
         }.flowOn(Dispatchers.IO)
 
