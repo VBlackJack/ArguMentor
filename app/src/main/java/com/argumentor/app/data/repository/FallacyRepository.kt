@@ -1,8 +1,11 @@
 package com.argumentor.app.data.repository
 
+import android.content.Context
+import com.argumentor.app.data.constants.FallacyCatalog
 import com.argumentor.app.data.local.dao.FallacyDao
 import com.argumentor.app.data.model.Fallacy
 import com.argumentor.app.data.model.getCurrentIsoTimestamp
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import timber.log.Timber
 import javax.inject.Inject
@@ -14,7 +17,8 @@ import javax.inject.Singleton
  */
 @Singleton
 class FallacyRepository @Inject constructor(
-    private val fallacyDao: FallacyDao
+    private val fallacyDao: FallacyDao,
+    @ApplicationContext private val context: Context
 ) {
     /**
      * Observes all fallacies in the database.
@@ -170,54 +174,26 @@ class FallacyRepository @Inject constructor(
      * never runs and the fallacies table remains empty.
      *
      * This method should be called once at app startup to ensure the default
-     * fallacies are always available.
+     * fallacies are always available with localized names.
      */
     suspend fun ensureDefaultFallaciesExist() {
         try {
             val count = getFallacyCount()
 
-            // Only insert defaults if the database is completely empty
+            // Use FallacyCatalog to get fallacies with localized names from string resources
+            val catalogFallacies = FallacyCatalog.getFallacies(context)
+
             if (count == 0) {
-                Timber.d("No fallacies found in database. Inserting 30 default fallacies...")
+                // Database is empty - insert all default fallacies
+                Timber.d("No fallacies found in database. Inserting ${catalogFallacies.size} default fallacies with localized names...")
 
                 val currentTime = getCurrentIsoTimestamp()
-                val defaultFallacies = listOf(
-                    "ad_hominem" to "Ad Hominem",
-                    "straw_man" to "Straw Man",
-                    "appeal_to_ignorance" to "Appeal to Ignorance",
-                    "post_hoc" to "Post Hoc",
-                    "false_dilemma" to "False Dilemma",
-                    "begging_question" to "Begging the Question",
-                    "slippery_slope" to "Slippery Slope",
-                    "postdiction" to "Postdiction",
-                    "cherry_picking" to "Cherry Picking",
-                    "appeal_to_tradition" to "Appeal to Tradition",
-                    "appeal_to_authority" to "Appeal to Authority",
-                    "appeal_to_popularity" to "Appeal to Popularity",
-                    "circular_reasoning" to "Circular Reasoning",
-                    "tu_quoque" to "Tu Quoque",
-                    "hasty_generalization" to "Hasty Generalization",
-                    "red_herring" to "Red Herring",
-                    "no_true_scotsman" to "No True Scotsman",
-                    "loaded_question" to "Loaded Question",
-                    "appeal_to_emotion" to "Appeal to Emotion",
-                    "appeal_to_nature" to "Appeal to Nature",
-                    "false_equivalence" to "False Equivalence",
-                    "burden_of_proof" to "Burden of Proof",
-                    "texas_sharpshooter" to "Texas Sharpshooter",
-                    "middle_ground" to "Middle Ground",
-                    "anecdotal" to "Anecdotal",
-                    "composition" to "Composition",
-                    "division" to "Division",
-                    "genetic_fallacy" to "Genetic Fallacy",
-                    "bandwagon" to "Bandwagon",
-                    "appeal_to_fear" to "Appeal to Fear"
-                ).map { (id, name) ->
+                val defaultFallacies = catalogFallacies.map { catalogFallacy ->
                     Fallacy(
-                        id = id,
-                        name = name,
-                        description = "See string resource: fallacy_${id}_description",
-                        example = "See string resource: fallacy_${id}_example",
+                        id = catalogFallacy.id,
+                        name = catalogFallacy.name,
+                        description = catalogFallacy.description,
+                        example = catalogFallacy.example,
                         category = "",
                         isCustom = false,
                         createdAt = currentTime,
@@ -226,9 +202,39 @@ class FallacyRepository @Inject constructor(
                 }
 
                 insertFallacies(defaultFallacies)
-                Timber.i("Successfully inserted ${defaultFallacies.size} default fallacies")
+                Timber.i("Successfully inserted ${defaultFallacies.size} default fallacies with localized names")
             } else {
-                Timber.d("Fallacies already exist in database (count: $count). Skipping initialization.")
+                // Database has fallacies - update existing ones with localized names
+                Timber.d("Fallacies exist in database (count: $count). Updating pre-loaded fallacies with localized names...")
+
+                val existingFallacies = getAllFallaciesSync()
+                var updatedCount = 0
+
+                catalogFallacies.forEach { catalogFallacy ->
+                    val existingFallacy = existingFallacies.find { it.id == catalogFallacy.id && !it.isCustom }
+                    if (existingFallacy != null) {
+                        // Update only if the name/description/example is different (avoid unnecessary updates)
+                        if (existingFallacy.name != catalogFallacy.name ||
+                            existingFallacy.description != catalogFallacy.description ||
+                            existingFallacy.example != catalogFallacy.example) {
+
+                            val updatedFallacy = existingFallacy.copy(
+                                name = catalogFallacy.name,
+                                description = catalogFallacy.description,
+                                example = catalogFallacy.example,
+                                updatedAt = getCurrentIsoTimestamp()
+                            )
+                            updateFallacy(updatedFallacy)
+                            updatedCount++
+                        }
+                    }
+                }
+
+                if (updatedCount > 0) {
+                    Timber.i("Updated $updatedCount pre-loaded fallacies with localized names")
+                } else {
+                    Timber.d("All pre-loaded fallacies already have correct localized names")
+                }
             }
         } catch (e: Exception) {
             Timber.e(e, "Failed to ensure default fallacies exist")
