@@ -80,23 +80,28 @@ interface TopicDao {
     suspend fun getTopicCountByPosture(posture: Topic.Posture): Int
 
     /**
-     * Optimized query to get topics with claim counts using a single JOIN query.
+     * Optimized query to get topics with claim counts using a subquery.
      * This prevents N+1 query patterns where we'd load topics first, then query
      * claims for each topic separately.
      *
      * PERFORMANCE IMPROVEMENT (PERF-001):
-     * - Single SQL query with JOIN instead of 1 + N queries
+     * - Single SQL query with subquery instead of 1 + N queries
      * - Much faster for large databases
      * - Reduces database I/O from O(n) to O(1)
+     *
+     * NOTE: Claims.topics is a JSON array of topic IDs (e.g., ["id1", "id2"]).
+     * We use LIKE to search for the topic ID within the JSON string.
+     * The pattern '%"topicId"%' ensures we match the exact ID within quotes.
      *
      * @param limit Maximum number of topics to return (sorted by claim count DESC)
      * @return List of topics with their claim counts
      */
     @Query("""
-        SELECT topics.*, COUNT(claims.id) as claimCount
+        SELECT topics.*,
+               (SELECT COUNT(*)
+                FROM claims
+                WHERE claims.topics LIKE '%"' || topics.id || '"%') as claimCount
         FROM topics
-        LEFT JOIN claims ON claims.topicId = topics.id
-        GROUP BY topics.id
         ORDER BY claimCount DESC
         LIMIT :limit
     """)
