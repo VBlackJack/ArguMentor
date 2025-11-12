@@ -5,6 +5,7 @@ import com.argumentor.app.data.model.Claim
 import com.argumentor.app.data.model.Topic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -69,16 +70,19 @@ class StatisticsRepository @Inject constructor(
      * - Uses combine() to merge all DAO flows and recalculate on any change
      */
     fun getStatistics(): Flow<Statistics> =
-        kotlinx.coroutines.flow.combine(
-            topicDao.getAllTopics(),
-            claimDao.getAllClaims(),
-            rebuttalDao.getAllRebuttals(),
-            evidenceDao.getAllEvidences(),
-            questionDao.getAllQuestions()
-        ) { _, _, _, _, _ ->
-            // Combine first 5 flows, ignore their values
-            Unit
-        }.combine(sourceDao.getAllSources()) { _, _ ->
+        combine(
+            combine(
+                topicDao.getAllTopics(),
+                claimDao.getAllClaims(),
+                rebuttalDao.getAllRebuttals(),
+                evidenceDao.getAllEvidences(),
+                questionDao.getAllQuestions()
+            ) { _, _, _, _, _ ->
+                // Combine first 5 flows, ignore their values
+                Unit
+            },
+            sourceDao.getAllSources()
+        ) { _, _ ->
             // Combine with 6th flow, recalculate on any change
             calculateStatistics()
         }.flowOn(Dispatchers.IO)
