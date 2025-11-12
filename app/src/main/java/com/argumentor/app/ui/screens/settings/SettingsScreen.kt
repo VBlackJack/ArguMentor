@@ -21,6 +21,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.argumentor.app.BuildConfig
 import com.argumentor.app.R
 import com.argumentor.app.data.preferences.AppLanguage
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * Delay before restarting the app after language change to ensure preferences are saved.
@@ -41,8 +43,10 @@ fun SettingsScreen(
     val pendingLanguage by viewModel.pendingLanguage.collectAsState()
     val tutorialEnabled by viewModel.tutorialEnabled.collectAsState()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     // UI state preservation on configuration changes
     var showRestartDialog by rememberSaveable { mutableStateOf(false) }
+    var shouldRestart by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -252,10 +256,12 @@ fun SettingsScreen(
                     TextButton(
                         onClick = {
                             viewModel.applyLanguageChange {
+                                // BEST PRACTICE FIX: Use coroutines instead of Handler.postDelayed
                                 // Wait for save to complete, then restart gracefully
-                                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                                scope.launch {
+                                    delay(LANGUAGE_CHANGE_RESTART_DELAY_MS)
                                     (context as? Activity)?.recreate()
-                                }, LANGUAGE_CHANGE_RESTART_DELAY_MS)
+                                }
                             }
                         }
                     ) {

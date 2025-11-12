@@ -7,9 +7,18 @@ import com.argumentor.app.data.model.*
 import com.argumentor.app.data.repository.*
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Generates sample/demo data for tutorial purposes.
+ *
+ * RACE CONDITION FIX:
+ * - Uses Mutex to prevent concurrent calls from creating duplicate demo topics
+ * - Ensures atomic check-and-create operations
+ */
 @Singleton
 class SampleDataGenerator @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -21,40 +30,42 @@ class SampleDataGenerator @Inject constructor(
     private val sourceRepository: SourceRepository,
     private val settingsDataStore: SettingsDataStore
 ) {
+    // Mutex to prevent race conditions when creating demo topics
+    private val demoTopicMutex = Mutex()
 
-    suspend fun generateSampleData() {
+    suspend fun generateSampleData() = demoTopicMutex.withLock {
         // Check if tutorial is enabled
         val tutorialEnabled = settingsDataStore.tutorialEnabled.first()
         if (!tutorialEnabled) {
             return
         }
 
-        // Check if demo topic already exists
+        // Check if demo topic already exists (atomic with creation)
         val demoTopicId = settingsDataStore.demoTopicId.first()
         if (demoTopicId != null) {
             // Demo topic already exists, don't duplicate
             return
         }
 
-        // Generate the demo topic
+        // Generate the demo topic (still under mutex lock)
         createDemoTopic()
     }
 
-    suspend fun replaceDemoTopic() {
+    suspend fun replaceDemoTopic() = demoTopicMutex.withLock {
         // Check if tutorial is enabled
         val tutorialEnabled = settingsDataStore.tutorialEnabled.first()
         if (!tutorialEnabled) {
             return
         }
 
-        // Delete existing demo topic if it exists
+        // Delete existing demo topic if it exists (atomic with creation)
         val existingDemoTopicId = settingsDataStore.demoTopicId.first()
         if (existingDemoTopicId != null) {
             deleteDemoTopicCompletely(existingDemoTopicId)
             settingsDataStore.setDemoTopicId(null)
         }
 
-        // Create new demo topic in current language
+        // Create new demo topic in current language (still under mutex lock)
         createDemoTopic()
     }
 

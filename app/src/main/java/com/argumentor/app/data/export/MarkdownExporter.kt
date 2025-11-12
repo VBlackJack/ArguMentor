@@ -229,7 +229,7 @@ class MarkdownExporter @Inject constructor(
                     appendLine()
                 }
 
-                appendLine("*${context.getString(R.string.export_generated_by)}*")
+                appendLine("*${context.getString(R.string.export_generated_by, formatDate(getCurrentIsoTimestamp()))}*")
             }
 
             // Write to OutputStream (SAF-compatible)
@@ -252,12 +252,15 @@ class MarkdownExporter @Inject constructor(
      * BUG-004 FIX: Use java.time.Instant for proper ISO 8601 parsing
      * SimpleDateFormat doesn't handle 'Z' timezone properly in ISO 8601 format
      * This fix properly parses timestamps like "2024-01-01T12:00:00Z"
+     *
+     * LOCALE FIX: Use system default locale instead of hardcoded Locale.FRENCH
+     * for proper internationalization support
      */
     private fun formatDate(isoDate: String): String {
         return try {
             val instant = java.time.Instant.parse(isoDate)
             val zonedDateTime = instant.atZone(java.time.ZoneId.systemDefault())
-            val formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm", Locale.FRENCH)
+            val formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm", Locale.getDefault())
             zonedDateTime.format(formatter)
         } catch (e: Exception) {
             // Fallback to original string if parsing fails

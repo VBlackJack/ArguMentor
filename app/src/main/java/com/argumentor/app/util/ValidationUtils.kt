@@ -58,10 +58,12 @@ object ValidationUtils {
         minLength: Int = MIN_TEXT_LENGTH,
         maxLength: Int = MAX_LONG_TEXT_LENGTH
     ): ValidationResult {
+        // CONSISTENCY FIX: Trim text consistently for both min and max length checks
+        val trimmedText = text.trim()
         return when {
             text.isBlank() -> ValidationResult.Invalid(context.getString(R.string.validation_field_empty, fieldName))
-            text.trim().length < minLength -> ValidationResult.Invalid(context.getString(R.string.validation_field_min_length, fieldName, minLength))
-            text.length > maxLength -> ValidationResult.Invalid(context.getString(R.string.validation_field_max_length, fieldName, maxLength))
+            trimmedText.length < minLength -> ValidationResult.Invalid(context.getString(R.string.validation_field_min_length, fieldName, minLength))
+            trimmedText.length > maxLength -> ValidationResult.Invalid(context.getString(R.string.validation_field_max_length, fieldName, maxLength))
             else -> ValidationResult.Valid
         }
     }
@@ -187,7 +189,8 @@ object ValidationUtils {
             Instant.parse(timestamp)
             ValidationResult.Valid
         } catch (e: Exception) {
-            ValidationResult.Invalid(context.getString(R.string.validation_url_invalid_format))
+            // ERROR MESSAGE FIX: Use timestamp-specific error message instead of URL error
+            ValidationResult.Invalid(context.getString(R.string.validation_timestamp_invalid_format))
         }
     }
 
