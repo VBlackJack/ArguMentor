@@ -597,6 +597,7 @@ private fun ClaimCard(
     coroutineScope: kotlinx.coroutines.CoroutineScope,
     haptic: androidx.compose.ui.hapticfeedback.HapticFeedback
 ) {
+    val context = LocalContext.current
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showEvidenceSection by remember { mutableStateOf(true) }
     val evidences by viewModel.getClaimEvidences(claim.id).collectAsState(initial = emptyList())
