@@ -1,6 +1,8 @@
 package com.argumentor.app.ui.screens.settings
 
 import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
@@ -28,6 +30,19 @@ import kotlinx.coroutines.launch
  * Delay before restarting the app after language change to ensure preferences are saved.
  */
 private const val LANGUAGE_CHANGE_RESTART_DELAY_MS = 500L
+
+/**
+ * Finds the Activity from a Context by unwrapping ContextWrappers.
+ * Required because LocalContext.current doesn't always return an Activity directly.
+ */
+private fun Context.findActivity(): Activity? {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+    return null
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -255,12 +270,13 @@ fun SettingsScreen(
                 confirmButton = {
                     TextButton(
                         onClick = {
+                            showRestartDialog = false
                             viewModel.applyLanguageChange {
                                 // BEST PRACTICE FIX: Use coroutines instead of Handler.postDelayed
                                 // Wait for save to complete, then restart gracefully
                                 scope.launch {
                                     delay(LANGUAGE_CHANGE_RESTART_DELAY_MS)
-                                    (context as? Activity)?.recreate()
+                                    context.findActivity()?.recreate()
                                 }
                             }
                         }
