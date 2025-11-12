@@ -122,9 +122,10 @@ class FallacyRepository @Inject constructor(
         require(fallacy.name.isNotBlank()) { "Fallacy name cannot be blank" }
         require(fallacy.description.isNotBlank()) { "Fallacy description cannot be blank" }
 
+        // MEDIUM-005 FIX: Use imported function instead of fully qualified name
         // Update the updatedAt timestamp
         val updatedFallacy = fallacy.copy(
-            updatedAt = com.argumentor.app.data.model.getCurrentIsoTimestamp()
+            updatedAt = getCurrentIsoTimestamp()
         )
         fallacyDao.updateFallacy(updatedFallacy)
     }

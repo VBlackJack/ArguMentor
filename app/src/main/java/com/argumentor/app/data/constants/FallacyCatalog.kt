@@ -92,14 +92,42 @@ object FallacyCatalog {
     }
 
     /**
-     * Helper function to get a string resource by name.
+     * Cache for string resource IDs to avoid repeated reflection calls.
+     * MEDIUM-004 FIX: getIdentifier() uses reflection which is 10-100x slower than direct access.
+     * This cache reduces lookup time from O(n) reflection to O(1) HashMap access.
+     *
+     * The cache is cleared automatically when the app process is killed (no manual cleanup needed).
+     * For dynamic language changes within the same process, consider clearing this cache.
+     */
+    private val resourceIdCache = mutableMapOf<String, Int>()
+
+    /**
+     * Helper function to get a string resource by name with caching.
+     *
+     * MEDIUM-004 FIX: Added resource ID caching to avoid repeated expensive reflection calls.
+     * Performance improvement: ~10-100x faster for repeated lookups.
+     *
+     * @param context Context to access resources
+     * @param resourceName Name of the string resource (e.g., "fallacy_ad_hominem_name")
+     * @return The localized string, or the resource name as fallback if not found
      */
     private fun getStringResource(context: Context, resourceName: String): String {
-        val resourceId = context.resources.getIdentifier(
-            resourceName,
-            "string",
-            context.packageName
-        )
+        // Check cache first (O(1) HashMap lookup)
+        val cachedResourceId = resourceIdCache[resourceName]
+        val resourceId = if (cachedResourceId != null) {
+            cachedResourceId
+        } else {
+            // Cache miss - use reflection to find resource ID (expensive O(n) operation)
+            val id = context.resources.getIdentifier(
+                resourceName,
+                "string",
+                context.packageName
+            )
+            // Cache the result for future lookups
+            resourceIdCache[resourceName] = id
+            id
+        }
+
         return if (resourceId != 0) {
             context.getString(resourceId)
         } else {

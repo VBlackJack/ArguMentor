@@ -58,10 +58,11 @@ object ValidationUtils {
         minLength: Int = MIN_TEXT_LENGTH,
         maxLength: Int = MAX_LONG_TEXT_LENGTH
     ): ValidationResult {
-        // CONSISTENCY FIX: Trim text consistently for both min and max length checks
+        // ISSUE-002 FIX: Trim once at the beginning for consistency
+        // Use trimmed text for all checks (blank, min length, max length)
         val trimmedText = text.trim()
         return when {
-            text.isBlank() -> ValidationResult.Invalid(context.getString(R.string.validation_field_empty, fieldName))
+            trimmedText.isBlank() -> ValidationResult.Invalid(context.getString(R.string.validation_field_empty, fieldName))
             trimmedText.length < minLength -> ValidationResult.Invalid(context.getString(R.string.validation_field_min_length, fieldName, minLength))
             trimmedText.length > maxLength -> ValidationResult.Invalid(context.getString(R.string.validation_field_max_length, fieldName, maxLength))
             else -> ValidationResult.Valid

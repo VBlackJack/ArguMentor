@@ -31,6 +31,24 @@ object DatabaseModule {
 
     private const val TAG = "DatabaseModule"
 
+    /**
+     * Database auto-close timeout configuration.
+     *
+     * LOW-009 FIX: Extracted magic number to named constant with comprehensive documentation.
+     *
+     * The database will automatically close after this period of inactivity to conserve memory.
+     * It will reopen automatically when accessed again.
+     *
+     * Value: 10 seconds is a good balance between:
+     * - Memory conservation (closing idle connections)
+     * - Performance (avoiding frequent reopen overhead for active usage)
+     *
+     * Adjust based on app usage patterns:
+     * - Lower (5s) for very memory-constrained devices
+     * - Higher (30s) for apps with frequent database access
+     */
+    private const val DB_AUTO_CLOSE_TIMEOUT_SECONDS = 10L
+
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): ArguMentorDatabase {
@@ -46,9 +64,9 @@ object DatabaseModule {
             // WAL mode allows concurrent readers while a write is in progress
             .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
 
-            // PERF-001: Auto-close database after 10 seconds of inactivity to save memory
+            // PERF-001: Auto-close database after inactivity to save memory
             // The database will be automatically reopened when needed
-            .setAutoCloseTimeout(10, TimeUnit.SECONDS)
+            .setAutoCloseTimeout(DB_AUTO_CLOSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
 
             // SEC-001: Fallback strategy for database corruption or downgrade scenarios
             // Only destroys and recreates on downgrade (version going backwards)

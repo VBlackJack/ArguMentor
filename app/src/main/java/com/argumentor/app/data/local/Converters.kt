@@ -20,8 +20,20 @@ import timber.log.Timber
  */
 class Converters {
     companion object {
-        // Shared Gson instance for all converter methods
-        // Gson is thread-safe and can be reused across all Converter instances
+        /**
+         * Shared Gson instance for all converter methods.
+         *
+         * LOW-001 FIX: Clarified thread-safety documentation.
+         *
+         * Gson is thread-safe for serialization/deserialization operations (read-only usage).
+         * Multiple threads can safely call toJson() and fromJson() concurrently.
+         *
+         * IMPORTANT: Do NOT modify Gson configuration after initialization
+         * (e.g., setDateFormat(), registerTypeAdapter()) as this would break thread-safety.
+         * Configuration changes are NOT thread-safe and could cause race conditions.
+         *
+         * This instance uses default Gson configuration, which is sufficient for our needs.
+         */
         private val gson = Gson()
     }
 

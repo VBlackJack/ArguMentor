@@ -3,7 +3,64 @@ package com.argumentor.app.data.dto
 import com.google.gson.annotations.SerializedName
 
 /**
- * Complete export data structure matching JSON schema v1.0.
+ * Complete export data structure for ArguMentor data exchange.
+ *
+ * LOW-002 FIX: Enhanced documentation with comprehensive schema information.
+ *
+ * ## JSON Schema Version
+ * Current version: **1.0**
+ *
+ * ## Purpose
+ * This structure represents the complete export format for all ArguMentor data,
+ * including topics, claims, rebuttals, evidences, questions, sources, and tags.
+ * The schema is versioned to support future format changes and backward compatibility.
+ *
+ * ## Schema Evolution
+ * - **Version 1.0** (Current): Initial release with all core entities
+ *   - Topics, Claims, Rebuttals, Evidences, Questions, Sources, Tags
+ *   - All timestamps in ISO 8601 format
+ *   - All IDs as UUID v4 strings
+ *
+ * ## Backward Compatibility
+ * Future schema versions will maintain backward compatibility by:
+ * - Adding optional fields only (never removing required fields)
+ * - Providing default values for new fields
+ * - Supporting migration from older schema versions
+ *
+ * ## Usage
+ * ```kotlin
+ * // Export
+ * val exportData = ExportData(
+ *     exportedAt = getCurrentIsoTimestamp(),
+ *     topics = topicList.map { it.toDto() },
+ *     claims = claimList.map { it.toDto() }
+ *     // ... other entities
+ * )
+ * val json = Gson().toJson(exportData)
+ *
+ * // Import
+ * val importData = Gson().fromJson(json, ExportData::class.java)
+ * // Validate schema version before processing
+ * ```
+ *
+ * @property schemaVersion The version of the export schema (currently "1.0")
+ * @property exportedAt ISO 8601 timestamp of when this export was created
+ * @property app Application identifier (always "ArguMentor")
+ * @property topics List of all exported topics
+ * @property claims List of all exported claims
+ * @property rebuttals List of all exported rebuttals
+ * @property evidences List of all exported evidences
+ * @property questions List of all exported questions
+ * @property sources List of all exported sources (bibliographic references)
+ * @property tags List of all exported tags (custom categorization)
+ *
+ * @see TopicDto
+ * @see ClaimDto
+ * @see RebuttalDto
+ * @see EvidenceDto
+ * @see QuestionDto
+ * @see SourceDto
+ * @see TagDto
  */
 data class ExportData(
     @SerializedName("schemaVersion")
