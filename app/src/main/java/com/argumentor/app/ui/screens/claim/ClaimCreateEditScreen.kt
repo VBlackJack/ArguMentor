@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -37,14 +38,10 @@ fun ClaimCreateEditScreen(
     val currentLocale = rememberCurrentLocale()
     val context = LocalContext.current
 
-    // Dialog state for unsaved changes confirmation
-    var showUnsavedChangesDialog by remember { mutableStateOf(false) }
-
-    // Dialog state for fallacy selection
-    var showFallacyDialog by remember { mutableStateOf(false) }
-
-    // Track validation state - show errors after first save attempt
-    var hasAttemptedSave by remember { mutableStateOf(false) }
+    // UI state preservation on configuration changes (e.g., screen rotation)
+    var showUnsavedChangesDialog by rememberSaveable { mutableStateOf(false) }
+    var showFallacyDialog by rememberSaveable { mutableStateOf(false) }
+    var hasAttemptedSave by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(claimId, topicId) {
         viewModel.loadClaim(claimId, topicId)
