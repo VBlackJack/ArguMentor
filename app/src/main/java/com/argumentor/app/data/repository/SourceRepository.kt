@@ -27,6 +27,9 @@ class SourceRepository @Inject constructor(
     suspend fun deleteSource(source: Source) =
         sourceDao.deleteSource(source)
 
+    suspend fun deleteSourceById(sourceId: String) =
+        sourceDao.deleteSourceById(sourceId)
+
     /**
      * Search sources using FTS with automatic fallback to LIKE search if FTS fails.
      */
