@@ -624,6 +624,26 @@
     <string name="content_desc_edit_source">Edit source</string>
     <string name="content_desc_delete_source">Delete source</string>
 
+    <!-- Source Create/Edit Screen -->
+    <string name="source_edit_title">Edit source</string>
+    <string name="source_create_title">New source</string>
+    <string name="source_field_title">Title *</string>
+    <string name="source_field_title_placeholder">E.g.: Journal article, book, website...</string>
+    <string name="source_field_citation">Full citation</string>
+    <string name="source_field_citation_placeholder">E.g.: Author, Title, Edition, Year</string>
+    <string name="source_field_url">URL</string>
+    <string name="source_field_url_placeholder">https://...</string>
+    <string name="source_field_publisher">Publisher</string>
+    <string name="source_field_publisher_placeholder">E.g.: Publishing house name</string>
+    <string name="source_field_date">Publication date</string>
+    <string name="source_field_date_placeholder">E.g.: 2024, January 2024, 01/15/2024</string>
+    <string name="source_field_notes">Notes</string>
+    <string name="source_field_notes_placeholder">Additional notes about this source...</string>
+    <string name="source_required_fields">* Required fields</string>
+    <string name="source_linked_claims">Linked claims</string>
+    <string name="source_evidence_count">%d evidence(s) use this source</string>
+    <string name="content_desc_voice_input">Voice input</string>
+
     <!-- Miscellaneous -->
     <string name="bullet_point">•</string>
     <string name="snackbar_undo">Undo</string>

@@ -624,6 +624,26 @@
     <string name="content_desc_edit_source">Éditer la source</string>
     <string name="content_desc_delete_source">Supprimer la source</string>
 
+    <!-- Source Create/Edit Screen -->
+    <string name="source_edit_title">Éditer la source</string>
+    <string name="source_create_title">Nouvelle source</string>
+    <string name="source_field_title">Titre *</string>
+    <string name="source_field_title_placeholder">Ex: Article de journal, livre, site web...</string>
+    <string name="source_field_citation">Citation complète</string>
+    <string name="source_field_citation_placeholder">Ex: Auteur, Titre, Édition, Année</string>
+    <string name="source_field_url">URL</string>
+    <string name="source_field_url_placeholder">https://...</string>
+    <string name="source_field_publisher">Éditeur</string>
+    <string name="source_field_publisher_placeholder">Ex: Nom de la maison d\'édition</string>
+    <string name="source_field_date">Date de publication</string>
+    <string name="source_field_date_placeholder">Ex: 2024, Janvier 2024, 15/01/2024</string>
+    <string name="source_field_notes">Notes</string>
+    <string name="source_field_notes_placeholder">Notes additionnelles sur cette source...</string>
+    <string name="source_required_fields">* Champs obligatoires</string>
+    <string name="source_linked_claims">Affirmations liées</string>
+    <string name="source_evidence_count">%d preuve(s) utilise(nt) cette source</string>
+    <string name="content_desc_voice_input">Dictée vocale</string>
+
     <!-- Miscellaneous -->
     <string name="bullet_point">•</string>
     <string name="snackbar_undo">Annuler</string>

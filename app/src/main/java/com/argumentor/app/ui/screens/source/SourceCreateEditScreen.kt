@@ -105,14 +105,14 @@ fun SourceCreateEditScreen(
             TopAppBar(
                 title = {
                     Text(
-                        if (isEditMode) "Éditer la source" else "Nouvelle source"
+                        stringResource(if (isEditMode) R.string.source_edit_title else R.string.source_create_title)
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Retour"
+                            contentDescription = stringResource(R.string.accessibility_back)
                         )
                     }
                 },
@@ -127,7 +127,7 @@ fun SourceCreateEditScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Save,
-                            contentDescription = "Enregistrer"
+                            contentDescription = stringResource(R.string.accessibility_save)
                         )
                     }
                 }
@@ -157,8 +157,8 @@ fun SourceCreateEditScreen(
                 OutlinedTextField(
                     value = title,
                     onValueChange = { viewModel.onTitleChange(it) },
-                    label = { Text("Titre *") },
-                    placeholder = { Text("Ex: Article de journal, livre, site web...") },
+                    label = { Text(stringResource(R.string.source_field_title)) },
+                    placeholder = { Text(stringResource(R.string.source_field_title_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = false,
                     maxLines = 3,
@@ -171,7 +171,7 @@ fun SourceCreateEditScreen(
                         IconButton(onClick = { titleSpeechLauncher.launch(createSpeechIntent(context, currentLocale)) }) {
                             Icon(
                                 imageVector = Icons.Default.Mic,
-                                contentDescription = "Dictée vocale",
+                                contentDescription = stringResource(R.string.content_desc_voice_input),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -182,8 +182,8 @@ fun SourceCreateEditScreen(
                 OutlinedTextField(
                     value = citation,
                     onValueChange = { viewModel.onCitationChange(it) },
-                    label = { Text("Citation complète") },
-                    placeholder = { Text("Ex: Auteur, Titre, Édition, Année") },
+                    label = { Text(stringResource(R.string.source_field_citation)) },
+                    placeholder = { Text(stringResource(R.string.source_field_citation_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = false,
                     maxLines = 5,
@@ -196,7 +196,7 @@ fun SourceCreateEditScreen(
                         IconButton(onClick = { citationSpeechLauncher.launch(createSpeechIntent(context, currentLocale)) }) {
                             Icon(
                                 imageVector = Icons.Default.Mic,
-                                contentDescription = "Dictée vocale",
+                                contentDescription = stringResource(R.string.content_desc_voice_input),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -207,8 +207,8 @@ fun SourceCreateEditScreen(
                 OutlinedTextField(
                     value = url,
                     onValueChange = { viewModel.onUrlChange(it) },
-                    label = { Text("URL") },
-                    placeholder = { Text("https://...") },
+                    label = { Text(stringResource(R.string.source_field_url)) },
+                    placeholder = { Text(stringResource(R.string.source_field_url_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
@@ -221,8 +221,8 @@ fun SourceCreateEditScreen(
                 OutlinedTextField(
                     value = publisher,
                     onValueChange = { viewModel.onPublisherChange(it) },
-                    label = { Text("Éditeur") },
-                    placeholder = { Text("Ex: Nom de la maison d'édition") },
+                    label = { Text(stringResource(R.string.source_field_publisher)) },
+                    placeholder = { Text(stringResource(R.string.source_field_publisher_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
@@ -234,7 +234,7 @@ fun SourceCreateEditScreen(
                         IconButton(onClick = { publisherSpeechLauncher.launch(createSpeechIntent(context, currentLocale)) }) {
                             Icon(
                                 imageVector = Icons.Default.Mic,
-                                contentDescription = "Dictée vocale",
+                                contentDescription = stringResource(R.string.content_desc_voice_input),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -245,8 +245,8 @@ fun SourceCreateEditScreen(
                 OutlinedTextField(
                     value = date,
                     onValueChange = { viewModel.onDateChange(it) },
-                    label = { Text("Date de publication") },
-                    placeholder = { Text("Ex: 2024, Janvier 2024, 15/01/2024") },
+                    label = { Text(stringResource(R.string.source_field_date)) },
+                    placeholder = { Text(stringResource(R.string.source_field_date_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
@@ -259,8 +259,8 @@ fun SourceCreateEditScreen(
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { viewModel.onNotesChange(it) },
-                    label = { Text("Notes") },
-                    placeholder = { Text("Notes additionnelles sur cette source...") },
+                    label = { Text(stringResource(R.string.source_field_notes)) },
+                    placeholder = { Text(stringResource(R.string.source_field_notes_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = false,
                     minLines = 3,
@@ -274,7 +274,7 @@ fun SourceCreateEditScreen(
                         IconButton(onClick = { notesSpeechLauncher.launch(createSpeechIntent(context, currentLocale)) }) {
                             Icon(
                                 imageVector = Icons.Default.Mic,
-                                contentDescription = "Dictée vocale",
+                                contentDescription = stringResource(R.string.content_desc_voice_input),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -283,7 +283,7 @@ fun SourceCreateEditScreen(
 
                 // Help text
                 Text(
-                    text = "* Champs obligatoires",
+                    text = stringResource(R.string.source_required_fields),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -293,7 +293,7 @@ fun SourceCreateEditScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Text(
-                        text = "Affirmations liées",
+                        text = stringResource(R.string.source_linked_claims),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -319,7 +319,7 @@ fun SourceCreateEditScreen(
                                 // Show how many evidences from this source link to this claim
                                 val evidenceCount = linkedEvidences.count { it.claimId == claim.id }
                                 Text(
-                                    text = "$evidenceCount preuve(s) utilise(nt) cette source",
+                                    text = stringResource(R.string.source_evidence_count, evidenceCount),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -347,7 +347,7 @@ fun SourceCreateEditScreen(
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Enregistrer")
+                    Text(stringResource(R.string.accessibility_save))
                 }
             }
         }
