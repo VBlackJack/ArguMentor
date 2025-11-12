@@ -24,10 +24,11 @@ class ClaimRepository @Inject constructor(
 ) {
     companion object {
         /**
-         * Valid ID format: UUID v4 pattern (alphanumeric and hyphens only)
+         * Valid ID format: UUID v4 pattern or fallacy IDs (alphanumeric, underscores, and hyphens)
          * This prevents SQL injection through json_each() queries
+         * Note: Fallacy IDs use underscores (e.g., ad_hominem, straw_man)
          */
-        private val VALID_ID_PATTERN = "[a-zA-Z0-9-]+".toRegex()
+        private val VALID_ID_PATTERN = "[a-zA-Z0-9_-]+".toRegex()
     }
 
     /**
@@ -37,7 +38,7 @@ class ClaimRepository @Inject constructor(
     private fun validateIds(ids: List<String>, fieldName: String) {
         ids.forEach { id ->
             require(id.matches(VALID_ID_PATTERN)) {
-                "Invalid $fieldName format: '$id'. IDs must contain only alphanumeric characters and hyphens."
+                "Invalid $fieldName format: '$id'. IDs must contain only alphanumeric characters, underscores, and hyphens."
             }
         }
     }
@@ -48,7 +49,7 @@ class ClaimRepository @Inject constructor(
      */
     private fun validateId(id: String, fieldName: String) {
         require(id.matches(VALID_ID_PATTERN)) {
-            "Invalid $fieldName format: '$id'. IDs must contain only alphanumeric characters and hyphens."
+            "Invalid $fieldName format: '$id'. IDs must contain only alphanumeric characters, underscores, and hyphens."
         }
     }
     /**
