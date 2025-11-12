@@ -361,14 +361,15 @@ fun TopicDetailScreen(
                                     color = MaterialTheme.colorScheme.primary
                                 )
                             }
+                            val stateDescriptionText = stringResource(
+                                if (showSummary) R.string.topic_summary_expanded else R.string.topic_summary_collapsed
+                            )
                             IconButton(
                                 onClick = { showSummary = !showSummary },
                                 modifier = Modifier
                                     .size(28.dp)
                                     .semantics {
-                                        stateDescription = stringResource(
-                                            if (showSummary) R.string.topic_summary_expanded else R.string.topic_summary_collapsed
-                                        )
+                                        stateDescription = stateDescriptionText
                                     }
                             ) {
                                 Icon(
@@ -638,6 +639,7 @@ private fun ClaimCard(
         Claim.Strength.MEDIUM -> R.string.strength_medium
         Claim.Strength.HIGH -> R.string.strength_high
     })
+    val claimCardDescription = stringResource(R.string.content_desc_claim_card, stanceText, strengthText, claim.text)
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -647,7 +649,7 @@ private fun ClaimCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .semantics(mergeDescendants = true) {
-                    contentDescription = stringResource(R.string.content_desc_claim_card, stanceText, strengthText, claim.text)
+                    contentDescription = claimCardDescription
                 },
             colors = CardDefaults.elevatedCardColors(containerColor = backgroundColor),
             elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),

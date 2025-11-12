@@ -72,14 +72,12 @@ class StatisticsRepository @Inject constructor(
      * SQL aggregation queries to DAOs for better performance.
      */
     fun getStatistics(): Flow<Statistics> {
-        return kotlinx.coroutines.flow.combine(
-            topicDao.getAllTopics(),
-            claimDao.getAllClaims(),
-            rebuttalDao.getAllRebuttals(),
-            evidenceDao.getAllEvidences(),
-            questionDao.getAllQuestions(),
-            sourceDao.getAllSources()
-        ) { topics, claims, rebuttals, evidence, questions, sources ->
+        return topicDao.getAllTopics().flatMapLatest { topics ->
+            claimDao.getAllClaims().flatMapLatest { claims ->
+                rebuttalDao.getAllRebuttals().flatMapLatest { rebuttals ->
+                    evidenceDao.getAllEvidences().flatMapLatest { evidence ->
+                        questionDao.getAllQuestions().flatMapLatest { questions ->
+                            sourceDao.getAllSources().map { sources ->
 
             // Claims by stance
             val claimsByStance = claims.groupingBy { it.stance }.eachCount()
@@ -138,6 +136,11 @@ class StatisticsRepository @Inject constructor(
                 averageRebuttalsPerClaim = avgRebuttalsPerClaim,
                 averageStrength = avgStrength
             )
+                            }
+                        }
+                    }
+                }
+            }
         }.flowOn(Dispatchers.IO)
     }
 
