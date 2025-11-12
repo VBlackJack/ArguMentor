@@ -292,6 +292,10 @@
     <string name="settings_restart_required_title">Redémarrage requis</string>
     <string name="settings_restart_required_message">Pour appliquer le changement de langue, l\'application doit redémarrer. Voulez-vous continuer\u00a0?</string>
     <string name="settings_restart_now">Redémarrer maintenant</string>
+    <string name="settings_demo_topic_will_be_translated">Note : Le sujet exemple sera traduit dans la nouvelle langue</string>
+    <string name="demo_topic_translated">Le sujet exemple a été traduit en français</string>
+    <string name="demo_topic_badge">Sujet exemple</string>
+    <string name="demo_topic_explanation">Ce sujet vous aide à découvrir l\'application. Il est automatiquement traduit lors du changement de langue.</string>
 
     <!-- Permissions Screen -->
     <string name="permissions_title">Permissions requises</string>

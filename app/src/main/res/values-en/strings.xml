@@ -280,6 +280,10 @@
     <string name="settings_restart_required_title">Restart required</string>
     <string name="settings_restart_required_message">To apply the language change, the app must restart. Do you want to continue?</string>
     <string name="settings_restart_now">Restart now</string>
+    <string name="settings_demo_topic_will_be_translated">Note: The demo topic will be translated to the new language</string>
+    <string name="demo_topic_translated">The demo topic has been translated to English</string>
+    <string name="demo_topic_badge">Demo topic</string>
+    <string name="demo_topic_explanation">This topic helps you discover the app. It is automatically translated when changing languages.</string>
 
     <!-- Permissions Screen -->
     <string name="permissions_title">Required permissions</string>

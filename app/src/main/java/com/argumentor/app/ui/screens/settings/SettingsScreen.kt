@@ -57,6 +57,7 @@ fun SettingsScreen(
     val language by viewModel.language.collectAsState()
     val pendingLanguage by viewModel.pendingLanguage.collectAsState()
     val tutorialEnabled by viewModel.tutorialEnabled.collectAsState()
+    val demoTopicId by viewModel.demoTopicId.collectAsState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     // UI state preservation on configuration changes
@@ -266,7 +267,21 @@ fun SettingsScreen(
             AlertDialog(
                 onDismissRequest = { showRestartDialog = false },
                 title = { Text(stringResource(R.string.settings_restart_required_title)) },
-                text = { Text(stringResource(R.string.settings_restart_required_message)) },
+                text = {
+                    Column {
+                        Text(stringResource(R.string.settings_restart_required_message))
+
+                        // Show additional warning if demo topic exists
+                        if (demoTopicId != null) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                stringResource(R.string.settings_demo_topic_will_be_translated),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                    }
+                },
                 confirmButton = {
                     TextButton(
                         onClick = {

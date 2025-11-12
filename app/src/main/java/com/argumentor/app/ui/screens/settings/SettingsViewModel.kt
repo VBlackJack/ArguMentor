@@ -80,6 +80,13 @@ class SettingsViewModel @Inject constructor(
             initialValue = true
         )
 
+    val demoTopicId: StateFlow<String?> = settingsDataStore.demoTopicId
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
+
     private val _pendingLanguage = MutableStateFlow<AppLanguage?>(null)
     val pendingLanguage: StateFlow<AppLanguage?> = _pendingLanguage.asStateFlow()
 

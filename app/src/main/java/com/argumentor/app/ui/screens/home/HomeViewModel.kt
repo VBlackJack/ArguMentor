@@ -3,6 +3,7 @@ package com.argumentor.app.ui.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.argumentor.app.R
+import com.argumentor.app.data.datastore.SettingsDataStore
 import com.argumentor.app.data.model.Topic
 import com.argumentor.app.data.repository.TopicRepository
 import com.argumentor.app.ui.common.UiState
@@ -26,7 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val topicRepository: TopicRepository,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val settingsDataStore: SettingsDataStore
 ) : ViewModel() {
 
     companion object {
@@ -45,6 +47,13 @@ class HomeViewModel @Inject constructor(
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    val demoTopicId: StateFlow<String?> = settingsDataStore.demoTopicId
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
 
     /**
      * Combined UI state that applies filtering based on search query and selected tag.

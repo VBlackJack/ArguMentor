@@ -49,6 +49,7 @@ fun HomeScreen(
     val selectedTag by viewModel.selectedTag.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
+    val demoTopicId by viewModel.demoTopicId.collectAsState()
 
     // Extract topics from uiState
     val topics = when (val state = uiState) {
@@ -332,6 +333,7 @@ fun HomeScreen(
                                         topic = topic,
                                         selectedTag = selectedTag,
                                         searchQuery = searchQuery,
+                                        demoTopicId = demoTopicId,
                                         onClick = { onNavigateToTopic(topic.id) },
                                         onTagClick = viewModel::onTagSelected,
                                         modifier = Modifier.animateItemPlacement()
@@ -368,6 +370,7 @@ fun HomeScreen(
                                     topic = topic,
                                     selectedTag = selectedTag,
                                     searchQuery = searchQuery,
+                                    demoTopicId = demoTopicId,
                                     onClick = { onNavigateToTopic(topic.id) },
                                     onTagClick = viewModel::onTagSelected,
                                     modifier = Modifier.animateItemPlacement()
@@ -394,11 +397,13 @@ private fun TopicCard(
     topic: Topic,
     selectedTag: String?,
     searchQuery: String = "",
+    demoTopicId: String? = null,
     onClick: () -> Unit,
     onTagClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current
+    val isDemoTopic = demoTopicId != null && topic.id == demoTopicId
 
     Card(
         modifier = modifier
@@ -419,6 +424,22 @@ private fun TopicCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
+            // Demo topic badge
+            if (isDemoTopic) {
+                AssistChip(
+                    onClick = { /* Could show explanation dialog */ },
+                    label = { Text(stringResource(R.string.demo_topic_badge)) },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Info,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    },
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+
             // Title with stronger visual weight and search highlights
             HighlightedText(
                 text = topic.title,
