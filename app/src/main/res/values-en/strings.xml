@@ -519,4 +519,170 @@
     <string name="field_email">The email</string>
     <string name="field_citation">The citation</string>
     <string name="field_summary">The summary</string>
+
+    <!-- Common Actions -->
+    <string name="action_delete">Delete</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_add">Add</string>
+    <string name="action_save">Save</string>
+    <string name="action_edit">Edit</string>
+
+    <!-- Delete Dialogs -->
+    <string name="topic_delete_dialog_title">Delete topic?</string>
+    <string name="topic_delete_dialog_message">This action is irreversible. All claims, rebuttals, evidence and questions associated with this topic will also be deleted.</string>
+    <string name="topic_deleted_message">Topic deleted</string>
+    <string name="claim_delete_dialog_title">Delete claim?</string>
+    <string name="claim_delete_dialog_message">This action is irreversible. All rebuttals and evidence associated with this claim will also be deleted.</string>
+    <string name="evidence_delete_dialog_title">Delete evidence?</string>
+    <string name="evidence_delete_dialog_message">This action is irreversible.</string>
+    <string name="question_delete_dialog_title">Delete question?</string>
+    <string name="question_delete_dialog_message">This action is irreversible.</string>
+
+    <!-- Export Actions -->
+    <string name="export_pdf_action">Export to PDF</string>
+    <string name="export_markdown_action">Export to Markdown</string>
+    <string name="topic_delete_action">Delete topic</string>
+
+    <!-- FAB Labels -->
+    <string name="fab_add_claim">Claim</string>
+    <string name="fab_add_question">Question</string>
+    <string name="fab_add_source">Source</string>
+
+    <!-- Tabs -->
+    <string name="tab_claims_count">Claims (%d)</string>
+    <string name="tab_questions_count">Questions (%d)</string>
+    <string name="tab_sources_count">Sources (%d)</string>
+
+    <!-- Topic Detail -->
+    <string name="topic_summary_section">Topic summary</string>
+    <string name="topic_summary_expanded">Summary expanded</string>
+    <string name="topic_summary_collapsed">Summary collapsed</string>
+    <string name="topic_show_summary">Show summary</string>
+    <string name="topic_hide_summary">Hide summary</string>
+    <string name="topic_default_title">Topic</string>
+
+    <!-- Empty States -->
+    <string name="claims_empty_title">No claims yet</string>
+    <string name="claims_empty_description">Claims are the main arguments of your debate. Add your first claim to structure your thinking.</string>
+    <string name="claims_empty_action">Add a claim</string>
+    <string name="questions_empty_title">No questions yet</string>
+    <string name="questions_empty_description">Questions help deepen your thinking, explore nuances of the topic, and challenge your claims.</string>
+    <string name="questions_empty_action">Add a question</string>
+    <string name="sources_empty_title">No sources</string>
+    <string name="sources_empty_description">Bibliographic sources will appear here. Add evidence with sources to your claims.</string>
+    <string name="sources_empty_action">Add a source</string>
+
+    <!-- Delete Success Messages -->
+    <string name="claim_deleted_message">Claim deleted</string>
+    <string name="evidence_deleted_message">Evidence deleted</string>
+    <string name="question_deleted_message">Question deleted</string>
+    <string name="source_deleted_message">Source deleted</string>
+
+    <!-- Export Messages -->
+    <string name="export_pdf_success">PDF exported successfully</string>
+    <string name="export_markdown_success">Markdown exported successfully</string>
+    <string name="export_error">Error: %s</string>
+
+    <!-- Claim Stance Labels -->
+    <string name="stance_pro">Pro</string>
+    <string name="stance_con">Con</string>
+    <string name="stance_neutral">Neutral</string>
+
+    <!-- Claim Strength Labels -->
+    <string name="strength_low">Low</string>
+    <string name="strength_medium">Medium</string>
+    <string name="strength_high">High</string>
+
+    <!-- Evidence Section -->
+    <string name="evidence_section_title">Evidence (%d)</string>
+    <string name="evidence_add_button">Add</string>
+
+    <!-- Evidence Type Labels -->
+    <string name="evidence_type_study">Study</string>
+    <string name="evidence_type_stat">Stat</string>
+    <string name="evidence_type_quote">Quote</string>
+    <string name="evidence_type_example">Example</string>
+
+    <!-- Evidence Quality Labels -->
+    <string name="evidence_quality_high">High</string>
+    <string name="evidence_quality_medium">Medium</string>
+    <string name="evidence_quality_low">Low</string>
+
+    <!-- Question Kind Labels -->
+    <string name="question_kind_socratic">Socratic</string>
+    <string name="question_kind_clarifying">Clarifying</string>
+    <string name="question_kind_challenge">Challenge</string>
+    <string name="question_kind_evidence">Evidence</string>
+
+    <!-- Question Target Labels -->
+    <string name="question_target_claim">→ Claim</string>
+
+    <!-- Content Descriptions -->
+    <string name="content_desc_claim_card">Claim %1$s, strength %2$s: %3$s</string>
+    <string name="content_desc_edit_evidence">Edit</string>
+    <string name="content_desc_delete_evidence">Delete</string>
+    <string name="content_desc_edit_source">Edit source</string>
+    <string name="content_desc_delete_source">Delete source</string>
+
+    <!-- Import/Export Screen -->
+    <string name="importexport_title">Import/Export</string>
+    <string name="export_section_title">Export data</string>
+    <string name="export_section_description">Export all topics, claims and sources in JSON format</string>
+    <string name="export_json_button">Export to JSON</string>
+    <string name="export_pdf_markdown_title">📄 PDF/Markdown export per topic</string>
+    <string name="export_pdf_markdown_instructions">To export a specific topic to PDF or Markdown:\n1. Open the topic\n2. Menu ⋮ → \"Export to PDF\" or \"Export to Markdown\"\n3. Choose the location via the file picker</string>
+    <string name="import_section_title">Import data</string>
+    <string name="import_section_description">Import data from a JSON file with duplicate detection</string>
+    <string name="import_similarity_threshold">Similarity threshold: %d%%</string>
+    <string name="import_button">Import</string>
+    <string name="import_preview_title">Import preview</string>
+    <string name="import_stat_total">Total: %d</string>
+    <string name="import_stat_created">Created: %d</string>
+    <string name="import_stat_updated">Updated: %d</string>
+    <string name="import_stat_duplicates">Duplicates: %d</string>
+    <string name="import_stat_near_duplicates">Near-duplicates: %d</string>
+    <string name="import_stat_errors">Errors: %d</string>
+    <string name="import_confirm_button">Confirm</string>
+    <string name="export_error">Export error: %s</string>
+    <string name="import_file_error">File read error: %s</string>
+
+    <!-- Topic Create/Edit Screen -->
+    <string name="topic_create_title">New topic</string>
+    <string name="topic_edit_title">Edit topic</string>
+    <string name="topic_field_title">Title</string>
+    <string name="topic_field_title_required">Title is required</string>
+    <string name="topic_field_summary">Summary</string>
+    <string name="topic_posture_section">Posture</string>
+    <string name="topic_posture_neutral">Neutral &amp; Critical</string>
+    <string name="topic_posture_skeptical">Skeptical</string>
+    <string name="topic_posture_academic">Academic Comparative</string>
+    <string name="topic_tags_section">Tags</string>
+    <string name="topic_new_tag">New tag</string>
+    <string name="unsaved_changes_title">Unsaved changes</string>
+    <string name="unsaved_changes_message">You have unsaved changes. Do you really want to quit without saving?</string>
+    <string name="action_leave">Leave</string>
+
+    <!-- Source Create/Edit Screen -->
+    <string name="source_edit_title">Edit source</string>
+    <string name="source_create_title">New source</string>
+    <string name="source_field_title">Title *</string>
+    <string name="source_field_title_placeholder">E.g.: Journal article, book, website...</string>
+    <string name="source_field_citation">Full citation</string>
+    <string name="source_field_citation_placeholder">E.g.: Author, Title, Edition, Year</string>
+    <string name="source_field_url">URL</string>
+    <string name="source_field_url_placeholder">https://...</string>
+    <string name="source_field_publisher">Publisher</string>
+    <string name="source_field_publisher_placeholder">E.g.: Publishing house name</string>
+    <string name="source_field_date">Publication date</string>
+    <string name="source_field_date_placeholder">E.g.: 2024, January 2024, 01/15/2024</string>
+    <string name="source_field_notes">Notes</string>
+    <string name="source_field_notes_placeholder">Additional notes about this source...</string>
+    <string name="source_required_fields">* Required fields</string>
+    <string name="source_linked_claims">Linked claims</string>
+    <string name="source_evidence_count">%d evidence(s) use this source</string>
+    <string name="content_desc_voice_input">Voice input</string>
+
+    <!-- Miscellaneous -->
+    <string name="bullet_point">•</string>
+    <string name="snackbar_undo">Undo</string>
 </resources>

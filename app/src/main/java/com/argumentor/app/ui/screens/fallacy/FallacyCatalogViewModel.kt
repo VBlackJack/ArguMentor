@@ -25,37 +25,38 @@ class FallacyCatalogViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    private val _fallacies = MutableStateFlow<List<Fallacy>>(emptyList())
-    val fallacies: StateFlow<List<Fallacy>> = _fallacies.asStateFlow()
+    /**
+     * MEMORY-001 FIX: Expose fallacies as StateFlow with lifecycle-aware collection.
+     * Uses flatMapLatest to automatically cancel previous search when query changes.
+     * Flow only collects while there are active subscribers (UI visible).
+     */
+    val fallacies: StateFlow<List<Fallacy>> = _searchQuery
+        .flatMapLatest { query ->
+            if (query.isBlank()) {
+                // No search query - return all fallacies
+                fallacyRepository.getAllFallacies()
+            } else {
+                // Active search query - return filtered fallacies
+                fallacyRepository.searchFallacies(query)
+            }
+        }
+        .map { fallaciesFromDb ->
+            // Update fallacies with localized content from strings.xml
+            fallaciesFromDb.map { fallacy -> localizeFallacy(fallacy) }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+            initialValue = emptyList()
+        )
 
     init {
-        // MEMORY-001 FIX: Check and sync fallacies on init, then observe with lifecycle-aware collection
+        // Check and sync fallacies on init (one-time operation)
         viewModelScope.launch {
-            // First check if database is empty and sync if needed (one-time operation)
             val existingFallacies = fallacyRepository.getAllFallaciesSync()
             if (existingFallacies.isEmpty()) {
                 syncFallaciesFromResources()
             }
-        }
-
-        // MEMORY-001 FIX: Use stateIn with WhileSubscribed to avoid memory leaks
-        // The Flow will only collect while there are active subscribers (UI visible)
-        viewModelScope.launch {
-            fallacyRepository.getAllFallacies()
-                .map { fallaciesFromDb ->
-                    // Update fallacies with localized content from strings.xml
-                    fallaciesFromDb.map { fallacy ->
-                        localizeFallacy(fallacy)
-                    }
-                }
-                .stateIn(
-                    scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-                    initialValue = emptyList()
-                )
-                .collect { localizedFallacies ->
-                    _fallacies.value = localizedFallacies
-                }
         }
     }
 
@@ -95,23 +96,13 @@ class FallacyCatalogViewModel @Inject constructor(
         fallacyRepository.insertFallacies(fallacyEntities)
     }
 
+    /**
+     * Updates the search query.
+     * PERFORMANCE: The fallacies StateFlow automatically reacts to query changes via flatMapLatest,
+     * canceling any previous search operation when a new query is set.
+     */
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query
-        viewModelScope.launch {
-            fallacyRepository.searchFallacies(query)
-                .map { results ->
-                    // SMELL-003 FIX: Use extracted localizeFallacy function
-                    results.map { fallacy -> localizeFallacy(fallacy) }
-                }
-                .stateIn(
-                    scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-                    initialValue = emptyList()
-                )
-                .collect { localizedResults ->
-                    _fallacies.value = localizedResults
-                }
-        }
     }
 
     /**

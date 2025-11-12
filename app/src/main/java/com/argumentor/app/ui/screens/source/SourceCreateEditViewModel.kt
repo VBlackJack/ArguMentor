@@ -1,5 +1,6 @@
 package com.argumentor.app.ui.screens.source
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.argumentor.app.data.model.Claim
@@ -9,6 +10,7 @@ import com.argumentor.app.data.repository.ClaimRepository
 import com.argumentor.app.data.repository.EvidenceRepository
 import com.argumentor.app.data.repository.SourceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,6 +20,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.argumentor.app.R
 import com.argumentor.app.util.ResourceProvider
+import com.argumentor.app.util.ValidationUtils
 import timber.log.Timber
 
 @HiltViewModel
@@ -25,7 +28,8 @@ class SourceCreateEditViewModel @Inject constructor(
     private val sourceRepository: SourceRepository,
     private val evidenceRepository: EvidenceRepository,
     private val claimRepository: ClaimRepository,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _title = MutableStateFlow("")
@@ -112,18 +116,26 @@ class SourceCreateEditViewModel @Inject constructor(
             _isLoading.value = false
         }
 
-        // Load linked evidences and claims
+        // MEMORY LEAK FIX: Load linked evidences and claims with lifecycle-aware collection
+        // using stateIn() so collection stops when UI is not visible
         viewModelScope.launch {
-            combine(
-                evidenceRepository.getEvidencesBySourceId(sourceId),
-                claimRepository.getAllClaims()
-            ) { evidences, allClaims ->
-                _linkedEvidences.value = evidences
+            evidenceRepository.getEvidencesBySourceId(sourceId)
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+                    initialValue = emptyList()
+                )
+                .collect { evidences ->
+                    _linkedEvidences.value = evidences
 
-                // Filter claims by evidence claim IDs instead of N+1 queries
-                val claimIds = evidences.map { it.claimId }.distinct().toSet()
-                _linkedClaims.value = allClaims.filter { it.id in claimIds }
-            }.collect { }
+                    // PERFORMANCE: Use bulk query instead of loading ALL claims and filtering in memory
+                    val claimIds = evidences.map { it.claimId }.distinct()
+                    if (claimIds.isNotEmpty()) {
+                        _linkedClaims.value = claimRepository.getClaimsByIds(claimIds)
+                    } else {
+                        _linkedClaims.value = emptyList()
+                    }
+                }
         }
     }
 
@@ -152,9 +164,21 @@ class SourceCreateEditViewModel @Inject constructor(
     }
 
     fun saveSource(onSaved: () -> Unit) {
+        // Validate title (required field)
         if (_title.value.isBlank()) {
             _errorMessage.value = resourceProvider.getString(R.string.error_source_title_empty)
             return
+        }
+
+        // SEC-008: Validate URL format to prevent malicious URLs (javascript:, data: URIs, etc.)
+        // This validation was moved from Source entity init block to ViewModel to avoid Context dependency in entities
+        val urlValue = _url.value.trim()
+        if (urlValue.isNotEmpty()) {
+            val urlValidation = ValidationUtils.validateUrl(context, urlValue)
+            if (!urlValidation.isValid) {
+                _errorMessage.value = urlValidation.errorMessage ?: resourceProvider.getString(R.string.validation_url_invalid_format)
+                return
+            }
         }
 
         _errorMessage.value = null

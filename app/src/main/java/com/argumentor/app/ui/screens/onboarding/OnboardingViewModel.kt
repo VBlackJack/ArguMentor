@@ -22,27 +22,22 @@ class OnboardingViewModel @Inject constructor(
     private val _currentPage = MutableStateFlow(0)
     val currentPage: StateFlow<Int> = _currentPage.asStateFlow()
 
-    private val _tutorialEnabled = MutableStateFlow(true)
-    val tutorialEnabled: StateFlow<Boolean> = _tutorialEnabled.asStateFlow()
+    /**
+     * MEMORY LEAK FIX: Use stateIn with WhileSubscribed to avoid infinite collection.
+     * Flow only collects while there are active subscribers (UI visible).
+     */
+    val tutorialEnabled: StateFlow<Boolean> = settingsDataStore.tutorialEnabled
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+            initialValue = true
+        )
 
     val totalPages = 4
 
-    init {
-        loadTutorialState()
-    }
-
-    private fun loadTutorialState() {
-        viewModelScope.launch {
-            settingsDataStore.tutorialEnabled.collect { enabled ->
-                _tutorialEnabled.value = enabled
-            }
-        }
-    }
-
     fun toggleTutorial() {
         viewModelScope.launch {
-            val newValue = !_tutorialEnabled.value
-            _tutorialEnabled.value = newValue
+            val newValue = !tutorialEnabled.value
             settingsDataStore.setTutorialEnabled(newValue)
             tutorialManager.handleTutorialToggle(newValue)
         }

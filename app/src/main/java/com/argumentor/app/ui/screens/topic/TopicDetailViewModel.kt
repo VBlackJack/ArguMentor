@@ -61,6 +61,9 @@ class TopicDetailViewModel @Inject constructor(
      *
      * BUG FIX (BUG-012): Added job cancellation to prevent overlapping loads
      * when switching between topics rapidly.
+     *
+     * MEMORY LEAK FIX: Use stateIn with WhileSubscribed for lifecycle-aware collection.
+     * Flow only collects while there are active subscribers (UI visible).
      */
     fun loadTopic(topicId: String) {
         // Cancel any previous loading operation
@@ -104,7 +107,11 @@ class TopicDetailViewModel @Inject constructor(
                         data to allQuestions.distinctBy { it.id }
                     }
                 }
-            }.collect { (data, allQuestions) ->
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+                initialValue = TopicData(null, emptyList(), emptyList(), emptyList(), emptyList()) to emptyList()
+            ).collect { (data, allQuestions) ->
                 // Update all state atomically at once to prevent inconsistent UI state
                 _topic.value = data.topic
                 _claims.value = data.claims

@@ -33,12 +33,13 @@ class FallacyDetailViewModel @Inject constructor(
     /**
      * Loads a fallacy by its ID.
      * MEMORY-002 FIX: Uses stateIn with WhileSubscribed to avoid memory leaks.
+     * PERFORMANCE: Single collection with proper lifecycle management instead of nested collect.
      */
     fun loadFallacy(fallacyId: String) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            _error.value = null
+        _isLoading.value = true
+        _error.value = null
 
+        viewModelScope.launch {
             try {
                 fallacyRepository.getFallacyById(fallacyId)
                     .map { fallacyFromDb ->
@@ -57,6 +58,7 @@ class FallacyDetailViewModel @Inject constructor(
                     .collect { localizedFallacy ->
                         if (localizedFallacy != null) {
                             _fallacy.value = localizedFallacy
+                            _error.value = null
                         } else {
                             _error.value = "Fallacy not found"
                         }

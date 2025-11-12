@@ -6,10 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.argumentor.app.data.datastore.SettingsDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,39 +20,30 @@ class NavigationViewModel @Inject constructor(
     // Load initial values synchronously from SharedPreferences to avoid flash
     private val prefs = context.getSharedPreferences("settings_cache", Context.MODE_PRIVATE)
 
-    private val _firstLaunchCompleted = MutableStateFlow(
-        prefs.getBoolean("first_launch_completed", false)
-    )
-    val firstLaunchCompleted: StateFlow<Boolean> = _firstLaunchCompleted.asStateFlow()
+    /**
+     * MEMORY LEAK FIX: Use stateIn with Eagerly for navigation state that must always be available.
+     * Initial value loaded from SharedPreferences cache to avoid flash.
+     * Note: Using Eagerly instead of WhileSubscribed because navigation state is critical
+     * and must be immediately available for app navigation decisions.
+     */
+    val firstLaunchCompleted: StateFlow<Boolean> = settingsDataStore.firstLaunchCompleted
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = prefs.getBoolean("first_launch_completed", false)
+        )
 
-    private val _ethicsWarningShown = MutableStateFlow(
-        prefs.getBoolean("ethics_warning_shown", false)
-    )
-    val ethicsWarningShown: StateFlow<Boolean> = _ethicsWarningShown.asStateFlow()
+    val ethicsWarningShown: StateFlow<Boolean> = settingsDataStore.ethicsWarningShown
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = prefs.getBoolean("ethics_warning_shown", false)
+        )
 
-    private val _onboardingCompleted = MutableStateFlow(
-        prefs.getBoolean("onboarding_completed", false)
-    )
-    val onboardingCompleted: StateFlow<Boolean> = _onboardingCompleted.asStateFlow()
-
-    init {
-        // Observe DataStore for updates after initial load
-        viewModelScope.launch {
-            settingsDataStore.firstLaunchCompleted.collect { value ->
-                _firstLaunchCompleted.value = value
-            }
-        }
-
-        viewModelScope.launch {
-            settingsDataStore.ethicsWarningShown.collect { value ->
-                _ethicsWarningShown.value = value
-            }
-        }
-
-        viewModelScope.launch {
-            settingsDataStore.onboardingCompleted.collect { value ->
-                _onboardingCompleted.value = value
-            }
-        }
-    }
+    val onboardingCompleted: StateFlow<Boolean> = settingsDataStore.onboardingCompleted
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = prefs.getBoolean("onboarding_completed", false)
+        )
 }

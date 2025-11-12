@@ -15,6 +15,18 @@ interface ClaimDao {
     @Query("SELECT * FROM claims WHERE id = :claimId")
     suspend fun getClaimById(claimId: String): Claim?
 
+    /**
+     * Bulk query to get multiple claims by their IDs.
+     *
+     * PERFORMANCE: Prevents N+1 query problem when loading multiple claims.
+     * Instead of making N separate queries for N claims, makes 1 query with IN clause.
+     *
+     * @param claimIds List of claim IDs to fetch
+     * @return List of Claims matching the provided IDs
+     */
+    @Query("SELECT * FROM claims WHERE id IN (:claimIds) ORDER BY updatedAt DESC")
+    suspend fun getClaimsByIds(claimIds: List<String>): List<Claim>
+
     @Query("SELECT * FROM claims WHERE :topicId IN (SELECT value FROM json_each(topics))")
     suspend fun getClaimsByTopicId(topicId: String): List<Claim>
 

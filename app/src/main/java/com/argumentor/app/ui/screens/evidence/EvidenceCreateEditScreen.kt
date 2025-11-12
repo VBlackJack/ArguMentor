@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime
@@ -43,8 +44,9 @@ fun EvidenceCreateEditScreen(
     val context = LocalContext.current
 
     val isEditMode = evidenceId != null
-    var showDeleteDialog by remember { mutableStateOf(false) }
-    var showSourceSelector by remember { mutableStateOf(false) }
+    // UI state preservation on configuration changes (e.g., screen rotation)
+    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
+    var showSourceSelector by rememberSaveable { mutableStateOf(false) }
 
     // Speech-to-text launcher for content field
     val speechLauncher = rememberSpeechToTextLauncher { text ->
