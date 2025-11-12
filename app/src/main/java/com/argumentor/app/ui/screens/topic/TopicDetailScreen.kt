@@ -95,14 +95,16 @@ fun TopicDetailScreen(
     ) { uri ->
         uri?.let {
             // Don't use .use {} here - the exporter closes the stream
+            val successMessage = context.getString(R.string.export_pdf_success)
+            val errorMessageTemplate = context.getString(R.string.export_error)
             context.contentResolver.openOutputStream(it)?.let { os ->
                 viewModel.exportTopicToPdf(topicId, os) { success, error ->
                     coroutineScope.launch {
                         snackbarHostState.showSnackbar(
                             message = if (success) {
-                                context.getString(R.string.export_pdf_success)
+                                successMessage
                             } else {
-                                context.getString(R.string.export_error, error ?: "")
+                                errorMessageTemplate.format(error ?: "")
                             }
                         )
                     }
@@ -117,14 +119,16 @@ fun TopicDetailScreen(
     ) { uri ->
         uri?.let {
             // Don't use .use {} here - the exporter closes the stream
+            val successMessage = context.getString(R.string.export_markdown_success)
+            val errorMessageTemplate = context.getString(R.string.export_error)
             context.contentResolver.openOutputStream(it)?.let { os ->
                 viewModel.exportTopicToMarkdown(topicId, os) { success, error ->
                     coroutineScope.launch {
                         snackbarHostState.showSnackbar(
                             message = if (success) {
-                                context.getString(R.string.export_markdown_success)
+                                successMessage
                             } else {
-                                context.getString(R.string.export_error, error ?: "")
+                                errorMessageTemplate.format(error ?: "")
                             }
                         )
                     }
@@ -147,9 +151,10 @@ fun TopicDetailScreen(
                 TextButton(
                     onClick = {
                         showDeleteTopicDialog = false
+                        val deletedMessage = context.getString(R.string.topic_deleted_message)
                         viewModel.deleteTopic {
                             coroutineScope.launch {
-                                snackbarHostState.showSnackbar(context.getString(R.string.topic_deleted_message))
+                                snackbarHostState.showSnackbar(deletedMessage)
                             }
                             onNavigateBack()
                         }
@@ -454,11 +459,13 @@ fun TopicDetailScreen(
                     },
                     onDeleteClaim = { claim ->
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        val deletedMessage = context.getString(R.string.claim_deleted_message)
+                        val undoLabel = context.getString(R.string.snackbar_undo)
                         viewModel.deleteClaim(claim) {
                             coroutineScope.launch {
                                 val result = snackbarHostState.showSnackbar(
-                                    message = context.getString(R.string.claim_deleted_message),
-                                    actionLabel = context.getString(R.string.snackbar_undo),
+                                    message = deletedMessage,
+                                    actionLabel = undoLabel,
                                     duration = SnackbarDuration.Short
                                 )
                                 if (result == SnackbarResult.ActionPerformed) {
@@ -483,11 +490,13 @@ fun TopicDetailScreen(
                     },
                     onDeleteQuestion = { question ->
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        val deletedMessage = context.getString(R.string.question_deleted_message)
+                        val undoLabel = context.getString(R.string.snackbar_undo)
                         viewModel.deleteQuestion(question) {
                             coroutineScope.launch {
                                 val result = snackbarHostState.showSnackbar(
-                                    message = context.getString(R.string.question_deleted_message),
-                                    actionLabel = context.getString(R.string.snackbar_undo),
+                                    message = deletedMessage,
+                                    actionLabel = undoLabel,
                                     duration = SnackbarDuration.Short
                                 )
                                 if (result == SnackbarResult.ActionPerformed) {
@@ -510,11 +519,13 @@ fun TopicDetailScreen(
                     },
                     onDeleteSource = { source ->
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        val deletedMessage = context.getString(R.string.source_deleted_message)
+                        val undoLabel = context.getString(R.string.snackbar_undo)
                         viewModel.deleteSource(source) {
                             coroutineScope.launch {
                                 val result = snackbarHostState.showSnackbar(
-                                    message = context.getString(R.string.source_deleted_message),
-                                    actionLabel = context.getString(R.string.snackbar_undo),
+                                    message = deletedMessage,
+                                    actionLabel = undoLabel,
                                     duration = SnackbarDuration.Short
                                 )
                                 if (result == SnackbarResult.ActionPerformed) {
@@ -815,13 +826,15 @@ private fun ClaimCard(
                                     TextButton(
                                         onClick = {
                                             val deletedEvidence = evidence
+                                            val deletedMessage = context.getString(R.string.evidence_deleted_message)
+                                            val undoLabel = context.getString(R.string.snackbar_undo)
                                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                             viewModel.deleteEvidence(evidence) {
                                                 showDeleteEvidenceDialog = false
                                                 coroutineScope.launch {
                                                     val result = snackbarHostState.showSnackbar(
-                                                        message = context.getString(R.string.evidence_deleted_message),
-                                                        actionLabel = context.getString(R.string.snackbar_undo),
+                                                        message = deletedMessage,
+                                                        actionLabel = undoLabel,
                                                         duration = SnackbarDuration.Short
                                                     )
                                                     if (result == SnackbarResult.ActionPerformed) {
