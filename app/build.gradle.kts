@@ -14,8 +14,8 @@ android {
         applicationId = "com.argumentor.app"
         minSdk = 24
         targetSdk = 34
-        versionCode = 7
-        versionName = "1.4.4"
+        versionCode = 8
+        versionName = "1.4.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
