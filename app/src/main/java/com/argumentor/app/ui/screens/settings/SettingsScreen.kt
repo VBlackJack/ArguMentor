@@ -272,11 +272,18 @@ fun SettingsScreen(
                         onClick = {
                             showRestartDialog = false
                             viewModel.applyLanguageChange {
-                                // BEST PRACTICE FIX: Use coroutines instead of Handler.postDelayed
-                                // Wait for save to complete, then restart gracefully
                                 scope.launch {
                                     delay(LANGUAGE_CHANGE_RESTART_DELAY_MS)
-                                    context.findActivity()?.recreate()
+                                    // Restart the app by recreating the MainActivity with a new Intent
+                                    val activity = context.findActivity()
+                                    if (activity != null) {
+                                        val intent = activity.packageManager
+                                            .getLaunchIntentForPackage(activity.packageName)
+                                        intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                                        intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        activity.startActivity(intent)
+                                        activity.finish()
+                                    }
                                 }
                             }
                         }
