@@ -76,7 +76,7 @@ class StatisticsRepository @Inject constructor(
             evidenceDao.getAllEvidences(),
             questionDao.getAllQuestions(),
             sourceDao.getAllSources()
-        ) { _, _, _, _, _, _ ->
+        ) { _: List<*>, _: List<*>, _: List<*>, _: List<*>, _: List<*>, _: List<*> ->
             // Recalculate statistics when any data changes
             calculateStatistics()
         }.flowOn(Dispatchers.IO)
