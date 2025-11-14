@@ -88,6 +88,31 @@ android {
     // The profile is defined in app/src/main/baseline-prof.txt and applied automatically
     // by ProfileInstaller at app startup.
     // See: https://developer.android.com/topic/performance/baselineprofiles
+
+    // Gradle Managed Devices for CI (PERF-CI-001)
+    // Enables fast instrumentation testing in CI using KVM-accelerated emulators
+    // This replaces android-emulator-runner and enables Linux runners (60-70% faster than macOS)
+    // See: https://developer.android.com/studio/test/gradle-managed-devices
+    testOptions {
+        managedDevices {
+            devices {
+                // API 28 device for testing
+                create<com.android.build.api.dsl.ManagedVirtualDevice>("pixel2Api28") {
+                    device = "Pixel 2"
+                    apiLevel = 28
+                    systemImageSource = "aosp"
+                }
+                // API 34 device for testing
+                create<com.android.build.api.dsl.ManagedVirtualDevice>("pixel2Api34") {
+                    device = "Pixel 2"
+                    apiLevel = 34
+                    systemImageSource = "aosp-atd" // Android Test Device images are optimized for CI
+                }
+            }
+        }
+        // Enable test sharding for parallel execution
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+    }
 }
 
 dependencies {
@@ -159,6 +184,9 @@ dependencies {
     androidTestImplementation("androidx.navigation:navigation-testing:2.7.5")
     androidTestImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
     kspAndroidTest("com.google.dagger:hilt-compiler:$hiltVersion")
+
+    // Test Orchestrator for test sharding and isolation (PERF-CI-002)
+    androidTestUtil("androidx.test:orchestrator:1.4.2")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
