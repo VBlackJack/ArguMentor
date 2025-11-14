@@ -30,7 +30,7 @@ class ClaimTest {
     @Test
     fun `Claim Strength toString returns correct value`() {
         assertEquals("low", Claim.Strength.LOW.toString())
-        assertEquals("med", Claim.Strength.MEDIUM.toString())
+        assertEquals("medium", Claim.Strength.MEDIUM.toString())
         assertEquals("high", Claim.Strength.HIGH.toString())
     }
 

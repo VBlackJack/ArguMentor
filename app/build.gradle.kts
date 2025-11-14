@@ -50,8 +50,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-        // Enable core library desugaring if needed for older Android versions
-        isCoreLibraryDesugaringEnabled = false
+        // Enable core library desugaring for java.time API on Android 7.0-7.1 (API 24-25)
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -112,6 +112,12 @@ android {
         }
         // Enable test sharding for parallel execution
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
+
+        // Return default values for empty test results
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+        }
     }
 }
 
@@ -169,6 +175,9 @@ dependencies {
     // This enables AOT compilation of critical code paths, improving startup time
     implementation("androidx.profileinstaller:profileinstaller:1.3.1")
 
+    // Core Library Desugaring - Required for java.time API on Android 7.0-7.1 (API 24-25)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+
     // Testing
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.mockito:mockito-core:5.7.0")
@@ -176,6 +185,9 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation("androidx.room:room-testing:$roomVersion")
     testImplementation("com.google.truth:truth:1.1.5")
+    testImplementation("org.robolectric:robolectric:4.11.1")
+    testImplementation("androidx.test:core:1.5.0")
+    testImplementation("androidx.test.ext:junit:1.1.5")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
