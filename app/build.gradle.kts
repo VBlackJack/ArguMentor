@@ -50,8 +50,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-        // Enable core library desugaring if needed for older Android versions
-        isCoreLibraryDesugaringEnabled = false
+        // Enable core library desugaring for java.time API on Android 7.0-7.1 (API 24-25)
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -174,6 +174,9 @@ dependencies {
     // ProfileInstaller automatically applies baseline profiles at app startup
     // This enables AOT compilation of critical code paths, improving startup time
     implementation("androidx.profileinstaller:profileinstaller:1.3.1")
+
+    // Core Library Desugaring - Required for java.time API on Android 7.0-7.1 (API 24-25)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
     // Testing
     testImplementation("junit:junit:4.13.2")

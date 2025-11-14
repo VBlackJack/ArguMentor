@@ -39,7 +39,7 @@ class TopicDaoTest {
         val topic = Topic(
             title = "Test Topic",
             summary = "Test Summary",
-            posture = Topic.Posture.NEUTRAL_CRITIQUE,
+            posture = Topic.Posture.NEUTRAL_CRITICAL,
             tags = listOf("test", "kotlin")
         )
 
@@ -99,7 +99,7 @@ class TopicDaoTest {
         topicDao.insertTopic(topic2)
         topicDao.insertTopic(topic3)
 
-        val results = topicDao.searchTopics("Android").first()
+        val results = topicDao.searchTopicsLike("Android").first()
         assertEquals(2, results.size)
         assertTrue(results.any { it.id == topic1.id })
         assertTrue(results.any { it.id == topic3.id })
