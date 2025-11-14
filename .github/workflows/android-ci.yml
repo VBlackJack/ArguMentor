@@ -41,10 +41,12 @@ jobs:
       run: chmod +x gradlew
 
     - name: Run Detekt
-      run: ./gradlew detekt --configuration-cache --build-cache
+      run: ./gradlew detekt --configuration-cache --build-cache --stacktrace
+      continue-on-error: false
 
     - name: Run Android Lint
-      run: ./gradlew lint --configuration-cache --build-cache
+      run: ./gradlew lint --configuration-cache --build-cache --stacktrace
+      continue-on-error: false
 
     - name: Upload Detekt report
       if: always()
@@ -89,7 +91,8 @@ jobs:
       run: chmod +x gradlew
 
     - name: Run unit tests
-      run: ./gradlew test --configuration-cache --build-cache --parallel
+      run: ./gradlew test --configuration-cache --build-cache --parallel --stacktrace
+      continue-on-error: false
 
     - name: Upload test results
       if: always()
@@ -162,8 +165,12 @@ jobs:
           --configuration-cache \
           --build-cache \
           --parallel \
+          --stacktrace \
+          --info \
           -Pandroid.testInstrumentationRunnerArguments.numShards=${TOTAL_SHARDS} \
           -Pandroid.testInstrumentationRunnerArguments.shardIndex=${SHARD_INDEX}
+      continue-on-error: false
+      timeout-minutes: 25
 
     - name: Upload instrumented test results
       if: always()
