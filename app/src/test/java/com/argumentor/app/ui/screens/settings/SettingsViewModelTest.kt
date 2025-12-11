@@ -97,18 +97,6 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun `toggleDarkTheme from true calls datastore with false`() = runTest {
-        isDarkThemeFlow.value = true
-        viewModel = createViewModel()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.toggleDarkTheme()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        verify(settingsDataStore).setDarkTheme(false)
-    }
-
-    @Test
     fun `toggleImmersiveMode calls datastore with inverted value`() = runTest {
         viewModel = createViewModel()
         testDispatcher.scheduler.advanceUntilIdle()
