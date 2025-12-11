@@ -32,13 +32,62 @@ jobs:
       uses: gradle/actions/setup-gradle@v3
       with:
         cache-read-only: false
-        # Enable configuration cache for 30-40% build speedup
-        arguments: |
-          --configuration-cache
-          --build-cache
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+
+    - name: Create dummy google-services.json for CI
+      run: |
+        cat > app/google-services.json << 'EOF'
+        {
+          "project_info": {
+            "project_number": "000000000000",
+            "project_id": "argumentor-ci-dummy",
+            "storage_bucket": "argumentor-ci-dummy.appspot.com"
+          },
+          "client": [
+            {
+              "client_info": {
+                "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
+                "android_client_info": {
+                  "package_name": "com.argumentor.app"
+                }
+              },
+              "oauth_client": [],
+              "api_key": [
+                {
+                  "current_key": "AIzaSyDummyKeyForCIBuildOnly000000000"
+                }
+              ],
+              "services": {
+                "appinvite_service": {
+                  "other_platform_oauth_client": []
+                }
+              }
+            },
+            {
+              "client_info": {
+                "mobilesdk_app_id": "1:000000000000:android:0000000000000001111111",
+                "android_client_info": {
+                  "package_name": "com.argumentor.app.debug"
+                }
+              },
+              "oauth_client": [],
+              "api_key": [
+                {
+                  "current_key": "AIzaSyDummyKeyForCIBuildOnly000000000"
+                }
+              ],
+              "services": {
+                "appinvite_service": {
+                  "other_platform_oauth_client": []
+                }
+              }
+            }
+          ],
+          "configuration_version": "1"
+        }
+        EOF
 
     - name: Run Detekt
       run: ./gradlew detekt --configuration-cache --build-cache --stacktrace
@@ -83,12 +132,62 @@ jobs:
       uses: gradle/actions/setup-gradle@v3
       with:
         cache-read-only: false
-        arguments: |
-          --configuration-cache
-          --build-cache
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+
+    - name: Create dummy google-services.json for CI
+      run: |
+        cat > app/google-services.json << 'EOF'
+        {
+          "project_info": {
+            "project_number": "000000000000",
+            "project_id": "argumentor-ci-dummy",
+            "storage_bucket": "argumentor-ci-dummy.appspot.com"
+          },
+          "client": [
+            {
+              "client_info": {
+                "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
+                "android_client_info": {
+                  "package_name": "com.argumentor.app"
+                }
+              },
+              "oauth_client": [],
+              "api_key": [
+                {
+                  "current_key": "AIzaSyDummyKeyForCIBuildOnly000000000"
+                }
+              ],
+              "services": {
+                "appinvite_service": {
+                  "other_platform_oauth_client": []
+                }
+              }
+            },
+            {
+              "client_info": {
+                "mobilesdk_app_id": "1:000000000000:android:0000000000000001111111",
+                "android_client_info": {
+                  "package_name": "com.argumentor.app.debug"
+                }
+              },
+              "oauth_client": [],
+              "api_key": [
+                {
+                  "current_key": "AIzaSyDummyKeyForCIBuildOnly000000000"
+                }
+              ],
+              "services": {
+                "appinvite_service": {
+                  "other_platform_oauth_client": []
+                }
+              }
+            }
+          ],
+          "configuration_version": "1"
+        }
+        EOF
 
     - name: Run unit tests
       run: ./gradlew test --configuration-cache --build-cache --parallel --stacktrace
@@ -135,12 +234,62 @@ jobs:
       uses: gradle/actions/setup-gradle@v3
       with:
         cache-read-only: false
-        arguments: |
-          --configuration-cache
-          --build-cache
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+
+    - name: Create dummy google-services.json for CI
+      run: |
+        cat > app/google-services.json << 'EOF'
+        {
+          "project_info": {
+            "project_number": "000000000000",
+            "project_id": "argumentor-ci-dummy",
+            "storage_bucket": "argumentor-ci-dummy.appspot.com"
+          },
+          "client": [
+            {
+              "client_info": {
+                "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
+                "android_client_info": {
+                  "package_name": "com.argumentor.app"
+                }
+              },
+              "oauth_client": [],
+              "api_key": [
+                {
+                  "current_key": "AIzaSyDummyKeyForCIBuildOnly000000000"
+                }
+              ],
+              "services": {
+                "appinvite_service": {
+                  "other_platform_oauth_client": []
+                }
+              }
+            },
+            {
+              "client_info": {
+                "mobilesdk_app_id": "1:000000000000:android:0000000000000001111111",
+                "android_client_info": {
+                  "package_name": "com.argumentor.app.debug"
+                }
+              },
+              "oauth_client": [],
+              "api_key": [
+                {
+                  "current_key": "AIzaSyDummyKeyForCIBuildOnly000000000"
+                }
+              ],
+              "services": {
+                "appinvite_service": {
+                  "other_platform_oauth_client": []
+                }
+              }
+            }
+          ],
+          "configuration_version": "1"
+        }
+        EOF
 
     - name: Enable KVM for hardware acceleration
       run: |
@@ -200,12 +349,62 @@ jobs:
       uses: gradle/actions/setup-gradle@v3
       with:
         cache-read-only: false
-        arguments: |
-          --configuration-cache
-          --build-cache
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+
+    - name: Create dummy google-services.json for CI
+      run: |
+        cat > app/google-services.json << 'EOF'
+        {
+          "project_info": {
+            "project_number": "000000000000",
+            "project_id": "argumentor-ci-dummy",
+            "storage_bucket": "argumentor-ci-dummy.appspot.com"
+          },
+          "client": [
+            {
+              "client_info": {
+                "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
+                "android_client_info": {
+                  "package_name": "com.argumentor.app"
+                }
+              },
+              "oauth_client": [],
+              "api_key": [
+                {
+                  "current_key": "AIzaSyDummyKeyForCIBuildOnly000000000"
+                }
+              ],
+              "services": {
+                "appinvite_service": {
+                  "other_platform_oauth_client": []
+                }
+              }
+            },
+            {
+              "client_info": {
+                "mobilesdk_app_id": "1:000000000000:android:0000000000000001111111",
+                "android_client_info": {
+                  "package_name": "com.argumentor.app.debug"
+                }
+              },
+              "oauth_client": [],
+              "api_key": [
+                {
+                  "current_key": "AIzaSyDummyKeyForCIBuildOnly000000000"
+                }
+              ],
+              "services": {
+                "appinvite_service": {
+                  "other_platform_oauth_client": []
+                }
+              }
+            }
+          ],
+          "configuration_version": "1"
+        }
+        EOF
 
     - name: Build release APK
       run: ./gradlew assembleRelease --configuration-cache --build-cache --parallel
@@ -239,6 +438,59 @@ jobs:
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+
+    - name: Create dummy google-services.json for CI
+      run: |
+        cat > app/google-services.json << 'EOF'
+        {
+          "project_info": {
+            "project_number": "000000000000",
+            "project_id": "argumentor-ci-dummy",
+            "storage_bucket": "argumentor-ci-dummy.appspot.com"
+          },
+          "client": [
+            {
+              "client_info": {
+                "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
+                "android_client_info": {
+                  "package_name": "com.argumentor.app"
+                }
+              },
+              "oauth_client": [],
+              "api_key": [
+                {
+                  "current_key": "AIzaSyDummyKeyForCIBuildOnly000000000"
+                }
+              ],
+              "services": {
+                "appinvite_service": {
+                  "other_platform_oauth_client": []
+                }
+              }
+            },
+            {
+              "client_info": {
+                "mobilesdk_app_id": "1:000000000000:android:0000000000000001111111",
+                "android_client_info": {
+                  "package_name": "com.argumentor.app.debug"
+                }
+              },
+              "oauth_client": [],
+              "api_key": [
+                {
+                  "current_key": "AIzaSyDummyKeyForCIBuildOnly000000000"
+                }
+              ],
+              "services": {
+                "appinvite_service": {
+                  "other_platform_oauth_client": []
+                }
+              }
+            }
+          ],
+          "configuration_version": "1"
+        }
+        EOF
 
     - name: Run dependency vulnerability check
       run: ./gradlew dependencyCheckAnalyze || true
