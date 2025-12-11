@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- Disable UnsafeOptInUsageError - we intentionally use experimental APIs with proper annotations -->
+    <issue id="UnsafeOptInUsageError" severity="warning" />
+</lint>

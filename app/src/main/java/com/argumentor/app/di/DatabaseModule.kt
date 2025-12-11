@@ -2,6 +2,7 @@ package com.argumentor.app.di
 
 import android.content.Context
 import android.util.Log
+import androidx.room.ExperimentalRoomApi
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -25,6 +26,7 @@ import javax.inject.Singleton
  * - Fallback migration strategy to handle corrupted databases gracefully
  * - Callbacks for error monitoring and debugging
  */
+@OptIn(ExperimentalRoomApi::class)
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
