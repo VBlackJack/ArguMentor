@@ -124,8 +124,8 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.9.3")
     implementation("androidx.appcompat:appcompat:1.7.0")
 
-    // Jetpack Compose (October 2024 BOM - stable API compatibility)
-    implementation(platform("androidx.compose:compose-bom:2024.09.03"))
+    // Jetpack Compose (June 2024 BOM - has stable PullToRefresh API)
+    implementation(platform("androidx.compose:compose-bom:2024.06.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
@@ -195,7 +195,7 @@ dependencies {
     // Testing - Android Instrumented Tests
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.09.03"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.06.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.navigation:navigation-testing:2.8.4")
     androidTestImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")

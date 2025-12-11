@@ -77,8 +77,8 @@ fun AdaptiveNavigationScaffold(
                 }
             ) {
                 content(
-                    onMenuClick = { scope.launch { drawerState.open() } },
-                    paddingValues = PaddingValues(0.dp)
+                    { scope.launch { drawerState.open() } },
+                    PaddingValues(0.dp)
                 )
             }
         }
@@ -94,8 +94,8 @@ fun AdaptiveNavigationScaffold(
                 }
             ) {
                 content(
-                    onMenuClick = { /* No-op for permanent drawer */ },
-                    paddingValues = PaddingValues(0.dp)
+                    { /* No-op for permanent drawer */ },
+                    PaddingValues(0.dp)
                 )
             }
         }
