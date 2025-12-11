@@ -7,6 +7,7 @@ import androidx.work.Configuration
 import com.argumentor.app.data.repository.FallacyRepository
 import com.argumentor.app.util.AppConstants
 import com.argumentor.app.util.LocaleHelper
+import com.argumentor.app.util.ProductionTree
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -84,17 +85,8 @@ class ArguMentorApp : Application(), Configuration.Provider {
             Timber.plant(Timber.DebugTree())
             Timber.d("ArguMentor Application initialized in DEBUG mode")
         } else {
-            // In release, plant a production tree that logs only errors
-            // TODO: Integrate crash reporting (Firebase Crashlytics, Sentry, etc.)
-            Timber.plant(object : Timber.Tree() {
-                override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-                    if (priority >= android.util.Log.ERROR) {
-                        // Log only errors in production
-                        // Future: Send to crash reporting service
-                        android.util.Log.e(tag, message, t)
-                    }
-                }
-            })
+            // In release, plant a production tree with crash reporting capabilities
+            Timber.plant(ProductionTree())
         }
 
         // BUG FIX: Initialize default fallacies on first launch

@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
     id("io.gitlab.arturbosch.detekt")
@@ -8,16 +9,16 @@ plugins {
 
 android {
     namespace = "com.argumentor.app"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.argumentor.app"
         minSdk = 24
-        targetSdk = 34
-        versionCode = 8
-        versionName = "1.4.5"
+        targetSdk = 35
+        versionCode = 9
+        versionName = "1.5.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.argumentor.app.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -56,10 +57,7 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
-        // Enable explicit API mode for better library design (optional - strict mode)
-        // freeCompilerArgs += "-Xexplicit-api=warning"
-
-        // Optimization: Use IR backend (default in Kotlin 1.5+)
+        // Optimization flags for Kotlin 2.0
         freeCompilerArgs += listOf(
             "-opt-in=kotlin.RequiresOptIn",
             "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
@@ -70,10 +68,6 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.4"
     }
 
     packaging {
@@ -123,24 +117,24 @@ android {
 
 dependencies {
     // Core Android
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-    implementation("androidx.activity:activity-compose:1.8.1")
-    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.core:core-ktx:1.15.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+    implementation("androidx.activity:activity-compose:1.9.3")
+    implementation("androidx.appcompat:appcompat:1.7.0")
 
-    // Jetpack Compose
-    implementation(platform("androidx.compose:compose-bom:2024.04.00"))
+    // Jetpack Compose (December 2024 BOM)
+    implementation(platform("androidx.compose:compose-bom:2024.11.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
 
     // Navigation
-    implementation("androidx.navigation:navigation-compose:2.7.5")
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("androidx.navigation:navigation-compose:2.8.4")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     // Room Database
     val roomVersion = "2.6.1"
@@ -149,23 +143,23 @@ dependencies {
     ksp("androidx.room:room-compiler:$roomVersion")
 
     // Hilt Dependency Injection
-    val hiltVersion = "2.48"
+    val hiltVersion = "2.52"
     implementation("com.google.dagger:hilt-android:$hiltVersion")
     ksp("com.google.dagger:hilt-compiler:$hiltVersion")
 
     // WorkManager for background tasks
-    implementation("androidx.work:work-runtime-ktx:2.9.0")
-    implementation("androidx.hilt:hilt-work:1.1.0")
-    ksp("androidx.hilt:hilt-compiler:1.1.0")
+    implementation("androidx.work:work-runtime-ktx:2.10.0")
+    implementation("androidx.hilt:hilt-work:1.2.0")
+    ksp("androidx.hilt:hilt-compiler:1.2.0")
 
     // JSON serialization
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.code.gson:gson:2.11.0")
 
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 
     // DataStore for preferences
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     // Logging
     implementation("com.jakewharton.timber:timber:5.0.1")
@@ -173,28 +167,35 @@ dependencies {
     // Baseline Profile Support (PERF-002)
     // ProfileInstaller automatically applies baseline profiles at app startup
     // This enables AOT compilation of critical code paths, improving startup time
-    implementation("androidx.profileinstaller:profileinstaller:1.3.1")
+    implementation("androidx.profileinstaller:profileinstaller:1.4.1")
 
     // Core Library Desugaring - Required for java.time API on Android 7.0-7.1 (API 24-25)
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
-    // Testing
+    // Testing - Unit Tests
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:5.7.0")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("org.mockito:mockito-core:5.14.2")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
     testImplementation("androidx.room:room-testing:$roomVersion")
-    testImplementation("com.google.truth:truth:1.1.5")
+    testImplementation("com.google.truth:truth:1.4.4")
     testImplementation("org.robolectric:robolectric:4.11.1")
     testImplementation("androidx.test:core:1.5.0")
     testImplementation("androidx.test.ext:junit:1.1.5")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("app.cash.turbine:turbine:1.2.0")
 
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.04.00"))
+    // Testing - Android Instrumented Tests
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.11.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    androidTestImplementation("androidx.navigation:navigation-testing:2.7.5")
+    androidTestImplementation("androidx.navigation:navigation-testing:2.8.4")
     androidTestImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    androidTestImplementation("com.google.truth:truth:1.4.4")
+    androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
+    androidTestImplementation("app.cash.turbine:turbine:1.2.0")
     kspAndroidTest("com.google.dagger:hilt-compiler:$hiltVersion")
 
     // Test Orchestrator for test sharding and isolation (PERF-CI-002)
