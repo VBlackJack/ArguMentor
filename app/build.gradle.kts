@@ -203,6 +203,7 @@ dependencies {
     androidTestImplementation("com.google.truth:truth:1.4.4")
     androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
     androidTestImplementation("app.cash.turbine:turbine:1.2.0")
+    androidTestImplementation("androidx.room:room-testing:$roomVersion")
     kspAndroidTest("com.google.dagger:hilt-compiler:$hiltVersion")
 
     // Test Orchestrator for test sharding and isolation (PERF-CI-002)

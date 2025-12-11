@@ -11,7 +11,8 @@
       "WebFetch(domain:github.com)",
       "Bash(gh run:*)",
       "Bash(./gradlew lintDebug:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(git revert:*)"
     ]
   }
 }
