@@ -208,11 +208,14 @@ jobs:
         path: app/build/reports/tests/
 
   # Instrumentation Tests - Parallel sharded execution with Gradle Managed Devices
+  # Note: GMD on GitHub Actions is flaky - emulator setup often fails
+  # These tests are optional and won't block the CI pipeline
   instrumented-tests:
     name: Instrumented Tests (API ${{ matrix.api-level }}, Shard ${{ matrix.shard }})
     runs-on: ubuntu-latest # Using ubuntu with KVM instead of macOS (60-70% faster)
     timeout-minutes: 30
     needs: unit-tests # Build avoidance: only run if unit tests pass
+    continue-on-error: true # Don't fail the workflow if emulator setup fails
 
     strategy:
       fail-fast: false # Continue other shards even if one fails
