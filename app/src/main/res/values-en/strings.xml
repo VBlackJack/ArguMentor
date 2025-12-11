@@ -464,6 +464,8 @@
     <string name="error_export_markdown">Error exporting Markdown</string>
     <string name="error_export">Error during export</string>
     <string name="error_import">Error during import</string>
+    <string name="error_operation_timeout">The operation took too long. Please try again.</string>
+    <string name="loading_please_wait">Please wait…</string>
     <string name="error_topic_title_empty">Topic title cannot be empty</string>
     <string name="error_claim_text_empty">Claim text cannot be empty</string>
     <string name="error_text_too_long">Text is too long (maximum 10000 characters)</string>

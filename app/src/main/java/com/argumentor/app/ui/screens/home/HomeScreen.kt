@@ -266,7 +266,7 @@ fun HomeScreen(
                                 ) {
                                     Icon(
                                         Icons.Default.Clear,
-                                        contentDescription = null,
+                                        contentDescription = stringResource(R.string.accessibility_clear_search),
                                         modifier = Modifier.size(16.dp)
                                     )
                                     Spacer(modifier = Modifier.width(4.dp))

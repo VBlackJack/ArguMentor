@@ -9,7 +9,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -31,6 +33,7 @@ fun FallacyDetailScreen(
     onNavigateToEdit: (String) -> Unit = {},
     viewModel: FallacyDetailViewModel = hiltViewModel()
 ) {
+    val haptic = LocalHapticFeedback.current
     val fallacy by viewModel.fallacy.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
@@ -58,6 +61,7 @@ fun FallacyDetailScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         viewModel.deleteFallacy(onSuccess = onNavigateBack)
                         showDeleteDialog = false
                     }

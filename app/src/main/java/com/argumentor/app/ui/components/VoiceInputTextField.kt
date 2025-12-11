@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ import java.util.Locale
  *
  * PERFORMANCE: Uses rememberUpdatedState to stabilize callbacks and prevent unnecessary recompositions.
  * BUGFIX: Properly handles locales with or without country codes to prevent empty language codes.
+ * UX: Optional character counter with maxLength support.
  */
 @Composable
 fun VoiceInputTextField(
@@ -35,6 +37,7 @@ fun VoiceInputTextField(
     singleLine: Boolean = false,
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
+    maxLength: Int? = null,
     locale: Locale = Locale("fr", "FR"), // Default to French
     isError: Boolean = false,
     supportingText: @Composable (() -> Unit)? = null
@@ -80,16 +83,39 @@ fun VoiceInputTextField(
         locale.language
     }
 
+    // Determine the supporting text: custom, character counter, or both
+    val effectiveSupportingText: @Composable (() -> Unit)? = when {
+        supportingText != null -> supportingText
+        maxLength != null -> {
+            {
+                val isOverLimit = value.length > maxLength
+                Text(
+                    text = "${value.length}/$maxLength",
+                    color = if (isOverLimit) MaterialTheme.colorScheme.error
+                           else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        else -> null
+    }
+
+    // Enforce maxLength if set
+    val effectiveOnValueChange: (String) -> Unit = if (maxLength != null) {
+        { newValue -> if (newValue.length <= maxLength) onValueChange(newValue) }
+    } else {
+        onValueChange
+    }
+
     OutlinedTextField(
         value = value,
-        onValueChange = onValueChange,
+        onValueChange = effectiveOnValueChange,
         label = { Text(label) },
         modifier = modifier,
         singleLine = singleLine,
         minLines = minLines,
         maxLines = maxLines,
-        isError = isError,
-        supportingText = supportingText,
+        isError = isError || (maxLength != null && value.length > maxLength),
+        supportingText = effectiveSupportingText,
         trailingIcon = {
             IconButton(
                 onClick = {

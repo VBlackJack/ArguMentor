@@ -139,7 +139,7 @@ fun ClaimCreateEditScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Text field
+            // Text field (max 1000 characters)
             VoiceInputTextField(
                 value = text,
                 onValueChange = viewModel::onTextChange,
@@ -147,6 +147,7 @@ fun ClaimCreateEditScreen(
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
                 maxLines = 8,
+                maxLength = 1000,
                 locale = currentLocale,
                 isError = hasAttemptedSave && text.isBlank(),
                 supportingText = if (hasAttemptedSave && text.isBlank()) {

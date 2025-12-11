@@ -100,7 +100,7 @@ fun OnboardingScreen(
                             }
                         }
                     ) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = null)
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.accessibility_previous))
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(stringResource(R.string.accessibility_back))
                     }
@@ -129,7 +129,7 @@ fun OnboardingScreen(
                         }
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Icon(Icons.Default.ArrowForward, contentDescription = null)
+                    Icon(Icons.Default.ArrowForward, contentDescription = stringResource(R.string.accessibility_next))
                 }
             }
         }

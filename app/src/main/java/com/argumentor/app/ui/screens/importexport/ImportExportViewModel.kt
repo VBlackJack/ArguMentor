@@ -9,10 +9,12 @@ import com.argumentor.app.data.repository.ImportExportRepository
 import com.argumentor.app.util.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import java.io.InputStream
 import java.io.OutputStream
 import javax.inject.Inject
@@ -57,6 +59,12 @@ class ImportExportViewModel @Inject constructor(
          * Used to prevent performance issues when rendering large lists of near-duplicates.
          */
         const val DEFAULT_REVIEW_PAGE_SIZE = 50
+
+        /**
+         * Timeout for import/export operations in milliseconds.
+         * Prevents UI from hanging indefinitely on slow operations.
+         */
+        const val OPERATION_TIMEOUT_MS = 60_000L // 60 seconds
     }
 
     fun setSimilarityThreshold(threshold: Double) {
@@ -67,18 +75,27 @@ class ImportExportViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = ImportExportState.Loading
 
-            importExportRepository.exportToJson(outputStream).fold(
-                onSuccess = {
-                    Timber.d("Data export successful")
-                    _state.value = ImportExportState.Success(resourceProvider.getString(R.string.export_success))
-                },
-                onFailure = { error ->
-                    Timber.e(error, "Failed to export data")
-                    _state.value = ImportExportState.Error(
-                        error.message ?: resourceProvider.getString(R.string.error_export)
+            try {
+                withTimeout(OPERATION_TIMEOUT_MS) {
+                    importExportRepository.exportToJson(outputStream).fold(
+                        onSuccess = {
+                            Timber.d("Data export successful")
+                            _state.value = ImportExportState.Success(resourceProvider.getString(R.string.export_success))
+                        },
+                        onFailure = { error ->
+                            Timber.e(error, "Failed to export data")
+                            _state.value = ImportExportState.Error(
+                                error.message ?: resourceProvider.getString(R.string.error_export)
+                            )
+                        }
                     )
                 }
-            )
+            } catch (e: TimeoutCancellationException) {
+                Timber.e(e, "Export operation timed out")
+                _state.value = ImportExportState.Error(
+                    resourceProvider.getString(R.string.error_operation_timeout)
+                )
+            }
         }
     }
 
@@ -86,21 +103,30 @@ class ImportExportViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = ImportExportState.Loading
 
-            importExportRepository.importFromJson(
-                inputStream,
-                _similarityThreshold.value
-            ).fold(
-                onSuccess = { result ->
-                    Timber.d("Data import preview: ${result.created} created, ${result.updated} updated, ${result.duplicates} duplicates")
-                    _state.value = ImportExportState.ImportPreview(result)
-                },
-                onFailure = { error ->
-                    Timber.e(error, "Failed to import data")
-                    _state.value = ImportExportState.Error(
-                        error.message ?: resourceProvider.getString(R.string.error_import)
+            try {
+                withTimeout(OPERATION_TIMEOUT_MS) {
+                    importExportRepository.importFromJson(
+                        inputStream,
+                        _similarityThreshold.value
+                    ).fold(
+                        onSuccess = { result ->
+                            Timber.d("Data import preview: ${result.created} created, ${result.updated} updated, ${result.duplicates} duplicates")
+                            _state.value = ImportExportState.ImportPreview(result)
+                        },
+                        onFailure = { error ->
+                            Timber.e(error, "Failed to import data")
+                            _state.value = ImportExportState.Error(
+                                error.message ?: resourceProvider.getString(R.string.error_import)
+                            )
+                        }
                     )
                 }
-            )
+            } catch (e: TimeoutCancellationException) {
+                Timber.e(e, "Import operation timed out")
+                _state.value = ImportExportState.Error(
+                    resourceProvider.getString(R.string.error_operation_timeout)
+                )
+            }
         }
     }
 

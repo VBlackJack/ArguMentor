@@ -111,13 +111,14 @@ fun TopicCreateEditScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Title field
+            // Title field (max 200 characters)
             VoiceInputTextField(
                 value = title,
                 onValueChange = viewModel::onTitleChange,
                 label = stringResource(R.string.topic_field_title),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
+                maxLength = 200,
                 locale = currentLocale,
                 isError = hasAttemptedSave && title.isBlank(),
                 supportingText = if (hasAttemptedSave && title.isBlank()) {
@@ -125,7 +126,7 @@ fun TopicCreateEditScreen(
                 } else null
             )
 
-            // Summary field
+            // Summary field (max 2000 characters)
             VoiceInputTextField(
                 value = summary,
                 onValueChange = viewModel::onSummaryChange,
@@ -133,6 +134,7 @@ fun TopicCreateEditScreen(
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
                 maxLines = 6,
+                maxLength = 2000,
                 locale = currentLocale
             )
 

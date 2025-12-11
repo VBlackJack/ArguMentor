@@ -476,6 +476,8 @@
     <string name="error_export_markdown">Erreur lors de l\'export Markdown</string>
     <string name="error_export">Erreur lors de l\'export</string>
     <string name="error_import">Erreur lors de l\'import</string>
+    <string name="error_operation_timeout">L\'opération a pris trop de temps. Veuillez réessayer.</string>
+    <string name="loading_please_wait">Veuillez patienter…</string>
     <string name="error_topic_title_empty">Le titre du sujet ne peut pas être vide</string>
     <string name="error_claim_text_empty">Le texte de l\'affirmation ne peut pas être vide</string>
     <string name="error_text_too_long">Le texte est trop long (maximum 10000 caractères)</string>

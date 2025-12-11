@@ -82,7 +82,7 @@ fun ImportExportScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             Icons.Default.FileUpload,
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.accessibility_export),
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -138,7 +138,7 @@ fun ImportExportScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             Icons.Default.FileDownload,
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.accessibility_import),
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -183,7 +183,26 @@ fun ImportExportScreen(
             // Status message
             when (val currentState = state) {
                 is ImportExportState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            CircularProgressIndicator()
+                            Text(
+                                stringResource(R.string.loading_please_wait),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                 }
 
                 is ImportExportState.Success -> {
