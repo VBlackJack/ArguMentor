@@ -218,6 +218,8 @@ android.lint {
     abortOnError = true
     // Treat warnings as warnings, not errors
     warningsAsErrors = false
+    // Use baseline to track pre-existing issues
+    baseline = file("lint-baseline.xml")
 }
 
 detekt {

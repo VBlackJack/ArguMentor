@@ -2,17 +2,21 @@
 <!--
     Backup rules for Android Auto Backup.
     SECURITY: Exclude sensitive data from cloud backups.
+
+    Note: In full-backup-content, you can only exclude from domains that are
+    implicitly included. Since we only include sharedpref, excludes for other
+    domains are not needed.
 -->
 <full-backup-content>
-    <!-- Include only safe, non-sensitive files -->
+    <!-- Include only SharedPreferences (safe, non-sensitive settings) -->
     <include domain="sharedpref" path="." />
 
-    <!-- Exclude database files - contain user data -->
-    <exclude domain="database" path="." />
+    <!--
+        The following are NOT backed up by default when using <include>:
+        - database: User content in Room database
+        - cache: Temporary files
+        - file: DataStore preferences (datastore/)
 
-    <!-- Exclude cache - temporary data -->
-    <exclude domain="cache" path="." />
-
-    <!-- Exclude DataStore preferences file -->
-    <exclude domain="file" path="datastore/" />
+        No explicit <exclude> needed as they're not in any <include> path.
+    -->
 </full-backup-content>
