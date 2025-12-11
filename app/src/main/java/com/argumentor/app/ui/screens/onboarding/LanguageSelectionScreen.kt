@@ -1,7 +1,6 @@
 package com.argumentor.app.ui.screens.onboarding
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Language
@@ -74,6 +73,7 @@ fun LanguageSelectionScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LanguageCard(
     language: AppLanguage,
@@ -81,10 +81,10 @@ private fun LanguageCard(
     modifier: Modifier = Modifier
 ) {
     Card(
+        onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(80.dp)
-            .clickable(onClick = onClick),
+            .height(80.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface

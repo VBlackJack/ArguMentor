@@ -12,6 +12,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -39,6 +41,7 @@ fun ClaimCreateEditScreen(
     val currentLocale = rememberCurrentLocale()
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
+    val textFieldFocusRequester = remember { FocusRequester() }
 
     // UI state preservation on configuration changes (e.g., screen rotation)
     var showUnsavedChangesDialog by rememberSaveable { mutableStateOf(false) }
@@ -113,11 +116,21 @@ fun ClaimCreateEditScreen(
                     }
                 },
                 actions = {
+                    if (isSaving) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .padding(end = 8.dp),
+                            strokeWidth = 2.dp
+                        )
+                    }
                     TextButton(
                         onClick = {
                             hasAttemptedSave = true
                             if (text.isNotBlank()) {
                                 viewModel.saveClaim(onNavigateBack)
+                            } else {
+                                textFieldFocusRequester.requestFocus()
                             }
                         },
                         enabled = !isSaving
@@ -144,7 +157,9 @@ fun ClaimCreateEditScreen(
                 value = text,
                 onValueChange = viewModel::onTextChange,
                 label = stringResource(R.string.claim_text_label),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(textFieldFocusRequester),
                 minLines = 3,
                 maxLines = 8,
                 maxLength = 1000,

@@ -199,31 +199,25 @@ private fun FallacyCard(
 
                 // Action buttons (only for custom fallacies)
                 if (fallacy.isCustom) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
                         IconButton(
-                            onClick = {
-                                onEdit()
-                            },
-                            modifier = Modifier.size(32.dp)
+                            onClick = { onEdit() }
                         ) {
                             Icon(
                                 Icons.Default.Edit,
                                 contentDescription = stringResource(R.string.edit),
                                 tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                         IconButton(
-                            onClick = {
-                                showDeleteDialog = true
-                            },
-                            modifier = Modifier.size(32.dp)
+                            onClick = { showDeleteDialog = true }
                         ) {
                             Icon(
                                 Icons.Default.Delete,
                                 contentDescription = stringResource(R.string.delete),
                                 tint = MaterialTheme.colorScheme.error,
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                     }

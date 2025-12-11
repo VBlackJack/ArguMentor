@@ -59,7 +59,13 @@ fun VoiceInputTextField(
                 } else {
                     spokenText
                 }
-                currentOnValueChange.value(newText)
+                // Apply maxLength limit to voice input as well
+                val limitedText = if (maxLength != null && newText.length > maxLength) {
+                    newText.take(maxLength)
+                } else {
+                    newText
+                }
+                currentOnValueChange.value(limitedText)
             }
         }
     }

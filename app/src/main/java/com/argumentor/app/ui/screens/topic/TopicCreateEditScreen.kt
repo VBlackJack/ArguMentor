@@ -88,6 +88,14 @@ fun TopicCreateEditScreen(
                     }
                 },
                 actions = {
+                    if (isSaving) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .padding(end = 8.dp),
+                            strokeWidth = 2.dp
+                        )
+                    }
                     TextButton(
                         onClick = {
                             hasAttemptedSave = true

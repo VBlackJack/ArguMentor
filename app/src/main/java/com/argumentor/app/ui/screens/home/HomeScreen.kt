@@ -404,6 +404,12 @@ private fun TopicCard(
 ) {
     val haptic = LocalHapticFeedback.current
     val isDemoTopic = demoTopicId != null && topic.id == demoTopicId
+    val cardDescription = stringResource(
+        R.string.home_topic_card_description,
+        topic.title,
+        topic.summary.take(100),
+        topic.tags.size
+    )
 
     Card(
         modifier = modifier
@@ -413,7 +419,7 @@ private fun TopicCard(
                 onClick()
             }
             .semantics(mergeDescendants = true) {
-                // contentDescription will need manual fix
+                contentDescription = cardDescription
             },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant

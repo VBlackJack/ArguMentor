@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -45,7 +46,7 @@ fun DebateModeScreen(
     val cardsReviewed by viewModel.cardsReviewed.collectAsState()
     val sessionScore by viewModel.sessionScore.collectAsState()
     val streak by viewModel.streak.collectAsState()
-    var showCardMenu by remember { mutableStateOf(false) }
+    var showCardMenu by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(topicId) {
         viewModel.loadTopic(topicId)
