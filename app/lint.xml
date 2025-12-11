@@ -4,4 +4,6 @@
     <issue id="UnsafeOptInUsageError" severity="warning" />
     <!-- Downgrade StringFormatInvalid - some false positives with dynamic strings -->
     <issue id="StringFormatInvalid" severity="warning" />
+    <!-- Downgrade MissingTranslation - translations will be completed incrementally -->
+    <issue id="MissingTranslation" severity="warning" />
 </lint>
