@@ -213,12 +213,10 @@ dependencies {
 }
 
 android.lint {
-    // Don't abort build on lint errors - too many pre-existing issues
-    abortOnError = false
+    // Abort build on lint errors
+    abortOnError = true
     // Treat warnings as warnings, not errors
     warningsAsErrors = false
-    // Continue checking even after errors
-    checkAllWarnings = false
 }
 
 detekt {

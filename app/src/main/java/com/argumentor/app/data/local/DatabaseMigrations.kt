@@ -88,15 +88,15 @@ object DatabaseMigrations {
                         val bindings = mutableListOf<Any>()
                         val assignments = mutableListOf<String>()
 
-                    if (hasCreatedColumn) {
-                        assignments += "createdAt = ?"
+                        if (hasCreatedColumn) {
+                            assignments += "createdAt = ?"
+                            bindings += nextTimestamp()
+                        }
+
+                        assignments += "updatedAt = ?"
                         bindings += nextTimestamp()
-                    }
 
-                    assignments += "updatedAt = ?"
-                    bindings += nextTimestamp()
-
-                    bindings += id
+                        bindings += id
 
                         db.execSQL(
                             "UPDATE $table SET ${assignments.joinToString(", ")} WHERE $idColumn = ?",
