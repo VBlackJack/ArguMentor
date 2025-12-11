@@ -5,6 +5,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -482,8 +484,12 @@ private fun ClaimBack(
     val context = androidx.compose.ui.platform.LocalContext.current
     val hasContent = card.rebuttals.isNotEmpty() || card.evidences.isNotEmpty() || card.questions.isNotEmpty()
 
+    val scrollState = rememberScrollState()
+
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState),
         verticalArrangement = if (hasContent) Arrangement.spacedBy(16.dp) else Arrangement.Center
     ) {
         if (!hasContent) {
