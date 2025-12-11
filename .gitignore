@@ -60,7 +60,8 @@ captures/
 .cxx/
 
 # Google Services (e.g. APIs or Firebase)
-# google-services.json
+# SECURITY: Never commit Firebase config to public repos
+app/google-services.json
 
 # Freeline
 freeline.py

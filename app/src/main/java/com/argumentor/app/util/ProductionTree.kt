@@ -1,6 +1,7 @@
 package com.argumentor.app.util
 
 import android.util.Log
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import timber.log.Timber
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -172,52 +173,35 @@ class ProductionTree : Timber.Tree() {
     }
 
     /**
-     * Report an error to crash reporting service.
+     * Report an error to Firebase Crashlytics.
      *
-     * Integration points for crash reporting services:
-     *
-     * Firebase Crashlytics:
-     * ```
-     * FirebaseCrashlytics.getInstance().apply {
-     *     setCustomKey("tag", tag ?: "unknown")
-     *     log(message)
-     *     if (throwable != null) {
-     *         recordException(throwable)
-     *     }
-     * }
-     * ```
-     *
-     * Sentry:
-     * ```
-     * Sentry.captureMessage(message, SentryLevel.ERROR)
-     * if (throwable != null) {
-     *     Sentry.captureException(throwable)
-     * }
-     * ```
+     * Sends error information to Firebase Crashlytics for crash analysis:
+     * - Sets custom keys for error categorization
+     * - Logs the error message for context
+     * - Records exceptions for non-fatal crash reports
      *
      * @param tag Log tag for categorization
      * @param message Error message
      * @param throwable Optional exception
      */
     private fun logError(tag: String?, message: String, throwable: Throwable?) {
-        // Placeholder for crash reporting integration
-        // Uncomment and configure when adding Firebase Crashlytics or Sentry:
-        //
-        // Firebase Crashlytics:
-        // FirebaseCrashlytics.getInstance().apply {
-        //     setCustomKey("error_tag", tag ?: "unknown")
-        //     log("[$tag] $message")
-        //     throwable?.let { recordException(it) }
-        // }
-        //
-        // Sentry:
-        // Sentry.configureScope { scope ->
-        //     scope.setTag("error_tag", tag ?: "unknown")
-        // }
-        // if (throwable != null) {
-        //     Sentry.captureException(throwable)
-        // } else {
-        //     Sentry.captureMessage("[$tag] $message", SentryLevel.ERROR)
-        // }
+        try {
+            FirebaseCrashlytics.getInstance().apply {
+                // Set custom key for error categorization
+                setCustomKey("error_tag", tag ?: "unknown")
+
+                // Log the message for context (visible in Crashlytics dashboard)
+                log("[$tag] $message")
+
+                // Record the exception if present
+                if (throwable != null) {
+                    recordException(throwable)
+                }
+            }
+        } catch (e: Exception) {
+            // Crashlytics not initialized yet or other error
+            // Fail silently to avoid cascading errors
+            Log.w("ProductionTree", "Failed to log to Crashlytics: ${e.message}")
+        }
     }
 }
