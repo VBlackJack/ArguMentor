@@ -39,9 +39,10 @@ fun EngagingEmptyState(
         verticalArrangement = Arrangement.Center
     ) {
         // Large icon with transparency for visual hierarchy
+        // contentDescription is null because the title provides the semantic meaning
         Icon(
             imageVector = icon,
-            contentDescription = null,
+            contentDescription = null, // Decorative: title provides meaning
             modifier = Modifier.size(120.dp),
             tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
         )
@@ -77,7 +78,7 @@ fun EngagingEmptyState(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = null,
+                    contentDescription = null, // Part of button, text provides meaning
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))

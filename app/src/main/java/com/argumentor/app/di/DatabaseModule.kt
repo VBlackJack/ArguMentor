@@ -86,6 +86,15 @@ object DatabaseModule {
                 override fun onOpen(db: SupportSQLiteDatabase) {
                     super.onOpen(db)
                     Log.d(TAG, "Database opened: version ${db.version}")
+
+                    // PERF-002: Enable incremental auto-vacuum to reclaim space automatically
+                    // auto_vacuum=2 (INCREMENTAL) is safer than FULL as it happens in small steps
+                    // This prevents database file from growing indefinitely after many deletes
+                    db.execSQL("PRAGMA auto_vacuum = INCREMENTAL")
+
+                    // Trigger incremental vacuum on open to reclaim some space
+                    // This runs in small chunks and won't block for long
+                    db.execSQL("PRAGMA incremental_vacuum(100)")
                 }
 
                 override fun onDestructiveMigration(db: SupportSQLiteDatabase) {

@@ -2,6 +2,7 @@ package com.argumentor.app.data.model
 
 import androidx.compose.runtime.Immutable
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.argumentor.app.data.local.Converters
@@ -39,7 +40,10 @@ import java.util.UUID
  * This data class is immutable (all properties are val) and contains only immutable types.
  */
 @Immutable
-@Entity(tableName = "topics")
+@Entity(
+    tableName = "topics",
+    indices = [Index(value = ["posture"])]
+)
 @TypeConverters(Converters::class)
 data class Topic(
     @PrimaryKey

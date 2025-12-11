@@ -1,4 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Backup rules for Android Auto Backup.
+    SECURITY: Exclude sensitive data from cloud backups.
+-->
 <full-backup-content>
-    <include domain="file" path="." />
+    <!-- Include only safe, non-sensitive files -->
+    <include domain="sharedpref" path="." />
+
+    <!-- Exclude database files - contain user data -->
+    <exclude domain="database" path="." />
+
+    <!-- Exclude cache - temporary data -->
+    <exclude domain="cache" path="." />
+
+    <!-- Exclude DataStore preferences file -->
+    <exclude domain="file" path="datastore/" />
 </full-backup-content>

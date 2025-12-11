@@ -18,6 +18,8 @@ import com.argumentor.app.data.model.*
  * Version 8 - Added EvidenceFts for full-text search on evidences
  * Version 9 - Added TagFts for full-text search on tags
  * Version 10 - Added Fallacy entity for CRUD operations on logical fallacies
+ * Version 11 - Added index on tags.label for faster tag lookup by label
+ * Version 12 - Added indexes on claims(stance, strength), topics(posture); made claimFingerprint UNIQUE
  */
 @Database(
     entities = [
@@ -37,7 +39,7 @@ import com.argumentor.app.data.model.*
         EvidenceFts::class,
         TagFts::class
     ],
-    version = 10,
+    version = 12,
     exportSchema = true
 )
 @TypeConverters(Converters::class)

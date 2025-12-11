@@ -12,7 +12,17 @@
       "Bash(gh run:*)",
       "Bash(./gradlew lintDebug:*)",
       "Bash(grep:*)",
-      "Bash(git revert:*)"
+      "Bash(git revert:*)",
+      "Bash(adb devices:*)",
+      "Bash(./gradlew assembleDebug:*)",
+      "Bash(adb install:*)",
+      "WebFetch(domain:www.githubstatus.com)",
+      "Bash(find:*)",
+      "Bash(./gradlew testDebugUnitTest:*)",
+      "Bash(./gradlew compileDebugUnitTestKotlin:*)",
+      "Bash(cat:*)",
+      "Bash(./gradlew compileDebugKotlin:*)",
+      "Bash(./gradlew clean testDebugUnitTest:*)"
     ]
   }
 }

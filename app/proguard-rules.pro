@@ -131,3 +131,18 @@
     <fields>;
     <init>(...);
 }
+
+# Keep FTS entities - Required for Room FTS4 full-text search
+# FTS entities use reflection and must not be obfuscated
+-keep @androidx.room.Fts4 class * {
+    <fields>;
+    <init>(...);
+}
+-keep class com.argumentor.app.data.local.FtsEntities$* {
+    <fields>;
+    <init>(...);
+}
+-keep class com.argumentor.app.data.local.*Fts {
+    <fields>;
+    <init>(...);
+}

@@ -5,9 +5,9 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import timber.log.Timber
 import java.io.PrintWriter
 import java.io.StringWriter
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.ConcurrentLinkedQueue
 
 /**
@@ -41,8 +41,11 @@ class ProductionTree : Timber.Tree() {
 
         /**
          * Date format for log timestamps.
+         * Using java.time.DateTimeFormatter for thread-safety (unlike SimpleDateFormat).
          */
-        private val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US)
+        private val DATE_FORMAT: DateTimeFormatter = DateTimeFormatter
+            .ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+            .withZone(ZoneId.systemDefault())
 
         /**
          * Thread-safe queue for recent log entries.
@@ -96,7 +99,7 @@ class ProductionTree : Timber.Tree() {
         val throwable: Throwable?
     ) {
         fun format(): String {
-            val time = DATE_FORMAT.format(Date(timestamp))
+            val time = DATE_FORMAT.format(Instant.ofEpochMilli(timestamp))
             val level = priorityToString(priority)
             val tagStr = tag?.let { "[$it]" } ?: ""
             val base = "$time $level $tagStr $message"

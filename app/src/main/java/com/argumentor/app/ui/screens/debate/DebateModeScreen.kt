@@ -110,7 +110,7 @@ fun DebateModeScreen(
                                             showCardMenu = false
                                         },
                                         leadingIcon = if (index == currentCardIndex) {
-                                            { Icon(Icons.Default.Check, contentDescription = null) }
+                                            { Icon(Icons.Default.Check, contentDescription = stringResource(R.string.accessibility_current_card)) }
                                         } else null
                                     )
                                 }
@@ -177,7 +177,7 @@ fun DebateModeScreen(
                         ) {
                             Icon(
                                 Icons.Default.Star,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.accessibility_score),
                                 modifier = Modifier.size(16.dp),
                                 tint = MaterialTheme.colorScheme.primary
                             )
@@ -197,7 +197,7 @@ fun DebateModeScreen(
                             ) {
                                 Icon(
                                     Icons.Default.LocalFireDepartment,
-                                    contentDescription = null,
+                                    contentDescription = stringResource(R.string.accessibility_streak),
                                     modifier = Modifier.size(16.dp),
                                     tint = MaterialTheme.colorScheme.tertiary
                                 )
@@ -272,7 +272,7 @@ fun DebateModeScreen(
                             enabled = currentCardIndex > 0,
                             modifier = Modifier.weight(1f)
                         ) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = null)
+                            Icon(Icons.Default.ArrowBack, contentDescription = null) // Text provides meaning
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(stringResource(R.string.debate_previous))
                         }
@@ -284,7 +284,7 @@ fun DebateModeScreen(
                         ) {
                             Text(stringResource(R.string.debate_next))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Icon(Icons.Default.ArrowForward, contentDescription = null)
+                            Icon(Icons.Default.ArrowForward, contentDescription = null) // Text provides meaning
                         }
                     }
                 }
@@ -501,7 +501,7 @@ private fun ClaimBack(
             ) {
                 Icon(
                     imageVector = Icons.Default.Info,
-                    contentDescription = null,
+                    contentDescription = null, // Decorative: title below provides meaning
                     modifier = Modifier.size(48.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                 )

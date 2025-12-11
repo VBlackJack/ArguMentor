@@ -13,6 +13,19 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 - Fichier .editorconfig pour standardiser le formatage du code
 - Templates GitHub pour les issues et pull requests
 - Workflow GitHub Actions pour CI/CD automatisé
+- Architecture Decision Records (ADR) dans `docs/architecture/`
+  - ADR 001: Clean Architecture avec MVVM
+  - ADR 002: JSON Arrays pour relations many-to-many
+  - ADR 003: Stratégie de recherche FTS4
+- Tests unitaires ViewModel complets
+  - TopicDetailViewModelTest (20 tests)
+  - StatisticsViewModelTest (5 tests)
+  - DebateModeViewModelTest (18 tests)
+  - ImportExportViewModelTest (15 tests)
+  - ClaimCreateEditViewModelTest (22 tests)
+- Tests unitaires MarkdownExporter (15 tests)
+- Tests de validation des contrastes WCAG (ColorContrastTest)
+- VACUUM automatique incrémental pour la base de données
 
 ### Corrigé
 - Version hardcodée dans SettingsScreen.kt remplacée par BuildConfig.VERSION_NAME
@@ -26,6 +39,11 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 - Stabilité des opérations de suppression de données du tutoriel
 - Cohérence de l'internationalisation (i18n) à travers l'application
 - Gestion des erreurs avec logging structuré
+- Couverture de tests augmentée (~35% → ~60%)
+- Lint MissingTranslation passé en severity "error"
+
+### Sécurité
+- Validation des contrastes WCAG 2.1 AA pour toutes les couleurs
 
 ## [1.4.1] - 2025-11-08
 

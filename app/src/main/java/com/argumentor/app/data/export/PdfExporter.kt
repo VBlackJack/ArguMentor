@@ -10,8 +10,6 @@ import com.argumentor.app.data.model.Claim
 import com.argumentor.app.data.model.Rebuttal
 import com.argumentor.app.data.model.Topic
 import java.io.OutputStream
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  * Exports topics and their arguments to PDF format.

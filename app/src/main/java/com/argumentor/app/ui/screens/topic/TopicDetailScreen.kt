@@ -378,18 +378,17 @@ fun TopicDetailScreen(
                             )
                             IconButton(
                                 onClick = { showSummary = !showSummary },
-                                modifier = Modifier
-                                    .size(28.dp)
-                                    .semantics {
-                                        stateDescription = stateDescriptionText
-                                    }
+                                modifier = Modifier.semantics {
+                                    stateDescription = stateDescriptionText
+                                }
                             ) {
                                 Icon(
                                     if (showSummary) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
                                     contentDescription = stringResource(
                                         if (showSummary) R.string.topic_hide_summary else R.string.topic_show_summary
                                     ),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(24.dp)
                                 )
                             }
                         }

@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    FileProvider paths for sharing files with other apps.
+    SECURITY: Restrict paths to only necessary directories.
+-->
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- External storage Downloads folder -->
+    <!-- External storage Downloads folder for exports -->
     <external-path
         name="downloads"
         path="Download/" />
 
-    <!-- App's external files directory -->
+    <!-- App's external files directory - only exports subfolder -->
     <external-files-path
-        name="external_files"
-        path="." />
+        name="exports"
+        path="exports/" />
 
-    <!-- App's cache directory -->
+    <!-- App's cache directory - only temp subfolder for sharing -->
     <cache-path
-        name="cache"
-        path="." />
-
-    <!-- App's internal files directory -->
-    <files-path
-        name="files"
-        path="." />
+        name="temp"
+        path="temp/" />
 </paths>

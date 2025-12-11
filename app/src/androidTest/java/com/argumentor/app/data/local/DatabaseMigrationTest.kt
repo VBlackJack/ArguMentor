@@ -112,15 +112,17 @@ class DatabaseMigrationTest {
 
         val db = helper.runMigrationsAndValidate(testDbName, 10, true, DatabaseMigrations.MIGRATION_9_10)
 
-        // Verify fallacy structure has all required columns
-        db.query("SELECT id, name, description, example, category, severity FROM fallacies WHERE id = 'straw_man'").use { cursor ->
+        // Verify fallacy structure has all required columns matching the actual schema
+        db.query("SELECT id, name, description, example, category, isCustom, createdAt, updatedAt FROM fallacies WHERE id = 'straw_man'").use { cursor ->
             assertThat(cursor.moveToFirst()).isTrue()
             assertThat(cursor.getString(0)).isEqualTo("straw_man")
             assertThat(cursor.getString(1)).isEqualTo("Straw Man")
-            assertThat(cursor.getString(2)).isNotEmpty() // description
-            assertThat(cursor.getString(3)).isNotEmpty() // example
-            assertThat(cursor.getString(4)).isEqualTo("relevance") // category
-            assertThat(cursor.getString(5)).isEqualTo("high") // severity
+            assertThat(cursor.getString(2)).isNotEmpty() // description (placeholder text)
+            assertThat(cursor.getString(3)).isNotEmpty() // example (placeholder text)
+            assertThat(cursor.getString(4)).isEmpty() // category (empty string by default)
+            assertThat(cursor.getInt(5)).isEqualTo(0) // isCustom = false
+            assertThat(cursor.getString(6)).isNotEmpty() // createdAt
+            assertThat(cursor.getString(7)).isNotEmpty() // updatedAt
         }
 
         db.close()

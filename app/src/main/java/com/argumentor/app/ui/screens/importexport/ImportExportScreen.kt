@@ -196,7 +196,7 @@ fun ImportExportScreen(
                             modifier = Modifier.padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.CheckCircle, contentDescription = null)
+                            Icon(Icons.Default.CheckCircle, contentDescription = stringResource(R.string.accessibility_success))
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(currentState.message)
                         }
@@ -213,7 +213,7 @@ fun ImportExportScreen(
                             modifier = Modifier.padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.Error, contentDescription = null)
+                            Icon(Icons.Default.Error, contentDescription = stringResource(R.string.accessibility_error))
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(currentState.message)
                         }

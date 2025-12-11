@@ -120,16 +120,18 @@ private fun NavigationDrawerContent(
         Divider()
         Spacer(modifier = Modifier.height(16.dp))
 
+        val homeLabel = stringResource(R.string.nav_home)
         NavigationDrawerItem(
-            icon = { Icon(Icons.Default.Home, contentDescription = null) },
-            label = { Text(stringResource(R.string.nav_home)) },
+            icon = { Icon(Icons.Default.Home, contentDescription = homeLabel) },
+            label = { Text(homeLabel) },
             selected = currentRoute == "home",
             onClick = onNavigateToHome
         )
 
+        val newTopicLabel = stringResource(R.string.nav_new_topic)
         NavigationDrawerItem(
-            icon = { Icon(Icons.Default.Add, contentDescription = null) },
-            label = { Text(stringResource(R.string.nav_new_topic)) },
+            icon = { Icon(Icons.Default.Add, contentDescription = newTopicLabel) },
+            label = { Text(newTopicLabel) },
             selected = false,
             onClick = onNavigateToCreate
         )
@@ -138,16 +140,18 @@ private fun NavigationDrawerContent(
         Divider()
         Spacer(modifier = Modifier.height(8.dp))
 
+        val statisticsLabel = stringResource(R.string.nav_statistics)
         NavigationDrawerItem(
-            icon = { Icon(Icons.Default.BarChart, contentDescription = null) },
-            label = { Text(stringResource(R.string.nav_statistics)) },
+            icon = { Icon(Icons.Default.BarChart, contentDescription = statisticsLabel) },
+            label = { Text(statisticsLabel) },
             selected = currentRoute == "statistics",
             onClick = onNavigateToStatistics
         )
 
+        val importExportLabel = stringResource(R.string.nav_import_export)
         NavigationDrawerItem(
-            icon = { Icon(Icons.Default.FileUpload, contentDescription = null) },
-            label = { Text(stringResource(R.string.nav_import_export)) },
+            icon = { Icon(Icons.Default.FileUpload, contentDescription = importExportLabel) },
+            label = { Text(importExportLabel) },
             selected = currentRoute == "import_export",
             onClick = onNavigateToImportExport
         )
@@ -156,9 +160,10 @@ private fun NavigationDrawerContent(
         Divider()
         Spacer(modifier = Modifier.height(8.dp))
 
+        val settingsLabel = stringResource(R.string.nav_settings)
         NavigationDrawerItem(
-            icon = { Icon(Icons.Default.Settings, contentDescription = null) },
-            label = { Text(stringResource(R.string.nav_settings)) },
+            icon = { Icon(Icons.Default.Settings, contentDescription = settingsLabel) },
+            label = { Text(settingsLabel) },
             selected = currentRoute == "settings",
             onClick = onNavigateToSettings
         )

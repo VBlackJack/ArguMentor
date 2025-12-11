@@ -75,6 +75,8 @@ class SpeechToTextHelper(
 
                     override fun onError(error: Int) {
                         isListening = false
+                        // MEMORY LEAK FIX: Always cleanup on error to prevent dangling recognizer
+                        cleanup()
                         val errorMessage = when (error) {
                             SpeechRecognizer.ERROR_AUDIO -> resourceProvider.getString(R.string.error_speech_audio)
                             SpeechRecognizer.ERROR_CLIENT -> resourceProvider.getString(R.string.error_speech_client)
@@ -92,6 +94,8 @@ class SpeechToTextHelper(
 
                     override fun onResults(results: Bundle?) {
                         isListening = false
+                        // MEMORY LEAK FIX: Cleanup after results to release resources
+                        cleanup()
                         val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                         val text = matches?.firstOrNull() ?: ""
                         if (text.isNotBlank()) {

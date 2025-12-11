@@ -363,6 +363,45 @@ object DatabaseMigrations {
     }
 
     /**
+     * Migration from version 10 to 11.
+     *
+     * Changes:
+     * - Added index on tags.label for faster tag lookup by label
+     */
+    val MIGRATION_10_11 = object : Migration(10, 11) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Create index on tags.label for faster lookups in TagDao.getTagByLabel()
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_tags_label` ON `tags` (`label`)")
+            Timber.d("Migration 10→11: Created index on tags.label")
+        }
+    }
+
+    /**
+     * Migration from version 11 to 12.
+     *
+     * Changes:
+     * - Added indexes on claims(stance, strength) for faster filtering queries
+     * - Added index on topics(posture) for faster posture filtering
+     * - Made claimFingerprint UNIQUE to prevent race condition duplicates
+     */
+    val MIGRATION_11_12 = object : Migration(11, 12) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Create indexes for common filter columns (performance optimization)
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_claims_stance` ON `claims` (`stance`)")
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_claims_strength` ON `claims` (`strength`)")
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_topics_posture` ON `topics` (`posture`)")
+
+            // Make claimFingerprint unique to prevent race condition duplicates
+            // First, drop the existing non-unique index
+            db.execSQL("DROP INDEX IF EXISTS `index_claims_claimFingerprint`")
+            // Create unique index (this will fail if duplicates exist, which is correct behavior)
+            db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_claims_claimFingerprint` ON `claims` (`claimFingerprint`)")
+
+            Timber.d("Migration 11→12: Added indexes on stance, strength, posture and made claimFingerprint unique")
+        }
+    }
+
+    /**
      * All migrations in order.
      */
     val ALL_MIGRATIONS = arrayOf(
@@ -374,6 +413,8 @@ object DatabaseMigrations {
         MIGRATION_6_7,
         MIGRATION_7_8,
         MIGRATION_8_9,
-        MIGRATION_9_10
+        MIGRATION_9_10,
+        MIGRATION_10_11,
+        MIGRATION_11_12
     )
 }

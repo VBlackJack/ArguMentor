@@ -27,7 +27,11 @@ import java.util.UUID
 @Immutable
 @Entity(
     tableName = "claims",
-    indices = [Index(value = ["claimFingerprint"])]
+    indices = [
+        Index(value = ["claimFingerprint"], unique = true),
+        Index(value = ["stance"]),
+        Index(value = ["strength"])
+    ]
 )
 @TypeConverters(Converters::class)
 data class Claim(

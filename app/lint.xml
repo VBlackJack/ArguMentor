@@ -4,6 +4,7 @@
     <issue id="UnsafeOptInUsageError" severity="warning" />
     <!-- Downgrade StringFormatInvalid - some false positives with dynamic strings -->
     <issue id="StringFormatInvalid" severity="warning" />
-    <!-- Downgrade MissingTranslation - translations will be completed incrementally -->
-    <issue id="MissingTranslation" severity="warning" />
+    <!-- MissingTranslation set to error for release quality assurance -->
+    <!-- Use @Suppress("MissingTranslation") on specific strings that are intentionally untranslated -->
+    <issue id="MissingTranslation" severity="error" />
 </lint>
