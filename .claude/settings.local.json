@@ -10,7 +10,8 @@
       "Bash(git rebase:*)",
       "WebFetch(domain:github.com)",
       "Bash(gh run:*)",
-      "Bash(./gradlew lintDebug:*)"
+      "Bash(./gradlew lintDebug:*)",
+      "Bash(grep:*)"
     ]
   }
 }

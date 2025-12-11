@@ -2,4 +2,6 @@
 <lint>
     <!-- Disable UnsafeOptInUsageError - we intentionally use experimental APIs with proper annotations -->
     <issue id="UnsafeOptInUsageError" severity="warning" />
+    <!-- Downgrade StringFormatInvalid - some false positives with dynamic strings -->
+    <issue id="StringFormatInvalid" severity="warning" />
 </lint>

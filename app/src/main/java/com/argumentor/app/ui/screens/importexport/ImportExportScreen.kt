@@ -34,7 +34,7 @@ fun ImportExportScreen(
                     viewModel.exportData(outputStream)
                 }
             } catch (e: Exception) {
-                viewModel.setError(context.getString(R.string.export_error, e.message ?: ""))
+                viewModel.setError(context.getString(R.string.export_error_formatted, e.message ?: ""))
             }
         }
     }
